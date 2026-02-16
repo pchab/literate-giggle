@@ -1,7 +1,7 @@
 # BATTLE SYSTEM SPECIFICATION
 
 ## THE GRID
-* **Dimensions:** 5 Columns (Width) x 3 Rows (Depth).
+* **Dimensions:** 3 Columns (Width) x 5 Rows (Depth).
 * **Coordinates:** `[col, row]` where `[0,0]` is Top-Left.
 * **Orientation:** * Player Grid: Left side.
     * Enemy Area: Off-grid, Right side.
@@ -13,6 +13,6 @@
     * Offensive Cards = Low/No Movement.
 
 ## VISUAL LAYOUT (Refer to `battle_ui_mockup.jpg`)
-* **Left Panel:** 3 Vertical Slots for Hero Portraits + HP/MP + Cards.
-* **Center:** The 5x3 Grid.
+* **Left Panel:** 3 Vertical Slots for Hero Portraits + Cards.
+* **Center:** The 3x5 Grid. (3 columns, 5 rows)
 * **Right Panel:** Enemy Sprite Area + Enemy Info.
