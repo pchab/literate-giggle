@@ -32,7 +32,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-zinc-950 text-zinc-100 font-sans h-screen w-screen overflow-hidden flex`}
       >
         {/* Left Column: Party Sidebar */}
-        <aside className="w-80 flex-shrink-0 border-r border-zinc-800 bg-zinc-900 p-4">
+        <aside className="w-[400px] flex-shrink-0 border-r border-zinc-800 bg-zinc-900 p-4">
           {party}
         </aside>
 

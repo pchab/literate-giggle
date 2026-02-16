@@ -10,9 +10,9 @@
 1.  **Lane Targeting:** Enemies attack specific Rows (Lanes).
 2.  **Intercepting:** High Defense heroes must move *laterally* into the target lane to block shots.
 3.  **Movement:** * Defensive Cards = High Movement.
-    * Offensive Cards = Low/No Movement.
+    * Heal/Offensive Cards = Low/No Movement.
 
 ## VISUAL LAYOUT (Refer to `battle_ui_mockup.jpg`)
-* **Left Panel:** 3 Vertical Slots for Hero Portraits + Cards.
+* **Left Panel:** 3 Vertical Slots for Hero Portraits + 3 Cards.
 * **Center:** The 3x5 Grid. (3 columns, 5 rows)
 * **Right Panel:** Enemy Sprite Area + Enemy Info.
