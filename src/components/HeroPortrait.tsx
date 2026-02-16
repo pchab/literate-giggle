@@ -1,35 +1,37 @@
-/* eslint-disable @next/next/no-img-element */
 import React from "react";
 
-export const HeroPortrait = () => {
-    return (
-        <div className="relative w-48 h-48 flex items-center justify-center">
-            {/* Glow/Backdrop */}
-            <div className="absolute inset-4 rounded-full bg-cyan-900/40 blur-xl animate-pulse"></div>
+interface HeroPortraitProps {
+  name: string;
+  classType: string;
+  color?: string; // Tailwind color class for border/accent
+}
 
-            {/* Character Image (Clipped circle) */}
-            <div className="absolute inset-6 rounded-full overflow-hidden bg-slate-900 border-2 border-slate-700">
-                {/* Placeholder Hero */}
-                <img
-                    src="https://api.dicebear.com/9.x/avataaars/svg?seed=Felix"
-                    alt="Hero"
-                    className="w-full h-full object-cover scale-110 mt-2"
-                />
-            </div>
+export function HeroPortrait({ name, classType, color = "border-zinc-600" }: HeroPortraitProps) {
+  return (
+    <div className="flex items-center gap-3 p-2 rounded-lg bg-zinc-900/50 border border-zinc-800 hover:bg-zinc-800/50 transition-colors cursor-pointer group">
+      {/* Portrait Circle */}
+      <div className={`w-12 h-12 rounded-full border-2 ${color} flex items-center justify-center bg-zinc-950 shadow-md group-hover:shadow-lg transition-all`}>
+        {/* Placeholder Icon: First letter of class */}
+        <span className="text-zinc-400 font-bold text-lg select-none">
+          {classType[0]}
+        </span>
+      </div>
 
-            {/* Rune Frame Overlay */}
-            <div className="absolute inset-0 pointer-events-none z-10">
-                <img
-                    src="/assets/rune-frame.png"
-                    alt="Rune Frame"
-                    className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(34,211,238,0.6)]"
-                />
-            </div>
-
-            {/* Status (HP) */}
-            <div className="absolute -bottom-2 -right-2 z-20 bg-red-900/90 text-red-100 w-12 h-12 rounded-full flex items-center justify-center border-2 border-red-500 shadow-lg font-serif font-bold text-lg">
-                30
-            </div>
-        </div>
-    );
+      {/* Info */}
+      <div className="flex flex-col">
+        <span className="text-zinc-200 font-semibold text-sm">{name}</span>
+        <span className="text-zinc-500 text-xs uppercase tracking-wide">{classType}</span>
+      </div>
+      
+      {/* Status Bars (Visual Stub) */}
+      <div className="flex flex-col gap-1 ml-auto w-16">
+          <div className="h-1 w-full bg-zinc-800 rounded overflow-hidden">
+             <div className="h-full bg-green-600 w-3/4"></div>
+          </div>
+          <div className="h-1 w-full bg-zinc-800 rounded overflow-hidden">
+             <div className="h-full bg-blue-600 w-1/2"></div>
+          </div>
+      </div>
+    </div>
+  );
 }
