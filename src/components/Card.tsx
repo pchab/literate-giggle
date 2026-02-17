@@ -1,14 +1,13 @@
 import Image from "next/image";
+import type { Card } from "@/modules/cards/cards.type";
 
-export interface CardProps {
-  id: string;
-  title: string;
-}
-
-export function Card({ id, title }: CardProps) {
-  return (
-    <div>
-      <Image src={"/card.png"} alt={title} width={60} height={90} className="w-full h-full object-cover opacity-80" />
-    </div>
-  );
+export function CardComponent({ name }: Card) {
+	return (
+		<div className="relative">
+			<Image src={"/card.png"} alt={name} width={65} height={100} />
+			<div className="absolute inset-0 flex justify-center items-center text-sm font-bold text-white">
+				{name}
+			</div>
+		</div>
+	);
 }

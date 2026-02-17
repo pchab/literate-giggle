@@ -1,43 +1,23 @@
 "use client";
 
-import { Card, type CardProps } from "./Card";
+import type { Hero } from "@/modules/figures/figures.type";
+import { CardComponent } from "./Card";
+import { useBattleStore } from "@/store/battle.store";
 
-interface HandProps {
-    cards: CardProps[];
-    onPlay?: (cardId: string) => void;
-}
-
-export function Hand({ cards, onPlay }: HandProps) {
-    // Limit to 3 cards as requested
-    const visibleCards = cards.slice(0, 3);
-
-    return (
-        <div className="w-full h-32 flex justify-center items-center">
-            {visibleCards.map((card, index) => {
-                const total = visibleCards.length;
-                const center = (total - 1) / 2;
-                const offset = index - center;
-                
-                // Fan calculations
-                const rotation = offset * 5; // Slight rotation
-                const translateX = offset * 50; // Overlap spacing
-                const translateY = Math.abs(offset) * 10; // Arch
-
-                return (
-                    <button
-                        key={card.id}
-                        type="button"
-                        className="absolute transition-all duration-300 hover:z-50 hover:-translate-y-12 hover:scale-110 cursor-pointer origin-bottom focus:outline-none"
-                        style={{
-                            transform: `translateX(${translateX}px) translateY(${translateY}px) rotate(${rotation}deg)`,
-                            zIndex: index,
-                        }}
-                        onClick={() => onPlay?.(card.id)}
-                    >
-                        <Card id={card.id} title={card.title} />
-                    </button>
-                );
-            })}
-        </div>
-    );
+export function Hand({ id: heroId, cards }: Pick<Hero, "id" | "cards">) {
+	const playCard = useBattleStore((state) => state.playCard);
+	return (
+		<div className="w-full h-32 flex justify-center items-center gap-2">
+			{cards.map((card) => (
+				<button
+					key={card.id}
+					type="button"
+					className="transition-all duration-300 hover:z-50 hover:scale-120 cursor-pointer origin-bottom focus:outline-none"
+					onClick={() => playCard(heroId, card.id)}
+				>
+					<CardComponent {...card} />
+				</button>
+			))}
+		</div>
+	);
 }
