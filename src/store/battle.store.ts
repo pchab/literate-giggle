@@ -16,6 +16,7 @@ type BattleState = {
 type BattleAction = {
   playCard: (heroId: Hero['id'], cardId: Card['id']) => void;
   moveHero: (newPosition: GridPosition) => void;
+  enemyAction: () => void;
 }
 
 const initialState: BattleState = {
@@ -72,6 +73,13 @@ export const useBattleStore = create<
         return {
           heroes: heroes.map((h) => h.id === heroId ? { ...h, gridPosition: newPosition } : h),
           currentMove: null,
+        };
+      }),
+      enemyAction: () => set(({ monsters }) => {
+        // Placeholder for enemy action logic
+        console.log("Enemy action triggered for monsters:", monsters);
+        return {
+          usedCards: {}, // Reset used cards after enemy action
         };
       }),
     }),

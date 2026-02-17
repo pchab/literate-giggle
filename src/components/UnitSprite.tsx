@@ -1,19 +1,25 @@
-import type { Hero } from "@/modules/figures/figures.type";
 import Image from "next/image";
+import type { EnemyType, HeroClass } from "@/modules/figures/figures.type";
+
+type SpriteType = HeroClass | EnemyType;
 
 interface UnitSpriteProps {
-	type: Hero["heroClass"];
+	type: SpriteType;
+	stance?: number;
 }
 
-const UNIT_ASSETS: Record<Hero["heroClass"], string> = {
-	Squire: "/sprites/squire_0.png",
-	Knight: "/sprites/warrior_0.png",
-	Mage: "/sprites/mage_0.png",
-	Thief: "/sprites/thief_0.png",
-};
+const UNIT_ASSETS: (stance: number) => Record<SpriteType, string> = (
+	stance,
+) => ({
+	Squire: `/sprites/squire_${stance}.png`,
+	Knight: `/sprites/warrior_${stance}.png`,
+	Mage: `/sprites/mage_${stance}.png`,
+	Thief: `/sprites/thief_${stance}.png`,
+	Boss: `/sprites/boss_${stance}.png`,
+});
 
-export function UnitSprite({ type }: UnitSpriteProps) {
-	const src = UNIT_ASSETS[type];
+export function UnitSprite({ type, stance = 0 }: UnitSpriteProps) {
+	const src = UNIT_ASSETS(stance)[type];
 
 	return (
 		<div className="relative w-full h-full flex items-center justify-center pointer-events-none -translate-y-4">

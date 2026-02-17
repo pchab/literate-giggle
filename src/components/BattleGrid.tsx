@@ -50,7 +50,10 @@ export function BattleGrid({ units = [] }: BattleGridProps) {
 						{/* Render Unit if present */}
 						{unitInCell && (
 							<div className="absolute inset-0 z-10">
-								<UnitSprite type={unitInCell.heroClass} />
+								<UnitSprite
+									type={unitInCell.heroClass}
+									stance={isUnitMoving ? 2 : 0}
+								/>
 							</div>
 						)}
 					</button>
