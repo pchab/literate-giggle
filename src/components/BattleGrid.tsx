@@ -1,5 +1,9 @@
+"use client";
+
 import type { Hero } from "@/modules/figures/figures.type";
 import { UnitSprite } from "./UnitSprite";
+import { useBattleStore } from "@/store/battle.store";
+import { useShallow } from "zustand/shallow";
 
 interface BattleGridProps {
 	units?: Pick<Hero, "id" | "heroClass" | "gridPosition">[];
@@ -14,6 +18,13 @@ const cells = Array.from({ length: 15 }, (_, i) => {
 });
 
 export function BattleGrid({ units = [] }: BattleGridProps) {
+	const { currentMove, moveHero } = useBattleStore(
+		useShallow((state) => ({
+			currentMove: state.currentMove,
+			moveHero: state.moveHero,
+		})),
+	);
+
 	return (
 		<div className="grid grid-cols-3 gap-1 p-1 bg-zinc-900/80 rounded-lg border border-zinc-800 relative">
 			{cells.map((cell) => {
@@ -21,12 +32,15 @@ export function BattleGrid({ units = [] }: BattleGridProps) {
 					({ gridPosition }) =>
 						gridPosition.col === cell.col && gridPosition.row === cell.row,
 				);
+				const isUnitMoving = currentMove && unitInCell?.id === currentMove[0];
 
 				return (
-					<div
+					<button
+						type="button"
 						key={cell.id}
-						className="w-24 h-24 border border-zinc-700/50 bg-zinc-900/30 hover:bg-zinc-800 transition-colors relative flex items-center justify-center"
+						className={`w-24 h-24 border border-zinc-700/50 bg-zinc-900/30 hover:bg-zinc-800 transition-colors relative flex items-center justify-center ${isUnitMoving ? "ring-2 ring-blue-500" : ""}`}
 						title={`Cell [${cell.col}, ${cell.row}]`}
+						onClick={() => moveHero(cell)}
 					>
 						{/* Debug/Coordinate overlay - helpful for dev */}
 						<span className="text-xs text-zinc-800 select-none absolute top-1 left-1">
@@ -39,7 +53,7 @@ export function BattleGrid({ units = [] }: BattleGridProps) {
 								<UnitSprite type={unitInCell.heroClass} />
 							</div>
 						)}
-					</div>
+					</button>
 				);
 			})}
 		</div>
