@@ -1,5 +1,6 @@
 import type { Card } from '../cards/cards.type';
 import type { GridPosition } from '../grid/grid.type';
+import type { Attack } from './attacks';
 
 export type HeroClass = 'Squire' | 'Knight' | 'Thief' | 'Mage';
 export type Hero = {
@@ -7,6 +8,10 @@ export type Hero = {
   heroClass: HeroClass;
   hp: number;
   maxHp: number;
+  physAtk: number;
+  physDef: number;
+  magAtk: number;
+  magDef: number;
   gridPosition: GridPosition;
   cards: [Card, Card];
 }
@@ -18,13 +23,4 @@ export type Monster = {
   hp: number;
   attacks: Attack[];
   intent: Attack;
-}
-
-type Target = 'lowestHp' | 'random' | 'lowestPhysDef' | 'lowestMagDef' | 'grid';
-export type Attack = {
-  id: number;
-  target: Target;
-  pattern: GridPosition[];
-  damage: number;
-  effect?: string;
 }

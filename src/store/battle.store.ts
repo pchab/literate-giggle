@@ -1,7 +1,9 @@
 import { arcaneBoltCard, arcaneShieldCard, bandageCard, shortSwordCard, woodenShieldCard } from '@/modules/cards/cards';
 import type { Card } from '@/modules/cards/cards.type';
+import { filterGridByAttackPattern } from '@/modules/figures/attacks';
 import { testBoss } from '@/modules/figures/boss';
 import type { Hero, Monster } from '@/modules/figures/figures.type';
+import { squireStats } from '@/modules/figures/heroes';
 import type { GridPosition } from '@/modules/grid/grid.type';
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
@@ -21,9 +23,9 @@ type BattleAction = {
 
 const initialState: BattleState = {
   heroes: [
-    { id: 1, heroClass: "Squire", hp: 10, maxHp: 10, gridPosition: { row: 1, col: 1 }, cards: [shortSwordCard, woodenShieldCard] },
-    { id: 2, heroClass: "Squire", hp: 10, maxHp: 10, gridPosition: { row: 2, col: 1 }, cards: [arcaneBoltCard, arcaneShieldCard] },
-    { id: 3, heroClass: "Squire", hp: 10, maxHp: 10, gridPosition: { row: 3, col: 1 }, cards: [bandageCard, woodenShieldCard] },
+    { id: 1, ...squireStats, gridPosition: { row: 1, col: 1 }, cards: [shortSwordCard, woodenShieldCard] },
+    { id: 2, ...squireStats, gridPosition: { row: 2, col: 1 }, cards: [arcaneBoltCard, arcaneShieldCard] },
+    { id: 3, ...squireStats, gridPosition: { row: 3, col: 1 }, cards: [bandageCard, woodenShieldCard] },
   ],
   monsters: [testBoss],
   currentMove: null,
@@ -75,10 +77,27 @@ export const useBattleStore = create<
           currentMove: null,
         };
       }),
-      enemyAction: () => set(({ monsters }) => {
-        // Placeholder for enemy action logic
-        console.log("Enemy action triggered for monsters:", monsters);
+      enemyAction: () => set(({ monsters, heroes }) => {
+        const newHeroes = monsters.reduce((acc, { intent }) => {
+          const targetedCells = filterGridByAttackPattern(
+            intent,
+            heroes,
+          );
+          return acc.map((hero) => {
+            const isTargeted = targetedCells.some(
+              ({ col, row }) => col === hero.gridPosition.col && row === hero.gridPosition.row,
+            );
+            return isTargeted ? { ...hero, hp: Math.max(0, hero.hp - intent.damage) } : hero;
+          });
+        }, heroes);
+        const nextMonsters = monsters.map((m) => {
+          const nextIntent =
+            m.attacks[Math.floor(Math.random() * m.attacks.length)];
+          return { ...m, intent: nextIntent };
+        });
         return {
+          monsters: nextMonsters,
+          heroes: newHeroes,
           usedCards: {}, // Reset used cards after enemy action
         };
       }),
