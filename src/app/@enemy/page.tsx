@@ -6,20 +6,31 @@ import { UnitSprite } from "@/components/UnitSprite";
 import { useEffect } from "react";
 
 export default function EnemyArea() {
-	const { heroes, monsters, usedCards, currentMove, enemyAction } =
-		useBattleStore(
-			useShallow((state) => ({
-				heroes: state.heroes,
-				monsters: state.monsters,
-				usedCards: state.usedCards,
-				currentMove: state.currentMove,
-				enemyAction: state.enemyAction,
-			})),
-		);
+	const {
+		heroes,
+		monsters,
+		usedCards,
+		currentMove,
+		currentAttack,
+		attackEnemy,
+		enemyAction,
+	} = useBattleStore(
+		useShallow((state) => ({
+			heroes: state.heroes,
+			monsters: state.monsters,
+			usedCards: state.usedCards,
+			currentMove: state.currentMove,
+			currentAttack: state.currentAttack,
+			attackEnemy: state.attackEnemy,
+			enemyAction: state.enemyAction,
+		})),
+	);
 
 	const isEnemyTurn =
 		!currentMove &&
-		Object.keys(usedCards).length === heroes.filter(({ hp }) => hp > 0).length;
+		!currentAttack &&
+		Object.keys(usedCards).length ===
+			heroes.filter(({ currentHp }) => currentHp > 0).length;
 
 	useEffect(() => {
 		if (isEnemyTurn) {
@@ -37,18 +48,23 @@ export default function EnemyArea() {
 			<div className="flex-1 flex flex-col gap-4">
 				<div className="h-1/2 rounded-lg border border-dashed border-red-900/20 bg-red-950/10 flex items-center justify-center text-red-900/50">
 					{monsters.map((m) => (
-						<UnitSprite
+						<button
+							type="button"
 							key={m.id}
-							type={m.enemyType}
-							stance={isEnemyTurn ? 1 : 0}
-						/>
+							className="relative w-full h-full flex items-center justify-center -translate-y-4"
+							onClick={() => attackEnemy(m.id, 1)}
+						>
+							<UnitSprite type={m.enemyType} stance={isEnemyTurn ? 1 : 0} />
+						</button>
 					))}
 				</div>
 				<div className="h-1/4 rounded-lg border border-dashed border-zinc-800 bg-zinc-900/50 flex items-center justify-center text-zinc-600">
-					{monsters.map(({ intent }) => (
+					{monsters.map(({ currentHp, maxHp, intent }) => (
 						<div key={intent.id} className="text-center">
 							<p className="font-bold">{intent.target}</p>
-							<p className="font-bold">{JSON.stringify(intent.pattern)}</p>
+							<p className="font-bold">
+								HP: {currentHp}/{maxHp}
+							</p>
 						</div>
 					))}
 				</div>

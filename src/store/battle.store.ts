@@ -12,23 +12,27 @@ type BattleState = {
   heroes: Hero[];
   monsters: Monster[];
   currentMove: [Hero['id'], number] | null;
+  currentAttack: [Monster['id'], number] | null;
   usedCards: Record<Hero['id'], Card['id']>;
 }
 
 type BattleAction = {
+  resetBattle: () => void;
   playCard: (heroId: Hero['id'], cardId: Card['id']) => void;
   moveHero: (newPosition: GridPosition) => void;
+  attackEnemy: (monsterId: Monster['id'], attackValue: number) => void;
   enemyAction: () => void;
 }
 
 const initialState: BattleState = {
   heroes: [
-    { id: 1, ...squireStats, gridPosition: { row: 1, col: 1 }, cards: [shortSwordCard, woodenShieldCard] },
-    { id: 2, ...squireStats, gridPosition: { row: 2, col: 1 }, cards: [arcaneBoltCard, arcaneShieldCard] },
-    { id: 3, ...squireStats, gridPosition: { row: 3, col: 1 }, cards: [bandageCard, woodenShieldCard] },
+    { id: 1, ...squireStats, currentPhysBlock: 0, currentMagBlock: 0, gridPosition: { row: 1, col: 1 }, cards: [shortSwordCard, woodenShieldCard] },
+    { id: 2, ...squireStats, currentPhysBlock: 0, currentMagBlock: 0, gridPosition: { row: 2, col: 1 }, cards: [arcaneBoltCard, arcaneShieldCard] },
+    { id: 3, ...squireStats, currentPhysBlock: 0, currentMagBlock: 0, gridPosition: { row: 3, col: 1 }, cards: [bandageCard, woodenShieldCard] },
   ],
   monsters: [testBoss],
   currentMove: null,
+  currentAttack: null,
   usedCards: {},
 };
 
@@ -38,22 +42,37 @@ export const useBattleStore = create<
   persist(
     (set) => ({
       ...initialState,
-      playCard: (heroId, cardId) => set(({ heroes, currentMove, usedCards }) => {
-        if (currentMove) {
+      resetBattle: () => set(() => initialState),
+      playCard: (heroId, cardId) => set(({ heroes, currentMove, currentAttack, usedCards }) => {
+        if (currentMove || currentAttack) {
           console.warn("A card use is already in progress. Please wait for it to resolve before playing another card.");
           return {};
         }
-        const card = heroes.find(h => h.id === heroId)?.cards.find(c => c.id === cardId);
+        const heroIndex = heroes.findIndex((h) => h.id === heroId);
+        if (heroIndex === -1) {
+          console.warn(`Hero with ID ${heroId} not found.`);
+          return {};
+        }
+        const hero = heroes[heroIndex];
+        const card = hero.cards.find(c => c.id === cardId);
         if (!card) {
           console.warn(`Card with ID ${cardId} not found for hero with ID ${heroId}`);
           return {};
         }
+        const hasAttackValue = card.action.type === 'physAtt' || card.action.type === 'magAtt';
+        const hasMoveValue = card.action.move > 0;
         return {
+          heroes: heroes.with(heroIndex, {
+            ...hero,
+            currentPhysBlock: card.action.type === 'physDef' ? hero.currentPhysBlock + card.action.value : hero.currentPhysBlock,
+            currentMagBlock: card.action.type === 'magDef' ? hero.currentMagBlock + card.action.value : hero.currentMagBlock,
+          }),
           usedCards: {
             ...usedCards,
             [heroId]: cardId,
           },
-          currentMove: card.action.move > 0 ? [heroId, card.action.move] : null,
+          currentMove: hasMoveValue ? [heroId, card.action.move] : null,
+          currentAttack: hasAttackValue ? [heroId, card.action.value] : null,
         };
       }),
       moveHero: (newPosition) => set(({ heroes, currentMove }) => {
@@ -77,6 +96,21 @@ export const useBattleStore = create<
           currentMove: null,
         };
       }),
+      attackEnemy: (monsterId, attackValue) => set(({ monsters, currentAttack }) => {
+        if (!currentAttack) {
+          console.warn("No card is currently being played. Please play a card before attacking an enemy.");
+          return {};
+        }
+        const monster = monsters.find((m) => m.id === monsterId);
+        if (!monster) {
+          console.warn(`Monster with ID ${monsterId} not found.`);
+          return {};
+        }
+        return {
+          monsters: monsters.map((m) => m.id === monsterId ? { ...m, currentHp: Math.max(0, m.currentHp - attackValue) } : m),
+          currentAttack: null,
+        };
+      }),
       enemyAction: () => set(({ monsters, heroes }) => {
         const newHeroes = monsters.reduce((acc, { intent }) => {
           const targetedCells = filterGridByAttackPattern(
@@ -87,7 +121,18 @@ export const useBattleStore = create<
             const isTargeted = targetedCells.some(
               ({ col, row }) => col === hero.gridPosition.col && row === hero.gridPosition.row,
             );
-            return isTargeted ? { ...hero, hp: Math.max(0, hero.hp - intent.damage) } : hero;
+            if (!isTargeted) {
+              return hero;
+            }
+            const damage = intent.effect === 'physDmg'
+              ? Math.max(0, intent.damage - hero.physDef - hero.currentPhysBlock)
+              : Math.max(0, intent.damage - hero.magDef - hero.currentMagBlock);
+            return {
+              ...hero,
+              currentHp: Math.max(0, hero.currentHp - damage),
+              currentPhysBlock: 0,
+              currentMagBlock: 0,
+            };
           });
         }, heroes);
         const nextMonsters = monsters.map((m) => {

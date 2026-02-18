@@ -7,7 +7,7 @@ export type Attack = {
   target: Target;
   pattern: GridPosition[];
   damage: number;
-  effect?: string;
+  effect: 'physDmg' | 'magDmg';
 }
 
 export const crossPattern: GridPosition[] = [
@@ -53,7 +53,7 @@ export function filterGridByAttackPattern(attack: Attack, heroes: Hero[]): GridP
       case "lowestMagDef":
         return hero.magDef < currentTarget.magDef ? hero : currentTarget;
       case "lowestHp":
-        return hero.hp < currentTarget.hp ? hero : currentTarget;
+        return hero.currentHp < currentTarget.currentHp ? hero : currentTarget;
       default:
         return Math.random() < 0.5 ? hero : currentTarget;
     }

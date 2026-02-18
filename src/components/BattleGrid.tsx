@@ -5,6 +5,7 @@ import { UnitSprite } from "./UnitSprite";
 import { useBattleStore } from "@/store/battle.store";
 import { useShallow } from "zustand/shallow";
 import { filterGridByAttackPattern } from "@/modules/figures/attacks";
+import type { GridPosition } from "@/modules/grid/grid.type";
 
 interface BattleGridProps {
 	units?: Pick<Hero, "id" | "heroClass" | "gridPosition">[];
@@ -19,19 +20,22 @@ const cells = Array.from({ length: 15 }, (_, i) => {
 });
 
 export function BattleGrid({ units = [] }: BattleGridProps) {
-	const { currentMove, moveHero, monsters, heroes } = useBattleStore(
-		useShallow((state) => ({
-			currentMove: state.currentMove,
-			moveHero: state.moveHero,
-			monsters: state.monsters,
-			heroes: state.heroes,
-		})),
-	);
+	const { currentMove, currentAttack, moveHero, monsters, heroes } =
+		useBattleStore(
+			useShallow((state) => ({
+				currentMove: state.currentMove,
+				currentAttack: state.currentAttack,
+				moveHero: state.moveHero,
+				monsters: state.monsters,
+				heroes: state.heroes,
+			})),
+		);
 
-	const targetedCells = filterGridByAttackPattern(
-		monsters[0].attacks[0],
-		heroes,
-	);
+	const targetedCells = monsters.reduce((acc, monster) => {
+		acc.push(...filterGridByAttackPattern(monster.intent, heroes));
+		return acc;
+	}, [] as GridPosition[]);
+
 	return (
 		<div className="grid grid-cols-3 gap-1 p-1 bg-zinc-900/80 rounded-lg border border-zinc-800 relative">
 			{cells.map((cell) => {
@@ -40,6 +44,8 @@ export function BattleGrid({ units = [] }: BattleGridProps) {
 						gridPosition.col === cell.col && gridPosition.row === cell.row,
 				);
 				const isUnitMoving = currentMove && unitInCell?.id === currentMove[0];
+				const isUnitAttacking =
+					currentAttack && unitInCell?.id === currentAttack[0];
 				const isTargeted = targetedCells.some(
 					({ col, row }) => col === cell.col && row === cell.row,
 				);
@@ -48,6 +54,8 @@ export function BattleGrid({ units = [] }: BattleGridProps) {
 					: isTargeted
 						? "ring-2 ring-red-500"
 						: "";
+
+				const stance = isUnitAttacking ? 2 : isUnitMoving ? 1 : 0;
 
 				return (
 					<button
@@ -65,10 +73,7 @@ export function BattleGrid({ units = [] }: BattleGridProps) {
 						{/* Render Unit if present */}
 						{unitInCell && (
 							<div className="absolute inset-0 z-10">
-								<UnitSprite
-									type={unitInCell.heroClass}
-									stance={isUnitMoving ? 2 : 0}
-								/>
+								<UnitSprite type={unitInCell.heroClass} stance={stance} />
 							</div>
 						)}
 					</button>

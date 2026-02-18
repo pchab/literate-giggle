@@ -15,7 +15,7 @@ export const woodenShieldCard: Card = {
   name: "Wooden Shield",
   action: {
     type: 'physDef',
-    value: 0,
+    value: 2,
     move: 2,
   },
 };
@@ -35,7 +35,7 @@ export const arcaneShieldCard: Card = {
   name: "Arcane Shield",
   action: {
     type: 'magDef',
-    value: 0,
+    value: 2,
     move: 2,
   },
 };
