@@ -18,7 +18,7 @@ export type Hero = {
   cards: [Card, Card];
 }
 
-export type EnemyType = 'Boss';
+export type EnemyType = 'Boss' | 'Skeleton' | 'Bat' | 'Archer';
 export type Monster = {
   id: number;
   enemyType: EnemyType;

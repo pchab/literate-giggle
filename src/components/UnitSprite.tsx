@@ -16,6 +16,9 @@ const UNIT_ASSETS: (stance: number) => Record<SpriteType, string> = (
 	Mage: `/sprites/mage_${stance}.png`,
 	Thief: `/sprites/thief_${stance}.png`,
 	Boss: `/sprites/boss_${stance}.png`,
+	Skeleton: `/sprites/skeleton_${stance}.png`,
+	Bat: `/sprites/bat_${stance}.png`,
+	Archer: `/sprites/archer_${stance}.png`,
 });
 
 export function UnitSprite({ type, stance = 0 }: UnitSpriteProps) {

@@ -64,6 +64,7 @@ export const useBattleStore = create<
         return {
           heroes: heroes.with(heroIndex, {
             ...hero,
+            currentHp: card.action.type === 'heal' ? Math.min(hero.maxHp, hero.currentHp + card.action.value) : hero.currentHp,
             currentPhysBlock: card.action.type === 'physDef' ? hero.currentPhysBlock + card.action.value : hero.currentPhysBlock,
             currentMagBlock: card.action.type === 'magDef' ? hero.currentMagBlock + card.action.value : hero.currentMagBlock,
           }),
