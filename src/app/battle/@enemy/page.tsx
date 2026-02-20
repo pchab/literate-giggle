@@ -1,15 +1,15 @@
 "use client";
 
-import { useShallow } from "zustand/shallow";
-import { useBattleStore } from "@/store/battle.store";
-import { UnitSprite } from "@/components/UnitSprite";
 import { useEffect } from "react";
+import { useShallow } from "zustand/shallow";
+import { UnitSprite } from "@/components/UnitSprite";
+import { useBattleStore } from "@/store/battle.store";
 
 export default function EnemyArea() {
 	const {
 		heroes,
 		monsters,
-		usedCards,
+		usedCardsThisTurn,
 		currentMove,
 		currentAttack,
 		attackEnemy,
@@ -18,7 +18,7 @@ export default function EnemyArea() {
 		useShallow((state) => ({
 			heroes: state.heroes,
 			monsters: state.monsters,
-			usedCards: state.usedCards,
+			usedCardsThisTurn: state.usedCardsThisTurn,
 			currentMove: state.currentMove,
 			currentAttack: state.currentAttack,
 			attackEnemy: state.attackEnemy,
@@ -29,7 +29,7 @@ export default function EnemyArea() {
 	const isEnemyTurn =
 		!currentMove &&
 		!currentAttack &&
-		Object.keys(usedCards).length ===
+		Object.keys(usedCardsThisTurn).length ===
 			heroes.filter(({ currentHp }) => currentHp > 0).length;
 
 	useEffect(() => {

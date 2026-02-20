@@ -1,23 +1,22 @@
-import { arcaneBoltCard, arcaneShieldCard, bandageCard, shortSwordCard, woodenShieldCard } from '@/modules/cards/cards';
-import type { Card } from '@/modules/cards/cards.type';
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
+import type { Card, CardLog } from '@/modules/cards/cards.type';
 import { filterGridByAttackPattern } from '@/modules/figures/attacks';
 import { testBoss } from '@/modules/figures/boss';
 import type { Hero, Monster } from '@/modules/figures/figures.type';
-import { squireStats } from '@/modules/figures/heroes';
 import type { GridPosition } from '@/modules/grid/grid.type';
-import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
 
 type BattleState = {
   heroes: Hero[];
   monsters: Monster[];
   currentMove: [Hero['id'], number] | null;
   currentAttack: [Monster['id'], number] | null;
-  usedCards: Record<Hero['id'], Card['id']>;
+  usedCardsThisTurn: Record<Hero['id'], Card['id']>;
+  cardUsageLog: CardLog;
 }
 
 type BattleAction = {
-  resetBattle: () => void;
+  initBattle: (heroRoster: Hero[]) => void;
   playCard: (heroId: Hero['id'], cardId: Card['id']) => void;
   moveHero: (newPosition: GridPosition) => void;
   attackEnemy: (monsterId: Monster['id'], attackValue: number) => void;
@@ -25,15 +24,16 @@ type BattleAction = {
 }
 
 const initialState: BattleState = {
-  heroes: [
-    { id: 1, ...squireStats, currentPhysBlock: 0, currentMagBlock: 0, gridPosition: { row: 1, col: 1 }, cards: [shortSwordCard, woodenShieldCard] },
-    { id: 2, ...squireStats, currentPhysBlock: 0, currentMagBlock: 0, gridPosition: { row: 2, col: 1 }, cards: [arcaneBoltCard, arcaneShieldCard] },
-    { id: 3, ...squireStats, currentPhysBlock: 0, currentMagBlock: 0, gridPosition: { row: 3, col: 1 }, cards: [bandageCard, woodenShieldCard] },
-  ],
+  heroes: [],
   monsters: [testBoss],
   currentMove: null,
   currentAttack: null,
-  usedCards: {},
+  usedCardsThisTurn: {},
+  cardUsageLog: {
+    1: {},
+    2: {},
+    3: {},
+  },
 };
 
 export const useBattleStore = create<
@@ -42,8 +42,8 @@ export const useBattleStore = create<
   persist(
     (set) => ({
       ...initialState,
-      resetBattle: () => set(() => initialState),
-      playCard: (heroId, cardId) => set(({ heroes, currentMove, currentAttack, usedCards }) => {
+      initBattle: (heroRoster: Hero[]) => set(() => ({ ...initialState, heroes: heroRoster })),
+      playCard: (heroId, cardId) => set(({ heroes, currentMove, currentAttack, usedCardsThisTurn, cardUsageLog }) => {
         if (currentMove || currentAttack) {
           console.warn("A card use is already in progress. Please wait for it to resolve before playing another card.");
           return {};
@@ -68,9 +68,16 @@ export const useBattleStore = create<
             currentPhysBlock: card.action.type === 'physDef' ? hero.currentPhysBlock + card.action.value : hero.currentPhysBlock,
             currentMagBlock: card.action.type === 'magDef' ? hero.currentMagBlock + card.action.value : hero.currentMagBlock,
           }),
-          usedCards: {
-            ...usedCards,
+          usedCardsThisTurn: {
+            ...usedCardsThisTurn,
             [heroId]: cardId,
+          },
+          cardUsageLog: {
+            ...cardUsageLog,
+            [heroId]: {
+              ...cardUsageLog[heroId],  
+              [cardId]: (cardUsageLog[heroId][cardId] || 0) + 1,
+            },
           },
           currentMove: hasMoveValue ? [heroId, card.action.move] : null,
           currentAttack: hasAttackValue ? [heroId, card.action.value] : null,
@@ -113,7 +120,7 @@ export const useBattleStore = create<
         };
       }),
       enemyAction: () => set(({ monsters, heroes }) => {
-        const newHeroes = monsters.reduce((acc, { intent }) => {
+        const nextHeroes = monsters.reduce((acc, { intent }) => {
           const targetedCells = filterGridByAttackPattern(
             intent,
             heroes,
@@ -138,13 +145,13 @@ export const useBattleStore = create<
         }, heroes);
         const nextMonsters = monsters.map((m) => {
           const nextIntent =
-            m.attacks[Math.floor(Math.random() * m.attacks.length)];
+          m.attacks[Math.floor(Math.random() * m.attacks.length)];
           return { ...m, intent: nextIntent };
         });
         return {
           monsters: nextMonsters,
-          heroes: newHeroes,
-          usedCards: {}, // Reset used cards after enemy action
+          heroes: nextHeroes,
+          usedCardsThisTurn: {}, // Reset used cards after enemy action
         };
       }),
     }),

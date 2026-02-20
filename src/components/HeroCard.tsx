@@ -1,10 +1,10 @@
 "use client";
 
+import Image from "next/image";
+import type { Hero } from "@/modules/figures/figures.type";
+import { useBattleStore } from "@/store/battle.store";
 import { Hand } from "./Hand";
 import { HeroPortrait } from "./HeroPortrait";
-import Image from "next/image";
-import { useBattleStore } from "@/store/battle.store";
-import type { Hero } from "@/modules/figures/figures.type";
 
 export function HeroCard({
 	id,
@@ -15,8 +15,8 @@ export function HeroCard({
 	currentPhysBlock,
 	currentMagBlock,
 }: Hero) {
-	const usedCards = useBattleStore((state) => state.usedCards);
-	const hasUsedCard = !!usedCards[id];
+	const usedCardsThisTurn = useBattleStore((state) => state.usedCardsThisTurn);
+	const hasUsedCard = !!usedCardsThisTurn[id];
 
 	return (
 		<div className="relative flex flex-col">

@@ -15,6 +15,7 @@ export type Hero = {
   magDef: number;
   currentMagBlock: number;
   gridPosition: GridPosition;
+  deck: Card[];
   cards: [Card, Card];
 }
 

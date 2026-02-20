@@ -4,7 +4,7 @@ import type { Monster } from "./figures.type";
 export const testBoss: Monster = {
   id: 1,
   enemyType: "Boss",
-  currentHp: 20,
+  currentHp: 4,
   maxHp: 20,
   attacks: [
     {
