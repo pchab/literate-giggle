@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { useShallow } from "zustand/shallow";
 import { BattleGrid } from "@/components/BattleGrid";
-import type { Hero } from "@/modules/figures/figures.type";
+import type { Hero } from "@/modules/figures/domain/figures.type";
 import { useBattleStore } from "@/store/battle.store";
 import { useWorldStore } from "@/store/world.store";
 

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import type { EnemyType, HeroClass } from "@/modules/figures/figures.type";
+import type { EnemyType, HeroClass } from "@/modules/figures/domain/figures.type";
 
 type SpriteType = HeroClass | EnemyType;
 

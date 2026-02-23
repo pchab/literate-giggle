@@ -1,6 +1,6 @@
-import { cardLibrary } from "@/modules/cards/cards";
-import type { Card } from "@/modules/cards/cards.type";
-import type { Hero } from "@/modules/figures/figures.type";
+import { cardLibrary } from "@/modules/cards/domain/cards";
+import type { Card } from "@/modules/cards/domain/cards.type";
+import type { Hero } from "@/modules/figures/domain/figures.type";
 import type { WorldStoreServerAction } from "@/store/world.store";
 
 export function evolveCard(

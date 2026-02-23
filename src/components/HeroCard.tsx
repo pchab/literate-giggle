@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import type { Hero } from "@/modules/figures/figures.type";
+import type { Hero } from "@/modules/figures/domain/figures.type";
 import { useBattleStore } from "@/store/battle.store";
 import { Hand } from "./Hand";
 import { HeroPortrait } from "./HeroPortrait";

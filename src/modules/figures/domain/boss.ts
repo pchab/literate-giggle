@@ -1,11 +1,10 @@
-import { crossPattern, linePattern } from "./attacks";
+import { crossPattern, linePattern } from "../attacks";
 import type { Monster } from "./figures.type";
 
-export const bat: Monster = {
+export const testBoss: Omit<Monster, "currentHp" | "gridPosition"> = {
 	id: 1,
-	enemyType: "Bat",
-	currentHp: 10,
-	maxHp: 10,
+	enemyType: "Boss",
+	maxHp: 20,
 	attacks: [
 		{
 			id: 1,

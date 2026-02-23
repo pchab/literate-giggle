@@ -1,5 +1,5 @@
 import type { BattleStoreServerAction } from "@/store/battle.store";
-import type { Monster } from "../figures.type";
+import type { Monster } from "../domain/figures.type";
 
 export function attackEnemy(
 	monsterId: Monster["id"],

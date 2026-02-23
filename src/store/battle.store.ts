@@ -1,10 +1,10 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { cardService } from "@/modules/cards/cards.service";
-import type { Card, CardLog } from "@/modules/cards/cards.type";
-import { testBoss } from "@/modules/figures/boss";
+import type { Card, CardLog } from "@/modules/cards/domain/cards.type";
+import { testBoss } from "@/modules/figures/domain/boss";
+import type { Hero, Monster } from "@/modules/figures/domain/figures.type";
 import { enemyService } from "@/modules/figures/enemy.service";
-import type { Hero, Monster } from "@/modules/figures/figures.type";
 import { heroService } from "@/modules/figures/heroes.service";
 import type { GridPosition } from "@/modules/grid/grid.type";
 
@@ -27,7 +27,7 @@ type BattleAction = {
 
 const initialState: BattleState = {
 	heroes: [],
-	monsters: [testBoss],
+	monsters: [{ ...testBoss, currentHp: 4, gridPosition: { row: 4, col: 4 } }],
 	currentMove: null,
 	currentAttack: null,
 	usedCardsThisTurn: {},

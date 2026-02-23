@@ -1,6 +1,6 @@
 import type { BattleStoreServerAction } from "@/store/battle.store";
-import type { Hero } from "../../figures/figures.type";
-import type { Card } from "../cards.type";
+import type { Hero } from "../../figures/domain/figures.type";
+import type { Card } from "../domain/cards.type";
 
 export function executeCard(
 	heroId: Hero["id"],

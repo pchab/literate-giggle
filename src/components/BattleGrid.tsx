@@ -2,7 +2,7 @@
 
 import { useShallow } from "zustand/shallow";
 import { filterGridByAttackPattern } from "@/modules/figures/attacks";
-import type { Hero } from "@/modules/figures/figures.type";
+import type { Hero } from "@/modules/figures/domain/figures.type";
 import type { GridPosition } from "@/modules/grid/grid.type";
 import { useBattleStore } from "@/store/battle.store";
 import { UnitSprite } from "./UnitSprite";

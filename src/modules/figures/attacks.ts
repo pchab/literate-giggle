@@ -1,5 +1,5 @@
 import type { GridPosition } from "../grid/grid.type";
-import type { Hero } from "./figures.type";
+import type { Hero } from "./domain/figures.type";
 
 type Target = "lowestHp" | "random" | "lowestPhysDef" | "lowestMagDef" | "grid";
 export type Attack = {

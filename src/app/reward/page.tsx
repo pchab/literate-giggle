@@ -4,9 +4,9 @@ import { AnimatePresence, domAnimation, LazyMotion, m } from "framer-motion";
 import { redirect } from "next/navigation";
 import { useState } from "react";
 import { CardComponent } from "@/components/Card";
-import { cardLibrary } from "@/modules/cards/cards";
+import { cardLibrary } from "@/modules/cards/domain/cards";
 import type { Card } from "@/modules/cards/cards.type";
-import type { Hero } from "@/modules/figures/figures.type";
+import type { Hero } from "@/modules/figures/domain/figures.type";
 import { useWorldStore } from "@/store/world.store";
 
 const MAX_XP = 2;

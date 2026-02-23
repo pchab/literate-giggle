@@ -1,10 +1,10 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { cardLibrary, initialDeck } from "@/modules/cards/cards";
 import { cardService } from "@/modules/cards/cards.service";
-import type { Card, CardLog } from "@/modules/cards/cards.type";
-import type { Hero } from "@/modules/figures/figures.type";
-import { squireStats } from "@/modules/figures/heroes";
+import { cardLibrary, initialDeck } from "@/modules/cards/domain/cards";
+import type { Card, CardLog } from "@/modules/cards/domain/cards.type";
+import type { Hero } from "@/modules/figures/domain/figures.type";
+import { squireStats } from "@/modules/figures/domain/heroes";
 import {
 	type MapTier,
 	type NodeType,
@@ -51,27 +51,30 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 				{
 					id: 1,
 					...squireStats,
+					currentHp: squireStats.maxHp,
 					currentPhysBlock: 0,
 					currentMagBlock: 0,
-					gridPosition: { row: 1, col: 1 },
+					gridPosition: { row: 0, col: 0 },
 					deck: initialDeck,
 					cards: [cardLibrary[0], cardLibrary[1]],
 				},
 				{
 					id: 2,
 					...squireStats,
+					currentHp: squireStats.maxHp,
 					currentPhysBlock: 0,
 					currentMagBlock: 0,
-					gridPosition: { row: 2, col: 1 },
+					gridPosition: { row: 0, col: 1 },
 					deck: initialDeck,
 					cards: [cardLibrary[2], cardLibrary[3]],
 				},
 				{
 					id: 3,
 					...squireStats,
+					currentHp: squireStats.maxHp,
 					currentPhysBlock: 0,
 					currentMagBlock: 0,
-					gridPosition: { row: 3, col: 1 },
+					gridPosition: { row: 1, col: 0 },
 					deck: initialDeck,
 					cards: [cardLibrary[1], cardLibrary[4]],
 				},

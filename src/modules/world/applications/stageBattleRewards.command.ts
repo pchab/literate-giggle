@@ -1,4 +1,4 @@
-import type { CardLog } from "@/modules/cards/cards.type";
+import type { CardLog } from "@/modules/cards/domain/cards.type";
 import type { WorldStoreServerAction } from "@/store/world.store";
 
 export function stageBattleRewards(
