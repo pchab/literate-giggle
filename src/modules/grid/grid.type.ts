@@ -1,4 +1,4 @@
 export type GridPosition = {
-  col: number;
-  row: number;
-}
+	col: number;
+	row: number;
+};

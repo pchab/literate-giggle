@@ -1,8 +1,8 @@
 "use client";
 
 import type { Hero } from "@/modules/figures/figures.type";
-import { CardComponent } from "./Card";
 import { useBattleStore } from "@/store/battle.store";
+import { CardComponent } from "./Card";
 
 export function Hand({ id: heroId, cards }: Pick<Hero, "id" | "cards">) {
 	const playCard = useBattleStore((state) => state.playCard);

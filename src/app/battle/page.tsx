@@ -23,13 +23,16 @@ export default function Home() {
 
 	const isBattleWon = monsters.every((monster) => monster.currentHp <= 0);
 	if (isBattleWon) {
-		const remainingHealth = heroes.reduce((acc, hero) => {
-			acc[hero.id] = hero.currentHp;
-			return acc;
-		}, {} as Record<Hero['id'], number>);
-		
+		const remainingHealth = heroes.reduce(
+			(acc, hero) => {
+				acc[hero.id] = hero.currentHp;
+				return acc;
+			},
+			{} as Record<Hero["id"], number>,
+		);
+
 		stageBattleRewards(remainingHealth, cardUsageLog);
-		redirect('/');
+		redirect("/");
 	}
 
 	return (
