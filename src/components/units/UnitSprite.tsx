@@ -1,5 +1,8 @@
 import Image from "next/image";
-import type { EnemyType, HeroClass } from "@/modules/figures/domain/figures.type";
+import type {
+	EnemyType,
+	HeroClass,
+} from "@/modules/figures/domain/figures.type";
 
 type SpriteType = HeroClass | EnemyType;
 
@@ -25,7 +28,7 @@ export function UnitSprite({ type, stance = 0 }: UnitSpriteProps) {
 	const src = UNIT_ASSETS(stance)[type];
 
 	return (
-		<div className="relative w-full h-full flex items-center justify-center pointer-events-none -translate-y-4">
+		<div className="absolute w-full h-full flex items-center justify-center pointer-events-none -translate-y-4">
 			<Image src={src} alt={type} fill className="object-contain" priority />
 		</div>
 	);

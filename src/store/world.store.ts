@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { cardService } from "@/modules/cards/cards.service";
+import { evolveCard } from "@/modules/cards/applications/evolveCard.command";
 import { cardLibrary, initialDeck } from "@/modules/cards/domain/cards";
 import type { Card, CardLog } from "@/modules/cards/domain/cards.type";
 import type { Hero } from "@/modules/figures/domain/figures.type";
@@ -37,9 +37,7 @@ export interface WorldAction {
 	) => void;
 }
 
-export type WorldStoreServerAction = (
-	state: WorldState,
-) => Partial<WorldState>;
+export type WorldStoreServerAction = (state: WorldState) => Partial<WorldState>;
 
 export const useWorldStore = create<WorldState & WorldAction>()(
 	persist(
@@ -89,7 +87,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 			claimRewardsAndReturnToMap: () =>
 				set(worldService.claimRewardsAndReturnToMap()),
 			evolveCard: (heroId, oldCardId, newCardId) =>
-				set(cardService.evolveCard(heroId, oldCardId, newCardId)),
+				set(evolveCard(heroId, oldCardId, newCardId)),
 		}),
 		{
 			name: "alpha-world-state",

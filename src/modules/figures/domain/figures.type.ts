@@ -2,7 +2,7 @@ import type { Card } from "../../cards/domain/cards.type";
 import type { GridPosition } from "../../grid/grid.type";
 import type { Attack } from "../attacks";
 
-type Figure = {
+export type Figure = {
 	id: number;
 	currentHp: number;
 	maxHp: number;

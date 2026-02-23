@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { useState } from "react";
 import { CardComponent } from "@/components/Card";
 import { cardLibrary } from "@/modules/cards/domain/cards";
-import type { Card } from "@/modules/cards/cards.type";
+import type { Card } from "@/modules/cards/domain/cards.type";
 import type { Hero } from "@/modules/figures/domain/figures.type";
 import { useWorldStore } from "@/store/world.store";
 

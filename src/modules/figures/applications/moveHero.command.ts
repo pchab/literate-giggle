@@ -1,3 +1,4 @@
+import { getManhattanDistance } from "@/modules/grid/grid.helpers";
 import type { GridPosition } from "@/modules/grid/grid.type";
 import type { BattleStoreServerAction } from "@/store/battle.store";
 
@@ -15,9 +16,7 @@ export function moveHero(newPosition: GridPosition): BattleStoreServerAction {
 			console.warn(`Hero with ID ${heroId} not found.`);
 			return {};
 		}
-		const distance =
-			Math.abs(newPosition.row - hero.gridPosition.row) +
-			Math.abs(newPosition.col - hero.gridPosition.col);
+		const distance = getManhattanDistance(newPosition, hero.gridPosition);
 		if (distance > maxDistance) {
 			console.warn(
 				`Hero ${heroId} cannot move more than ${maxDistance} squares.`,

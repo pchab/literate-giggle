@@ -16,11 +16,6 @@ export default function RootLayout({
 
 			{/* Center Column: Main Battle Grid */}
 			<main className="flex-1 relative">{children}</main>
-
-			{/* Right Column: Enemy Area */}
-			<aside className="w-80 flex-shrink-0 border-l border-zinc-800 bg-zinc-900 p-4">
-				{enemy}
-			</aside>
 		</>
 	);
 }

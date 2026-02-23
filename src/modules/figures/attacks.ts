@@ -6,6 +6,7 @@ export type Attack = {
 	id: number;
 	target: Target;
 	pattern: GridPosition[];
+	move: number;
 	damage: number;
 	effect: "physDmg" | "magDmg";
 };

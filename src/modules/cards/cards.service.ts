@@ -1,5 +1,3 @@
-"use server";
-
 import { evolveCard } from "./applications/evolveCard.command";
 import { executeCard } from "./applications/executeCard.command";
 
