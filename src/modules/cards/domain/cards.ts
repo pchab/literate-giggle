@@ -176,9 +176,9 @@ export const cardLibrary: Card[] = [
 		name: "Healing Orb",
 		action: {
 			type: "heal",
-			value: 4,
+			value: 3,
 			move: 0,
-			range: 1,
+			range: 2,
 		},
 		xp: 0,
 		evolutions: [],

@@ -62,7 +62,7 @@ export default function RewardScreen() {
 				</m.div>
 
 				{/* Container for Heroes */}
-				<div className="w-full max-w-3xl flex flex-col gap-8">
+				<div className="w-full flex gap-8">
 					{initialRoster.map(({ id: heroId, deck }) => {
 						const cardIdUsed = pendingBattleLog[heroId] || {};
 						const cardsUsed = deck.filter((card) => !!cardIdUsed[card.id]);
