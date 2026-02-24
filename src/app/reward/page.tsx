@@ -271,15 +271,7 @@ export default function RewardScreen() {
                                             </p> */}
 
 												<div className="flex gap-2 text-xs font-mono text-cyan-400 pt-3 border-t border-slate-700">
-													{evoData.action.type && (
-														<span>{evoData.action.type} TYPE</span>
-													)}
-													{evoData.action.value && (
-														<span>{evoData.action.value} VALUE</span>
-													)}
-													{evoData.action.move && (
-														<span>{evoData.action.move} MOVE</span>
-													)}
+													{JSON.stringify(evoData.effects)}
 												</div>
 											</button>
 										);

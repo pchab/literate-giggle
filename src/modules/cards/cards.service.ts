@@ -1,9 +1,11 @@
 import { cancelCard } from "./applications/cancelCard.command";
 import { evolveCard } from "./applications/evolveCard.command";
-import { executeCard } from "./applications/executeCard.command";
+import { resolveCard } from "./applications/resolveCard.command";
+import { selectCard } from "./applications/selectCard.command";
 
 export const cardService = {
-	playCard: executeCard,
+	selectCard: selectCard,
 	cancelCard: cancelCard,
+	resolveCard: resolveCard,
 	evolveCard: evolveCard,
 };

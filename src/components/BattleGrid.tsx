@@ -29,28 +29,24 @@ const tailwindGridCols = [
 
 export function BattleGrid() {
 	const {
-		moveHero,
 		monsters,
 		heroes,
-		currentMove,
 		usedCardsThisTurn,
-		currentAttack,
 		enemyAction,
-		attackEnemy,
 		enemyIntents,
 		hoveredCard,
+		activeCard,
+		resolveCard,
 	} = useBattleStore(
 		useShallow((state) => ({
-			attackEnemy: state.attackEnemy,
-			currentAttack: state.currentAttack,
-			currentMove: state.currentMove,
 			usedCardsThisTurn: state.usedCardsThisTurn,
-			moveHero: state.moveHero,
 			enemyAction: state.enemyAction,
 			monsters: state.monsters,
 			heroes: state.heroes,
 			enemyIntents: state.enemyIntents,
 			hoveredCard: state.hoveredCard,
+			activeCard: state.activeCard,
+			resolveCard: state.resolveCard,
 		})),
 	);
 
@@ -61,56 +57,47 @@ export function BattleGrid() {
 	const aliveHeroesCount = heroes.filter(
 		({ currentHp }) => currentHp > 0,
 	).length;
+
+	// Updated isEnemyTurn logic to use activeCard
 	const isEnemyTurn =
-		!currentMove &&
-		!currentAttack &&
+		!activeCard &&
 		aliveHeroesCount > 0 &&
 		Object.keys(usedCardsThisTurn).length === aliveHeroesCount;
 
-	const hoveredHeroInfo = heroes.find((h) => h.id === hoveredCard?.heroId);
-	const hoveredCardInfo = hoveredHeroInfo?.cards.find(
-		(c) => c.id === hoveredCard?.cardId,
-	);
-	let hoverReachableCells: GridPosition[] = [];
-	let hoverAttackableCells: GridPosition[] = [];
+	// --- 1. RANGE CALCULATIONS (Hover & Active) ---
+	let validTargetCells: GridPosition[] = [];
+	let isTargetingEnemy = false;
+	let isTargetingAlly = false;
+	let isTargetingEmpty = false;
 
-	if (hoveredHeroInfo && hoveredCardInfo && hoveredCardInfo.action.move > 0) {
-		hoverReachableCells = calculateReachableCells(
-			hoveredHeroInfo.gridPosition,
-			hoveredCardInfo.action.move,
-			monsters,
-		);
-	}
-	if (
-		hoveredHeroInfo &&
-		hoveredCardInfo &&
-		(hoveredCardInfo.action.type === "physAtt" ||
-			hoveredCardInfo.action.type === "magAtt")
-	) {
-		hoverAttackableCells = calculateAttackableCells(
-			hoveredHeroInfo.gridPosition,
-			hoveredCardInfo.action.range,
-		);
-	}
+	// A helper to figure out the active card or hovered card
+	const cardToPreview =
+		activeCard?.card ||
+		heroes
+			.find((h) => h.id === hoveredCard?.heroId)
+			?.cards.find((c) => c.id === hoveredCard?.cardId);
 
-	if (currentMove) {
-		const [heroId, moveDistance] = currentMove;
-		const movingHero = heroes.find((h) => h.id === heroId);
-		if (movingHero) {
-			hoverReachableCells = calculateReachableCells(
-				movingHero.gridPosition,
-				moveDistance,
+	const previewCaster = activeCard
+		? heroes.find((h) => h.id === activeCard.heroId)
+		: heroes.find((h) => h.id === hoveredCard?.heroId);
+
+	if (cardToPreview && previewCaster) {
+		const req = cardToPreview.playRequirement;
+		isTargetingEnemy = req === "requires_enemy";
+		isTargetingAlly = req === "requires_ally";
+		isTargetingEmpty = req === "requires_empty_cell";
+
+		if (isTargetingEmpty) {
+			validTargetCells = calculateReachableCells(
+				previewCaster.gridPosition,
+				cardToPreview.range,
 				monsters,
 			);
-		}
-	}
-	if (currentAttack) {
-		const [heroId, attackData] = currentAttack;
-		const attackingHero = heroes.find((h) => h.id === heroId);
-		if (attackingHero) {
-			hoverAttackableCells = calculateAttackableCells(
-				attackingHero.gridPosition,
-				attackData.range,
+		} else {
+			// Ranged attacks/heals/buffs
+			validTargetCells = calculateAttackableCells(
+				previewCaster.gridPosition,
+				cardToPreview.range,
 			);
 		}
 	}
@@ -135,6 +122,7 @@ export function BattleGrid() {
 						({ gridPosition }) =>
 							gridPosition.col === cell.col && gridPosition.row === cell.row,
 					);
+
 				const heroInCell = heroes
 					.filter((m) => m.currentHp > 0)
 					.find(
@@ -144,52 +132,66 @@ export function BattleGrid() {
 
 				const isCellEmpty = !enemyInCell && !heroInCell;
 
-				// 3. Check if this specific cell is targeted by any enemy
 				const isDanger = allDangerTiles.some(
 					(tile) => tile.col === cell.col && tile.row === cell.row,
 				);
-
 				const isHoveredHero =
 					hoveredCard?.heroId && heroInCell?.id === hoveredCard.heroId;
-				const isReachable = hoverReachableCells.some(
-					(pos) => pos.row === cell.row && pos.col === cell.col,
-				);
-				const isAttackable = hoverAttackableCells.some(
+				const inRange = validTargetCells.some(
 					(pos) => pos.row === cell.row && pos.col === cell.col,
 				);
 
-				// 4. Define dynamic Tailwind classes based on danger status
+				// --- 2. DYNAMIC CELL STYLING ---
 				const baseClasses =
 					"w-24 h-24 relative flex items-center justify-center transition-all duration-300";
+				let stateClasses = "bg-zinc-900/30 border border-zinc-700/50 z-0";
 
-				let stateClasses =
-					"bg-zinc-900/30 border border-zinc-700/50 hover:bg-zinc-800 z-0";
 				if (isDanger) {
 					stateClasses =
-						"bg-red-950/40 border border-red-600/70 hover:bg-red-900/50 shadow-[inset_0_0_15px_rgba(220,38,38,0.25)] z-10";
+						"bg-red-950/40 border border-red-600/70 shadow-[inset_0_0_15px_rgba(220,38,38,0.25)] z-10";
 				} else if (isHoveredHero) {
 					stateClasses =
 						"bg-blue-900/40 border-2 border-blue-400 z-10 shadow-[inset_0_0_15px_rgba(59,130,246,0.5)]";
-				} else if (isAttackable) {
-					stateClasses =
-						"bg-orange-900/40 border border-orange-500/50 hover:bg-orange-800/50 z-10 shadow-[inset_0_0_15px_rgba(249,115,22,0.15)]";
-				} else if (isReachable) {
-					stateClasses =
-						"bg-blue-950/40 border border-blue-500/50 hover:bg-blue-900/50 z-10";
+				} else if (inRange) {
+					if (isTargetingEmpty && isCellEmpty) {
+						stateClasses =
+							"bg-blue-950/40 border border-blue-500/50 hover:bg-blue-900/50 z-10 cursor-pointer";
+					} else if (isTargetingEnemy && enemyInCell) {
+						stateClasses =
+							"bg-orange-900/40 border border-orange-500/50 hover:bg-orange-800/50 z-10 shadow-[inset_0_0_15px_rgba(249,115,22,0.15)] cursor-crosshair";
+					} else if (isTargetingAlly && heroInCell) {
+						stateClasses =
+							"bg-green-900/40 border border-green-500/50 hover:bg-green-800/50 z-10 shadow-[inset_0_0_15px_rgba(34,197,94,0.15)] cursor-pointer";
+					}
 				}
 
+				// If holding a card, but this tile isn't valid, dim it
+				const isInvalidTarget =
+					activeCard &&
+					(!inRange ||
+						(isTargetingEmpty && !isCellEmpty) ||
+						(isTargetingEnemy && !enemyInCell) ||
+						(isTargetingAlly && !heroInCell));
+
+				if (isInvalidTarget) {
+					stateClasses += " cursor-not-allowed opacity-50";
+				}
+
+				// --- 3. RENDERING ---
+
+				// A. EMPTY TILE
 				if (isCellEmpty) {
 					return (
 						<button
 							type="button"
 							key={cell.id}
-							className={`${baseClasses} ${stateClasses} ${currentMove && !isReachable ? "cursor-not-allowed opacity-50" : ""}`}
-							title={`Cell [${cell.col}, ${cell.row}]`}
+							className={`${baseClasses} ${stateClasses}`}
 							onClick={() => {
-								if (currentMove) {
-									if (isReachable) moveHero(cell);
-								} else {
-									moveHero(cell);
+								console.log({ activeCard, inRange, isTargetingEmpty });
+								if (activeCard && inRange && isTargetingEmpty) {
+									console.log("here");
+									// Pass the coordinate string for empty cell targeting (like movement)
+									resolveCard(cell);
 								}
 							}}
 						>
@@ -200,16 +202,16 @@ export function BattleGrid() {
 					);
 				}
 
+				// B. ENEMY TILE
 				if (enemyInCell) {
 					return (
 						<button
 							type="button"
 							key={cell.id}
-							className={`${baseClasses} ${stateClasses} ${currentAttack && !isAttackable ? "cursor-not-allowed opacity-50" : ""}`}
-							title={`Cell [${cell.col}, ${cell.row}]`}
+							className={`${baseClasses} ${stateClasses}`}
 							onClick={() => {
-								if (currentAttack && isAttackable) {
-									attackEnemy(enemyInCell.id, currentAttack[1]);
+								if (activeCard && inRange && isTargetingEnemy) {
+									resolveCard(enemyInCell.id);
 								}
 							}}
 						>
@@ -221,13 +223,23 @@ export function BattleGrid() {
 					);
 				}
 
+				// C. HERO TILE
 				return (
-					<div key={cell.id} className={`${baseClasses} ${stateClasses}`}>
+					<button
+						type="button"
+						key={cell.id}
+						className={`${baseClasses} ${stateClasses} ${heroInCell ? "hover:brightness-110" : ""}`}
+						onClick={() => {
+							if (activeCard && inRange && isTargetingAlly && heroInCell) {
+								resolveCard(heroInCell.id);
+							}
+						}}
+					>
 						<span className="text-xs text-zinc-800 select-none absolute top-1 left-1">
 							{cell.col},{cell.row}
 						</span>
 						{heroInCell && <HeroSprite unitInCell={heroInCell} key={cell.id} />}
-					</div>
+					</button>
 				);
 			})}
 		</div>

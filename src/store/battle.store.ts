@@ -3,29 +3,39 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import type { MonsterIntent } from "@/modules/attacks/attacks";
 import { intentService } from "@/modules/attacks/intents.service";
 import { cardService } from "@/modules/cards/cards.service";
-import type { Card, CardLog } from "@/modules/cards/domain/cards.type";
+import type {
+	AnchorTarget,
+	Card,
+	CardLog,
+} from "@/modules/cards/domain/cards.type";
 import { archer } from "@/modules/figures/domain/archer";
 import type { Hero, Monster } from "@/modules/figures/domain/figures.type";
 import { skeleton } from "@/modules/figures/domain/skeleton";
 import { enemyService } from "@/modules/figures/enemy.service";
+import { createMonsterId } from "@/modules/figures/figures.helpers";
 import { heroService } from "@/modules/figures/heroes.service";
 import type { GridPosition } from "@/modules/grid/grid.type";
+
+export type ActiveCardContext = {
+	heroId: Hero["id"];
+	card: Card;
+};
 
 export type BattleState = {
 	heroes: Hero[];
 	monsters: Monster[];
-	currentMove: [Hero["id"], number] | null;
-	currentAttack: [Hero["id"], { damage: number; range: number }] | null;
 	usedCardsThisTurn: Record<Hero["id"], Card["id"]>;
 	cardUsageLog: CardLog;
 	enemyIntents: Record<Monster["id"], MonsterIntent>;
 	hoveredCard: { heroId: Hero["id"]; cardId: Card["id"] } | null;
+	activeCard: ActiveCardContext | null;
 };
 
 type BattleAction = {
 	initBattle: (heroRoster: Hero[]) => void;
-	playCard: (heroId: Hero["id"], cardId: Card["id"]) => void;
+	selectCard: (heroId: Hero["id"], cardId: Card["id"]) => void;
 	cancelCard: (heroId: Hero["id"], cardId: Card["id"]) => void;
+	resolveCard: (anchorTargetId: AnchorTarget | null) => void;
 	moveHero: (newPosition: GridPosition) => void;
 	attackEnemy: (
 		monsterId: Monster["id"],
@@ -41,27 +51,22 @@ const initialState: BattleState = {
 	heroes: [],
 	monsters: [
 		{
-			id: 1,
+			id: createMonsterId(1),
 			...skeleton,
 			currentHp: skeleton.maxHp,
 			gridPosition: { row: 4, col: 4 },
 		},
 		{
-			id: 2,
+			id: createMonsterId(2),
 			...archer,
 			currentHp: archer.maxHp,
 			gridPosition: { row: 4, col: 3 },
 		},
 	],
 	enemyIntents: {},
-	currentMove: null,
-	currentAttack: null,
+	activeCard: null,
 	usedCardsThisTurn: {},
-	cardUsageLog: {
-		1: {},
-		2: {},
-		3: {},
-	},
+	cardUsageLog: {},
 	hoveredCard: null,
 };
 
@@ -82,9 +87,12 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 						initialState.monsters,
 					),
 				})),
-			playCard: (heroId, cardId) => set(cardService.playCard(heroId, cardId)),
+			selectCard: (heroId, cardId) =>
+				set(cardService.selectCard(heroId, cardId)),
 			cancelCard: (heroId, cardId) =>
 				set(cardService.cancelCard(heroId, cardId)),
+			resolveCard: (anchorTargetId) =>
+				set(cardService.resolveCard(anchorTargetId)),
 			moveHero: (newPosition) => set(heroService.moveHero(newPosition)),
 			attackEnemy: (monsterId, attackData) =>
 				set(heroService.attackEnemy(monsterId, attackData)),

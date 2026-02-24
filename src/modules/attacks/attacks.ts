@@ -45,8 +45,8 @@ export const conePattern: GridPosition[] = [
 ];
 
 export type MonsterIntent = {
-	monsterId: number;
-	targetHeroId: number | null;
+	monsterId: Monster["id"];
+	targetHeroId: Hero["id"] | null;
 	intendedMove: GridPosition;
 	dangerZone: GridPosition[];
 	attackData: Attack;

@@ -7,6 +7,8 @@ export const skeleton: Omit<
 > = {
 	enemyType: "Skeleton",
 	maxHp: 10,
+	physDef: 0,
+	magDef: 0,
 	attacks: [
 		{
 			id: 1,

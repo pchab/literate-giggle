@@ -6,25 +6,18 @@ import { useBattleStore } from "@/store/battle.store";
 import { UnitSprite } from "./UnitSprite";
 
 export default function EnemySprite({ unitInCell }: { unitInCell: Monster }) {
-	const {
-		heroes,
-		usedCardsThisTurn,
-		currentMove,
-		currentAttack,
-		enemyIntents,
-	} = useBattleStore(
-		useShallow((state) => ({
-			heroes: state.heroes,
-			usedCardsThisTurn: state.usedCardsThisTurn,
-			currentMove: state.currentMove,
-			currentAttack: state.currentAttack,
-			enemyIntents: state.enemyIntents, // 1. Pull the intents!
-		})),
-	);
+	const { heroes, usedCardsThisTurn, activeCard, enemyIntents } =
+		useBattleStore(
+			useShallow((state) => ({
+				heroes: state.heroes,
+				usedCardsThisTurn: state.usedCardsThisTurn,
+				activeCard: state.activeCard,
+				enemyIntents: state.enemyIntents, // 1. Pull the intents!
+			})),
+		);
 
 	const isEnemyTurn =
-		!currentMove &&
-		!currentAttack &&
+		!activeCard &&
 		Object.keys(usedCardsThisTurn).length ===
 			heroes.filter(({ currentHp }) => currentHp > 0).length;
 
@@ -61,20 +54,20 @@ export default function EnemySprite({ unitInCell }: { unitInCell: Monster }) {
 			)}
 
 			<UnitSprite type={unitInCell.enemyType} stance={stance} />
-			<div className="absolute -bottom-2 w-14 flex flex-col items-center pointer-events-none z-20">                
-                {/* Health Bar */}
-                <div className="w-full h-1.5 bg-zinc-950 border border-zinc-700/80 rounded-sm overflow-hidden shadow-lg">
-                    <div 
-                        className="h-full bg-red-600 transition-all duration-300 ease-out"
-                        style={{ width: `${hpPercent}%` }}
-                    />
-                </div>
-                
-                {/* Health Numbers */}
-                <span className="text-[9px] text-zinc-300 font-bold mt-0.5 tracking-wider drop-shadow-md">
-                    {currentHp}/{maxHp}
-                </span>
-            </div>
+			<div className="absolute -bottom-2 w-14 flex flex-col items-center pointer-events-none z-20">
+				{/* Health Bar */}
+				<div className="w-full h-1.5 bg-zinc-950 border border-zinc-700/80 rounded-sm overflow-hidden shadow-lg">
+					<div
+						className="h-full bg-red-600 transition-all duration-300 ease-out"
+						style={{ width: `${hpPercent}%` }}
+					/>
+				</div>
+
+				{/* Health Numbers */}
+				<span className="text-[9px] text-zinc-300 font-bold mt-0.5 tracking-wider drop-shadow-md">
+					{currentHp}/{maxHp}
+				</span>
+			</div>
 		</div>
 	);
 }

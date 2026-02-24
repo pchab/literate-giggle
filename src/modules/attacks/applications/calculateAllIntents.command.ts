@@ -10,8 +10,8 @@ import {
 export function calculateAllIntents(
 	heroes: Hero[],
 	monsters: Monster[],
-): Record<string, MonsterIntent> {
-	const intents: Record<string, MonsterIntent> = {};
+): Record<Monster["id"], MonsterIntent> {
+	const intents: Record<Monster["id"], MonsterIntent> = {};
 
 	const simulatedMonsters = [...monsters];
 

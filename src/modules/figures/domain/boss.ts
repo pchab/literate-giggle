@@ -7,6 +7,8 @@ export const testBoss: Omit<
 > = {
 	enemyType: "Boss",
 	maxHp: 20,
+	physDef: 1,
+	magDef: 1,
 	attacks: [
 		{
 			id: 1,

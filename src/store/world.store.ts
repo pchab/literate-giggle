@@ -5,6 +5,7 @@ import { cardLibrary, initialDeck } from "@/modules/cards/domain/cards";
 import type { Card, CardLog } from "@/modules/cards/domain/cards.type";
 import type { Hero } from "@/modules/figures/domain/figures.type";
 import { squireStats } from "@/modules/figures/domain/heroes";
+import { createHeroId } from "@/modules/figures/figures.helpers";
 import {
 	type MapTier,
 	type NodeType,
@@ -47,7 +48,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 			currentNodeId: "start",
 			roster: [
 				{
-					id: 1,
+					id: createHeroId(1),
 					...squireStats,
 					currentHp: squireStats.maxHp,
 					currentPhysBlock: 0,
@@ -57,7 +58,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 					cards: [cardLibrary[0], cardLibrary[1]],
 				},
 				{
-					id: 2,
+					id: createHeroId(2),
 					...squireStats,
 					currentHp: squireStats.maxHp,
 					currentPhysBlock: 0,
@@ -67,7 +68,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 					cards: [cardLibrary[2], cardLibrary[3]],
 				},
 				{
-					id: 3,
+					id: createHeroId(3),
 					...squireStats,
 					currentHp: squireStats.maxHp,
 					currentPhysBlock: 0,

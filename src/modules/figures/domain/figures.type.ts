@@ -3,20 +3,20 @@ import type { Card } from "../../cards/domain/cards.type";
 import type { GridPosition } from "../../grid/grid.type";
 
 export type Figure = {
-	id: number;
 	currentHp: number;
 	maxHp: number;
+	physDef: number;
+	magDef: number;
 	gridPosition: GridPosition;
 };
 
 export type HeroClass = "Squire" | "Knight" | "Thief" | "Mage";
 export type Hero = Figure & {
+	id: string & { readonly __brand: "HeroId" };
 	heroClass: HeroClass;
 	physAtk: number;
-	physDef: number;
 	currentPhysBlock: number;
 	magAtk: number;
-	magDef: number;
 	currentMagBlock: number;
 	deck: Card[];
 	cards: [Card, Card];
@@ -24,6 +24,7 @@ export type Hero = Figure & {
 
 export type EnemyType = "Boss" | "Skeleton" | "Bat" | "Archer";
 export type Monster = Figure & {
+	id: string & { readonly __brand: "MonsterId" };
 	enemyType: EnemyType;
 	attacks: Attack[];
 };

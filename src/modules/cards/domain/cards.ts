@@ -4,12 +4,16 @@ export const cardLibrary: Card[] = [
 	{
 		id: 1,
 		name: "Short Sword",
-		action: {
-			type: "physAtt",
-			value: 2,
-			move: 0,
-			range: 1,
-		},
+		playRequirement: "requires_enemy",
+		range: 2,
+		effects: [
+			{
+				type: "damage",
+				amount: 2,
+				damageType: "physDmg",
+				target: "anchor",
+			},
+		],
 		xp: 0,
 		evolutions: [6, 7],
 	},
@@ -17,12 +21,20 @@ export const cardLibrary: Card[] = [
 	{
 		id: 2,
 		name: "Wooden Shield",
-		action: {
-			type: "physDef",
-			value: 2,
-			move: 2,
-			range: 1,
-		},
+		playRequirement: "requires_empty_cell",
+		range: 2,
+		effects: [
+			{
+				type: "move",
+				target: "self",
+			},
+			{
+				type: "block",
+				amount: 2,
+				blockType: "physBlock",
+				target: "self",
+			},
+		],
 		xp: 0,
 		evolutions: [8, 9],
 	},
@@ -30,12 +42,16 @@ export const cardLibrary: Card[] = [
 	{
 		id: 3,
 		name: "Arcane Bolt",
-		action: {
-			type: "magAtt",
-			value: 2,
-			move: 0,
-			range: 2,
-		},
+		playRequirement: "requires_enemy",
+		range: 2,
+		effects: [
+			{
+				type: "damage",
+				amount: 2,
+				damageType: "magDmg",
+				target: "anchor",
+			},
+		],
 		xp: 0,
 		evolutions: [10, 11],
 	},
@@ -43,12 +59,20 @@ export const cardLibrary: Card[] = [
 	{
 		id: 4,
 		name: "Arcane Shield",
-		action: {
-			type: "magDef",
-			value: 2,
-			move: 2,
-			range: 1,
-		},
+		playRequirement: "requires_empty_cell",
+		range: 2,
+		effects: [
+			{
+				type: "move",
+				target: "self",
+			},
+			{
+				type: "block",
+				amount: 2,
+				blockType: "magBlock",
+				target: "self",
+			},
+		],
 		xp: 0,
 		evolutions: [12, 13],
 	},
@@ -56,12 +80,15 @@ export const cardLibrary: Card[] = [
 	{
 		id: 5,
 		name: "Bandage",
-		action: {
-			type: "heal",
-			value: 2,
-			move: 0,
-			range: 1,
-		},
+		playRequirement: "no_target",
+		range: 2,
+		effects: [
+			{
+				type: "heal",
+				amount: 2,
+				target: "self",
+			},
+		],
 		xp: 0,
 		evolutions: [14, 15],
 	},
@@ -70,12 +97,16 @@ export const cardLibrary: Card[] = [
 	{
 		id: 6,
 		name: "Long Sword",
-		action: {
-			type: "physAtt",
-			value: 3,
-			move: 0,
-			range: 1,
-		},
+		playRequirement: "requires_enemy",
+		range: 2,
+		effects: [
+			{
+				type: "damage",
+				amount: 3,
+				damageType: "physDmg",
+				target: "anchor",
+			},
+		],
 		xp: 0,
 		evolutions: [],
 	},
@@ -83,12 +114,16 @@ export const cardLibrary: Card[] = [
 	{
 		id: 7,
 		name: "Battle Axe",
-		action: {
-			type: "physAtt",
-			value: 4,
-			move: 0,
-			range: 1,
-		},
+		playRequirement: "requires_enemy",
+		range: 2,
+		effects: [
+			{
+				type: "damage",
+				amount: 4,
+				damageType: "physDmg",
+				target: "anchor",
+			},
+		],
 		xp: 0,
 		evolutions: [],
 	},
@@ -96,12 +131,20 @@ export const cardLibrary: Card[] = [
 	{
 		id: 8,
 		name: "Steel Shield",
-		action: {
-			type: "physDef",
-			value: 3,
-			move: 2,
-			range: 1,
-		},
+		playRequirement: "requires_empty_cell",
+		range: 2,
+		effects: [
+			{
+				type: "move",
+				target: "self",
+			},
+			{
+				type: "block",
+				amount: 3,
+				blockType: "physBlock",
+				target: "self",
+			},
+		],
 		xp: 0,
 		evolutions: [],
 	},
@@ -109,12 +152,20 @@ export const cardLibrary: Card[] = [
 	{
 		id: 9,
 		name: "Heavy Shield",
-		action: {
-			type: "physDef",
-			value: 4,
-			move: 1,
-			range: 1,
-		},
+		playRequirement: "requires_empty_cell",
+		range: 1,
+		effects: [
+			{
+				type: "move",
+				target: "self",
+			},
+			{
+				type: "block",
+				amount: 4,
+				blockType: "physBlock",
+				target: "self",
+			},
+		],
 		xp: 0,
 		evolutions: [],
 	},
@@ -122,12 +173,16 @@ export const cardLibrary: Card[] = [
 	{
 		id: 10,
 		name: "Fireball",
-		action: {
-			type: "magAtt",
-			value: 4,
-			move: 0,
-			range: 1,
-		},
+		playRequirement: "requires_enemy",
+		range: 2,
+		effects: [
+			{
+				type: "damage",
+				amount: 4,
+				damageType: "magDmg",
+				target: "anchor",
+			},
+		],
 		xp: 0,
 		evolutions: [],
 	},
@@ -135,12 +190,16 @@ export const cardLibrary: Card[] = [
 	{
 		id: 11,
 		name: "Ice Shard",
-		action: {
-			type: "magAtt",
-			value: 4,
-			move: 0,
-			range: 1,
-		},
+		playRequirement: "requires_enemy",
+		range: 2,
+		effects: [
+			{
+				type: "damage",
+				amount: 4,
+				damageType: "magDmg",
+				target: "anchor",
+			},
+		],
 		xp: 0,
 		evolutions: [],
 	},
@@ -148,12 +207,16 @@ export const cardLibrary: Card[] = [
 	{
 		id: 12,
 		name: "Fire Shield",
-		action: {
-			type: "magDef",
-			value: 4,
-			move: 0,
-			range: 1,
-		},
+		playRequirement: "no_target",
+		range: 2,
+		effects: [
+			{
+				type: "block",
+				amount: 4,
+				blockType: "magBlock",
+				target: "self",
+			},
+		],
 		xp: 0,
 		evolutions: [],
 	},
@@ -161,12 +224,16 @@ export const cardLibrary: Card[] = [
 	{
 		id: 13,
 		name: "Ice Wall",
-		action: {
-			type: "magDef",
-			value: 2,
-			move: 0,
-			range: 1,
-		},
+		playRequirement: "requires_empty_cell",
+		range: 2,
+		effects: [
+			{
+				type: "block",
+				amount: 2,
+				blockType: "magBlock",
+				target: "anchor",
+			},
+		],
 		xp: 0,
 		evolutions: [],
 	},
@@ -174,12 +241,15 @@ export const cardLibrary: Card[] = [
 	{
 		id: 14,
 		name: "Healing Orb",
-		action: {
-			type: "heal",
-			value: 3,
-			move: 0,
-			range: 2,
-		},
+		playRequirement: "requires_ally",
+		range: 2,
+		effects: [
+			{
+				type: "heal",
+				amount: 3,
+				target: "anchor",
+			},
+		],
 		xp: 0,
 		evolutions: [],
 	},
@@ -187,12 +257,15 @@ export const cardLibrary: Card[] = [
 	{
 		id: 15,
 		name: "Regen",
-		action: {
-			type: "heal",
-			value: 2,
-			move: 0,
-			range: 1,
-		},
+		playRequirement: "requires_ally",
+		range: 2,
+		effects: [
+			{
+				type: "heal",
+				amount: 2,
+				target: "anchor",
+			},
+		],
 		xp: 0,
 		evolutions: [],
 	},
