@@ -2,7 +2,11 @@
 
 import { useEffect } from "react";
 import { useShallow } from "zustand/shallow";
-import { GRID_BOUNDS, calculateReachableCells } from "@/modules/grid/grid.helpers";
+import {
+	calculateReachableCells,
+	GRID_BOUNDS,
+} from "@/modules/grid/grid.helpers";
+import type { GridPosition } from "@/modules/grid/grid.type";
 import { useBattleStore } from "@/store/battle.store";
 import EnemySprite from "./units/EnemySprite";
 import HeroSprite from "./units/HeroSprite";
@@ -63,11 +67,28 @@ export function BattleGrid() {
 		Object.keys(usedCardsThisTurn).length === aliveHeroesCount;
 
 	const hoveredHeroInfo = heroes.find((h) => h.id === hoveredCard?.heroId);
-	const hoveredCardInfo = hoveredHeroInfo?.cards.find((c) => c.id === hoveredCard?.cardId);
-	const hoverReachableCells = (hoveredHeroInfo && hoveredCardInfo && hoveredCardInfo.action.move > 0)
-		? calculateReachableCells(hoveredHeroInfo.gridPosition, hoveredCardInfo.action.move, monsters)
-		: currentMove ? calculateReachableCells(heroes.find((h) => h.id === currentMove[0])!.gridPosition, currentMove[1], monsters)
-		: [];
+	const hoveredCardInfo = hoveredHeroInfo?.cards.find(
+		(c) => c.id === hoveredCard?.cardId,
+	);
+	let hoverReachableCells: GridPosition[] = [];
+	if (hoveredHeroInfo && hoveredCardInfo && hoveredCardInfo.action.move > 0) {
+		hoverReachableCells = calculateReachableCells(
+			hoveredHeroInfo.gridPosition,
+			hoveredCardInfo.action.move,
+			monsters,
+		);
+	}
+	if (currentMove) {
+		const [heroId, moveDistance] = currentMove;
+		const movingHero = heroes.find((h) => h.id === heroId);
+		if (movingHero) {
+			hoverReachableCells = calculateReachableCells(
+				movingHero.gridPosition,
+				moveDistance,
+				monsters,
+			);
+		}
+	}
 
 	useEffect(() => {
 		if (isEnemyTurn) {
@@ -103,7 +124,8 @@ export function BattleGrid() {
 					(tile) => tile.col === cell.col && tile.row === cell.row,
 				);
 
-				const isHoveredHero = hoveredCard?.heroId && heroInCell?.id === hoveredCard.heroId;
+				const isHoveredHero =
+					hoveredCard?.heroId && heroInCell?.id === hoveredCard.heroId;
 				const isReachable = hoverReachableCells.some(
 					(pos) => pos.row === cell.row && pos.col === cell.col,
 				);
@@ -111,14 +133,18 @@ export function BattleGrid() {
 				// 4. Define dynamic Tailwind classes based on danger status
 				const baseClasses =
 					"w-24 h-24 relative flex items-center justify-center transition-all duration-300";
-				
-				let stateClasses = "bg-zinc-900/30 border border-zinc-700/50 hover:bg-zinc-800 z-0";
+
+				let stateClasses =
+					"bg-zinc-900/30 border border-zinc-700/50 hover:bg-zinc-800 z-0";
 				if (isDanger) {
-					stateClasses = "bg-red-950/40 border border-red-600/70 hover:bg-red-900/50 shadow-[inset_0_0_15px_rgba(220,38,38,0.25)] z-10";
+					stateClasses =
+						"bg-red-950/40 border border-red-600/70 hover:bg-red-900/50 shadow-[inset_0_0_15px_rgba(220,38,38,0.25)] z-10";
 				} else if (isHoveredHero) {
-					stateClasses = "bg-blue-900/40 border-2 border-blue-400 z-10 shadow-[inset_0_0_15px_rgba(59,130,246,0.5)]";
+					stateClasses =
+						"bg-blue-900/40 border-2 border-blue-400 z-10 shadow-[inset_0_0_15px_rgba(59,130,246,0.5)]";
 				} else if (isReachable) {
-					stateClasses = "bg-blue-950/40 border border-blue-500/50 hover:bg-blue-900/50 z-10";
+					stateClasses =
+						"bg-blue-950/40 border border-blue-500/50 hover:bg-blue-900/50 z-10";
 				}
 
 				if (isCellEmpty) {

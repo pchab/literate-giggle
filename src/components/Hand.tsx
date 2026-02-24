@@ -6,10 +6,12 @@ import { useBattleStore } from "@/store/battle.store";
 import { CardComponent } from "./Card";
 
 export function Hand({ id: heroId, cards }: Pick<Hero, "id" | "cards">) {
-	const { playCard, setHoveredCard } = useBattleStore(useShallow((state) => ({
-		playCard: state.playCard,
-		setHoveredCard: state.setHoveredCard,
-	})));
+	const { playCard, setHoveredCard } = useBattleStore(
+		useShallow((state) => ({
+			playCard: state.playCard,
+			setHoveredCard: state.setHoveredCard,
+		})),
+	);
 
 	return (
 		<div className="w-full h-32 flex justify-center items-center gap-2">

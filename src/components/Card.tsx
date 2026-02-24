@@ -1,5 +1,5 @@
 import Image from "next/image";
-import type { Card } from "@/modules/cards/cards.type";
+import type { Card } from "@/modules/cards/domain/cards.type";
 
 export function CardComponent({ name }: Card) {
 	return (

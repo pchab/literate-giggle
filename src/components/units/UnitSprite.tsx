@@ -29,7 +29,13 @@ export function UnitSprite({ type, stance = 0 }: UnitSpriteProps) {
 
 	return (
 		<div className="absolute w-full h-full flex items-center justify-center pointer-events-none -translate-y-4">
-			<Image src={src} alt={type} fill className="object-contain" priority />
+			<Image
+				src={src}
+				alt={type}
+				fill
+				className="object-contain z-20"
+				priority
+			/>
 		</div>
 	);
 }
