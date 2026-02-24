@@ -19,6 +19,7 @@ export type BattleState = {
 	usedCardsThisTurn: Record<Hero["id"], Card["id"]>;
 	cardUsageLog: CardLog;
 	enemyIntents: Record<Monster["id"], MonsterIntent>;
+	hoveredCard: { heroId: Hero["id"]; cardId: Card["id"] } | null;
 };
 
 type BattleAction = {
@@ -27,6 +28,9 @@ type BattleAction = {
 	moveHero: (newPosition: GridPosition) => void;
 	attackEnemy: (monsterId: Monster["id"], attackValue: number) => void;
 	enemyAction: () => void;
+	setHoveredCard: (
+		hovered: { heroId: Hero["id"]; cardId: Card["id"] } | null,
+	) => void;
 };
 
 const initialState: BattleState = {
@@ -54,6 +58,7 @@ const initialState: BattleState = {
 		2: {},
 		3: {},
 	},
+	hoveredCard: null,
 };
 
 export type BattleStoreServerAction = (
@@ -78,6 +83,7 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 			attackEnemy: (monsterId, attackValue) =>
 				set(heroService.attackEnemy(monsterId, attackValue)),
 			enemyAction: () => set(enemyService.enemyAction()),
+			setHoveredCard: (hoveredCard) => set(() => ({ hoveredCard })),
 		}),
 		{
 			name: "alpha-battle-state",

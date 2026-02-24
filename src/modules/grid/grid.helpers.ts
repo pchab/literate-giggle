@@ -33,3 +33,52 @@ export const isTileInBounds = (pos: GridPosition) => {
 		pos.col < GRID_BOUNDS.cols
 	);
 };
+
+export const calculateReachableCells = (
+	startPos: GridPosition,
+	moveValue: number,
+	figures: (Hero | Monster)[],
+): GridPosition[] => {
+	if (moveValue <= 0) return [];
+
+	const queue: { pos: GridPosition; dist: number }[] = [
+		{ pos: startPos, dist: 0 },
+	];
+	const visited = new Set<string>();
+	const startKey = `${startPos.row},${startPos.col}`;
+	visited.add(startKey);
+
+	const reachable: GridPosition[] = [];
+
+	while (queue.length > 0) {
+		const current = queue.shift();
+		if (!current) break;
+
+		if (current.dist > 0) {
+			reachable.push(current.pos);
+		}
+
+		if (current.dist < moveValue) {
+			const neighbors = [
+				{ row: current.pos.row - 1, col: current.pos.col },
+				{ row: current.pos.row + 1, col: current.pos.col },
+				{ row: current.pos.row, col: current.pos.col - 1 },
+				{ row: current.pos.row, col: current.pos.col + 1 },
+			].filter(isTileInBounds);
+
+			for (const next of neighbors) {
+				const key = `${next.row},${next.col}`;
+				if (!visited.has(key)) {
+					visited.add(key);
+					// Typically you can't step ONTO occupied tile, but let's say movement range calculation shouldn't include occupied tiles.
+					// We'll mark it visited but only add to queue if it's NOT occupied.
+					if (!isTileOccupied(next, figures)) {
+						queue.push({ pos: next, dist: current.dist + 1 });
+					}
+				}
+			}
+		}
+	}
+
+	return reachable;
+};

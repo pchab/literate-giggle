@@ -1,3 +1,4 @@
+import { intentService } from "@/modules/attacks/intents.service";
 import type { BattleStoreServerAction } from "@/store/battle.store";
 import type { Hero } from "../../figures/domain/figures.type";
 import type { Card } from "../domain/cards.type";
@@ -8,6 +9,7 @@ export function executeCard(
 ): BattleStoreServerAction {
 	return ({
 		heroes,
+		monsters,
 		currentMove,
 		currentAttack,
 		usedCardsThisTurn,
@@ -35,22 +37,26 @@ export function executeCard(
 		const hasAttackValue =
 			card.action.type === "physAtt" || card.action.type === "magAtt";
 		const hasMoveValue = card.action.move > 0;
+
+		const newHeroes = heroes.with(heroIndex, {
+			...hero,
+			currentHp:
+				card.action.type === "heal"
+					? Math.min(hero.maxHp, hero.currentHp + card.action.value)
+					: hero.currentHp,
+			currentPhysBlock:
+				card.action.type === "physDef"
+					? hero.currentPhysBlock + card.action.value
+					: hero.currentPhysBlock,
+			currentMagBlock:
+				card.action.type === "magDef"
+					? hero.currentMagBlock + card.action.value
+					: hero.currentMagBlock,
+		});
+		const newIntents = intentService.calculateAllIntents(newHeroes, monsters);
 		return {
-			heroes: heroes.with(heroIndex, {
-				...hero,
-				currentHp:
-					card.action.type === "heal"
-						? Math.min(hero.maxHp, hero.currentHp + card.action.value)
-						: hero.currentHp,
-				currentPhysBlock:
-					card.action.type === "physDef"
-						? hero.currentPhysBlock + card.action.value
-						: hero.currentPhysBlock,
-				currentMagBlock:
-					card.action.type === "magDef"
-						? hero.currentMagBlock + card.action.value
-						: hero.currentMagBlock,
-			}),
+			heroes: newHeroes,
+			enemyIntents: newIntents,
 			usedCardsThisTurn: {
 				...usedCardsThisTurn,
 				[heroId]: cardId,
@@ -64,6 +70,7 @@ export function executeCard(
 			},
 			currentMove: hasMoveValue ? [heroId, card.action.move] : null,
 			currentAttack: hasAttackValue ? [heroId, card.action.value] : null,
+			hoveredCard: null,
 		};
 	};
 }
