@@ -3,6 +3,7 @@ import type { Hero, Monster } from "@/modules/figures/domain/figures.type";
 import {
 	filterGridByAttackPattern,
 	findTargetedHero,
+	getActualTarget,
 	type MonsterIntent,
 } from "../attacks";
 
@@ -19,22 +20,34 @@ export function calculateAllIntents(
 		.forEach((monster, index) => {
 			const plannedAttack =
 				monster.attacks[Math.floor(Math.random() * monster.attacks.length)];
-			const target = findTargetedHero(plannedAttack, heroes);
+			const idealTarget = findTargetedHero(plannedAttack, heroes);
 
 			const moveDest = calculateAIMove(
 				monster,
+				idealTarget,
 				plannedAttack,
 				heroes,
 				simulatedMonsters,
 			);
 
 			simulatedMonsters[index] = { ...monster, gridPosition: moveDest };
-
-			const dangerTiles = filterGridByAttackPattern(plannedAttack, heroes);
+			const actualCollision = getActualTarget(
+				moveDest,
+				idealTarget.gridPosition,
+				heroes,
+				simulatedMonsters,
+			);
+			const finalTargetPos = actualCollision
+				? actualCollision.unit.gridPosition
+				: idealTarget.gridPosition;
+			const dangerTiles = filterGridByAttackPattern(
+				plannedAttack,
+				finalTargetPos,
+			);
 
 			intents[monster.id] = {
 				monsterId: monster.id,
-				targetHeroId: target.id,
+				targetHeroId: idealTarget.id,
 				intendedMove: moveDest,
 				dangerZone: dangerTiles,
 				attackData: plannedAttack,

@@ -1,4 +1,4 @@
-import { type Attack, findTargetedHero } from "../attacks/attacks";
+import type { Attack } from "../attacks/attacks";
 import {
 	GRID_BOUNDS,
 	getManhattanDistance,
@@ -9,6 +9,7 @@ import type { Hero, Monster } from "./domain/figures.type";
 
 export const calculateAIMove = (
 	monster: Monster,
+	targetHero: Hero,
 	plannedAttack: Attack,
 	heroes: Hero[],
 	monsters: Monster[],
@@ -16,7 +17,6 @@ export const calculateAIMove = (
 	if (plannedAttack.move === 0) {
 		return monster.gridPosition;
 	}
-	const targetHero = findTargetedHero(plannedAttack, heroes);
 	const distance = getManhattanDistance(
 		monster.gridPosition,
 		targetHero.gridPosition,

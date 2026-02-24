@@ -1,62 +1,57 @@
 import { intentService } from "@/modules/attacks/intents.service";
-import { getManhattanDistance } from "@/modules/grid/grid.helpers";
 import type { BattleStoreServerAction } from "@/store/battle.store";
 import {
 	filterGridByAttackPattern,
 	findTargetedHero,
+	getActualTarget,
 } from "../../attacks/attacks";
-import { calculateAIMove } from "../ai.helpers";
 
 export function enemyAction(): BattleStoreServerAction {
 	return ({ monsters, heroes, enemyIntents }) => {
 		const nextMonsters = monsters
 			.filter((m) => m.currentHp > 0)
 			.map((m) => {
-				const plannedAttack = enemyIntents[m.id].attackData;
-				const newGridPosition = calculateAIMove(
-					m,
-					plannedAttack,
-					heroes,
-					monsters,
-				);
+				const { intendedMove } = enemyIntents[m.id];
 				return {
 					...m,
-					gridPosition: newGridPosition,
+					gridPosition: intendedMove,
 				};
 			});
 
-		const nextHeroes = nextMonsters.reduce((acc, m) => {
-			const plannedAttack = enemyIntents[m.id].attackData;
-			const targetHero =
-				heroes.find((h) => h.id === enemyIntents[m.id].targetHeroId) ||
-				findTargetedHero(plannedAttack, heroes);
+		const nextHeroes = nextMonsters.reduce((acc, currentMonster) => {
+			const plannedAttack = enemyIntents[currentMonster.id].attackData;
 
-			const distance = getManhattanDistance(
-				m.gridPosition,
-				targetHero.gridPosition,
+			const idealTarget = findTargetedHero(plannedAttack, acc);
+
+			const collision = getActualTarget(
+				currentMonster.gridPosition,
+				idealTarget.gridPosition,
+				acc,
+				nextMonsters,
 			);
-			if (
-				distance < plannedAttack.minRange ||
-				distance > plannedAttack.maxRange
-			) {
-				return acc;
-			}
 
-			const targetedCells = filterGridByAttackPattern(plannedAttack, heroes);
+			const finalTargetPos = collision
+				? collision.unit.gridPosition
+				: idealTarget.gridPosition;
+
+			const targetedCells = filterGridByAttackPattern(
+				plannedAttack,
+				finalTargetPos,
+			);
+
 			return acc.map((hero) => {
 				const isTargeted = targetedCells.some(
 					({ col, row }) =>
 						col === hero.gridPosition.col && row === hero.gridPosition.row,
 				);
-				if (!isTargeted) {
-					return hero;
-				}
+
+				if (!isTargeted) return hero;
+
 				const effectiveDmg =
 					plannedAttack.effect === "physDmg"
 						? Math.max(0, plannedAttack.damage - hero.physDef)
 						: Math.max(0, plannedAttack.damage - hero.magDef);
 
-				// Calculate how much HP is lost, and how much Block remains
 				const hpDamage =
 					plannedAttack.effect === "physDmg"
 						? Math.max(0, effectiveDmg - hero.currentPhysBlock)
@@ -65,12 +60,12 @@ export function enemyAction(): BattleStoreServerAction {
 				const newPhysBlock =
 					plannedAttack.effect === "physDmg"
 						? Math.max(0, hero.currentPhysBlock - effectiveDmg)
-						: hero.currentPhysBlock; // Unchanged if magic attack
+						: hero.currentPhysBlock;
 
 				const newMagBlock =
 					plannedAttack.effect === "magDmg"
 						? Math.max(0, hero.currentMagBlock - effectiveDmg)
-						: hero.currentMagBlock; // Unchanged if phys attack
+						: hero.currentMagBlock;
 
 				return {
 					...hero,
@@ -80,6 +75,7 @@ export function enemyAction(): BattleStoreServerAction {
 				};
 			});
 		}, heroes);
+
 		const nextEnemyIntents = intentService.calculateAllIntents(
 			nextHeroes,
 			nextMonsters,

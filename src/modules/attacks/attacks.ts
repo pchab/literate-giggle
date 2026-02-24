@@ -1,4 +1,5 @@
-import type { Hero } from "../figures/domain/figures.type";
+import type { Hero, Monster } from "../figures/domain/figures.type";
+import { getLineOfSightPath } from "../grid/grid.helpers";
 import type { GridPosition } from "../grid/grid.type";
 
 type Target = "lowestHp" | "random" | "lowestPhysDef" | "lowestMagDef" | "grid";
@@ -67,17 +68,51 @@ export function findTargetedHero(attack: Attack, heroes: Hero[]): Hero {
 	};
 	return heroes.reduce(reduceFunction);
 }
+
+export function getActualTarget(
+	attackerPos: GridPosition,
+	intendedTargetPos: GridPosition,
+	heroes: Hero[],
+	monsters: Monster[],
+): { type: "hero"; unit: Hero } | { type: "monster"; unit: Monster } | null {
+	const flightPath = getLineOfSightPath(attackerPos, intendedTargetPos);
+
+	// Start at i = 1 to skip the tile the Attacker is standing on!
+	for (let i = 1; i < flightPath.length; i++) {
+		const tile = flightPath[i];
+
+		// Did it hit a Hero?
+		const heroHit = heroes.find(
+			(h) =>
+				h.gridPosition.col === tile.col &&
+				h.gridPosition.row === tile.row &&
+				h.currentHp > 0,
+		);
+		if (heroHit) return { type: "hero", unit: heroHit };
+
+		// Did it hit a Monster? (Friendly fire is a great mechanic)
+		const monsterHit = monsters.find(
+			(m) =>
+				m.gridPosition.col === tile.col &&
+				m.gridPosition.row === tile.row &&
+				m.currentHp > 0,
+		);
+		if (monsterHit) return { type: "monster", unit: monsterHit };
+	}
+
+	return null; // Arrow flew perfectly to the intended empty tile
+}
+
 export function filterGridByAttackPattern(
 	attack: Attack,
-	heroes: Hero[],
+	targetPos: GridPosition,
 ): GridPosition[] {
 	const { target, pattern } = attack;
 	if (target === "grid") {
 		return pattern;
 	}
-	const targetedHero = findTargetedHero(attack, heroes);
 	return pattern.map(({ col, row }) => ({
-		col: targetedHero.gridPosition.col + col,
-		row: targetedHero.gridPosition.row + row,
+		col: targetPos.col + col,
+		row: targetPos.row + row,
 	}));
 }
