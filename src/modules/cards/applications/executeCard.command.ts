@@ -69,7 +69,9 @@ export function executeCard(
 				},
 			},
 			currentMove: hasMoveValue ? [heroId, card.action.move] : null,
-			currentAttack: hasAttackValue ? [heroId, card.action.value] : null,
+			currentAttack: hasAttackValue
+				? [heroId, { damage: card.action.value, range: card.action.range }]
+				: null,
 			hoveredCard: null,
 		};
 	};

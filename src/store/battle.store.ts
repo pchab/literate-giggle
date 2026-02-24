@@ -15,7 +15,7 @@ export type BattleState = {
 	heroes: Hero[];
 	monsters: Monster[];
 	currentMove: [Hero["id"], number] | null;
-	currentAttack: [Monster["id"], number] | null;
+	currentAttack: [Hero["id"], { damage: number; range: number }] | null;
 	usedCardsThisTurn: Record<Hero["id"], Card["id"]>;
 	cardUsageLog: CardLog;
 	enemyIntents: Record<Monster["id"], MonsterIntent>;
@@ -26,7 +26,10 @@ type BattleAction = {
 	initBattle: (heroRoster: Hero[]) => void;
 	playCard: (heroId: Hero["id"], cardId: Card["id"]) => void;
 	moveHero: (newPosition: GridPosition) => void;
-	attackEnemy: (monsterId: Monster["id"], attackValue: number) => void;
+	attackEnemy: (
+		monsterId: Monster["id"],
+		attackData: { damage: number; range: number },
+	) => void;
 	enemyAction: () => void;
 	setHoveredCard: (
 		hovered: { heroId: Hero["id"]; cardId: Card["id"] } | null,
@@ -80,8 +83,8 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 				})),
 			playCard: (heroId, cardId) => set(cardService.playCard(heroId, cardId)),
 			moveHero: (newPosition) => set(heroService.moveHero(newPosition)),
-			attackEnemy: (monsterId, attackValue) =>
-				set(heroService.attackEnemy(monsterId, attackValue)),
+			attackEnemy: (monsterId, attackData) =>
+				set(heroService.attackEnemy(monsterId, attackData)),
 			enemyAction: () => set(enemyService.enemyAction()),
 			setHoveredCard: (hoveredCard) => set(() => ({ hoveredCard })),
 		}),

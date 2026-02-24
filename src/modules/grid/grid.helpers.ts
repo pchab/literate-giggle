@@ -82,3 +82,22 @@ export const calculateReachableCells = (
 
 	return reachable;
 };
+
+export const calculateAttackableCells = (
+	startPos: GridPosition,
+	rangeValue: number,
+): GridPosition[] => {
+	const attackable: GridPosition[] = [];
+	for (let row = 0; row < GRID_BOUNDS.rows; row++) {
+		for (let col = 0; col < GRID_BOUNDS.cols; col++) {
+			const pos = { row, col };
+			if (
+				getManhattanDistance(startPos, pos) <= rangeValue &&
+				getManhattanDistance(startPos, pos) > 0
+			) {
+				attackable.push(pos);
+			}
+		}
+	}
+	return attackable;
+};

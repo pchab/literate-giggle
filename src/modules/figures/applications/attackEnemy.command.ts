@@ -3,7 +3,7 @@ import type { Monster } from "../domain/figures.type";
 
 export function attackEnemy(
 	monsterId: Monster["id"],
-	attackValue: number,
+	attackData: { damage: number; range: number },
 ): BattleStoreServerAction {
 	return ({ monsters, currentAttack }) => {
 		if (!currentAttack) {
@@ -20,7 +20,7 @@ export function attackEnemy(
 		return {
 			monsters: monsters.map((m) =>
 				m.id === monsterId
-					? { ...m, currentHp: Math.max(0, m.currentHp - attackValue) }
+					? { ...m, currentHp: Math.max(0, m.currentHp - attackData.damage) }
 					: m,
 			),
 			currentAttack: null,

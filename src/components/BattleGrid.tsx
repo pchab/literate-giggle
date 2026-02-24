@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useShallow } from "zustand/shallow";
 import {
+	calculateAttackableCells,
 	calculateReachableCells,
 	GRID_BOUNDS,
 } from "@/modules/grid/grid.helpers";
@@ -71,6 +72,8 @@ export function BattleGrid() {
 		(c) => c.id === hoveredCard?.cardId,
 	);
 	let hoverReachableCells: GridPosition[] = [];
+	let hoverAttackableCells: GridPosition[] = [];
+
 	if (hoveredHeroInfo && hoveredCardInfo && hoveredCardInfo.action.move > 0) {
 		hoverReachableCells = calculateReachableCells(
 			hoveredHeroInfo.gridPosition,
@@ -78,6 +81,18 @@ export function BattleGrid() {
 			monsters,
 		);
 	}
+	if (
+		hoveredHeroInfo &&
+		hoveredCardInfo &&
+		(hoveredCardInfo.action.type === "physAtt" ||
+			hoveredCardInfo.action.type === "magAtt")
+	) {
+		hoverAttackableCells = calculateAttackableCells(
+			hoveredHeroInfo.gridPosition,
+			hoveredCardInfo.action.range,
+		);
+	}
+
 	if (currentMove) {
 		const [heroId, moveDistance] = currentMove;
 		const movingHero = heroes.find((h) => h.id === heroId);
@@ -86,6 +101,16 @@ export function BattleGrid() {
 				movingHero.gridPosition,
 				moveDistance,
 				monsters,
+			);
+		}
+	}
+	if (currentAttack) {
+		const [heroId, attackData] = currentAttack;
+		const attackingHero = heroes.find((h) => h.id === heroId);
+		if (attackingHero) {
+			hoverAttackableCells = calculateAttackableCells(
+				attackingHero.gridPosition,
+				attackData.range,
 			);
 		}
 	}
@@ -129,6 +154,9 @@ export function BattleGrid() {
 				const isReachable = hoverReachableCells.some(
 					(pos) => pos.row === cell.row && pos.col === cell.col,
 				);
+				const isAttackable = hoverAttackableCells.some(
+					(pos) => pos.row === cell.row && pos.col === cell.col,
+				);
 
 				// 4. Define dynamic Tailwind classes based on danger status
 				const baseClasses =
@@ -142,6 +170,9 @@ export function BattleGrid() {
 				} else if (isHoveredHero) {
 					stateClasses =
 						"bg-blue-900/40 border-2 border-blue-400 z-10 shadow-[inset_0_0_15px_rgba(59,130,246,0.5)]";
+				} else if (isAttackable) {
+					stateClasses =
+						"bg-orange-900/40 border border-orange-500/50 hover:bg-orange-800/50 z-10 shadow-[inset_0_0_15px_rgba(249,115,22,0.15)]";
 				} else if (isReachable) {
 					stateClasses =
 						"bg-blue-950/40 border border-blue-500/50 hover:bg-blue-900/50 z-10";
@@ -152,9 +183,15 @@ export function BattleGrid() {
 						<button
 							type="button"
 							key={cell.id}
-							className={`${baseClasses} ${stateClasses}`}
+							className={`${baseClasses} ${stateClasses} ${currentMove && !isReachable ? "cursor-not-allowed opacity-50" : ""}`}
 							title={`Cell [${cell.col}, ${cell.row}]`}
-							onClick={() => moveHero(cell)}
+							onClick={() => {
+								if (currentMove) {
+									if (isReachable) moveHero(cell);
+								} else {
+									moveHero(cell);
+								}
+							}}
 						>
 							<span className="text-xs text-zinc-800 select-none absolute top-1 left-1">
 								{cell.col},{cell.row}
@@ -168,11 +205,13 @@ export function BattleGrid() {
 						<button
 							type="button"
 							key={cell.id}
-							className={`${baseClasses} ${stateClasses}`}
+							className={`${baseClasses} ${stateClasses} ${currentAttack && !isAttackable ? "cursor-not-allowed opacity-50" : ""}`}
 							title={`Cell [${cell.col}, ${cell.row}]`}
-							onClick={() =>
-								currentAttack && attackEnemy(enemyInCell.id, currentAttack[1])
-							}
+							onClick={() => {
+								if (currentAttack && isAttackable) {
+									attackEnemy(enemyInCell.id, currentAttack[1]);
+								}
+							}}
 						>
 							<span className="text-xs text-zinc-800 select-none absolute top-1 left-1">
 								{cell.col},{cell.row}
