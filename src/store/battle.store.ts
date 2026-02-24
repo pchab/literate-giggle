@@ -25,6 +25,7 @@ export type BattleState = {
 type BattleAction = {
 	initBattle: (heroRoster: Hero[]) => void;
 	playCard: (heroId: Hero["id"], cardId: Card["id"]) => void;
+	cancelCard: (heroId: Hero["id"], cardId: Card["id"]) => void;
 	moveHero: (newPosition: GridPosition) => void;
 	attackEnemy: (
 		monsterId: Monster["id"],
@@ -82,6 +83,8 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 					),
 				})),
 			playCard: (heroId, cardId) => set(cardService.playCard(heroId, cardId)),
+			cancelCard: (heroId, cardId) =>
+				set(cardService.cancelCard(heroId, cardId)),
 			moveHero: (newPosition) => set(heroService.moveHero(newPosition)),
 			attackEnemy: (monsterId, attackData) =>
 				set(heroService.attackEnemy(monsterId, attackData)),
