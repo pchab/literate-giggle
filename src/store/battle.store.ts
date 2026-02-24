@@ -1,9 +1,12 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+import type { MonsterIntent } from "@/modules/attacks/attacks";
+import { intentService } from "@/modules/attacks/intents.service";
 import { cardService } from "@/modules/cards/cards.service";
 import type { Card, CardLog } from "@/modules/cards/domain/cards.type";
-import { testBoss } from "@/modules/figures/domain/boss";
+import { archer } from "@/modules/figures/domain/archer";
 import type { Hero, Monster } from "@/modules/figures/domain/figures.type";
+import { skeleton } from "@/modules/figures/domain/skeleton";
 import { enemyService } from "@/modules/figures/enemy.service";
 import { heroService } from "@/modules/figures/heroes.service";
 import type { GridPosition } from "@/modules/grid/grid.type";
@@ -15,6 +18,7 @@ export type BattleState = {
 	currentAttack: [Monster["id"], number] | null;
 	usedCardsThisTurn: Record<Hero["id"], Card["id"]>;
 	cardUsageLog: CardLog;
+	enemyIntents: Record<Monster["id"], MonsterIntent>;
 };
 
 type BattleAction = {
@@ -27,7 +31,21 @@ type BattleAction = {
 
 const initialState: BattleState = {
 	heroes: [],
-	monsters: [{ ...testBoss, currentHp: 4, gridPosition: { row: 4, col: 4 } }],
+	monsters: [
+		{
+			id: 1,
+			...skeleton,
+			currentHp: skeleton.maxHp,
+			gridPosition: { row: 4, col: 4 },
+		},
+		{
+			id: 2,
+			...archer,
+			currentHp: archer.maxHp,
+			gridPosition: { row: 4, col: 3 },
+		},
+	],
+	enemyIntents: {},
 	currentMove: null,
 	currentAttack: null,
 	usedCardsThisTurn: {},
@@ -47,7 +65,14 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 		(set) => ({
 			...initialState,
 			initBattle: (heroRoster: Hero[]) =>
-				set(() => ({ ...initialState, heroes: heroRoster })),
+				set(() => ({
+					...initialState,
+					heroes: heroRoster,
+					enemyIntents: intentService.calculateAllIntents(
+						heroRoster,
+						initialState.monsters,
+					),
+				})),
 			playCard: (heroId, cardId) => set(cardService.playCard(heroId, cardId)),
 			moveHero: (newPosition) => set(heroService.moveHero(newPosition)),
 			attackEnemy: (monsterId, attackValue) =>

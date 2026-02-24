@@ -1,10 +1,29 @@
+import { intentService } from "@/modules/attacks/intents.service";
 import type { BattleStoreServerAction } from "@/store/battle.store";
-import { filterGridByAttackPattern } from "../attacks";
+import { filterGridByAttackPattern } from "../../attacks/attacks";
+import { calculateAIMove } from "../ai.helpers";
 
 export function enemyAction(): BattleStoreServerAction {
-	return ({ monsters, heroes }) => {
-		const nextHeroes = monsters.reduce((acc, { intent }) => {
-			const targetedCells = filterGridByAttackPattern(intent, heroes);
+	return ({ monsters, heroes, enemyIntents }) => {
+		const nextMonsters = monsters
+			.filter((m) => m.currentHp > 0)
+			.map((m) => {
+				const plannedAttack = enemyIntents[m.id].attackData;
+				const newGridPosition = calculateAIMove(
+					m,
+					plannedAttack,
+					heroes,
+					monsters,
+				);
+				return {
+					...m,
+					gridPosition: newGridPosition,
+				};
+			});
+
+		const nextHeroes = nextMonsters.reduce((acc, { id }) => {
+			const plannedAttack = enemyIntents[id].attackData;
+			const targetedCells = filterGridByAttackPattern(plannedAttack, heroes);
 			return acc.map((hero) => {
 				const isTargeted = targetedCells.some(
 					({ col, row }) =>
@@ -13,27 +32,44 @@ export function enemyAction(): BattleStoreServerAction {
 				if (!isTargeted) {
 					return hero;
 				}
-				const damage =
-					intent.effect === "physDmg"
-						? Math.max(0, intent.damage - hero.physDef - hero.currentPhysBlock)
-						: Math.max(0, intent.damage - hero.magDef - hero.currentMagBlock);
+				const effectiveDmg =
+					plannedAttack.effect === "physDmg"
+						? Math.max(0, plannedAttack.damage - hero.physDef)
+						: Math.max(0, plannedAttack.damage - hero.magDef);
+
+				// Calculate how much HP is lost, and how much Block remains
+				const hpDamage =
+					plannedAttack.effect === "physDmg"
+						? Math.max(0, effectiveDmg - hero.currentPhysBlock)
+						: Math.max(0, effectiveDmg - hero.currentMagBlock);
+
+				const newPhysBlock =
+					plannedAttack.effect === "physDmg"
+						? Math.max(0, hero.currentPhysBlock - effectiveDmg)
+						: hero.currentPhysBlock; // Unchanged if magic attack
+
+				const newMagBlock =
+					plannedAttack.effect === "magDmg"
+						? Math.max(0, hero.currentMagBlock - effectiveDmg)
+						: hero.currentMagBlock; // Unchanged if phys attack
+
 				return {
 					...hero,
-					currentHp: Math.max(0, hero.currentHp - damage),
-					currentPhysBlock: 0,
-					currentMagBlock: 0,
+					currentHp: Math.max(0, hero.currentHp - hpDamage),
+					currentPhysBlock: newPhysBlock,
+					currentMagBlock: newMagBlock,
 				};
 			});
 		}, heroes);
-		const nextMonsters = monsters.map((m) => {
-			const nextIntent =
-				m.attacks[Math.floor(Math.random() * m.attacks.length)];
-			return { ...m, intent: nextIntent };
-		});
+		const nextEnemyIntents = intentService.calculateAllIntents(
+			nextHeroes,
+			nextMonsters,
+		);
 		return {
 			monsters: nextMonsters,
 			heroes: nextHeroes,
-			usedCardsThisTurn: {}, // Reset used cards after enemy action
+			usedCardsThisTurn: {},
+			enemyIntents: nextEnemyIntents,
 		};
 	};
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useShallow } from "zustand/shallow";
 import { GRID_BOUNDS } from "@/modules/grid/grid.helpers";
 import { useBattleStore } from "@/store/battle.store";
@@ -22,40 +23,90 @@ const tailwindGridCols = [
 ];
 
 export function BattleGrid() {
-	const { moveHero, monsters, heroes, currentAttack, attackEnemy } = useBattleStore(
+	const {
+		moveHero,
+		monsters,
+		heroes,
+		currentMove,
+		usedCardsThisTurn,
+		currentAttack,
+		enemyAction,
+		attackEnemy,
+		enemyIntents,
+	} = useBattleStore(
 		useShallow((state) => ({
 			attackEnemy: state.attackEnemy,
 			currentAttack: state.currentAttack,
+			currentMove: state.currentMove,
+			usedCardsThisTurn: state.usedCardsThisTurn,
 			moveHero: state.moveHero,
+			enemyAction: state.enemyAction,
 			monsters: state.monsters,
 			heroes: state.heroes,
+			enemyIntents: state.enemyIntents,
 		})),
 	);
+
+	const allDangerTiles = Object.values(enemyIntents || {}).flatMap(
+		(intent) => intent.dangerZone || [],
+	);
+
+	const aliveHeroesCount = heroes.filter(
+		({ currentHp }) => currentHp > 0,
+	).length;
+	const isEnemyTurn =
+		!currentMove &&
+		!currentAttack &&
+		aliveHeroesCount > 0 &&
+		Object.keys(usedCardsThisTurn).length === aliveHeroesCount;
+
+	useEffect(() => {
+		if (isEnemyTurn) {
+			const timeoutId = setTimeout(() => {
+				enemyAction();
+			}, 1000);
+			return () => clearTimeout(timeoutId);
+		}
+	}, [isEnemyTurn, enemyAction]);
 
 	return (
 		<div
 			className={`grid ${tailwindGridCols[GRID_BOUNDS.cols]} gap-1 p-1 bg-zinc-900/80 rounded-lg border border-zinc-800 relative`}
 		>
 			{cells.map((cell) => {
-				const enemyInCell = monsters.find(
-					({ gridPosition }) =>
-						gridPosition.col === cell.col && gridPosition.row === cell.row,
-				);
-				const heroInCell = heroes.find(
-					({ gridPosition }) =>
-						gridPosition.col === cell.col && gridPosition.row === cell.row,
-				);
+				const enemyInCell = monsters
+					.filter((m) => m.currentHp > 0)
+					.find(
+						({ gridPosition }) =>
+							gridPosition.col === cell.col && gridPosition.row === cell.row,
+					);
+				const heroInCell = heroes
+					.filter((m) => m.currentHp > 0)
+					.find(
+						({ gridPosition }) =>
+							gridPosition.col === cell.col && gridPosition.row === cell.row,
+					);
 
 				const isCellEmpty = !enemyInCell && !heroInCell;
+
+				// 3. Check if this specific cell is targeted by any enemy
+				const isDanger = allDangerTiles.some(
+					(tile) => tile.col === cell.col && tile.row === cell.row,
+				);
+
+				// 4. Define dynamic Tailwind classes based on danger status
+				const baseClasses =
+					"w-24 h-24 relative flex items-center justify-center transition-all duration-300";
+				const dangerClasses = isDanger
+					? "bg-red-950/40 border border-red-600/70 hover:bg-red-900/50 shadow-[inset_0_0_15px_rgba(220,38,38,0.25)] z-10"
+					: "bg-zinc-900/30 border border-zinc-700/50 hover:bg-zinc-800 z-0";
 
 				if (isCellEmpty) {
 					return (
 						<button
 							type="button"
 							key={cell.id}
-							className={
-								"w-24 h-24 border border-zinc-700/50 bg-zinc-900/30 hover:bg-zinc-800 transition-colors relative flex items-center justify-center"
-							}
+							className={`${baseClasses} ${dangerClasses}`}
 							title={`Cell [${cell.col}, ${cell.row}]`}
 							onClick={() => moveHero(cell)}
 						>
@@ -71,9 +122,7 @@ export function BattleGrid() {
 						<button
 							type="button"
 							key={cell.id}
-							className={
-								"w-24 h-24 border border-zinc-700/50 bg-zinc-900/30 hover:bg-zinc-800 transition-colors relative flex items-center justify-center"
-							}
+							className={`${baseClasses} ${dangerClasses}`}
 							title={`Cell [${cell.col}, ${cell.row}]`}
 							onClick={() =>
 								currentAttack && attackEnemy(enemyInCell.id, currentAttack[1])
@@ -88,12 +137,7 @@ export function BattleGrid() {
 				}
 
 				return (
-					<div
-						key={cell.id}
-						className={
-							"relative w-24 h-24 border border-zinc-700/50 bg-zinc-900/30 hover:bg-zinc-800 transition-colors flex items-center justify-center"
-						}
-					>
+					<div key={cell.id} className={`${baseClasses} ${dangerClasses}`}>
 						<span className="text-xs text-zinc-800 select-none absolute top-1 left-1">
 							{cell.col},{cell.row}
 						</span>

@@ -1,11 +1,9 @@
 export default function RootLayout({
 	children,
 	party,
-	enemy,
 }: Readonly<{
 	children: React.ReactNode;
 	party: React.ReactNode;
-	enemy: React.ReactNode;
 }>) {
 	return (
 		<>

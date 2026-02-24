@@ -1,6 +1,6 @@
+import type { Attack } from "../../attacks/attacks";
 import type { Card } from "../../cards/domain/cards.type";
 import type { GridPosition } from "../../grid/grid.type";
-import type { Attack } from "../attacks";
 
 export type Figure = {
 	id: number;
@@ -26,5 +26,4 @@ export type EnemyType = "Boss" | "Skeleton" | "Bat" | "Archer";
 export type Monster = Figure & {
 	enemyType: EnemyType;
 	attacks: Attack[];
-	intent: Attack;
 };

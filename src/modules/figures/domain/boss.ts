@@ -1,8 +1,10 @@
-import { conePattern, crossPattern } from "../attacks";
+import { conePattern, crossPattern } from "../../attacks/attacks";
 import type { Monster } from "./figures.type";
 
-export const testBoss: Omit<Monster, "currentHp" | "gridPosition"> = {
-	id: 1,
+export const testBoss: Omit<
+	Monster,
+	"id" | "currentHp" | "gridPosition" | "plannedAttack"
+> = {
 	enemyType: "Boss",
 	maxHp: 20,
 	attacks: [
@@ -10,25 +12,21 @@ export const testBoss: Omit<Monster, "currentHp" | "gridPosition"> = {
 			id: 1,
 			target: "lowestHp",
 			pattern: crossPattern,
-			move: 1,
+			move: 2,
 			damage: 3,
+			minRange: 1,
+			maxRange: 1,
 			effect: "physDmg",
 		},
 		{
 			id: 2,
 			target: "lowestPhysDef",
 			pattern: conePattern,
-			move: 1,
+			move: 2,
 			damage: 4,
+			minRange: 1,
+			maxRange: 1,
 			effect: "physDmg",
 		},
 	],
-	intent: {
-		id: 1,
-		target: "lowestHp",
-		pattern: crossPattern,
-		move: 1,
-		damage: 3,
-		effect: "physDmg",
-	},
 };
