@@ -13,6 +13,9 @@ export const calculateAIMove = (
 	heroes: Hero[],
 	monsters: Monster[],
 ): GridPosition => {
+	if (plannedAttack.move === 0) {
+		return monster.gridPosition;
+	}
 	const targetHero = findTargetedHero(plannedAttack, heroes);
 	const distance = getManhattanDistance(
 		monster.gridPosition,

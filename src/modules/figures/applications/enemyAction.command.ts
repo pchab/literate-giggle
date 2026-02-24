@@ -1,6 +1,10 @@
 import { intentService } from "@/modules/attacks/intents.service";
+import { getManhattanDistance } from "@/modules/grid/grid.helpers";
 import type { BattleStoreServerAction } from "@/store/battle.store";
-import { filterGridByAttackPattern } from "../../attacks/attacks";
+import {
+	filterGridByAttackPattern,
+	findTargetedHero,
+} from "../../attacks/attacks";
 import { calculateAIMove } from "../ai.helpers";
 
 export function enemyAction(): BattleStoreServerAction {
@@ -21,8 +25,23 @@ export function enemyAction(): BattleStoreServerAction {
 				};
 			});
 
-		const nextHeroes = nextMonsters.reduce((acc, { id }) => {
-			const plannedAttack = enemyIntents[id].attackData;
+		const nextHeroes = nextMonsters.reduce((acc, m) => {
+			const plannedAttack = enemyIntents[m.id].attackData;
+			const targetHero =
+				heroes.find((h) => h.id === enemyIntents[m.id].targetHeroId) ||
+				findTargetedHero(plannedAttack, heroes);
+
+			const distance = getManhattanDistance(
+				m.gridPosition,
+				targetHero.gridPosition,
+			);
+			if (
+				distance < plannedAttack.minRange ||
+				distance > plannedAttack.maxRange
+			) {
+				return acc;
+			}
+
 			const targetedCells = filterGridByAttackPattern(plannedAttack, heroes);
 			return acc.map((hero) => {
 				const isTargeted = targetedCells.some(
