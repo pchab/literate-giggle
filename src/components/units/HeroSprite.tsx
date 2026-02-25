@@ -7,7 +7,11 @@ import { UnitSprite } from "./UnitSprite";
 import { useCombatText } from "./useCombatText.hook";
 
 export default function HeroSprite({ unitInCell }: { unitInCell: Hero }) {
-	const { texts, isHit } = useCombatText(unitInCell.currentHp);
+	const { texts, isHit } = useCombatText(
+		unitInCell.currentHp,
+		unitInCell.currentPhysBlock,
+		unitInCell.currentMagBlock,
+	);
 
 	const currentHp = unitInCell.currentHp;
 	const maxHp = unitInCell.maxHp;

@@ -16,10 +16,13 @@ export function applyEffectToHero(hero: Hero, effect: CardEffect): Hero {
 		if (effect.blockType === "physBlock")
 			return {
 				...hero,
-				currentPhysBlock: hero.currentPhysBlock + effect.amount,
+				currentPhysBlock: Math.max(hero.currentPhysBlock, effect.amount),
 			};
 		if (effect.blockType === "magBlock")
-			return { ...hero, currentMagBlock: hero.currentMagBlock + effect.amount };
+			return {
+				...hero,
+				currentMagBlock: Math.max(hero.currentMagBlock, effect.amount),
+			};
 	}
 	// Handle self-damage, buffs, etc.
 	return hero;

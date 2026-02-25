@@ -3,42 +3,74 @@ import { useEffect, useRef, useState } from "react";
 export interface CombatText {
 	id: number;
 	amount: number;
-	type: "damage" | "heal";
+	type: "damage" | "heal" | "physBlock" | "magBlock";
 }
 
-export function useCombatText(currentHp: number) {
+export function useCombatText(
+	currentHp: number,
+	currentPhysBlock: number = 0,
+	currentMagBlock: number = 0,
+) {
 	const prevHp = useRef(currentHp);
+	const prevPhysBlock = useRef(currentPhysBlock);
+	const prevMagBlock = useRef(currentMagBlock);
+
 	const [texts, setTexts] = useState<CombatText[]>([]);
 	const [isHit, setIsHit] = useState(false);
 
 	useEffect(() => {
-		const diff = prevHp.current - currentHp;
+		const hpDiff = prevHp.current - currentHp;
+		const physDiff = prevPhysBlock.current - currentPhysBlock;
+		const magDiff = prevMagBlock.current - currentMagBlock;
 
-		if (diff !== 0) {
-			// It's a hit or a heal!
-			const isDamage = diff > 0;
-			const newText: CombatText = {
-				id: Date.now() + Math.random(), // Unique ID for React keys
-				amount: Math.abs(diff),
-				type: isDamage ? "damage" : "heal",
-			};
+		const newTexts: CombatText[] = [];
+		let tookDamage = false;
 
-			setTexts((prev) => [...prev, newText]);
+		if (hpDiff !== 0) {
+			newTexts.push({
+				id: Date.now() + Math.random(),
+				amount: Math.abs(hpDiff),
+				type: hpDiff > 0 ? "damage" : "heal",
+			});
+			if (hpDiff > 0) tookDamage = true;
+		}
 
-			// Trigger the flash animation if it was damage
-			if (isDamage) {
+		if (physDiff > 0) {
+			newTexts.push({
+				id: Date.now() + Math.random(),
+				amount: physDiff,
+				type: "physBlock",
+			});
+			tookDamage = true;
+		}
+
+		if (magDiff > 0) {
+			newTexts.push({
+				id: Date.now() + Math.random(),
+				amount: magDiff,
+				type: "magBlock",
+			});
+			tookDamage = true;
+		}
+
+		if (newTexts.length > 0) {
+			setTexts((prev) => [...prev, ...newTexts]);
+
+			if (tookDamage) {
 				setIsHit(true);
-				setTimeout(() => setIsHit(false), 400); // matches CSS duration
+				setTimeout(() => setIsHit(false), 400);
 			}
 
-			// Cleanup the floating text after it finishes animating (1 second)
 			setTimeout(() => {
-				setTexts((prev) => prev.filter((t) => t.id !== newText.id));
+				const idsToRemove = newTexts.map((t) => t.id);
+				setTexts((prev) => prev.filter((t) => !idsToRemove.includes(t.id)));
 			}, 1000);
 		}
 
 		prevHp.current = currentHp;
-	}, [currentHp]);
+		prevPhysBlock.current = currentPhysBlock;
+		prevMagBlock.current = currentMagBlock;
+	}, [currentHp, currentPhysBlock, currentMagBlock]);
 
 	return { texts, isHit };
 }

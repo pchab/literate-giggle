@@ -33,9 +33,7 @@ export default function EnemySprite({ unitInCell }: { unitInCell: Monster }) {
 
 	return (
 		<div className="absolute inset-0 z-10 flex flex-col items-center justify-end">
-			{intent && !isEnemyTurn && (
-				<IntentDisplay intent={intent} />
-			)}
+			{intent && !isEnemyTurn && <IntentDisplay intent={intent} />}
 
 			<FloatingDamage texts={texts} />
 
