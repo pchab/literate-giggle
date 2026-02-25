@@ -15,6 +15,8 @@ import { enemyService } from "@/modules/figures/enemy.service";
 import { createMonsterId } from "@/modules/figures/figures.helpers";
 import { heroService } from "@/modules/figures/heroes.service";
 import type { GridPosition } from "@/modules/grid/grid.type";
+import { encountersService } from "@/modules/map/encounters.service";
+import { Encounter } from "@/modules/map/encounters.data";
 
 export type ActiveCardContext = {
 	heroId: Hero["id"];
@@ -32,7 +34,7 @@ export type BattleState = {
 };
 
 type BattleAction = {
-	initBattle: (heroRoster: Hero[]) => void;
+	initBattle: (heroRoster: Hero[], encounterId: Encounter["id"]) => void;
 	selectCard: (heroId: Hero["id"], cardId: Card["id"]) => void;
 	cancelCard: (heroId: Hero["id"], cardId: Card["id"]) => void;
 	resolveCard: (anchorTargetId: AnchorTarget | null) => void;
@@ -78,15 +80,8 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 	persist(
 		(set) => ({
 			...initialState,
-			initBattle: (heroRoster: Hero[]) =>
-				set(() => ({
-					...initialState,
-					heroes: heroRoster,
-					enemyIntents: intentService.calculateAllIntents(
-						heroRoster,
-						initialState.monsters,
-					),
-				})),
+			initBattle: (heroRoster: Hero[], encounterId: Encounter["id"]) =>
+				set(encountersService.initBattle(heroRoster, encounterId)),
 			selectCard: (heroId, cardId) =>
 				set(cardService.selectCard(heroId, cardId)),
 			cancelCard: (heroId, cardId) =>

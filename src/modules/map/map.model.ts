@@ -1,3 +1,5 @@
+import { createEncounterId, type Encounter } from "./encounters.data";
+
 export type NodeType = "TOWN" | "BATTLE" | "CAMP" | "EVENT";
 
 export interface MapNode {
@@ -6,7 +8,7 @@ export interface MapNode {
 	type: NodeType;
 	position: { x: number; y: number }; // CSS percentages (0-100)
 	connectedNodeIds: string[];
-	isCompleted?: boolean; // Useful so they don't replay the same battle infinitely
+	encounterId?: Encounter["id"];
 }
 
 export type MapData = Record<string, MapNode>;
@@ -26,6 +28,7 @@ export const PROTOTYPE_MAP: MapData = {
 		type: "BATTLE",
 		position: { x: 50, y: 60 },
 		connectedNodeIds: ["start_town", "ruined_tower", "dark_forest"],
+		encounterId: createEncounterId("tutorial_fight"),
 	},
 	ruined_tower: {
 		id: "ruined_tower",
@@ -40,5 +43,6 @@ export const PROTOTYPE_MAP: MapData = {
 		type: "BATTLE",
 		position: { x: 70, y: 40 },
 		connectedNodeIds: ["crossroads"],
+		encounterId: createEncounterId("forest_ambush"),
 	},
 };
