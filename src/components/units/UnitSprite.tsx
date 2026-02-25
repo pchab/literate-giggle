@@ -28,7 +28,7 @@ export function UnitSprite({ type, stance = 0 }: UnitSpriteProps) {
 	const src = UNIT_ASSETS(stance)[type];
 
 	return (
-		<div className="absolute w-full h-full flex items-center justify-center pointer-events-none -translate-y-4">
+		<div className="absolute w-full h-full flex items-center justify-center pointer-events-none">
 			<Image
 				src={src}
 				alt={type}

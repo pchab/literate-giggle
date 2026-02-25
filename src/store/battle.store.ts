@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import type { MonsterIntent } from "@/modules/attacks/attacks";
-import { intentService } from "@/modules/attacks/intents.service";
 import { cardService } from "@/modules/cards/cards.service";
 import type {
 	AnchorTarget,
@@ -15,8 +14,8 @@ import { enemyService } from "@/modules/figures/enemy.service";
 import { createMonsterId } from "@/modules/figures/figures.helpers";
 import { heroService } from "@/modules/figures/heroes.service";
 import type { GridPosition } from "@/modules/grid/grid.type";
+import type { Encounter } from "@/modules/map/encounters.data";
 import { encountersService } from "@/modules/map/encounters.service";
-import { Encounter } from "@/modules/map/encounters.data";
 
 export type ActiveCardContext = {
 	heroId: Hero["id"];
@@ -43,7 +42,7 @@ type BattleAction = {
 		monsterId: Monster["id"],
 		attackData: { damage: number; range: number },
 	) => void;
-	enemyAction: () => void;
+	enemyAction: () => Promise<void>;
 	setHoveredCard: (
 		hovered: { heroId: Hero["id"]; cardId: Card["id"] } | null,
 	) => void;
@@ -78,7 +77,7 @@ export type BattleStoreServerAction = (
 
 export const useBattleStore = create<BattleState & BattleAction>()(
 	persist(
-		(set) => ({
+		(set, get) => ({
 			...initialState,
 			initBattle: (heroRoster: Hero[], encounterId: Encounter["id"]) =>
 				set(encountersService.initBattle(heroRoster, encounterId)),
@@ -91,7 +90,9 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 			moveHero: (newPosition) => set(heroService.moveHero(newPosition)),
 			attackEnemy: (monsterId, attackData) =>
 				set(heroService.attackEnemy(monsterId, attackData)),
-			enemyAction: () => set(enemyService.enemyAction()),
+			enemyAction: async () => {
+				await enemyService.resolveEnemyActions(get, set);
+			},
 			setHoveredCard: (hoveredCard) => set(() => ({ hoveredCard })),
 		}),
 		{

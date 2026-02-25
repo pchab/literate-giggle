@@ -1,5 +1,5 @@
-import { enemyAction } from "./applications/enemyAction.command";
+import { resolveEnemyActions } from "./applications/resolveEnemyAction.command";
 
 export const enemyService = {
-	enemyAction: enemyAction,
+	resolveEnemyActions,
 };

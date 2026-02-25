@@ -40,7 +40,10 @@ export default function RewardScreen() {
 		newCardId: Card["id"],
 	) => {
 		evolveCard(heroId, oldCardId, newCardId); // Update the store
-		setEvolvedCards((prev) => ({ ...prev, [`${heroId}-${oldCardId}`]: newCardId })); // Update local visual state
+		setEvolvedCards((prev) => ({
+			...prev,
+			[`${heroId}-${oldCardId}`]: newCardId,
+		})); // Update local visual state
 		setEvolutionModal(null); // Close modal
 	};
 
@@ -166,7 +169,8 @@ export default function RewardScreen() {
 																{
 																	cardLibrary.find(
 																		({ id: cardId }) =>
-																			evolvedCards[`${heroId}-${card.id}`] === cardId,
+																			evolvedCards[`${heroId}-${card.id}`] ===
+																			cardId,
 																	)?.name
 																}
 															</m.span>
