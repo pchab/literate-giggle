@@ -7,6 +7,8 @@ import type { Card, CardLog } from "@/modules/cards/domain/cards.type";
 import type { Hero } from "@/modules/figures/domain/figures.type";
 import { squireStats } from "@/modules/figures/domain/heroes";
 import { createHeroId } from "@/modules/figures/figures.helpers";
+import { heroClassService } from "@/modules/heroClass/heroClass.service";
+import type { HeroClass } from "@/modules/heroClass/heroClass.types";
 import {
 	type MapData,
 	type NodeType,
@@ -22,6 +24,11 @@ export interface WorldState {
 	currentNodeId: string;
 	roster: Hero[];
 	pendingBattleLog: CardLog;
+	pendingPromotion: {
+		heroId: Hero["id"];
+		oldClass: HeroClass;
+		newClass: HeroClass;
+	} | null;
 }
 
 export interface WorldAction {
@@ -37,6 +44,7 @@ export interface WorldAction {
 		oldCardId: Card["id"],
 		newCardId: Card["id"],
 	) => void;
+	clearPromotion: () => void;
 }
 
 export type WorldStoreServerAction = (state: WorldState) => Partial<WorldState>;
@@ -80,6 +88,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 				},
 			],
 			pendingBattleLog: {} as CardLog,
+			pendingPromotion: null,
 
 			setPhase: (phase) => set(worldService.setPhase(phase)),
 			travelToNode: (nodeId, nodeType) =>
@@ -90,6 +99,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 				set(worldService.claimRewardsAndReturnToMap()),
 			evolveCard: (heroId, oldCardId, newCardId) =>
 				set(evolveCard(heroId, oldCardId, newCardId)),
+			clearPromotion: () => set(heroClassService.resolvePendingPromotion()),
 		}),
 		{
 			name: "alpha-world-state",

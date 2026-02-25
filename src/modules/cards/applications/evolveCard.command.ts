@@ -10,7 +10,7 @@ export function evolveCard(
 	oldCardId: Card["id"],
 	newCardId: Card["id"],
 ): WorldStoreServerAction {
-	return ({ roster }) => {
+	return ({ roster, pendingPromotion }) => {
 		const hero = roster.find((hero) => hero.id === heroId);
 		const cardTemplate = cardLibrary.find((card) => card.id === newCardId);
 		if (!hero || !cardTemplate) return {};
@@ -23,14 +23,17 @@ export function evolveCard(
 
 		const newDeck = hero.deck.with(oldCardIndex, newCard);
 		const nextHeroClass = evaluateHeroClass(newDeck, hero.heroClass);
+		const isPromotion = hero.heroClass !== nextHeroClass;
 
 		return {
 			roster: roster.with(heroIndex, {
 				...hero,
-				heroClass: nextHeroClass,
 				deck: newDeck,
 				cards: oldCardId === card1.id ? [newCard, card2] : [card1, newCard],
 			}),
+			pendingPromotion: isPromotion
+				? { heroId: hero.id, oldClass: hero.heroClass, newClass: nextHeroClass }
+				: pendingPromotion,
 		};
 	};
 }
