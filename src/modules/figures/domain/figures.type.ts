@@ -1,3 +1,4 @@
+import type { HeroClass } from "@/modules/heroClass/heroClass.types";
 import type { Attack } from "../../attacks/attacks";
 import type { Card } from "../../cards/domain/cards.type";
 import type { GridPosition } from "../../grid/grid.type";
@@ -10,7 +11,6 @@ export type Figure = {
 	gridPosition: GridPosition;
 };
 
-export type HeroClass = "Squire" | "Knight" | "Thief" | "Mage";
 export type Hero = Figure & {
 	id: string & { readonly __brand: "HeroId" };
 	heroClass: HeroClass;
@@ -22,7 +22,7 @@ export type Hero = Figure & {
 	cards: [Card, Card];
 };
 
-export type EnemyType = "Boss" | "Skeleton" | "Bat" | "Archer";
+export type EnemyType = "BOSS" | "SKELETON" | "BAT" | "ARCHER";
 export type Monster = Figure & {
 	id: string & { readonly __brand: "MonsterId" };
 	enemyType: EnemyType;

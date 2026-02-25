@@ -1,14 +1,19 @@
 import Image from "next/image";
+import type { HeroClass } from "@/modules/heroClass/heroClass.types";
 
 interface HeroPortraitProps {
-	classType: string;
+	classType: HeroClass;
 }
 
-const PORTRAITS: Record<string, string> = {
-	Squire: "/hero_portrait_squire.png",
-	Warrior: "/hero_portrait_warrior.png",
-	Mage: "/hero_portrait_mage.png",
-	Thief: "/hero_portrait_thief.png",
+const PORTRAITS: Record<HeroClass, string> = {
+	SQUIRE: "/portraits/hero_portrait_squire.png",
+	KNIGHT: "/portraits/hero_portrait_knight.png",
+	CRYOMANCER: "/portraits/hero_portrait_cryomancer.png",
+	PYROMANCER: "/portraits/hero_portrait_pyromancer.png",
+	BARBARIAN: "/portraits/hero_portrait_barbarian.png",
+	PALADIN: "/portraits/hero_portrait_paladin.png",
+	CLERIC: "/portraits/hero_portrait_cleric.png",
+	THIEF: "/portraits/hero_portrait_thief.png",
 };
 
 export function HeroPortrait({ classType }: HeroPortraitProps) {

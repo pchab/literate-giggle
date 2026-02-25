@@ -4,7 +4,7 @@ export const squireStats: Omit<
 	Hero,
 	"currentHp" | "id" | "gridPosition" | "cards" | "deck"
 > = {
-	heroClass: "Squire",
+	heroClass: "SQUIRE",
 	maxHp: 10,
 	physAtk: 1,
 	physDef: 1,

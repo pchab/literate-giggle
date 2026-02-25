@@ -5,7 +5,7 @@ export const testBoss: Omit<
 	Monster,
 	"id" | "currentHp" | "gridPosition" | "plannedAttack"
 > = {
-	enemyType: "Boss",
+	enemyType: "BOSS",
 	maxHp: 20,
 	physDef: 1,
 	magDef: 1,

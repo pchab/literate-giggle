@@ -181,7 +181,7 @@ export function BattleGrid() {
 
 				if (
 					isInvalidTarget &&
-					!(canTargetSelf && heroInCell?.id === previewCaster?.id)
+					!canTargetSelf && heroInCell?.id !== previewCaster?.id 
 				) {
 					stateClasses += " cursor-not-allowed opacity-50";
 				}

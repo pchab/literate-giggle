@@ -5,7 +5,7 @@ export const archer: Omit<
 	Monster,
 	"id" | "currentHp" | "gridPosition" | "intent"
 > = {
-	enemyType: "Archer",
+	enemyType: "ARCHER",
 	maxHp: 10,
 	physDef: 0,
 	magDef: 0,

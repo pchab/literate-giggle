@@ -1,6 +1,7 @@
 import { cardLibrary } from "@/modules/cards/domain/cards";
 import type { Card } from "@/modules/cards/domain/cards.type";
 import type { Hero } from "@/modules/figures/domain/figures.type";
+import { evaluateHeroClass } from "@/modules/heroClass/heroClass.helper";
 import type { WorldStoreServerAction } from "@/store/world.store";
 import { cloneCard } from "../cards.helper";
 
@@ -20,10 +21,14 @@ export function evolveCard(
 		const [card1, card2] = hero.cards;
 		const newCard = cloneCard(cardTemplate);
 
+		const newDeck = hero.deck.with(oldCardIndex, newCard);
+		const nextHeroClass = evaluateHeroClass(newDeck, hero.heroClass);
+
 		return {
 			roster: roster.with(heroIndex, {
 				...hero,
-				deck: hero.deck.with(oldCardIndex, newCard),
+				heroClass: nextHeroClass,
+				deck: newDeck,
 				cards: oldCardId === card1.id ? [newCard, card2] : [card1, newCard],
 			}),
 		};

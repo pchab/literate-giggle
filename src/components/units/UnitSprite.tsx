@@ -2,8 +2,8 @@ import { motion } from "motion/react";
 import Image from "next/image";
 import type {
 	EnemyType,
-	HeroClass,
 } from "@/modules/figures/domain/figures.type";
+import type { HeroClass } from "@/modules/heroClass/heroClass.types";
 
 type SpriteType = HeroClass | EnemyType;
 
@@ -16,14 +16,18 @@ interface UnitSpriteProps {
 const UNIT_ASSETS: (stance: number) => Record<SpriteType, string> = (
 	stance,
 ) => ({
-	Squire: `/sprites/squire_${stance}.png`,
-	Knight: `/sprites/warrior_${stance}.png`,
-	Mage: `/sprites/mage_${stance}.png`,
-	Thief: `/sprites/thief_${stance}.png`,
-	Boss: `/sprites/boss_${stance}.png`,
-	Skeleton: `/sprites/skeleton_${stance}.png`,
-	Bat: `/sprites/bat_${stance}.png`,
-	Archer: `/sprites/archer_${stance}.png`,
+	SQUIRE: `/sprites/squire_${stance}.png`,
+	KNIGHT: `/sprites/knight_${stance}.png`,
+	CRYOMANCER: `/sprites/cryomancer_${stance}.png`,
+	PYROMANCER: `/sprites/pyromancer_${stance}.png`,
+	BARBARIAN: `/sprites/barbarian_${stance}.png`,
+	PALADIN: `/sprites/paladin_${stance}.png`,
+	CLERIC: `/sprites/cleric_${stance}.png`,
+	THIEF: `/sprites/thief_${stance}.png`,
+	BOSS: `/sprites/boss_${stance}.png`,
+	SKELETON: `/sprites/skeleton_${stance}.png`,
+	BAT: `/sprites/bat_${stance}.png`,
+	ARCHER: `/sprites/archer_${stance}.png`,
 });
 
 export function UnitSprite({

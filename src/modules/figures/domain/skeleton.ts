@@ -5,7 +5,7 @@ export const skeleton: Omit<
 	Monster,
 	"id" | "currentHp" | "gridPosition" | "plannedAttack"
 > = {
-	enemyType: "Skeleton",
+	enemyType: "SKELETON",
 	maxHp: 10,
 	physDef: 0,
 	magDef: 0,

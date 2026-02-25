@@ -5,7 +5,7 @@ export const bat: Omit<
 	Monster,
 	"id" | "currentHp" | "gridPosition" | "plannedAttack"
 > = {
-	enemyType: "Bat",
+	enemyType: "BAT",
 	maxHp: 6,
 	physDef: 0,
 	magDef: 0,
