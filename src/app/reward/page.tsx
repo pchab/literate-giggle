@@ -21,7 +21,7 @@ export default function RewardScreen() {
 
 	// Track which cards have been evolved during this screen so we can show a success message
 	const [evolvedCards, setEvolvedCards] = useState<
-		Record<Card["id"], Card["id"]>
+		Record<string, Card["id"]> // key is "heroId-cardId"
 	>({});
 
 	// Controls the modal state
@@ -30,7 +30,7 @@ export default function RewardScreen() {
 		cardId: Card["id"];
 	} | null>(null);
 
-	if (!pendingBattleLog) {
+	if (Object.keys(pendingBattleLog).length === 0) {
 		redirect("/");
 	}
 
@@ -40,7 +40,7 @@ export default function RewardScreen() {
 		newCardId: Card["id"],
 	) => {
 		evolveCard(heroId, oldCardId, newCardId); // Update the store
-		setEvolvedCards((prev) => ({ ...prev, [oldCardId]: newCardId })); // Update local visual state
+		setEvolvedCards((prev) => ({ ...prev, [`${heroId}-${oldCardId}`]: newCardId })); // Update local visual state
 		setEvolutionModal(null); // Close modal
 	};
 
@@ -95,7 +95,7 @@ export default function RewardScreen() {
 											100,
 										);
 										const isMaxed = endPercent >= 100;
-										const hasEvolved = !!evolvedCards[card.id];
+										const hasEvolved = !!evolvedCards[`${heroId}-${card.id}`];
 
 										return (
 											<div key={card.id} className="flex items-center gap-6">
@@ -166,7 +166,7 @@ export default function RewardScreen() {
 																{
 																	cardLibrary.find(
 																		({ id: cardId }) =>
-																			evolvedCards[card.id] === cardId,
+																			evolvedCards[`${heroId}-${card.id}`] === cardId,
 																	)?.name
 																}
 															</m.span>

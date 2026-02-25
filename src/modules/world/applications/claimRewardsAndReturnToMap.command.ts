@@ -21,7 +21,7 @@ export function claimRewardsAndReturnToMap(): WorldStoreServerAction {
 
 		return {
 			roster: newRoster,
-			pendingBattleLog: null,
+			pendingBattleLog: {},
 			phase: "MAP",
 		};
 	};

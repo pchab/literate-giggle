@@ -69,6 +69,7 @@ export function BattleGrid() {
 	let isTargetingEnemy = false;
 	let isTargetingAlly = false;
 	let isTargetingEmpty = false;
+	let canTargetSelf = false;
 
 	// A helper to figure out the active card or hovered card
 	const cardToPreview =
@@ -84,20 +85,25 @@ export function BattleGrid() {
 	if (cardToPreview && previewCaster) {
 		const req = cardToPreview.playRequirement;
 		isTargetingEnemy = req === "requires_enemy";
-		isTargetingAlly = req === "requires_ally";
-		isTargetingEmpty = req === "requires_empty_cell";
+		isTargetingAlly =
+			req === "requires_ally" || req === "requires_ally_or_self";
+		isTargetingEmpty =
+			req === "requires_empty_cell" || req === "requires_empty_cell_or_self";
+		canTargetSelf =
+			req === "requires_ally_or_self" || req === "requires_empty_cell_or_self";
 
 		if (isTargetingEmpty) {
 			validTargetCells = calculateReachableCells(
 				previewCaster.gridPosition,
 				cardToPreview.range,
 				monsters,
+				canTargetSelf,
 			);
 		} else {
-			// Ranged attacks/heals/buffs
 			validTargetCells = calculateAttackableCells(
 				previewCaster.gridPosition,
 				cardToPreview.range,
+				canTargetSelf,
 			);
 		}
 	}
@@ -173,7 +179,10 @@ export function BattleGrid() {
 						(isTargetingEnemy && !enemyInCell) ||
 						(isTargetingAlly && !heroInCell));
 
-				if (isInvalidTarget) {
+				if (
+					isInvalidTarget &&
+					!(canTargetSelf && heroInCell?.id === previewCaster?.id)
+				) {
 					stateClasses += " cursor-not-allowed opacity-50";
 				}
 
@@ -187,9 +196,7 @@ export function BattleGrid() {
 							key={cell.id}
 							className={`${baseClasses} ${stateClasses}`}
 							onClick={() => {
-								console.log({ activeCard, inRange, isTargetingEmpty });
 								if (activeCard && inRange && isTargetingEmpty) {
-									console.log("here");
 									// Pass the coordinate string for empty cell targeting (like movement)
 									resolveCard(cell);
 								}
@@ -231,6 +238,13 @@ export function BattleGrid() {
 						className={`${baseClasses} ${stateClasses} ${heroInCell ? "hover:brightness-110" : ""}`}
 						onClick={() => {
 							if (activeCard && inRange && isTargetingAlly && heroInCell) {
+								resolveCard(heroInCell.id);
+							}
+							if (
+								heroInCell &&
+								canTargetSelf &&
+								heroInCell.id === previewCaster?.id
+							) {
 								resolveCard(heroInCell.id);
 							}
 						}}

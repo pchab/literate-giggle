@@ -1,13 +1,14 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { evolveCard } from "@/modules/cards/applications/evolveCard.command";
+import { cloneCard } from "@/modules/cards/cards.helper";
 import { cardLibrary, initialDeck } from "@/modules/cards/domain/cards";
 import type { Card, CardLog } from "@/modules/cards/domain/cards.type";
 import type { Hero } from "@/modules/figures/domain/figures.type";
 import { squireStats } from "@/modules/figures/domain/heroes";
 import { createHeroId } from "@/modules/figures/figures.helpers";
 import {
-	type MapTier,
+	type MapData,
 	type NodeType,
 	PROTOTYPE_MAP,
 } from "@/modules/map/map.model";
@@ -17,10 +18,10 @@ export type GamePhase = "CAMP" | "MAP" | "BATTLE" | "REWARD";
 
 export interface WorldState {
 	phase: GamePhase;
-	mapData: MapTier[];
+	mapData: MapData;
 	currentNodeId: string;
 	roster: Hero[];
-	pendingBattleLog: CardLog | null;
+	pendingBattleLog: CardLog;
 }
 
 export interface WorldAction {
@@ -45,7 +46,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 		(set) => ({
 			phase: "MAP",
 			mapData: PROTOTYPE_MAP,
-			currentNodeId: "start",
+			currentNodeId: "start_town",
 			roster: [
 				{
 					id: createHeroId(1),
@@ -55,7 +56,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 					currentMagBlock: 0,
 					gridPosition: { row: 0, col: 0 },
 					deck: initialDeck,
-					cards: [cardLibrary[0], cardLibrary[1]],
+					cards: [cloneCard(cardLibrary[0]), cloneCard(cardLibrary[1])],
 				},
 				{
 					id: createHeroId(2),
@@ -65,7 +66,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 					currentMagBlock: 0,
 					gridPosition: { row: 0, col: 1 },
 					deck: initialDeck,
-					cards: [cardLibrary[2], cardLibrary[3]],
+					cards: [cloneCard(cardLibrary[2]), cloneCard(cardLibrary[3])],
 				},
 				{
 					id: createHeroId(3),
@@ -75,10 +76,10 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 					currentMagBlock: 0,
 					gridPosition: { row: 1, col: 0 },
 					deck: initialDeck,
-					cards: [cardLibrary[1], cardLibrary[4]],
+					cards: [cloneCard(cardLibrary[1]), cloneCard(cardLibrary[4])],
 				},
 			],
-			pendingBattleLog: {} as CardLog | null,
+			pendingBattleLog: {} as CardLog,
 
 			setPhase: (phase) => set(worldService.setPhase(phase)),
 			travelToNode: (nodeId, nodeType) =>

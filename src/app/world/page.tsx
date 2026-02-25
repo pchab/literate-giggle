@@ -1,7 +1,7 @@
 "use client";
 
 import { redirect } from "next/navigation";
-import MapScreen from "@/components/MapScreen";
+import WorldMap from "@/components/WorldMap";
 import { useBattleStore } from "@/store/battle.store";
 import { useWorldStore } from "@/store/world.store";
 
@@ -14,5 +14,5 @@ export default function WorldScreen() {
 		redirect("/");
 	}
 
-	return <MapScreen />;
+	return <WorldMap />;
 }

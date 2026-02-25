@@ -1,8 +1,12 @@
 import type { Card } from "./cards.type";
 
+function createCardId(id: string): Card["id"] {
+	return `card-${id}` as Card["id"];
+}
+
 export const cardLibrary: Card[] = [
 	{
-		id: 1,
+		id: createCardId("1"),
 		name: "Short Sword",
 		playRequirement: "requires_enemy",
 		range: 2,
@@ -15,13 +19,13 @@ export const cardLibrary: Card[] = [
 			},
 		],
 		xp: 0,
-		evolutions: [6, 7],
+		evolutions: [createCardId("6"), createCardId("7")],
 	},
 
 	{
-		id: 2,
+		id: createCardId("2"),
 		name: "Wooden Shield",
-		playRequirement: "requires_empty_cell",
+		playRequirement: "requires_empty_cell_or_self",
 		range: 2,
 		effects: [
 			{
@@ -36,11 +40,11 @@ export const cardLibrary: Card[] = [
 			},
 		],
 		xp: 0,
-		evolutions: [8, 9],
+		evolutions: [createCardId("8"), createCardId("9")],
 	},
 
 	{
-		id: 3,
+		id: createCardId("3"),
 		name: "Arcane Bolt",
 		playRequirement: "requires_enemy",
 		range: 2,
@@ -53,13 +57,13 @@ export const cardLibrary: Card[] = [
 			},
 		],
 		xp: 0,
-		evolutions: [10, 11],
+		evolutions: [createCardId("10"), createCardId("11")],
 	},
 
 	{
-		id: 4,
+		id: createCardId("4"),
 		name: "Arcane Shield",
-		playRequirement: "requires_empty_cell",
+		playRequirement: "requires_empty_cell_or_self",
 		range: 2,
 		effects: [
 			{
@@ -74,11 +78,11 @@ export const cardLibrary: Card[] = [
 			},
 		],
 		xp: 0,
-		evolutions: [12, 13],
+		evolutions: [createCardId("12"), createCardId("13")],
 	},
 
 	{
-		id: 5,
+		id: createCardId("5"),
 		name: "Bandage",
 		playRequirement: "no_target",
 		range: 2,
@@ -90,12 +94,12 @@ export const cardLibrary: Card[] = [
 			},
 		],
 		xp: 0,
-		evolutions: [14, 15],
+		evolutions: [createCardId("14"), createCardId("15")],
 	},
 
 	// TIER 2 cards
 	{
-		id: 6,
+		id: createCardId("6"),
 		name: "Long Sword",
 		playRequirement: "requires_enemy",
 		range: 2,
@@ -112,7 +116,7 @@ export const cardLibrary: Card[] = [
 	},
 
 	{
-		id: 7,
+		id: createCardId("7"),
 		name: "Battle Axe",
 		playRequirement: "requires_enemy",
 		range: 2,
@@ -129,9 +133,9 @@ export const cardLibrary: Card[] = [
 	},
 
 	{
-		id: 8,
+		id: createCardId("8"),
 		name: "Steel Shield",
-		playRequirement: "requires_empty_cell",
+		playRequirement: "requires_empty_cell_or_self",
 		range: 2,
 		effects: [
 			{
@@ -150,9 +154,9 @@ export const cardLibrary: Card[] = [
 	},
 
 	{
-		id: 9,
+		id: createCardId("9"),
 		name: "Heavy Shield",
-		playRequirement: "requires_empty_cell",
+		playRequirement: "requires_empty_cell_or_self",
 		range: 1,
 		effects: [
 			{
@@ -171,7 +175,7 @@ export const cardLibrary: Card[] = [
 	},
 
 	{
-		id: 10,
+		id: createCardId("10"),
 		name: "Fireball",
 		playRequirement: "requires_enemy",
 		range: 2,
@@ -188,7 +192,7 @@ export const cardLibrary: Card[] = [
 	},
 
 	{
-		id: 11,
+		id: createCardId("11"),
 		name: "Ice Shard",
 		playRequirement: "requires_enemy",
 		range: 2,
@@ -205,11 +209,15 @@ export const cardLibrary: Card[] = [
 	},
 
 	{
-		id: 12,
+		id: createCardId("12"),
 		name: "Fire Shield",
-		playRequirement: "no_target",
+		playRequirement: "requires_empty_cell_or_self",
 		range: 2,
 		effects: [
+			{
+				type: "move",
+				target: "self",
+			},
 			{
 				type: "block",
 				amount: 4,
@@ -222,7 +230,7 @@ export const cardLibrary: Card[] = [
 	},
 
 	{
-		id: 13,
+		id: createCardId("13"),
 		name: "Ice Wall",
 		playRequirement: "requires_empty_cell",
 		range: 2,
@@ -239,9 +247,9 @@ export const cardLibrary: Card[] = [
 	},
 
 	{
-		id: 14,
+		id: createCardId("14"),
 		name: "Healing Orb",
-		playRequirement: "requires_ally",
+		playRequirement: "requires_ally_or_self",
 		range: 2,
 		effects: [
 			{
@@ -255,9 +263,9 @@ export const cardLibrary: Card[] = [
 	},
 
 	{
-		id: 15,
+		id: createCardId("15"),
 		name: "Regen",
-		playRequirement: "requires_ally",
+		playRequirement: "requires_ally_or_self",
 		range: 2,
 		effects: [
 			{

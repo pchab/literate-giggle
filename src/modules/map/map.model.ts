@@ -1,48 +1,44 @@
-export type NodeType = "battle" | "elite" | "camp" | "boss" | "event";
+export type NodeType = "TOWN" | "BATTLE" | "CAMP" | "EVENT";
 
 export interface MapNode {
 	id: string;
-	type: NodeType;
 	name: string;
-	nextNodes: string[]; // IDs of nodes you can travel to from here
+	type: NodeType;
+	position: { x: number; y: number }; // CSS percentages (0-100)
+	connectedNodeIds: string[];
+	isCompleted?: boolean; // Useful so they don't replay the same battle infinitely
 }
 
-export interface MapTier {
-	tier: number;
-	nodes: MapNode[];
-}
+export type MapData = Record<string, MapNode>;
 
-// A simple hardcoded prototype map
-export const PROTOTYPE_MAP: MapTier[] = [
-	{
-		tier: 0,
-		nodes: [
-			{
-				id: "start",
-				type: "camp",
-				name: "Safe Haven",
-				nextNodes: ["b1", "b2"],
-			},
-		],
+// A simple starting layout with backtracking!
+export const PROTOTYPE_MAP: MapData = {
+	start_town: {
+		id: "start_town",
+		name: "Oakhaven Village",
+		type: "TOWN",
+		position: { x: 50, y: 85 }, // Bottom center
+		connectedNodeIds: ["crossroads"],
 	},
-	{
-		tier: 1,
-		nodes: [
-			{ id: "b1", type: "battle", name: "Dark Woods", nextNodes: ["c1"] },
-			{ id: "b2", type: "battle", name: "Swamp Edge", nextNodes: ["c1", "e1"] },
-		],
+	crossroads: {
+		id: "crossroads",
+		name: "The King's Road",
+		type: "BATTLE",
+		position: { x: 50, y: 60 },
+		connectedNodeIds: ["start_town", "ruined_tower", "dark_forest"],
 	},
-	{
-		tier: 2,
-		nodes: [
-			{ id: "c1", type: "camp", name: "Ruined Shrine", nextNodes: ["boss1"] },
-			{ id: "e1", type: "elite", name: "Crypt Entrance", nextNodes: ["boss1"] },
-		],
+	ruined_tower: {
+		id: "ruined_tower",
+		name: "Ruined Tower",
+		type: "CAMP",
+		position: { x: 30, y: 40 },
+		connectedNodeIds: ["crossroads"],
 	},
-	{
-		tier: 3,
-		nodes: [
-			{ id: "boss1", type: "boss", name: "The Bone King", nextNodes: [] },
-		],
+	dark_forest: {
+		id: "dark_forest",
+		name: "Deep Dark Forest",
+		type: "BATTLE",
+		position: { x: 70, y: 40 },
+		connectedNodeIds: ["crossroads"],
 	},
-];
+};

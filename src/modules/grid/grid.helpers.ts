@@ -38,6 +38,7 @@ export const calculateReachableCells = (
 	startPos: GridPosition,
 	moveValue: number,
 	figures: (Hero | Monster)[],
+	canTargetSelf: boolean = false,
 ): GridPosition[] => {
 	if (moveValue <= 0) return [];
 
@@ -48,7 +49,7 @@ export const calculateReachableCells = (
 	const startKey = `${startPos.row},${startPos.col}`;
 	visited.add(startKey);
 
-	const reachable: GridPosition[] = [];
+	const reachable: GridPosition[] = canTargetSelf ? [startPos] : [];
 
 	while (queue.length > 0) {
 		const current = queue.shift();
@@ -86,6 +87,7 @@ export const calculateReachableCells = (
 export const calculateAttackableCells = (
 	startPos: GridPosition,
 	rangeValue: number,
+	canTargetSelf: boolean = false,
 ): GridPosition[] => {
 	const attackable: GridPosition[] = [];
 	for (let row = 0; row < GRID_BOUNDS.rows; row++) {
@@ -93,7 +95,7 @@ export const calculateAttackableCells = (
 			const pos = { row, col };
 			if (
 				getManhattanDistance(startPos, pos) <= rangeValue &&
-				getManhattanDistance(startPos, pos) > 0
+				(canTargetSelf || getManhattanDistance(startPos, pos) > 0)
 			) {
 				attackable.push(pos);
 			}

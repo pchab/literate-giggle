@@ -1,5 +1,9 @@
 import type { Hero, Monster } from "../figures/domain/figures.type";
-import type { CardEffect } from "./domain/cards.type";
+import type { Card, CardEffect } from "./domain/cards.type";
+
+export function cloneCard(card: Card): Card {
+	return Object.assign({}, card);
+}
 
 export function applyEffectToHero(hero: Hero, effect: CardEffect): Hero {
 	if (effect.type === "heal") {
