@@ -15,34 +15,76 @@ export type MapData = Record<string, MapNode>;
 
 // A simple starting layout with backtracking!
 export const PROTOTYPE_MAP: MapData = {
-	start_town: {
-		id: "start_town",
-		name: "Oakhaven Village",
+	ironhold_city: {
+		id: "ironhold_city",
+		name: "Ironhold",
 		type: "TOWN",
-		position: { x: 50, y: 85 }, // Bottom center
-		connectedNodeIds: ["crossroads"],
+		position: { x: 58, y: 45 },
+		connectedNodeIds: ["crossroads", "dark_forest", "northern_road"],
 	},
 	crossroads: {
 		id: "crossroads",
 		name: "The King's Road",
 		type: "BATTLE",
-		position: { x: 50, y: 60 },
-		connectedNodeIds: ["start_town", "ruined_tower", "dark_forest"],
+		position: { x: 62, y: 60 },
+		connectedNodeIds: [
+			"ironhold_city",
+			"wizard_tower",
+			"dark_forest",
+			"desert_ruins",
+		],
 		encounterId: createEncounterId("tutorial_fight"),
 	},
-	ruined_tower: {
-		id: "ruined_tower",
-		name: "Ruined Tower",
+	wizard_tower: {
+		id: "wizard_tower",
+		name: "Wizard Tower",
 		type: "CAMP",
-		position: { x: 30, y: 40 },
-		connectedNodeIds: ["crossroads"],
+		position: { x: 70, y: 64 },
+		connectedNodeIds: ["crossroads", "port_city"],
 	},
 	dark_forest: {
 		id: "dark_forest",
 		name: "Deep Dark Forest",
 		type: "BATTLE",
-		position: { x: 70, y: 40 },
-		connectedNodeIds: ["crossroads"],
-		encounterId: createEncounterId("forest_ambush"),
+		position: { x: 50, y: 56 },
+		connectedNodeIds: ["crossroads", "ironhold_city", "cromee_town"],
+		encounterId: createEncounterId("bat_swarm"),
+	},
+	port_city: {
+		id: "port_city",
+		name: "Port City",
+		type: "TOWN",
+		position: { x: 80, y: 70 },
+		connectedNodeIds: ["wizard_tower"],
+	},
+	desert_ruins: {
+		id: "desert_ruins",
+		name: "Desert Ruins",
+		type: "BATTLE",
+		position: { x: 52, y: 80 },
+		connectedNodeIds: ["crossroads", "cromee_town"],
+		encounterId: createEncounterId("skeleton_horde"),
+	},
+	cromee_town: {
+		id: "cromee_town",
+		name: "Cromee Town",
+		type: "TOWN",
+		position: { x: 49, y: 67 },
+		connectedNodeIds: ["desert_ruins", "dark_forest"],
+	},
+	northern_road: {
+		id: "northern_road",
+		name: "Northern Road",
+		type: "BATTLE",
+		position: { x: 67, y: 35 },
+		connectedNodeIds: ["ironhold_city"],
+		encounterId: createEncounterId("cultists_ambush"),
+	},
+	connury_town: {
+		id: "connury_town",
+		name: "Connury Town",
+		type: "TOWN",
+		position: { x: 75, y: 24 },
+		connectedNodeIds: ["northern_road"],
 	},
 };

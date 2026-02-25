@@ -46,7 +46,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 		(set) => ({
 			phase: "MAP",
 			mapData: PROTOTYPE_MAP,
-			currentNodeId: "start_town",
+			currentNodeId: "ironhold_city",
 			roster: [
 				{
 					id: createHeroId(1),

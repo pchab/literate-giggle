@@ -6,7 +6,7 @@ export const bat: Omit<
 	"id" | "currentHp" | "gridPosition" | "plannedAttack"
 > = {
 	enemyType: "Bat",
-	maxHp: 10,
+	maxHp: 6,
 	physDef: 0,
 	magDef: 0,
 	attacks: [
@@ -14,7 +14,7 @@ export const bat: Omit<
 			id: 1,
 			target: "lowestHp",
 			pattern: singleTargetPattern,
-			move: 3,
+			move: 4,
 			damage: 2,
 			minRange: 1,
 			maxRange: 1,
@@ -24,8 +24,8 @@ export const bat: Omit<
 			id: 2,
 			target: "lowestPhysDef",
 			pattern: singleTargetPattern,
-			move: 2,
-			damage: 3,
+			move: 4,
+			damage: 2,
 			minRange: 1,
 			maxRange: 1,
 			effect: "physDmg",
