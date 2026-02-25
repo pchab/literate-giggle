@@ -3,7 +3,7 @@
 import { AnimatePresence, domAnimation, LazyMotion, m } from "framer-motion";
 import { redirect } from "next/navigation";
 import { useState } from "react";
-import { CardComponent } from "@/components/Card";
+import { CardComponent } from "@/components/cards/Card";
 import { cardLibrary } from "@/modules/cards/domain/cards";
 import type { Card } from "@/modules/cards/domain/cards.type";
 import type { Hero } from "@/modules/figures/domain/figures.type";

@@ -1,7 +1,26 @@
 "use client";
 
+import { motion } from "motion/react";
+import Image from "next/image";
 import { useShallow } from "zustand/shallow";
 import { useWorldStore } from "@/store/world.store";
+
+// Helper mappings for visuals
+const NODE_ICONS = {
+	TOWN: "🏰",
+	BATTLE: "⚔️",
+	CAMP: "⛺",
+	EVENT: "❓",
+};
+
+const NODE_STYLES = {
+	TOWN: "bg-gradient-to-br from-blue-600 to-blue-800 border-blue-400 text-blue-100",
+	BATTLE:
+		"bg-gradient-to-br from-red-600 to-red-800 border-red-400 text-red-100",
+	CAMP: "bg-gradient-to-br from-green-600 to-green-800 border-green-400 text-green-100",
+	EVENT:
+		"bg-gradient-to-br from-purple-600 to-purple-800 border-purple-400 text-purple-100",
+};
 
 export default function WorldMap() {
 	const { mapData, currentNodeId, travelToNode } = useWorldStore(
@@ -15,24 +34,27 @@ export default function WorldMap() {
 	const nodes = Object.values(mapData);
 	const currentNode = mapData[currentNodeId];
 
-	// Helper colors for the node types
-	const nodeColors = {
-		TOWN: "bg-blue-500",
-		BATTLE: "bg-red-500",
-		CAMP: "bg-green-500",
-		EVENT: "bg-purple-500",
-	};
-
 	return (
-		<div className="relative w-full max-w-4xl h-[600px] bg-zinc-950 border-2 border-zinc-800 rounded-xl overflow-hidden shadow-2xl">
-			{/* 1. SVG LAYER: Draw the lines between connected nodes */}
-			<svg className="absolute inset-0 w-full h-full pointer-events-none">
-				<title>Connecting lines</title>
+		<div className="relative w-full h-full bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl overflow-hidden group/map">
+			{/* 1. The New Fantasy Map Background */}
+			<Image
+				src="/world_map.jpg"
+				alt="Fantasy World Map"
+				fill
+				className="object-cover object-center pointer-events-none z-0 opacity-80"
+				quality={100}
+			/>
+
+			{/* Optional: A slight vignette/darkening overlay so your bright node buttons still pop perfectly */}
+			<div className="absolute inset-0 bg-zinc-950/30 shadow-[inset_0_0_100px_rgba(0,0,0,0.8)] pointer-events-none z-0" />
+
+			{/* 2. SVG LAYER: Animated connecting paths */}
+			<svg className="absolute inset-0 w-full h-full pointer-events-none z-10">
+				<title>connections</title>
 				{nodes.map((node) =>
 					node.connectedNodeIds.map((targetId) => {
 						const targetNode = mapData[targetId];
-						// Only draw lines in one direction to prevent double-drawing
-						if (node.id > targetId) return null;
+						if (node.id > targetId) return null; // Prevent double-drawing
 
 						const isTravelable =
 							(node.id === currentNodeId &&
@@ -41,55 +63,116 @@ export default function WorldMap() {
 								currentNode.connectedNodeIds.includes(node.id));
 
 						return (
-							<line
+							<motion.line
 								key={`${node.id}-${targetId}`}
 								x1={`${node.position.x}%`}
 								y1={`${node.position.y}%`}
 								x2={`${targetNode.position.x}%`}
 								y2={`${targetNode.position.y}%`}
-								stroke={isTravelable ? "#71717a" : "#27272a"} // Brighter line if you can walk it
-								strokeWidth={isTravelable ? "4" : "2"}
-								strokeDasharray="6 6"
+								stroke={isTravelable ? "#d4d4d8" : "#3f3f46"}
+								strokeWidth={isTravelable ? "3" : "2"}
+								strokeDasharray="8 8"
+								// The Magic: If travelable, animate the dashes to create a "flowing" effect!
+								animate={isTravelable ? { strokeDashoffset: [0, -16] } : {}}
+								transition={
+									isTravelable
+										? { repeat: Infinity, duration: 1, ease: "linear" }
+										: {}
+								}
+								className={
+									isTravelable
+										? "drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]"
+										: ""
+								}
 							/>
 						);
 					}),
 				)}
 			</svg>
 
-			{/* 2. HTML LAYER: Render the clickable locations */}
+			{/* 3. HTML LAYER: Render the clickable locations */}
 			{nodes.map((node) => {
 				const isCurrentNode = node.id === currentNodeId;
 				const isReachable = currentNode.connectedNodeIds.includes(node.id);
+				const isLocked = !isReachable && !isCurrentNode;
 
 				return (
 					<div
 						key={node.id}
-						className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group"
+						className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-20"
 						style={{ left: `${node.position.x}%`, top: `${node.position.y}%` }}
 					>
-						{/* Node Label */}
-						<span className="mb-2 px-2 py-1 text-xs font-bold text-zinc-300 bg-zinc-900/80 rounded border border-zinc-700 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-							{node.name}
-						</span>
+						{/* The Node Button */}
+						<div className="relative group">
+							{/* "You Are Here" Pulsing Ring */}
+							{isCurrentNode && (
+								<motion.div
+									className="absolute -inset-3 rounded-full border-2 border-white/50 pointer-events-none"
+									animate={{ scale: [1, 1.5], opacity: [0.8, 0] }}
+									transition={{
+										repeat: Infinity,
+										duration: 2,
+										ease: "easeOut",
+									}}
+								/>
+							)}
 
-						{/* Node Button */}
-						<button
-							type="button"
-							onClick={() => {
-								if (isReachable) travelToNode(node.id, node.type);
-							}}
-							disabled={!isReachable && !isCurrentNode}
-							className={`
-                                w-8 h-8 rounded-full border-2 transition-all duration-300 z-10
-                                ${nodeColors[node.type]}
-                                ${isCurrentNode ? "ring-4 ring-white border-white scale-125 shadow-[0_0_15px_rgba(255,255,255,0.5)]" : ""}
-                                ${isReachable ? "cursor-pointer hover:scale-110 border-zinc-300 shadow-[0_0_10px_rgba(255,255,255,0.2)]" : ""}
-                                ${!isReachable && !isCurrentNode ? "opacity-40 grayscale cursor-not-allowed border-zinc-700" : ""}
+							<motion.button
+								type="button"
+								onClick={() => {
+									if (isReachable) travelToNode(node.id, node.type);
+								}}
+								disabled={isLocked}
+								whileHover={isReachable ? { scale: 1.15 } : {}}
+								whileTap={isReachable ? { scale: 0.95 } : {}}
+								className={`
+                                    flex items-center justify-center w-10 h-10 rounded-full border-2 shadow-lg transition-all
+                                    ${NODE_STYLES[node.type]}
+                                    ${isCurrentNode ? "ring-4 ring-white/30 border-white scale-110 shadow-[0_0_20px_rgba(255,255,255,0.4)]" : ""}
+                                    ${isReachable ? "cursor-pointer hover:border-white shadow-[0_0_15px_rgba(255,255,255,0.1)]" : ""}
+                                    ${isLocked ? "opacity-40 grayscale-[80%] cursor-not-allowed border-zinc-700 shadow-none" : ""}
+                                `}
+							>
+								<span className="text-lg drop-shadow-md">
+									{NODE_ICONS[node.type]}
+								</span>
+							</motion.button>
+
+							{/* Node Tooltip (Fades in on hover) */}
+							<div
+								className={`
+                                absolute bottom-[120%] left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 
+                                bg-zinc-900 border border-zinc-700 rounded-md shadow-xl
+                                opacity-0 group-hover:opacity-100 transition-opacity duration-200 
+                                pointer-events-none whitespace-nowrap z-50 flex flex-col items-center
+                                ${isLocked ? "hidden" : "block"}
                             `}
-						/>
+							>
+								<span className="text-sm font-bold text-zinc-100">
+									{node.name}
+								</span>
+								{isReachable && (
+									<span className="text-[10px] text-zinc-400 uppercase tracking-wider mt-0.5">
+										Click to Travel
+									</span>
+								)}
+							</div>
+						</div>
 					</div>
 				);
 			})}
+
+			{/* Map Legend / HUD (Optional bottom-left corner overlay) */}
+			<div className="absolute bottom-4 left-4 bg-zinc-950/80 border border-zinc-800 p-3 rounded-lg backdrop-blur-sm z-30 pointer-events-none">
+				<h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">
+					Legend
+				</h4>
+				<div className="flex gap-3 text-xs text-zinc-300">
+					<span className="flex items-center gap-1">🏰 Town</span>
+					<span className="flex items-center gap-1">⚔️ Battle</span>
+					<span className="flex items-center gap-1">⛺ Camp</span>
+				</div>
+			</div>
 		</div>
 	);
 }
