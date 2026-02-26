@@ -27,7 +27,9 @@ export function initBattle(
 			monsters: freshMonsters,
 			enemyIntents: initialIntents,
 			activeCard: null,
+			activeMoveHeroId: null,
 			usedCardsThisTurn: {},
+			usedMovesThisTurn: {},
 			cardUsageLog: {},
 			hoveredCard: null,
 		};

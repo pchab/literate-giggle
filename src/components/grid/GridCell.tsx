@@ -28,7 +28,7 @@ interface GridCellProps {
 	onMoveHero: (target: GridPosition) => void;
 	onSelectForMove: (heroId: Hero["id"] | null) => void;
 	activeMoveHeroId?: Hero["id"] | null;
-    hasMoved: boolean;
+	hasMoved: boolean;
 }
 
 export function GridCell({
@@ -50,7 +50,7 @@ export function GridCell({
 	onMoveHero,
 	onSelectForMove,
 	activeMoveHeroId,
-    hasMoved,
+	hasMoved,
 }: GridCellProps) {
 	const isCellEmpty = !enemyInCell && !heroInCell && !summonInCell;
 	const isHoveredHero = hoveredHeroId && heroInCell?.id === hoveredHeroId;

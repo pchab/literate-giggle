@@ -4,27 +4,20 @@ import { AnimatePresence, domAnimation, LazyMotion, m } from "framer-motion";
 import { redirect } from "next/navigation";
 import { useState } from "react";
 import { CardComponent } from "@/components/cards/Card";
-import { cardLibrary } from "@/modules/cards/domain/cards";
+import { formatCardEffect } from "@/modules/cards/cards.helper";
+import { cardLibrary } from "@/modules/cards/domain/cards.data";
 import type { Card } from "@/modules/cards/domain/cards.type";
 import type { Hero } from "@/modules/figures/domain/figures.type";
 import { useWorldStore } from "@/store/world.store";
-
-const MAX_XP = 2;
 
 export default function RewardScreen() {
 	const { roster, pendingBattleLog, claimRewardsAndReturnToMap, evolveCard } =
 		useWorldStore();
 
-	// Take a snapshot of the roster on mount so the UI doesn't visually break
-	// when a card is removed from the store's deck during evolution.
 	const [initialRoster] = useState(roster);
-
-	// Track which cards have been evolved during this screen so we can show a success message
-	const [evolvedCards, setEvolvedCards] = useState<
-		Record<string, Card["id"]> // key is "heroId-cardId"
-	>({});
-
-	// Controls the modal state
+	const [evolvedCards, setEvolvedCards] = useState<Record<string, Card["id"]>>(
+		{},
+	);
 	const [evolutionModal, setEvolutionModal] = useState<{
 		heroId: Hero["id"];
 		cardId: Card["id"];
@@ -39,12 +32,12 @@ export default function RewardScreen() {
 		oldCardId: Card["id"],
 		newCardId: Card["id"],
 	) => {
-		evolveCard(heroId, oldCardId, newCardId); // Update the store
+		evolveCard(heroId, oldCardId, newCardId);
 		setEvolvedCards((prev) => ({
 			...prev,
 			[`${heroId}-${oldCardId}`]: newCardId,
-		})); // Update local visual state
-		setEvolutionModal(null); // Close modal
+		}));
+		setEvolutionModal(null);
 	};
 
 	return (
@@ -78,7 +71,7 @@ export default function RewardScreen() {
 								initial={{ opacity: 0, scale: 0.95 }}
 								animate={{ opacity: 1, scale: 1 }}
 								transition={{ duration: 0.4 }}
-								className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-6 shadow-2xl relative overflow-hidden"
+								className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-6 shadow-2xl relative overflow-hidden flex-1"
 							>
 								<div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-900 to-transparent opacity-50" />
 
@@ -89,25 +82,26 @@ export default function RewardScreen() {
 								<div className="flex flex-col gap-6">
 									{cardsUsed.map((card, index) => {
 										const xpGained = pendingBattleLog[heroId][card.id];
+										// Use dynamic maxXp!
+										const targetMaxXp = card.maxXp || 1;
+
 										const startPercent = Math.min(
-											(card.xp / MAX_XP) * 100,
+											(card.xp / targetMaxXp) * 100,
 											100,
 										);
 										const endPercent = Math.min(
-											((card.xp + xpGained) / MAX_XP) * 100,
+											((card.xp + xpGained) / targetMaxXp) * 100,
 											100,
 										);
-										const isMaxed = endPercent >= 100;
+										const isMaxed = card.xp + xpGained >= targetMaxXp;
 										const hasEvolved = !!evolvedCards[`${heroId}-${card.id}`];
 
 										return (
 											<div key={card.id} className="flex items-center gap-6">
-												{/* Card Thumbnail */}
 												<div className="w-20 shrink-0 transform hover:scale-105 transition-transform">
 													<CardComponent {...card} />
 												</div>
 
-												{/* XP Details */}
 												<div className="flex-1 flex flex-col gap-2">
 													<div className="flex justify-between items-end">
 														<span className="font-bold text-slate-200">
@@ -118,7 +112,6 @@ export default function RewardScreen() {
 														</span>
 													</div>
 
-													{/* The Progress Bar Container */}
 													<div className="h-3 w-full bg-slate-950 rounded-full border border-slate-800 relative overflow-hidden shadow-inner">
 														<div
 															className="absolute top-0 left-0 h-full bg-cyan-950"
@@ -139,10 +132,10 @@ export default function RewardScreen() {
 														/>
 													</div>
 
-													{/* Evolution Logic & Status */}
 													<div className="flex justify-between items-center text-xs font-mono text-slate-500 h-6">
 														<span>
-															{isMaxed ? MAX_XP : card.xp + xpGained} / {MAX_XP}
+															{isMaxed ? targetMaxXp : card.xp + xpGained} /{" "}
+															{targetMaxXp}
 														</span>
 
 														{isMaxed && !hasEvolved && (
@@ -167,11 +160,9 @@ export default function RewardScreen() {
 															>
 																Evolved:{" "}
 																{
-																	cardLibrary.find(
-																		({ id: cardId }) =>
-																			evolvedCards[`${heroId}-${card.id}`] ===
-																			cardId,
-																	)?.name
+																	cardLibrary[
+																		evolvedCards[`${heroId}-${card.id}`]
+																	]?.name
 																}
 															</m.span>
 														)}
@@ -186,7 +177,6 @@ export default function RewardScreen() {
 					})}
 				</div>
 
-				{/* Action Button */}
 				<m.button
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
@@ -226,60 +216,60 @@ export default function RewardScreen() {
 								<h2 className="text-3xl font-serif text-yellow-500 mb-2">
 									Choose Evolution
 								</h2>
-								<p className="text-slate-400">
-									Select a new path for{" "}
-									<span className="text-white font-bold">
-										{
-											cardLibrary.find(
-												({ id: cardId }) => evolutionModal.cardId === cardId,
-											)?.name
-										}
-									</span>
-									.
-								</p>
 							</div>
 
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-								{cardLibrary
-									.find(({ id: cardId }) => evolutionModal.cardId === cardId)
-									?.evolutions.map((evoId) => {
-										const evoData = cardLibrary.find(
-											({ id: cardId }) => evoId === cardId,
-										);
-										if (!evoData) return null;
+								{cardLibrary[evolutionModal.cardId]?.evolutions.map((evoId) => {
+									const evoData = cardLibrary[evoId];
+									if (!evoData) return null;
 
-										return (
-											<button
-												type="button"
-												key={evoId}
-												onClick={() =>
-													handleEvolveChoice(
-														evolutionModal.heroId,
-														evolutionModal.cardId,
-														evoId,
-													)
-												}
-												className="group cursor-pointer bg-slate-800 border border-slate-600 rounded-lg p-6 hover:border-yellow-400 hover:bg-slate-700 transition-all shadow-lg hover:shadow-[0_0_20px_rgba(250,204,21,0.2)] flex flex-col gap-3"
-											>
-												<div className="flex justify-between items-start">
-													<h3 className="text-xl font-bold text-white group-hover:text-yellow-400 transition-colors">
-														{evoData.name}
-													</h3>
-													{/* <span className="text-xs font-mono uppercase bg-slate-900 px-2 py-1 rounded text-slate-400">
-                                                    Tier {evoData.}
-                                                </span> */}
+									return (
+										<button
+											type="button"
+											key={evoId}
+											onClick={() =>
+												handleEvolveChoice(
+													evolutionModal.heroId,
+													evolutionModal.cardId,
+													evoId,
+												)
+											}
+											className="group cursor-pointer bg-slate-800 border border-slate-600 rounded-lg p-6 hover:border-yellow-400 hover:bg-slate-700 transition-all shadow-lg hover:shadow-[0_0_20px_rgba(250,204,21,0.2)] flex flex-col gap-3 text-left relative overflow-hidden"
+										>
+											{/* Visual indicator for Class Promotions */}
+											{evoData.promotesToClass && (
+												<div className="absolute top-0 right-0 bg-amber-500 text-black text-[10px] font-black uppercase px-2 py-1 rounded-bl-lg">
+													Class Promotion!
 												</div>
+											)}
 
-												{/* <p className="text-slate-300 text-sm flex-1">
-                                                {evoData.description}
-                                            </p> */}
+											<div className="flex justify-between items-start mt-2">
+												<h3 className="text-xl font-bold text-white group-hover:text-yellow-400 transition-colors">
+													{evoData.name}
+												</h3>
+											</div>
 
-												<div className="flex gap-2 text-xs font-mono text-cyan-400 pt-3 border-t border-slate-700">
-													{JSON.stringify(evoData.effects)}
+											{/* Visual indicator for Passives */}
+											{evoData.grantsPassive && (
+												<div className="text-sm font-bold text-emerald-400 flex items-center gap-1">
+													<span>✨ Unlocks Passive:</span>
+													<span className="uppercase">
+														{evoData.grantsPassive.replace("passive-", "")}
+													</span>
 												</div>
-											</button>
-										);
-									})}
+											)}
+
+											{evoData.effects.map((effect, index) => (
+												<div
+													key={index}
+													className="flex gap-2 text-xs font-mono text-cyan-400 pt-3 border-t border-slate-700"
+												>
+													{formatCardEffect(effect)}
+												</div>
+											))}
+										</button>
+									);
+								})}
 							</div>
 						</m.div>
 					</m.div>

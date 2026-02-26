@@ -1,50 +1,95 @@
-import type { HeroClass } from "../heroClass.types";
-
-export interface ClassDefinition {
-	id: HeroClass;
-	name: string;
-	spriteBase: string;
-}
+import { createCardId } from "@/modules/cards/cards.helper";
+import type { ClassDefinition, HeroClass } from "./heroClass.types";
 
 export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
-	SQUIRE: {
-		id: "SQUIRE",
-		name: "Squire",
+	HOBO: {
+		id: "HOBO",
+		name: "Hobo",
+		spriteBase: "peasant", // Assuming you have a peasant_0.png!
+		bonusMaxHp: 0,
+		bonusBaseDef: 0,
+		bonusBaseMove: 0,
+		utilityCardChoices: [createCardId("bandage-1")], // Start with a basic heal
+	},
+	FIGHTER: {
+		id: "FIGHTER",
+		name: "Fighter",
 		spriteBase: "squire",
+		bonusMaxHp: 2,
+		bonusBaseDef: 1,
+		bonusBaseMove: 0,
+		utilityCardChoices: [createCardId("shield-block-1")],
 	},
-	BARBARIAN: {
-		id: "BARBARIAN",
-		name: "Barbarian",
-		spriteBase: "barbarian",
+	MAGE: {
+		id: "MAGE",
+		name: "Mage",
+		spriteBase: "apprentice",
+		bonusMaxHp: 0,
+		bonusBaseDef: 0,
+		bonusBaseMove: 0,
+		utilityCardChoices: [createCardId("push-1")],
 	},
-	PALADIN: {
-		id: "PALADIN",
-		name: "Paladin",
-		spriteBase: "paladin",
+	ROGUE: {
+		id: "ROGUE",
+		name: "Rogue",
+		spriteBase: "rogue",
+		bonusMaxHp: 0,
+		bonusBaseDef: 0,
+		bonusBaseMove: 0,
+		utilityCardChoices: [],
 	},
-	PYROMANCER: {
-		id: "PYROMANCER",
-		name: "Pyromancer",
-		spriteBase: "pyromancer",
-	},
-	CLERIC: {
-		id: "CLERIC",
-		name: "Cleric",
-		spriteBase: "cleric",
+	ARCHER: {
+		id: "ARCHER",
+		name: "Archer",
+		spriteBase: "archer",
+		bonusMaxHp: 0,
+		bonusBaseDef: 0,
+		bonusBaseMove: 0,
+		utilityCardChoices: [],
 	},
 	KNIGHT: {
 		id: "KNIGHT",
 		name: "Knight",
 		spriteBase: "knight",
+		bonusMaxHp: 0,
+		bonusBaseDef: 0,
+		bonusBaseMove: 0,
+		utilityCardChoices: [],
+	},
+	BARBARIAN: {
+		id: "BARBARIAN",
+		name: "Barbarian",
+		spriteBase: "barbarian",
+		bonusMaxHp: 0,
+		bonusBaseDef: 0,
+		bonusBaseMove: 0,
+		utilityCardChoices: [],
+	},
+	PYROMANCER: {
+		id: "PYROMANCER",
+		name: "Pyromancer",
+		spriteBase: "pyromancer",
+		bonusMaxHp: 0,
+		bonusBaseDef: 0,
+		bonusBaseMove: 0,
+		utilityCardChoices: [],
 	},
 	CRYOMANCER: {
 		id: "CRYOMANCER",
-		name: "Cryomancer",
+		name: " Cryomancer",
 		spriteBase: "cryomancer",
+		bonusMaxHp: 0,
+		bonusBaseDef: 0,
+		bonusBaseMove: 0,
+		utilityCardChoices: [createCardId("ice-wall-1")],
 	},
-	THIEF: {
-		id: "THIEF",
-		name: "Thief",
-		spriteBase: "thief",
+	CLERIC: {
+		id: "CLERIC",
+		name: "Cleric",
+		spriteBase: "cleric",
+		bonusMaxHp: 0,
+		bonusBaseDef: 0,
+		bonusBaseMove: 0,
+		utilityCardChoices: [],
 	},
 };

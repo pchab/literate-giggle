@@ -1,5 +1,6 @@
 import { isHeroId, isMonsterId } from "@/modules/figures/figures.helpers";
 import type { GridPosition } from "@/modules/grid/grid.type";
+import type { HeroClass } from "@/modules/heroClass/domain/heroClass.types";
 import type { Hero, Monster, Summon } from "../../figures/domain/figures.type";
 
 export type AnchorTarget =
@@ -70,8 +71,18 @@ export type Card = {
 	range: number;
 	playRequirement: PlayRequirement;
 	effects: CardEffect[];
-	xp: number;
-	evolutions: Card["id"][];
+
+	// XP & Leveling
+	xp: number; // Current XP
+	maxXp: number; // XP required to hit the next milestone
+	evolutions: Card["id"][]; // The Card IDs it can turn into
+
+	// --- THE PROGRESSION TRIGGERS ---
+	// If evolving INTO this card changes your class (e.g., Short Sword makes you a Fighter)
+	promotesToClass?: HeroClass;
+
+	// If reaching this level unlocks a permanent passive (e.g., "Toughened", "Fleet Footed")
+	grantsPassive?: string;
 };
 
 export type CardLog = Record<Hero["id"], Record<Card["id"], number>>;

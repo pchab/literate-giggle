@@ -28,7 +28,20 @@ export function Hand({ id: heroId, cards }: Pick<Hero, "id" | "cards">) {
 
 	return (
 		<div className="w-full h-32 flex justify-end items-center gap-3 px-4">
-			{cards.map((card) => {
+			{cards.map((card, index) => {
+				if (!card) {
+					return (
+						<div
+							key={`empty-slot-${index}`}
+							className="w-16 h-24 rounded border-2 border-dashed border-zinc-700/50 flex items-center justify-center bg-zinc-900/20"
+						>
+							<span className="text-zinc-600 text-xs text-center px-1">
+								Locked
+							</span>
+						</div>
+					);
+				}
+
 				const isSelected =
 					activeCard?.heroId === heroId && activeCard?.card.id === card.id;
 				const hasUsedCard = !!usedCardsThisTurn[heroId];

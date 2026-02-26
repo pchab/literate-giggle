@@ -2,13 +2,13 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { evolveCard } from "@/modules/cards/applications/evolveCard.command";
 import { cloneCard } from "@/modules/cards/cards.helper";
-import { cardLibrary, initialDeck } from "@/modules/cards/domain/cards";
+import { initialDeck } from "@/modules/cards/domain/cards.data";
 import type { Card, CardLog } from "@/modules/cards/domain/cards.type";
 import type { Hero } from "@/modules/figures/domain/figures.type";
 import { squireStats } from "@/modules/figures/domain/heroes/squire";
 import { createHeroId } from "@/modules/figures/figures.helpers";
+import type { HeroClass } from "@/modules/heroClass/domain/heroClass.types";
 import { heroClassService } from "@/modules/heroClass/heroClass.service";
-import type { HeroClass } from "@/modules/heroClass/heroClass.types";
 import {
 	type MapData,
 	type NodeType,
@@ -44,7 +44,7 @@ export interface WorldAction {
 		oldCardId: Card["id"],
 		newCardId: Card["id"],
 	) => void;
-	clearPromotion: () => void;
+	resolvePromotion: (chosenUtilityCardId: Card["id"]) => void;
 }
 
 export type WorldStoreServerAction = (state: WorldState) => Partial<WorldState>;
@@ -62,12 +62,8 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 					currentHp: squireStats.maxHp,
 					currentBlock: 0,
 					gridPosition: { row: 0, col: 0 },
-					deck: initialDeck,
-					cards: [
-						cloneCard(cardLibrary[0]),
-						cloneCard(cardLibrary[1]),
-						cloneCard(cardLibrary[4]),
-					],
+					deck: initialDeck.map(cloneCard),
+					cards: [cloneCard(initialDeck[0]), cloneCard(initialDeck[1]), null],
 				},
 				{
 					id: createHeroId(2),
@@ -75,12 +71,8 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 					currentHp: squireStats.maxHp,
 					currentBlock: 0,
 					gridPosition: { row: 0, col: 1 },
-					deck: initialDeck,
-					cards: [
-						cloneCard(cardLibrary[2]),
-						cloneCard(cardLibrary[3]),
-						cloneCard(cardLibrary[4]),
-					],
+					deck: initialDeck.map(cloneCard),
+					cards: [cloneCard(initialDeck[0]), cloneCard(initialDeck[1]), null],
 				},
 				{
 					id: createHeroId(3),
@@ -88,12 +80,8 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 					currentHp: squireStats.maxHp,
 					currentBlock: 0,
 					gridPosition: { row: 1, col: 0 },
-					deck: initialDeck,
-					cards: [
-						cloneCard(cardLibrary[0]),
-						cloneCard(cardLibrary[1]),
-						cloneCard(cardLibrary[4]),
-					],
+					deck: initialDeck.map(cloneCard),
+					cards: [cloneCard(initialDeck[0]), cloneCard(initialDeck[1]), null],
 				},
 			],
 			pendingBattleLog: {} as CardLog,
@@ -108,7 +96,8 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 				set(worldService.claimRewardsAndReturnToMap()),
 			evolveCard: (heroId, oldCardId, newCardId) =>
 				set(evolveCard(heroId, oldCardId, newCardId)),
-			clearPromotion: () => set(heroClassService.resolvePendingPromotion()),
+			resolvePromotion: (chosenUtilityCardId) =>
+				set(heroClassService.resolvePendingPromotion(chosenUtilityCardId)),
 		}),
 		{
 			name: "alpha-world-state",

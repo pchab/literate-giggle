@@ -1,23 +1,32 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
+import { useState } from "react";
 import { useShallow } from "zustand/shallow";
+import { cardLibrary } from "@/modules/cards/domain/cards.data";
+import type { Card } from "@/modules/cards/domain/cards.type";
+import { CLASS_REGISTRY } from "@/modules/heroClass/domain/heroClass.data";
 import { useWorldStore } from "@/store/world.store";
+import { CardComponent } from "./cards/Card";
 import { HeroPortrait } from "./HeroPortrait";
 
 export function ClassPromotionModal() {
-	const { pendingPromotion, clearPromotion, roster } = useWorldStore(
+	const { pendingPromotion, resolvePromotion, roster } = useWorldStore(
 		useShallow((state) => ({
 			pendingPromotion: state.pendingPromotion,
-			clearPromotion: state.clearPromotion,
+			resolvePromotion: state.resolvePromotion,
 			roster: state.roster,
 		})),
 	);
 
+	const [selectedCardId, setSelectedCardId] = useState<Card["id"] | null>(null);
+
 	if (!pendingPromotion) return null;
 
 	const hero = roster.find((h) => h.id === pendingPromotion.heroId);
-	if (!hero) return null;
+	const classDef = CLASS_REGISTRY[pendingPromotion.newClass];
+
+	if (!hero || !classDef) return null;
 
 	return (
 		<AnimatePresence>
@@ -88,9 +97,54 @@ export function ClassPromotionModal() {
 					</motion.div>
 				</div>
 
+				{/* --- THE NEW UTILITY CARD CHOICE UI --- */}
+				<motion.div
+					className="flex flex-col items-center z-10"
+					initial={{ opacity: 0, y: 20 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ delay: 1.2 }}
+				>
+					<h3 className="text-zinc-300 uppercase tracking-widest mb-6 font-bold">
+						Choose your Class Art
+					</h3>
+					<div className="flex gap-8">
+						{classDef.utilityCardChoices.map((cardId) => {
+							const cardDef = cardLibrary[cardId];
+							const isSelected = selectedCardId === cardId;
+
+							return (
+								<button
+									type="button"
+									key={cardId}
+									onClick={() => setSelectedCardId(cardId)}
+									className={`relative transition-all duration-300 ${
+										isSelected
+											? "scale-110 shadow-[0_0_30px_rgba(251,191,36,0.4)]"
+											: "scale-100 hover:scale-105 opacity-70 hover:opacity-100 grayscale hover:grayscale-0"
+									}`}
+								>
+									<CardComponent {...cardDef} />
+
+									{isSelected && (
+										<motion.div
+											layoutId="card-selection-ring"
+											className="absolute -inset-2 border-2 border-amber-400 rounded-xl pointer-events-none"
+										/>
+									)}
+								</button>
+							);
+						})}
+					</div>
+				</motion.div>
+
 				<motion.button
-					className="mt-16 px-8 py-3 bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold tracking-widest uppercase rounded shadow-lg transition-colors z-10"
-					onClick={clearPromotion}
+					disabled={!selectedCardId}
+					className={`mt-12 px-8 py-3 font-bold tracking-widest uppercase rounded shadow-lg transition-all z-10 ${
+						selectedCardId
+							? "bg-amber-600 hover:bg-amber-500 text-zinc-950 cursor-pointer"
+							: "bg-zinc-800 text-zinc-600 cursor-not-allowed"
+					}`}
+					onClick={() => selectedCardId && resolvePromotion(selectedCardId)}
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ delay: 1.5 }}

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import type { HeroClass } from "@/modules/heroClass/heroClass.types";
+import type { HeroClass } from "@/modules/heroClass/domain/heroClass.types";
 
 interface HeroPortraitProps {
 	classType: HeroClass;
