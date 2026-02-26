@@ -7,6 +7,7 @@ export const iceWall: Omit<
 	name: "Ice Wall",
 	spriteBase: "ice_wall",
 	maxHp: 10,
-	physDef: 0,
-	magDef: 0,
+	baseMove: 0,
+	baseDef: 0,
+	currentBlock: 0,
 };

@@ -8,31 +8,26 @@ interface CardTooltipProps {
 function renderEffectText(effect: CardEffect, index: number) {
 	switch (effect.type) {
 		case "damage": {
-			const dmgIcon = effect.damageType === "physDmg" ? "⚔️" : "🔮";
-			const dmgType = effect.damageType === "physDmg" ? "Physical" : "Magical";
 			return (
 				<span
 					key={index}
 					className="text-xs text-zinc-300 flex items-center gap-1.5"
 				>
-					{dmgIcon} Deal{" "}
-					<strong className="text-red-400">{effect.amount}</strong> {dmgType}{" "}
+					⚔️ Deal{" "}
+					<strong className="text-red-400">{effect.amount}</strong>{" "}
 					damage.
 				</span>
 			);
 		}
 		case "block": {
-			const blockIcon = effect.blockType === "physBlock" ? "🛡️" : "🔮";
-			const blockColor =
-				effect.blockType === "physBlock" ? "text-zinc-200" : "text-purple-300";
 			const targetText = effect.target === "self" ? "Gain" : "Apply";
 			return (
 				<span
 					key={index}
 					className="text-xs text-zinc-300 flex items-center gap-1.5"
 				>
-					{blockIcon} {targetText}{" "}
-					<strong className={blockColor}>{effect.amount}</strong> Block.
+					🛡️ {targetText}{" "}
+					<strong className="text-zinc-200">{effect.amount}</strong> Block.
 				</span>
 			);
 		}

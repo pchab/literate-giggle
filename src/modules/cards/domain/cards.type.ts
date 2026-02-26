@@ -49,14 +49,12 @@ export type CardEffect =
 	| {
 			type: "damage";
 			amount: number;
-			damageType: "physDmg" | "magDmg";
 			target: EffectTarget;
 	  }
 	| { type: "heal"; amount: number; target: EffectTarget }
 	| {
 			type: "block";
 			amount: number;
-			blockType: "physBlock" | "magBlock";
 			target: EffectTarget;
 	  }
 	| { type: "push"; distance: number; target: EffectTarget }

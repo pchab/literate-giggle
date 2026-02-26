@@ -3,13 +3,11 @@ import { motion } from "framer-motion";
 export default function HealthBar({
 	currentHp,
 	maxHp,
-	currentPhysBlock = 0,
-	currentMagBlock = 0,
+	currentBlock = 0,
 }: {
 	currentHp: number;
 	maxHp: number;
-	currentPhysBlock?: number;
-	currentMagBlock?: number;
+	currentBlock?: number;
 }) {
 	const hpPercent = Math.max(0, Math.min(100, (currentHp / maxHp) * 100));
 
@@ -25,8 +23,7 @@ export default function HealthBar({
 			</div>
 
 			<span className="text-[9px] font-bold text-zinc-300 mt-[1px] drop-shadow-md">
-				{currentHp}/{maxHp} {currentPhysBlock > 0 && `🛡️ ${currentPhysBlock}`}{" "}
-				{currentMagBlock > 0 && `🔮 ${currentMagBlock}`}
+				{currentHp}/{maxHp} {currentBlock > 0 && `🛡️ ${currentBlock}`}
 			</span>
 		</div>
 	);

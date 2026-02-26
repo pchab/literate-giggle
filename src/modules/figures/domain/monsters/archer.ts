@@ -8,8 +8,9 @@ export const archer: Omit<
 	enemyType: "ARCHER",
 	spriteBase: "archer",
 	maxHp: 10,
-	physDef: 0,
-	magDef: 0,
+	baseMove: 2,
+	baseDef: 0,
+	currentBlock: 0,
 	attacks: [
 		{
 			id: 1,
@@ -19,17 +20,15 @@ export const archer: Omit<
 			damage: 3,
 			minRange: 1,
 			maxRange: 3,
-			effect: "physDmg",
 		},
 		{
 			id: 2,
-			target: "lowestPhysDef",
+			target: "lowestDef",
 			pattern: singleTargetPattern,
 			move: 0,
 			damage: 4,
 			minRange: 2,
 			maxRange: 4,
-			effect: "physDmg",
 		},
 	],
 };

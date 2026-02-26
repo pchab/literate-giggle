@@ -8,8 +8,9 @@ export const bat: Omit<
 	enemyType: "BAT",
 	spriteBase: "bat",
 	maxHp: 6,
-	physDef: 0,
-	magDef: 0,
+	baseMove: 4,
+	baseDef: 0,
+	currentBlock: 0,
 	attacks: [
 		{
 			id: 1,
@@ -19,17 +20,15 @@ export const bat: Omit<
 			damage: 2,
 			minRange: 1,
 			maxRange: 1,
-			effect: "physDmg",
 		},
 		{
 			id: 2,
-			target: "lowestPhysDef",
+			target: "lowestDef",
 			pattern: singleTargetPattern,
 			move: 4,
 			damage: 2,
 			minRange: 1,
 			maxRange: 1,
-			effect: "physDmg",
 		},
 	],
 };

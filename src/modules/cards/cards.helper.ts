@@ -13,18 +13,11 @@ export function applyEffectToHero(hero: Hero, effect: CardEffect): Hero {
 		};
 	}
 	if (effect.type === "block") {
-		if (effect.blockType === "physBlock")
-			return {
-				...hero,
-				currentPhysBlock: Math.max(hero.currentPhysBlock, effect.amount),
-			};
-		if (effect.blockType === "magBlock")
-			return {
-				...hero,
-				currentMagBlock: Math.max(hero.currentMagBlock, effect.amount),
-			};
+		return {
+			...hero,
+			currentBlock: Math.max(hero.currentBlock, effect.amount),
+		};
 	}
-	// Handle self-damage, buffs, etc.
 	return hero;
 }
 
@@ -35,8 +28,7 @@ export function applyEffectToMonster(
 	if (effect.type === "damage") {
 		const dmg = Math.max(
 			0,
-			effect.amount -
-				(effect.damageType === "physDmg" ? monster.physDef : monster.magDef),
+			effect.amount - monster.currentBlock - monster.baseDef,
 		);
 		return { ...monster, currentHp: Math.max(0, monster.currentHp - dmg) };
 	}

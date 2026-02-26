@@ -8,8 +8,9 @@ export const testBoss: Omit<
 	enemyType: "BOSS",
 	spriteBase: "boss",
 	maxHp: 20,
-	physDef: 1,
-	magDef: 1,
+	baseMove: 2,
+	baseDef: 1,
+	currentBlock: 0,
 	attacks: [
 		{
 			id: 1,
@@ -19,17 +20,15 @@ export const testBoss: Omit<
 			damage: 3,
 			minRange: 1,
 			maxRange: 1,
-			effect: "physDmg",
 		},
 		{
 			id: 2,
-			target: "lowestPhysDef",
+			target: "lowestDef",
 			pattern: conePattern,
 			move: 2,
 			damage: 4,
 			minRange: 1,
 			maxRange: 1,
-			effect: "physDmg",
 		},
 	],
 };

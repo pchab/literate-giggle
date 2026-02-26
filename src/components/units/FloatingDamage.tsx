@@ -7,10 +7,8 @@ const getColorAndIcon = (type: CombatText["type"]) => {
 			return { color: "text-red-500", icon: "" };
 		case "heal":
 			return { color: "text-green-400", icon: "+" };
-		case "physBlock":
+		case "block":
 			return { color: "text-zinc-300", icon: "🛡️ " };
-		case "magBlock":
-			return { color: "text-purple-300", icon: "🔮 " };
 	}
 };
 

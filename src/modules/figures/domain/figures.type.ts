@@ -13,20 +13,17 @@ export type Figure = {
 	spriteBase: string;
 	currentHp: number;
 	maxHp: number;
-	physDef: number;
-	magDef: number;
+	baseDef: number;
+	currentBlock: number;
+	baseMove: number;
 	gridPosition: GridPosition;
 };
 
 export type Hero = Figure & {
 	id: string & { readonly __brand: "HeroId" };
 	heroClass: HeroClass;
-	physAtk: number;
-	currentPhysBlock: number;
-	magAtk: number;
-	currentMagBlock: number;
 	deck: Card[];
-	cards: [Card, Card];
+	cards: [Card, Card, Card];
 };
 
 export type EnemyType = "BOSS" | "SKELETON" | "BAT" | "ARCHER";

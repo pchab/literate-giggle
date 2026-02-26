@@ -2,7 +2,7 @@ import type { Hero, Monster } from "../figures/domain/figures.type";
 import { getLineOfSightPath } from "../grid/grid.helpers";
 import type { GridPosition } from "../grid/grid.type";
 
-type Target = "lowestHp" | "random" | "lowestPhysDef" | "lowestMagDef" | "grid";
+type Target = "lowestHp" | "random" | "lowestDef" | "grid";
 export type Attack = {
 	id: number;
 	target: Target;
@@ -11,7 +11,6 @@ export type Attack = {
 	damage: number;
 	minRange: number;
 	maxRange: number;
-	effect: "physDmg" | "magDmg";
 };
 
 export const singleTargetPattern: GridPosition[] = [{ col: 0, row: 0 }];
@@ -56,10 +55,8 @@ export function findTargetedHero(attack: Attack, heroes: Hero[]): Hero {
 	const { target } = attack;
 	const reduceFunction = (hero: Hero, currentTarget: Hero) => {
 		switch (target) {
-			case "lowestPhysDef":
-				return hero.physDef < currentTarget.physDef ? hero : currentTarget;
-			case "lowestMagDef":
-				return hero.magDef < currentTarget.magDef ? hero : currentTarget;
+			case "lowestDef":
+				return hero.baseDef < currentTarget.baseDef ? hero : currentTarget;
 			case "lowestHp":
 				return hero.currentHp < currentTarget.currentHp ? hero : currentTarget;
 			default:

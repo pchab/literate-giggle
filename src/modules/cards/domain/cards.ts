@@ -14,7 +14,6 @@ export const cardLibrary: Card[] = [
 			{
 				type: "damage",
 				amount: 2,
-				damageType: "physDmg",
 				target: "anchor",
 			},
 		],
@@ -35,7 +34,6 @@ export const cardLibrary: Card[] = [
 			{
 				type: "block",
 				amount: 2,
-				blockType: "physBlock",
 				target: "self",
 			},
 		],
@@ -52,7 +50,6 @@ export const cardLibrary: Card[] = [
 			{
 				type: "damage",
 				amount: 2,
-				damageType: "magDmg",
 				target: "anchor",
 			},
 		],
@@ -73,7 +70,6 @@ export const cardLibrary: Card[] = [
 			{
 				type: "block",
 				amount: 2,
-				blockType: "magBlock",
 				target: "self",
 			},
 		],
@@ -107,7 +103,6 @@ export const cardLibrary: Card[] = [
 			{
 				type: "damage",
 				amount: 3,
-				damageType: "physDmg",
 				target: "anchor",
 			},
 		],
@@ -124,7 +119,6 @@ export const cardLibrary: Card[] = [
 			{
 				type: "damage",
 				amount: 4,
-				damageType: "physDmg",
 				target: "anchor",
 			},
 		],
@@ -145,7 +139,6 @@ export const cardLibrary: Card[] = [
 			{
 				type: "block",
 				amount: 3,
-				blockType: "physBlock",
 				target: "self",
 			},
 		],
@@ -166,7 +159,6 @@ export const cardLibrary: Card[] = [
 			{
 				type: "block",
 				amount: 4,
-				blockType: "physBlock",
 				target: "self",
 			},
 		],
@@ -183,7 +175,6 @@ export const cardLibrary: Card[] = [
 			{
 				type: "damage",
 				amount: 4,
-				damageType: "magDmg",
 				target: "anchor",
 			},
 		],
@@ -200,7 +191,6 @@ export const cardLibrary: Card[] = [
 			{
 				type: "damage",
 				amount: 4,
-				damageType: "magDmg",
 				target: "anchor",
 			},
 		],
@@ -221,7 +211,6 @@ export const cardLibrary: Card[] = [
 			{
 				type: "block",
 				amount: 4,
-				blockType: "magBlock",
 				target: "self",
 			},
 		],

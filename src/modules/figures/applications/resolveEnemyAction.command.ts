@@ -58,31 +58,15 @@ export const resolveEnemyActions = async (get: StoreGet, set: StoreSet) => {
 
 			if (!isTargeted) return hero;
 
-			const effectiveDmg =
-				plannedAttack.effect === "physDmg"
-					? Math.max(0, plannedAttack.damage - hero.physDef)
-					: Math.max(0, plannedAttack.damage - hero.magDef);
+			const effectiveDmg = Math.max(0, plannedAttack.damage - hero.baseDef);
 
-			const hpDamage =
-				plannedAttack.effect === "physDmg"
-					? Math.max(0, effectiveDmg - hero.currentPhysBlock)
-					: Math.max(0, effectiveDmg - hero.currentMagBlock);
-
-			const newPhysBlock =
-				plannedAttack.effect === "physDmg"
-					? Math.max(0, hero.currentPhysBlock - effectiveDmg)
-					: hero.currentPhysBlock;
-
-			const newMagBlock =
-				plannedAttack.effect === "magDmg"
-					? Math.max(0, hero.currentMagBlock - effectiveDmg)
-					: hero.currentMagBlock;
+			const hpDamage = Math.max(0, effectiveDmg - hero.currentBlock);
+			const newBlock = Math.max(0, hero.currentBlock - effectiveDmg);
 
 			return {
 				...hero,
 				currentHp: Math.max(0, hero.currentHp - hpDamage),
-				currentPhysBlock: newPhysBlock,
-				currentMagBlock: newMagBlock,
+				currentBlock: newBlock,
 			};
 		});
 

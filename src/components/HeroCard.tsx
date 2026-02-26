@@ -17,8 +17,7 @@ export function HeroCard({
 	cards,
 	currentHp,
 	maxHp,
-	currentPhysBlock,
-	currentMagBlock,
+	currentBlock,
 }: Hero) {
 	return (
 		<div className="relative flex items-center w-full max-w-2xl h-32 rounded-lg border border-zinc-800 shadow-xl bg-zinc-950 mb-2">
@@ -44,16 +43,11 @@ export function HeroCard({
 						<span className="text-zinc-500">{maxHp}</span>
 					</span>
 
-					{(currentPhysBlock > 0 || currentMagBlock > 0) && (
+					{(currentBlock > 0) && (
 						<div className="flex gap-1.5 mt-1">
-							{currentPhysBlock > 0 && (
+							{currentBlock > 0 && (
 								<span className="text-[10px] font-bold text-zinc-300 bg-zinc-800/80 px-1.5 py-0.5 rounded border border-zinc-600 shadow-sm">
-									🛡️ {currentPhysBlock}
-								</span>
-							)}
-							{currentMagBlock > 0 && (
-								<span className="text-[10px] font-bold text-purple-300 bg-purple-900/50 px-1.5 py-0.5 rounded border border-purple-700 shadow-sm">
-									🔮 {currentMagBlock}
+									🛡️ {currentBlock}
 								</span>
 							)}
 						</div>

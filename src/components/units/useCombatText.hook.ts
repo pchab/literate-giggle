@@ -3,25 +3,19 @@ import { useEffect, useRef, useState } from "react";
 export interface CombatText {
 	id: number;
 	amount: number;
-	type: "damage" | "heal" | "physBlock" | "magBlock";
+	type: "damage" | "heal" | "block";
 }
 
-export function useCombatText(
-	currentHp: number,
-	currentPhysBlock: number = 0,
-	currentMagBlock: number = 0,
-) {
+export function useCombatText(currentHp: number, currentBlock: number = 0) {
 	const prevHp = useRef(currentHp);
-	const prevPhysBlock = useRef(currentPhysBlock);
-	const prevMagBlock = useRef(currentMagBlock);
+	const prevBlock = useRef(currentBlock);
 
 	const [texts, setTexts] = useState<CombatText[]>([]);
 	const [isHit, setIsHit] = useState(false);
 
 	useEffect(() => {
 		const hpDiff = prevHp.current - currentHp;
-		const physDiff = prevPhysBlock.current - currentPhysBlock;
-		const magDiff = prevMagBlock.current - currentMagBlock;
+		const blockDiff = prevBlock.current - currentBlock;
 
 		const newTexts: CombatText[] = [];
 		let tookDamage = false;
@@ -35,20 +29,11 @@ export function useCombatText(
 			if (hpDiff > 0) tookDamage = true;
 		}
 
-		if (physDiff > 0) {
+		if (blockDiff > 0) {
 			newTexts.push({
 				id: Date.now() + Math.random(),
-				amount: physDiff,
-				type: "physBlock",
-			});
-			tookDamage = true;
-		}
-
-		if (magDiff > 0) {
-			newTexts.push({
-				id: Date.now() + Math.random(),
-				amount: magDiff,
-				type: "magBlock",
+				amount: blockDiff,
+				type: "block",
 			});
 			tookDamage = true;
 		}
@@ -68,9 +53,8 @@ export function useCombatText(
 		}
 
 		prevHp.current = currentHp;
-		prevPhysBlock.current = currentPhysBlock;
-		prevMagBlock.current = currentMagBlock;
-	}, [currentHp, currentPhysBlock, currentMagBlock]);
+		prevBlock.current = currentBlock;
+	}, [currentHp, currentBlock]);
 
 	return { texts, isHit };
 }

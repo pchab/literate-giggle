@@ -10,8 +10,7 @@ import { useCombatText } from "./useCombatText.hook";
 export default function HeroSprite({ unitInCell }: { unitInCell: Hero }) {
 	const { texts, isHit } = useCombatText(
 		unitInCell.currentHp,
-		unitInCell.currentPhysBlock,
-		unitInCell.currentMagBlock,
+		unitInCell.currentBlock,
 	);
 	const activeCard = useBattleStore((state) => state.activeCard);
 
@@ -45,8 +44,7 @@ export default function HeroSprite({ unitInCell }: { unitInCell: Hero }) {
 			<HealthBar
 				currentHp={currentHp}
 				maxHp={maxHp}
-				currentPhysBlock={unitInCell.currentPhysBlock}
-				currentMagBlock={unitInCell.currentMagBlock}
+				currentBlock={unitInCell.currentBlock}
 			/>
 		</div>
 	);

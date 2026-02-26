@@ -17,7 +17,7 @@ const PORTRAITS: Record<HeroClass, string> = {
 };
 
 export function HeroPortrait({ classType }: HeroPortraitProps) {
-	const imageSrc = PORTRAITS[classType] || "/hero_portrait_squire.png"; // Fallback
+	const imageSrc = PORTRAITS[classType] || "/portraits/hero_portrait_squire.png"; // Fallback
 
 	return (
 		<div className="relative w-48 h-36 m-4">
