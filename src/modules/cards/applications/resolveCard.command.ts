@@ -8,8 +8,39 @@ import {
 	anchorIsGridPosition,
 	anchorIsHeroId,
 	anchorIsMonsterId,
+	type EffectTarget,
 } from "../domain/cards.type";
 
+// --- 1. TARGET RESOLUTION HELPER ---
+// Isolates the logic of WHO gets hit, keeping the main sequence clean.
+function resolveTargets(
+	targetType: EffectTarget,
+	anchorTargetId: AnchorTarget | null,
+	casterId: Hero["id"],
+	currentMonsters: Monster[],
+) {
+	const heroIds: string[] = [];
+	const monsterIds: string[] = [];
+
+	if (targetType === "self") {
+		heroIds.push(casterId);
+	} else if (
+		targetType === "anchor" &&
+		anchorTargetId &&
+		typeof anchorTargetId === "string"
+	) {
+		if (anchorIsHeroId(anchorTargetId)) heroIds.push(anchorTargetId);
+		if (anchorIsMonsterId(anchorTargetId)) monsterIds.push(anchorTargetId);
+	} else if (targetType === "all_enemies") {
+		monsterIds.push(...currentMonsters.map((m) => m.id));
+	}
+
+	// Future: "adjacent_to_anchor" AoE logic will go exactly here!
+
+	return { heroIds, monsterIds };
+}
+
+// --- 2. MAIN COMMAND ---
 export function resolveCard(
 	anchorTargetId: AnchorTarget | null,
 ): BattleStoreServerAction {
@@ -18,108 +49,95 @@ export function resolveCard(
 		heroes,
 		monsters,
 		usedCardsThisTurn,
+		usedMovesThisTurn,
 		cardUsageLog,
 		summons,
 		...state
 	}) => {
-		if (!activeCard) {
-			console.warn(`No active card found.`);
-			return {};
-		}
+		if (!activeCard) return {};
+
 		const { heroId, card } = activeCard;
-		const heroIndex = heroes.findIndex((h) => h.id === heroId);
-		if (heroIndex === -1) {
-			console.warn(`Hero with ID ${heroId} not found.`);
-			return {};
-		}
+		if (!heroes.some((h) => h.id === heroId)) return {};
 
-		// Clone the state so we can safely mutate it during the sequence
-		let nextHeroes = [...heroes];
-		let nextMonsters = [...monsters];
-		const nextSummons = [...summons];
+		// Mutable drafts for our sequence pipeline
+		let draftHeroes = [...heroes];
+		let draftMonsters = [...monsters];
+		const draftSummons = [...summons];
 
-		// Process every effect in the card's payload
+		// --- 3. THE PIPELINE ---
 		card.effects.forEach((effect) => {
-			// --- NEW: INTERCEPT MOVEMENT ---
+			// A. Handle Grid Displacements
 			if (effect.type === "move") {
 				if (anchorTargetId && anchorIsGridPosition(anchorTargetId)) {
-					const destination = anchorTargetId;
-
 					if (effect.target === "self") {
-						nextHeroes = nextHeroes.map((hero) =>
+						draftHeroes = draftHeroes.map((hero) =>
 							hero.id === heroId
-								? { ...hero, gridPosition: destination }
+								? { ...hero, gridPosition: anchorTargetId }
 								: hero,
 						);
 					}
-					// (Future proofing: if effect.target === 'anchor', you could use this to 'Pull' or 'Teleport' an ally/enemy!)
 				}
-				return; // Stop processing this specific effect and move to the next one
+				return; // Proceed to next effect
 			}
-			// -------------------------------
+
+			// B. Handle Entities Spawning
 			if (effect.type === "summon") {
 				if (anchorTargetId && anchorIsGridPosition(anchorTargetId)) {
-					const { blueprintId } = effect;
-					const newSummonBlueprint = summonLibrary[blueprintId];
-					const newSummon: Summon = {
+					const blueprint = summonLibrary[effect.blueprintId];
+					draftSummons.push({
 						id: `summon-${Date.now()}` as Summon["id"],
-						...newSummonBlueprint,
-						currentHp: newSummonBlueprint.maxHp,
+						...blueprint,
+						currentHp: blueprint.maxHp,
 						gridPosition: anchorTargetId,
-						allegiance: "PLAYER", // Assuming a hero cast it
-					};
-
-					nextSummons.push(newSummon);
+						allegiance: "PLAYER",
+					});
 				}
+				return; // Proceed to next effect
 			}
 
-			// 1. Determine WHO receives this specific effect
-			const targetedHeroIds: Hero["id"][] = [];
-			let targetedMonsterIds: Monster["id"][] = [];
+			// C. Handle Standard Effects (Damage, Heal, Block, Push)
+			// 1. Ask the helper who to hit
+			const targets = resolveTargets(
+				effect.target,
+				anchorTargetId,
+				heroId,
+				draftMonsters,
+			);
 
-			if (effect.target === "self") {
-				targetedHeroIds.push(heroId);
-			} else if (
-				effect.target === "anchor" &&
-				anchorTargetId &&
-				typeof anchorTargetId === "string"
-			) {
-				// Added `typeof anchorTargetId === "string"` check here so TS knows it's an ID
-				if (anchorIsHeroId(anchorTargetId))
-					targetedHeroIds.push(anchorTargetId);
-				if (anchorIsMonsterId(anchorTargetId))
-					targetedMonsterIds.push(anchorTargetId);
-			} else if (effect.target === "all_enemies") {
-				targetedMonsterIds = nextMonsters.map((m) => m.id);
-			}
-			// (You can add "adjacent_to_anchor" logic here later using grid math!)
-			// 2. Apply the effect to the targeted Heroes
-			nextHeroes = nextHeroes.map((hero) => {
-				if (!targetedHeroIds.includes(hero.id)) return hero;
-				return applyEffectToHero(hero, effect);
-			});
+			// 2. Apply the hits
+			draftHeroes = draftHeroes.map((hero) =>
+				targets.heroIds.includes(hero.id)
+					? applyEffectToHero(hero, effect)
+					: hero,
+			);
 
-			// 3. Apply the effect to the targeted Monsters
-			nextMonsters = nextMonsters.map((monster) => {
-				if (!targetedMonsterIds.includes(monster.id)) return monster;
-				return applyEffectToMonster(monster, effect);
-			});
+			draftMonsters = draftMonsters.map((monster) =>
+				targets.monsterIds.includes(monster.id)
+					? applyEffectToMonster(monster, effect)
+					: monster,
+			);
+
+			// Note: If you ever want Summons to take damage/heals, you just add `applyEffectToSummon` here!
 		});
 
-		const newIntents = intentService.calculateAllIntents(
-			nextHeroes,
-			nextMonsters,
-		);
+		// --- 4. FINALIZE & UPDATE STORE ---
 		return {
 			...state,
 			activeCard: null,
-			heroes: nextHeroes,
-			monsters: nextMonsters,
-			summons: nextSummons,
-			enemyIntents: newIntents, // Replaced `intents` with `enemyIntents` to match your store
+			heroes: draftHeroes,
+			monsters: draftMonsters,
+			summons: draftSummons,
+			enemyIntents: intentService.calculateAllIntents(
+				draftHeroes,
+				draftMonsters,
+			),
 			usedCardsThisTurn: {
 				...usedCardsThisTurn,
-				[activeCard.heroId]: activeCard.card.id, // Or activeCard.cardId depending on your state
+				[activeCard.heroId]: activeCard.card.id,
+			},
+			usedMovesThisTurn: {
+				...usedMovesThisTurn,
+				[activeCard.heroId]: true,
 			},
 			cardUsageLog: {
 				...cardUsageLog,

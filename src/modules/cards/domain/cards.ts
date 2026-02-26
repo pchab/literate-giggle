@@ -24,13 +24,9 @@ export const cardLibrary: Card[] = [
 	{
 		id: createCardId("2"),
 		name: "Wooden Shield",
-		playRequirement: "requires_empty_cell_or_self",
+		playRequirement: "no_target",
 		range: 2,
 		effects: [
-			{
-				type: "move",
-				target: "self",
-			},
 			{
 				type: "block",
 				amount: 2,
@@ -60,13 +56,9 @@ export const cardLibrary: Card[] = [
 	{
 		id: createCardId("4"),
 		name: "Arcane Shield",
-		playRequirement: "requires_empty_cell_or_self",
+		playRequirement: "no_target",
 		range: 2,
 		effects: [
-			{
-				type: "move",
-				target: "self",
-			},
 			{
 				type: "block",
 				amount: 2,
@@ -129,13 +121,9 @@ export const cardLibrary: Card[] = [
 	{
 		id: createCardId("8"),
 		name: "Steel Shield",
-		playRequirement: "requires_empty_cell_or_self",
+		playRequirement: "no_target",
 		range: 2,
 		effects: [
-			{
-				type: "move",
-				target: "self",
-			},
 			{
 				type: "block",
 				amount: 3,
@@ -149,13 +137,9 @@ export const cardLibrary: Card[] = [
 	{
 		id: createCardId("9"),
 		name: "Heavy Shield",
-		playRequirement: "requires_empty_cell_or_self",
+		playRequirement: "no_target",
 		range: 1,
 		effects: [
-			{
-				type: "move",
-				target: "self",
-			},
 			{
 				type: "block",
 				amount: 4,
@@ -201,13 +185,9 @@ export const cardLibrary: Card[] = [
 	{
 		id: createCardId("12"),
 		name: "Fire Shield",
-		playRequirement: "requires_empty_cell_or_self",
+		playRequirement: "no_target",
 		range: 2,
 		effects: [
-			{
-				type: "move",
-				target: "self",
-			},
 			{
 				type: "block",
 				amount: 4,

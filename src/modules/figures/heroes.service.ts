@@ -1,7 +1,7 @@
-import { attackEnemy } from "./applications/attackEnemy.command";
 import { moveHero } from "./applications/moveHero.command";
+import { selectActiveMoveHero } from "./applications/selectActiveMoveHero.command";
 
 export const heroService = {
-	moveHero: moveHero,
-	attackEnemy: attackEnemy,
+	moveHero,
+	selectActiveMoveHero,
 };

@@ -87,6 +87,7 @@ export const resolveEnemyActions = async (get: StoreGet, set: StoreSet) => {
 
 	set((prev) => ({
 		...prev,
+		usedMovesThisTurn: {},
 		usedCardsThisTurn: {},
 		enemyIntents: nextEnemyIntents,
 	}));

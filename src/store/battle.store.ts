@@ -26,24 +26,23 @@ export type ActiveCardContext = {
 export type BattleState = {
 	heroes: Hero[];
 	monsters: Monster[];
+	activeMoveHeroId: Hero["id"] | null;
+	usedMovesThisTurn: Record<Hero["id"], boolean>;
+	activeCard: ActiveCardContext | null;
 	usedCardsThisTurn: Record<Hero["id"], Card["id"]>;
 	cardUsageLog: CardLog;
 	enemyIntents: Record<Monster["id"], MonsterIntent>;
 	hoveredCard: { heroId: Hero["id"]; cardId: Card["id"] } | null;
-	activeCard: ActiveCardContext | null;
 	summons: Summon[];
 };
 
 type BattleAction = {
 	initBattle: (heroRoster: Hero[], encounterId: Encounter["id"]) => void;
+	setActiveMoveHeroId: (heroId: Hero["id"] | null) => void;
+	moveHero: (newPosition: GridPosition) => void;
 	selectCard: (heroId: Hero["id"], cardId: Card["id"]) => void;
 	cancelCard: (heroId: Hero["id"], cardId: Card["id"]) => void;
 	resolveCard: (anchorTargetId: AnchorTarget | null) => void;
-	moveHero: (newPosition: GridPosition) => void;
-	attackEnemy: (
-		monsterId: Monster["id"],
-		attackData: { damage: number; range: number },
-	) => void;
 	enemyAction: () => Promise<void>;
 	setHoveredCard: (
 		hovered: { heroId: Hero["id"]; cardId: Card["id"] } | null,
@@ -55,6 +54,8 @@ const initialState: BattleState = {
 	monsters: [],
 	enemyIntents: {},
 	activeCard: null,
+	activeMoveHeroId: null,
+	usedMovesThisTurn: {},
 	usedCardsThisTurn: {},
 	cardUsageLog: {},
 	hoveredCard: null,
@@ -77,9 +78,9 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 				set(cardService.cancelCard(heroId, cardId)),
 			resolveCard: (anchorTargetId) =>
 				set(cardService.resolveCard(anchorTargetId)),
+			setActiveMoveHeroId: (heroId) =>
+				set(heroService.selectActiveMoveHero(heroId)),
 			moveHero: (newPosition) => set(heroService.moveHero(newPosition)),
-			attackEnemy: (monsterId, attackData) =>
-				set(heroService.attackEnemy(monsterId, attackData)),
 			enemyAction: async () => {
 				await enemyService.resolveEnemyActions(get, set);
 			},

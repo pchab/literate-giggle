@@ -13,8 +13,7 @@ function renderEffectText(effect: CardEffect, index: number) {
 					key={index}
 					className="text-xs text-zinc-300 flex items-center gap-1.5"
 				>
-					⚔️ Deal{" "}
-					<strong className="text-red-400">{effect.amount}</strong>{" "}
+					⚔️ Deal <strong className="text-red-400">{effect.amount}</strong>{" "}
 					damage.
 				</span>
 			);
