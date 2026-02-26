@@ -1,12 +1,13 @@
-import { singleTargetPattern } from "../../attacks/attacks";
-import type { Monster } from "./figures.type";
+import { singleTargetPattern } from "@/modules/attacks/attacks";
+import type { Monster } from "../figures.type";
 
-export const bat: Omit<
+export const skeleton: Omit<
 	Monster,
 	"id" | "currentHp" | "gridPosition" | "plannedAttack"
 > = {
-	enemyType: "BAT",
-	maxHp: 6,
+	enemyType: "SKELETON",
+	spriteBase: "skeleton",
+	maxHp: 10,
 	physDef: 0,
 	magDef: 0,
 	attacks: [
@@ -14,7 +15,7 @@ export const bat: Omit<
 			id: 1,
 			target: "lowestHp",
 			pattern: singleTargetPattern,
-			move: 4,
+			move: 2,
 			damage: 2,
 			minRange: 1,
 			maxRange: 1,
@@ -24,7 +25,7 @@ export const bat: Omit<
 			id: 2,
 			target: "lowestPhysDef",
 			pattern: singleTargetPattern,
-			move: 4,
+			move: 2,
 			damage: 2,
 			minRange: 1,
 			maxRange: 1,

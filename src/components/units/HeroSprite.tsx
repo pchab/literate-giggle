@@ -35,7 +35,11 @@ export default function HeroSprite({ unitInCell }: { unitInCell: Hero }) {
 			<FloatingDamage texts={texts} />
 
 			<div className="relative w-24 h-24 flex items-center justify-center z-10">
-				<UnitSprite type={unitInCell.heroClass} stance={stance} isHit={isHit} />
+				<UnitSprite
+					spriteBase={unitInCell.spriteBase}
+					stance={stance}
+					isHit={isHit}
+				/>
 			</div>
 
 			<HealthBar

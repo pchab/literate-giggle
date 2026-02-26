@@ -38,7 +38,11 @@ export default function EnemySprite({ unitInCell }: { unitInCell: Monster }) {
 			<FloatingDamage texts={texts} />
 
 			<div className="relative w-24 h-24 flex items-center justify-center z-10">
-				<UnitSprite type={unitInCell.enemyType} stance={stance} isHit={isHit} />
+				<UnitSprite
+					spriteBase={unitInCell.spriteBase}
+					stance={stance}
+					isHit={isHit}
+				/>
 			</div>
 
 			<HealthBar currentHp={currentHp} maxHp={maxHp} />

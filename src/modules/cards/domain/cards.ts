@@ -236,9 +236,8 @@ export const cardLibrary: Card[] = [
 		range: 2,
 		effects: [
 			{
-				type: "block",
-				amount: 2,
-				blockType: "magBlock",
+				type: "summon",
+				blueprintId: "ice_wall",
 				target: "anchor",
 			},
 		],

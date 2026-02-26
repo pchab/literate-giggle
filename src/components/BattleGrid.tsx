@@ -11,6 +11,7 @@ import type { GridPosition } from "@/modules/grid/grid.type";
 import { useBattleStore } from "@/store/battle.store";
 import EnemySprite from "./units/EnemySprite";
 import HeroSprite from "./units/HeroSprite";
+import SummonSprite from "./units/SummonSprite";
 
 const cells = Array.from({ length: GRID_BOUNDS.rows }, (_, col) => {
 	return Array.from({ length: GRID_BOUNDS.cols }, (_, row) => {
@@ -31,6 +32,7 @@ export function BattleGrid() {
 	const {
 		monsters,
 		heroes,
+		summons, // <-- 1. Pull summons from the store
 		usedCardsThisTurn,
 		enemyAction,
 		enemyIntents,
@@ -43,6 +45,7 @@ export function BattleGrid() {
 			enemyAction: state.enemyAction,
 			monsters: state.monsters,
 			heroes: state.heroes,
+			summons: state.summons, // <-- Add this
 			enemyIntents: state.enemyIntents,
 			hoveredCard: state.hoveredCard,
 			activeCard: state.activeCard,
@@ -58,20 +61,18 @@ export function BattleGrid() {
 		({ currentHp }) => currentHp > 0,
 	).length;
 
-	// Updated isEnemyTurn logic to use activeCard
 	const isEnemyTurn =
 		!activeCard &&
 		aliveHeroesCount > 0 &&
 		Object.keys(usedCardsThisTurn).length === aliveHeroesCount;
 
-	// --- 1. RANGE CALCULATIONS (Hover & Active) ---
+	// --- 1. RANGE CALCULATIONS ---
 	let validTargetCells: GridPosition[] = [];
 	let isTargetingEnemy = false;
 	let isTargetingAlly = false;
 	let isTargetingEmpty = false;
 	let canTargetSelf = false;
 
-	// A helper to figure out the active card or hovered card
 	const cardToPreview =
 		activeCard?.card ||
 		heroes
@@ -92,11 +93,12 @@ export function BattleGrid() {
 		canTargetSelf =
 			req === "requires_ally_or_self" || req === "requires_empty_cell_or_self";
 
+		// Note: You will want to pass `summons` into these helpers later so they block movement/LoS!
 		if (isTargetingEmpty) {
 			validTargetCells = calculateReachableCells(
 				previewCaster.gridPosition,
 				cardToPreview.range,
-				monsters,
+				[...monsters, ...summons],
 				canTargetSelf,
 			);
 		} else {
@@ -136,7 +138,16 @@ export function BattleGrid() {
 							gridPosition.col === cell.col && gridPosition.row === cell.row,
 					);
 
-				const isCellEmpty = !enemyInCell && !heroInCell;
+				// <-- 2. Find if a summon is in this cell
+				const summonInCell = summons
+					.filter((s) => s.currentHp > 0)
+					.find(
+						({ gridPosition }) =>
+							gridPosition.col === cell.col && gridPosition.row === cell.row,
+					);
+
+				// <-- 3. Update the empty check
+				const isCellEmpty = !enemyInCell && !heroInCell && !summonInCell;
 
 				const isDanger = allDangerTiles.some(
 					(tile) => tile.col === cell.col && tile.row === cell.row,
@@ -147,7 +158,7 @@ export function BattleGrid() {
 					(pos) => pos.row === cell.row && pos.col === cell.col,
 				);
 
-				// --- 2. DYNAMIC CELL STYLING ---
+				// --- DYNAMIC CELL STYLING ---
 				const baseClasses =
 					"w-24 h-24 relative flex items-center justify-center transition-all duration-300";
 				let stateClasses = "bg-zinc-900/30 border border-zinc-700/50 z-0";
@@ -171,7 +182,6 @@ export function BattleGrid() {
 					}
 				}
 
-				// If holding a card, but this tile isn't valid, dim it
 				const isInvalidTarget =
 					activeCard &&
 					(!inRange ||
@@ -181,12 +191,13 @@ export function BattleGrid() {
 
 				if (
 					isInvalidTarget &&
-					!canTargetSelf && heroInCell?.id !== previewCaster?.id 
+					!canTargetSelf &&
+					heroInCell?.id !== previewCaster?.id
 				) {
 					stateClasses += " cursor-not-allowed opacity-50";
 				}
 
-				// --- 3. RENDERING ---
+				// --- RENDERING ---
 
 				// A. EMPTY TILE
 				if (isCellEmpty) {
@@ -197,7 +208,6 @@ export function BattleGrid() {
 							className={`${baseClasses} ${stateClasses}`}
 							onClick={() => {
 								if (activeCard && inRange && isTargetingEmpty) {
-									// Pass the coordinate string for empty cell targeting (like movement)
 									resolveCard(cell);
 								}
 							}}
@@ -230,7 +240,42 @@ export function BattleGrid() {
 					);
 				}
 
-				// C. HERO TILE
+				// C. SUMMON TILE (<-- New Render Block)
+				if (summonInCell) {
+					return (
+						<button
+							type="button"
+							key={cell.id}
+							className={`${baseClasses} ${stateClasses}`}
+							onClick={() => {
+								// If you want players to be able to cast buffs on summons,
+								// or enemies to target them, handle allegiance checks here later!
+								if (
+									activeCard &&
+									inRange &&
+									isTargetingAlly &&
+									summonInCell.allegiance === "PLAYER"
+								) {
+									resolveCard(summonInCell.id);
+								} else if (
+									activeCard &&
+									inRange &&
+									isTargetingEnemy &&
+									summonInCell.allegiance === "ENEMY"
+								) {
+									resolveCard(summonInCell.id);
+								}
+							}}
+						>
+							<span className="text-xs text-zinc-800 select-none absolute top-1 left-1">
+								{cell.col},{cell.row}
+							</span>
+							<SummonSprite unitInCell={summonInCell} key={cell.id} />
+						</button>
+					);
+				}
+
+				// D. HERO TILE
 				return (
 					<button
 						type="button"

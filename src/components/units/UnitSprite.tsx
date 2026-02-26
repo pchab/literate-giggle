@@ -1,41 +1,19 @@
 import { motion } from "motion/react";
 import Image from "next/image";
-import type {
-	EnemyType,
-} from "@/modules/figures/domain/figures.type";
-import type { HeroClass } from "@/modules/heroClass/heroClass.types";
-
-type SpriteType = HeroClass | EnemyType;
+import { UnitStance } from "@/modules/figures/domain/figures.type";
 
 interface UnitSpriteProps {
-	type: SpriteType;
-	stance?: number;
+	spriteBase: string;
+	stance?: UnitStance;
 	isHit?: boolean;
 }
 
-const UNIT_ASSETS: (stance: number) => Record<SpriteType, string> = (
-	stance,
-) => ({
-	SQUIRE: `/sprites/squire_${stance}.png`,
-	KNIGHT: `/sprites/knight_${stance}.png`,
-	CRYOMANCER: `/sprites/cryomancer_${stance}.png`,
-	PYROMANCER: `/sprites/pyromancer_${stance}.png`,
-	BARBARIAN: `/sprites/barbarian_${stance}.png`,
-	PALADIN: `/sprites/paladin_${stance}.png`,
-	CLERIC: `/sprites/cleric_${stance}.png`,
-	THIEF: `/sprites/thief_${stance}.png`,
-	BOSS: `/sprites/boss_${stance}.png`,
-	SKELETON: `/sprites/skeleton_${stance}.png`,
-	BAT: `/sprites/bat_${stance}.png`,
-	ARCHER: `/sprites/archer_${stance}.png`,
-});
-
 export function UnitSprite({
-	type,
-	stance = 0,
+	spriteBase,
+	stance = UnitStance.IDLE,
 	isHit = false,
 }: UnitSpriteProps) {
-	const src = UNIT_ASSETS(stance)[type];
+	const src = `/sprites/${spriteBase}_${stance}.png`;
 
 	return (
 		<motion.div
@@ -62,7 +40,7 @@ export function UnitSprite({
 			<div className="absolute w-full h-full flex items-center justify-center pointer-events-none">
 				<Image
 					src={src}
-					alt={type}
+					alt={`${spriteBase} stance ${stance}`}
 					fill
 					className="object-contain z-20"
 					priority

@@ -1,4 +1,4 @@
-import type { Hero, Monster } from "../figures/domain/figures.type";
+import type { Hero, Monster, Summon } from "../figures/domain/figures.type";
 import type { GridPosition } from "./grid.type";
 
 export const GRID_BOUNDS = {
@@ -8,7 +8,7 @@ export const GRID_BOUNDS = {
 
 export const isTileOccupied = (
 	pos: GridPosition,
-	figures: (Hero | Monster)[],
+	figures: (Hero | Monster | Summon)[],
 ) => {
 	return figures.some(
 		({ gridPosition, currentHp }) =>
@@ -37,7 +37,7 @@ export const isTileInBounds = (pos: GridPosition) => {
 export const calculateReachableCells = (
 	startPos: GridPosition,
 	moveValue: number,
-	figures: (Hero | Monster)[],
+	figures: (Hero | Monster | Summon)[],
 	canTargetSelf: boolean = false,
 ): GridPosition[] => {
 	if (moveValue <= 0) return [];

@@ -7,11 +7,12 @@ import type {
 	Card,
 	CardLog,
 } from "@/modules/cards/domain/cards.type";
-import { archer } from "@/modules/figures/domain/archer";
-import type { Hero, Monster } from "@/modules/figures/domain/figures.type";
-import { skeleton } from "@/modules/figures/domain/skeleton";
+import type {
+	Hero,
+	Monster,
+	Summon,
+} from "@/modules/figures/domain/figures.type";
 import { enemyService } from "@/modules/figures/enemy.service";
-import { createMonsterId } from "@/modules/figures/figures.helpers";
 import { heroService } from "@/modules/figures/heroes.service";
 import type { GridPosition } from "@/modules/grid/grid.type";
 import type { Encounter } from "@/modules/map/encounters.data";
@@ -30,6 +31,7 @@ export type BattleState = {
 	enemyIntents: Record<Monster["id"], MonsterIntent>;
 	hoveredCard: { heroId: Hero["id"]; cardId: Card["id"] } | null;
 	activeCard: ActiveCardContext | null;
+	summons: Summon[];
 };
 
 type BattleAction = {
@@ -50,29 +52,17 @@ type BattleAction = {
 
 const initialState: BattleState = {
 	heroes: [],
-	monsters: [
-		{
-			id: createMonsterId(1),
-			...skeleton,
-			currentHp: skeleton.maxHp,
-			gridPosition: { row: 4, col: 4 },
-		},
-		{
-			id: createMonsterId(2),
-			...archer,
-			currentHp: archer.maxHp,
-			gridPosition: { row: 4, col: 3 },
-		},
-	],
+	monsters: [],
 	enemyIntents: {},
 	activeCard: null,
 	usedCardsThisTurn: {},
 	cardUsageLog: {},
 	hoveredCard: null,
+	summons: [],
 };
 
 export type BattleStoreServerAction = (
-	state: BattleState,
+	state: BattleState & BattleAction,
 ) => Partial<BattleState>;
 
 export const useBattleStore = create<BattleState & BattleAction>()(

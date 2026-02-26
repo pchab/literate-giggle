@@ -1,11 +1,12 @@
-import { singleTargetPattern } from "../../attacks/attacks";
-import type { Monster } from "./figures.type";
+import { singleTargetPattern } from "@/modules/attacks/attacks";
+import type { Monster } from "../figures.type";
 
 export const archer: Omit<
 	Monster,
 	"id" | "currentHp" | "gridPosition" | "intent"
 > = {
 	enemyType: "ARCHER",
+	spriteBase: "archer",
 	maxHp: 10,
 	physDef: 0,
 	magDef: 0,

@@ -1,21 +1,22 @@
-import { singleTargetPattern } from "../../attacks/attacks";
-import type { Monster } from "./figures.type";
+import { conePattern, crossPattern } from "@/modules/attacks/attacks";
+import type { Monster } from "../figures.type";
 
-export const skeleton: Omit<
+export const testBoss: Omit<
 	Monster,
 	"id" | "currentHp" | "gridPosition" | "plannedAttack"
 > = {
-	enemyType: "SKELETON",
-	maxHp: 10,
-	physDef: 0,
-	magDef: 0,
+	enemyType: "BOSS",
+	spriteBase: "boss",
+	maxHp: 20,
+	physDef: 1,
+	magDef: 1,
 	attacks: [
 		{
 			id: 1,
 			target: "lowestHp",
-			pattern: singleTargetPattern,
+			pattern: crossPattern,
 			move: 2,
-			damage: 2,
+			damage: 3,
 			minRange: 1,
 			maxRange: 1,
 			effect: "physDmg",
@@ -23,9 +24,9 @@ export const skeleton: Omit<
 		{
 			id: 2,
 			target: "lowestPhysDef",
-			pattern: singleTargetPattern,
+			pattern: conePattern,
 			move: 2,
-			damage: 2,
+			damage: 4,
 			minRange: 1,
 			maxRange: 1,
 			effect: "physDmg",

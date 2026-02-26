@@ -1,7 +1,7 @@
 import type { Monster } from "@/modules/figures/domain/figures.type";
-import { archer } from "../figures/domain/archer";
-import { bat } from "../figures/domain/bat";
-import { skeleton } from "../figures/domain/skeleton";
+import { archer } from "../figures/domain/monsters/archer";
+import { bat } from "../figures/domain/monsters/bat";
+import { skeleton } from "../figures/domain/monsters/skeleton";
 import { createMonsterId } from "../figures/figures.helpers";
 
 export interface Encounter {

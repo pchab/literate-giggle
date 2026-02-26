@@ -1,6 +1,7 @@
 import { intentService } from "@/modules/attacks/intents.service";
+import { summonLibrary } from "@/modules/figures/domain/summons/summons.data";
 import type { BattleStoreServerAction } from "@/store/battle.store";
-import type { Hero, Monster } from "../../figures/domain/figures.type";
+import type { Hero, Monster, Summon } from "../../figures/domain/figures.type";
 import { applyEffectToHero, applyEffectToMonster } from "../cards.helper";
 import {
 	type AnchorTarget,
@@ -18,6 +19,7 @@ export function resolveCard(
 		monsters,
 		usedCardsThisTurn,
 		cardUsageLog,
+		summons,
 		...state
 	}) => {
 		if (!activeCard) {
@@ -34,6 +36,7 @@ export function resolveCard(
 		// Clone the state so we can safely mutate it during the sequence
 		let nextHeroes = [...heroes];
 		let nextMonsters = [...monsters];
+		const nextSummons = [...summons];
 
 		// Process every effect in the card's payload
 		card.effects.forEach((effect) => {
@@ -54,6 +57,21 @@ export function resolveCard(
 				return; // Stop processing this specific effect and move to the next one
 			}
 			// -------------------------------
+			if (effect.type === "summon") {
+				if (anchorTargetId && anchorIsGridPosition(anchorTargetId)) {
+					const { blueprintId } = effect;
+					const newSummonBlueprint = summonLibrary[blueprintId];
+					const newSummon: Summon = {
+						id: `summon-${Date.now()}` as Summon["id"],
+						...newSummonBlueprint,
+						currentHp: newSummonBlueprint.maxHp,
+						gridPosition: anchorTargetId,
+						allegiance: "PLAYER", // Assuming a hero cast it
+					};
+
+					nextSummons.push(newSummon);
+				}
+			}
 
 			// 1. Determine WHO receives this specific effect
 			const targetedHeroIds: Hero["id"][] = [];
@@ -97,6 +115,7 @@ export function resolveCard(
 			activeCard: null,
 			heroes: nextHeroes,
 			monsters: nextMonsters,
+			summons: nextSummons,
 			enemyIntents: newIntents, // Replaced `intents` with `enemyIntents` to match your store
 			usedCardsThisTurn: {
 				...usedCardsThisTurn,

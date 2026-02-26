@@ -1,8 +1,12 @@
 import { isHeroId, isMonsterId } from "@/modules/figures/figures.helpers";
 import type { GridPosition } from "@/modules/grid/grid.type";
-import type { Hero, Monster } from "../../figures/domain/figures.type";
+import type { Hero, Monster, Summon } from "../../figures/domain/figures.type";
 
-export type AnchorTarget = Hero["id"] | Monster["id"] | GridPosition;
+export type AnchorTarget =
+	| Hero["id"]
+	| Monster["id"]
+	| Summon["id"]
+	| GridPosition;
 
 export function anchorIsGridPosition(
 	anchorTarget: AnchorTarget,
@@ -55,7 +59,12 @@ export type CardEffect =
 			blockType: "physBlock" | "magBlock";
 			target: EffectTarget;
 	  }
-	| { type: "push"; distance: number; target: EffectTarget };
+	| { type: "push"; distance: number; target: EffectTarget }
+	| {
+			type: "summon";
+			blueprintId: string; // e.g., "ice_wall", "healing_totem"
+			target: EffectTarget;
+	  };
 
 export type Card = {
 	id: string & { readonly __brand: "CardId" };

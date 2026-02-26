@@ -5,7 +5,7 @@ import { cloneCard } from "@/modules/cards/cards.helper";
 import { cardLibrary, initialDeck } from "@/modules/cards/domain/cards";
 import type { Card, CardLog } from "@/modules/cards/domain/cards.type";
 import type { Hero } from "@/modules/figures/domain/figures.type";
-import { squireStats } from "@/modules/figures/domain/heroes";
+import { squireStats } from "@/modules/figures/domain/heroes/squire";
 import { createHeroId } from "@/modules/figures/figures.helpers";
 import { heroClassService } from "@/modules/heroClass/heroClass.service";
 import type { HeroClass } from "@/modules/heroClass/heroClass.types";
@@ -74,7 +74,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 					currentMagBlock: 0,
 					gridPosition: { row: 0, col: 1 },
 					deck: initialDeck,
-					cards: [cloneCard(cardLibrary[2]), cloneCard(cardLibrary[3])],
+					cards: [cloneCard(cardLibrary[2]), cloneCard(cardLibrary[12])],
 				},
 				{
 					id: createHeroId(3),
