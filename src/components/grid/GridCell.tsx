@@ -73,12 +73,12 @@ export function GridCell({
 	let stateClasses =
 		"bg-zinc-950/40 border border-zinc-800/60 z-0 backdrop-blur-[2px]";
 
-	if (isDanger) {
-		stateClasses =
-			"bg-red-950/50 border border-red-600/70 shadow-[inset_0_0_15px_rgba(220,38,38,0.3)] z-10 backdrop-blur-none";
-	} else if (isHoveredHero) {
+	if (isHoveredHero) {
 		stateClasses =
 			"bg-blue-900/40 border-2 border-blue-400 z-10 shadow-[inset_0_0_15px_rgba(59,130,246,0.5)] backdrop-blur-none";
+	} else if (isDanger) {
+		stateClasses =
+			"bg-red-950/50 border border-red-600/70 shadow-[inset_0_0_15px_rgba(220,38,38,0.3)] z-10 backdrop-blur-none";
 	} else if (inRange) {
 		if (isTargetingEmpty && isCellEmpty) {
 			stateClasses =
@@ -131,8 +131,9 @@ export function GridCell({
 	return (
 		<button
 			type="button"
-			className={`${baseClasses} ${stateClasses} ${heroInCell && !isInvalidTarget ? "hover:brightness-110" : ""
-				}`}
+			className={`${baseClasses} ${stateClasses} ${
+				heroInCell && !isInvalidTarget ? "hover:brightness-110" : ""
+			}`}
 			onClick={handleClick}
 		>
 			<span className="text-[10px] text-zinc-500 font-bold select-none absolute top-1 left-1 pointer-events-none">
@@ -145,7 +146,10 @@ export function GridCell({
 
 			{heroInCell && <HeroSprite unitInCell={heroInCell} />}
 
-			<VfxOverlay type={currentVfx[cell.id]} onComplete={() => setVfx(cell.id, null)} />
+			<VfxOverlay
+				type={currentVfx[cell.id]}
+				onComplete={() => setVfx(cell.id, null)}
+			/>
 		</button>
 	);
 }

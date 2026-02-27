@@ -13,8 +13,13 @@ import { useWorldStore } from "@/store/world.store";
 import EvolutionModal from "./EvolutionModal";
 
 export default function RewardScreen() {
-	const { roster, pendingBattleLog, claimRewardsAndReturnToMap, evolveCard, setPhase } =
-		useWorldStore();
+	const {
+		roster,
+		pendingBattleLog,
+		claimRewardsAndReturnToMap,
+		evolveCard,
+		setPhase,
+	} = useWorldStore();
 
 	const [initialRoster] = useState(roster);
 	const [evolvedCards, setEvolvedCards] = useState<Record<string, Card["id"]>>(

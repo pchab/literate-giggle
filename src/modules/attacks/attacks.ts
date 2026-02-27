@@ -1,5 +1,5 @@
 import type { Hero, Monster } from "../figures/domain/figures.type";
-import { getLineOfSightPath } from "../grid/grid.helpers";
+import { getLineOfSightPath, getManhattanDistance } from "../grid/grid.helpers";
 import type { GridPosition } from "../grid/grid.type";
 
 type Target = "lowestHp" | "random" | "lowestDef" | "grid";
@@ -66,6 +66,15 @@ export function getOrderedTargets(attack: Attack, heroes: Hero[]): Hero[] {
 	return [...heroes]
 		.filter(({ currentHp }) => currentHp > 0)
 		.sort(sortFunction);
+}
+
+export function isTargetInRange(
+	attack: Attack,
+	attackerPos: GridPosition,
+	targetPos: GridPosition,
+) {
+	const distance = getManhattanDistance(attackerPos, targetPos);
+	return distance >= attack.minRange && distance <= attack.maxRange;
 }
 
 export function getActualTarget(

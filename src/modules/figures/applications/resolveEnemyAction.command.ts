@@ -1,11 +1,11 @@
 import { intentService } from "@/modules/attacks/intents.service";
 import { getManhattanDistance } from "@/modules/grid/grid.helpers";
 import type { BattleState } from "@/store/battle.store"; // <-- Import your actual state interface!
+import { getIdealTarget } from "../../attacks/ai.helpers";
 import {
 	filterGridByAttackPattern,
 	getActualTarget,
 } from "../../attacks/attacks";
-import { getReachableTarget } from "../ai.helpers";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -27,7 +27,7 @@ export const resolveEnemyActions = async (get: StoreGet, set: StoreSet) => {
 		if (!intent) continue;
 
 		const { attackData: plannedAttack } = intent;
-		const { reachableTarget, moveDest } = getReachableTarget(
+		const { reachableTarget, moveDest } = getIdealTarget(
 			freshMonster,
 			plannedAttack,
 			state.heroes,

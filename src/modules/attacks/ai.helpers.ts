@@ -1,11 +1,11 @@
-import { type Attack, getOrderedTargets } from "../attacks/attacks";
+import type { Hero, Monster } from "../figures/domain/figures.type";
 import {
 	GRID_BOUNDS,
 	getManhattanDistance,
 	isTileOccupied,
 } from "../grid/grid.helpers";
 import type { GridPosition } from "../grid/grid.type";
-import type { Hero, Monster } from "./domain/figures.type";
+import { type Attack, getOrderedTargets, isTargetInRange } from "./attacks";
 
 export const calculateAIMove = (
 	monster: Monster,
@@ -100,7 +100,7 @@ const calculatePathToTarget = (
 	return [];
 };
 
-export const getReachableTarget = (
+export const getIdealTarget = (
 	monster: Monster,
 	plannedAttack: Attack,
 	heroes: Hero[],
@@ -110,7 +110,7 @@ export const getReachableTarget = (
 
 	return orderedTargets.reduce(
 		(acc, hero) => {
-			if (acc.moveDest) return acc;
+			if (acc.moveDest && acc.canHit) return acc;
 			const moveDest = calculateAIMove(
 				monster,
 				hero,
@@ -119,13 +119,23 @@ export const getReachableTarget = (
 				monsters,
 			);
 			if (moveDest) {
-				return { reachableTarget: hero, moveDest };
+				const canHit = isTargetInRange(
+					plannedAttack,
+					moveDest,
+					hero.gridPosition,
+				);
+				return canHit
+					? { reachableTarget: hero, moveDest, canHit }
+					: moveDest
+						? { reachableTarget: hero, moveDest, canHit }
+						: acc;
 			}
 			return acc;
 		},
 		{
 			reachableTarget: null as Hero | null,
 			moveDest: null as GridPosition | null,
+			canHit: false,
 		},
 	);
 };
