@@ -24,7 +24,7 @@ export default function EnemySprite({ unitInCell }: { unitInCell: Monster }) {
 	const isEnemyTurn =
 		!activeCard &&
 		Object.keys(usedCardsThisTurn).length ===
-			heroes.filter(({ currentHp }) => currentHp > 0).length;
+		heroes.filter(({ currentHp }) => currentHp > 0).length;
 
 	const stance = isEnemyTurn ? 1 : 0;
 	const intent = enemyIntents?.[unitInCell.id];
@@ -37,13 +37,12 @@ export default function EnemySprite({ unitInCell }: { unitInCell: Monster }) {
 
 			<FloatingDamage texts={texts} />
 
-			<div className="relative w-24 h-24 flex items-center justify-center z-10">
-				<UnitSprite
-					spriteBase={unitInCell.spriteBase}
-					stance={stance}
-					isHit={isHit}
-				/>
-			</div>
+			<UnitSprite
+				id={unitInCell.id}
+				spriteBase={unitInCell.spriteBase}
+				stance={stance}
+				isHit={isHit}
+			/>
 
 			<HealthBar currentHp={currentHp} maxHp={maxHp} />
 		</div>

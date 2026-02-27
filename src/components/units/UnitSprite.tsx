@@ -3,19 +3,26 @@ import Image from "next/image";
 import { UnitStance } from "@/modules/figures/domain/figures.type";
 
 interface UnitSpriteProps {
+	id: string;
 	spriteBase: string;
 	stance?: UnitStance;
 	isHit?: boolean;
 }
 
 export function UnitSprite({
+	id,
 	spriteBase,
 	stance = UnitStance.IDLE,
 	isHit = false,
 }: UnitSpriteProps) {
 	const src = `/sprites/${spriteBase}_${stance}.png`;
 
-	return (
+	return (<motion.div
+		layout
+		layoutId={`unit-${id}`}
+		transition={{ type: "spring", stiffness: 350, damping: 30 }}
+		className="relative w-grid h-grid flex items-center justify-center pointer-events-none"
+	>
 		<motion.div
 			className={`
                         absolute inset-0 
@@ -24,15 +31,15 @@ export function UnitSprite({
 			animate={
 				isHit
 					? {
-							filter: [
-								"brightness(1)",
-								"brightness(2) sepia(1) hue-rotate(-50deg) saturate(5)",
-								"brightness(1)",
-							],
-							x: [0, -4, 4, -2, 0],
-							rotate: [0, -3, 3, -1, 0],
-							scale: [1, 1.05, 1.05, 1, 1],
-						}
+						filter: [
+							"brightness(1)",
+							"brightness(2) sepia(1) hue-rotate(-50deg) saturate(5)",
+							"brightness(1)",
+						],
+						x: [0, -4, 4, -2, 0],
+						rotate: [0, -3, 3, -1, 0],
+						scale: [1, 1.05, 1.05, 1, 1],
+					}
 					: {}
 			}
 			transition={{ duration: 0.4, ease: "easeInOut" }}
@@ -47,5 +54,6 @@ export function UnitSprite({
 				/>
 			</div>
 		</motion.div>
+	</motion.div>
 	);
 }

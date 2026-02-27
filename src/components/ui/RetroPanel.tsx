@@ -12,7 +12,7 @@ export const RetroPanel = React.forwardRef<HTMLDivElement, RetroPanelProps>(
 		return (
 			<motion.div
 				ref={ref}
-				className={`bg-slate-900 border-4 border-slate-700 shadow-[inset_0_0_0_2px_rgba(255,255,255,0.1),6px_6px_0px_0px_rgba(0,0,0,0.6)] text-slate-200 p-6 relative ${className}`}
+				className={`bg-slate-900 border-4 border-slate-700 shadow-[inset_0_0_0_2px_rgba(255,255,255,0.1),6px_6px_0px_0px_rgba(0,0,0,0.6)] text-slate-200 p-8 relative ${className}`}
 				{...props}
 			>
 				{title && (

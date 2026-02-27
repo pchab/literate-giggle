@@ -83,7 +83,8 @@ export function BattleGrid() {
 		activeCard?.card ||
 		heroes
 			.find((h) => h.id === hoveredCard?.heroId)
-			?.cards.find((c) => c.id === hoveredCard?.cardId);
+			?.cards.filter((c) => !!c)
+			.find((c) => c.id === hoveredCard?.cardId);
 
 	const previewCaster = activeCard
 		? heroes.find((h) => h.id === activeCard.heroId)

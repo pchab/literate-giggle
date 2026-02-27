@@ -10,6 +10,7 @@ export enum UnitStance {
 }
 
 export type Figure = {
+	id: string;
 	spriteBase: string;
 	currentHp: number;
 	maxHp: number;

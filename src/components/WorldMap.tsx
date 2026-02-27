@@ -135,7 +135,7 @@ export default function WorldMap() {
                                     ${NODE_STYLES[node.type]}
                                     ${isCurrentNode ? "ring-4 ring-white/30 border-white scale-110 shadow-[0_0_20px_rgba(255,255,255,0.4)]" : ""}
                                     ${isReachable ? "cursor-pointer hover:border-white shadow-[0_0_15px_rgba(255,255,255,0.1)]" : ""}
-                                    ${isLocked ? "opacity-40 grayscale-[80%] cursor-not-allowed border-zinc-700 shadow-none" : ""}
+                                    ${isLocked ? "opacity-40 grayscale-80 cursor-not-allowed border-zinc-700 shadow-none" : ""}
                                 `}
 							>
 								<span className="text-lg drop-shadow-md">
@@ -179,18 +179,17 @@ export default function WorldMap() {
 				</div>
 			</div>
 
-			{/* --- NEW: Deck Loadout Button (Bottom Right) --- */}
+			{/* --- NEW: Deck menu Button (Top Right) --- */}
 			<motion.button
 				whileHover={{ scale: 1.05 }}
 				whileTap={{ scale: 0.95 }}
 				onClick={() => setIsLoadoutOpen(true)}
-				className="absolute z-30 bottom-4 right-4 flex items-center gap-2 px-6 py-3 font-bold text-black uppercase tracking-widest transition-colors bg-yellow-600 rounded-lg shadow-[0_0_15px_rgba(202,138,4,0.4)] hover:bg-yellow-500 hover:shadow-[0_0_20px_rgba(202,138,4,0.6)]"
+				className="absolute z-30 top-6 right-6 flex items-center gap-2 px-6 py-3 font-bold text-black uppercase tracking-widest transition-colors bg-yellow-600 rounded-lg shadow-[0_0_15px_rgba(202,138,4,0.4)] hover:bg-yellow-500 hover:shadow-[0_0_20px_rgba(202,138,4,0.6)]"
 			>
-				<span className="text-xl">🃏</span>
-				Loadout
+				Menu
 			</motion.button>
 
-			{/* --- NEW: The Loadout Modal --- */}
+			{/* --- NEW: The Hand Modal --- */}
 			<LoadoutModal
 				isOpen={isLoadoutOpen}
 				onClose={() => setIsLoadoutOpen(false)}

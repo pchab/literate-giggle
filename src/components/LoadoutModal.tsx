@@ -117,10 +117,11 @@ export function LoadoutModal({
 										type="button"
 										key={hero.id}
 										onClick={() => handleSelectHero(hero)}
-										className={`px-6 py-3 font-pixel text-2xl tracking-widest uppercase transition-colors text-shadow-pixel ${selectedHeroId === hero.id
-											? "bg-slate-700 text-yellow-500 border-t-4 border-x-4 border-slate-500 shadow-[inset_0_4px_0_rgba(255,255,255,0.2)]"
-											: "bg-slate-900 text-slate-500 hover:text-slate-300 border-t-4 border-x-4 border-transparent hover:border-slate-800"
-											}`}
+										className={`px-6 py-3 font-pixel text-2xl tracking-widest uppercase transition-colors text-shadow-pixel ${
+											selectedHeroId === hero.id
+												? "bg-slate-700 text-yellow-500 border-t-4 border-x-4 border-slate-500 shadow-[inset_0_4px_0_rgba(255,255,255,0.2)]"
+												: "bg-slate-900 text-slate-500 hover:text-slate-300 border-t-4 border-x-4 border-transparent hover:border-slate-800"
+										}`}
 									>
 										{hero.id}
 									</button>
