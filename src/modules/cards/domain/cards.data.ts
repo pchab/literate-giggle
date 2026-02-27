@@ -5,7 +5,7 @@ export const cardLibrary: Record<Card["id"], Card> = {
 	[createCardId("bandage-1")]: {
 		id: createCardId("bandage-1"),
 		name: "Bandage",
-		range: 1,
+		range: 0,
 		playRequirement: "no_target",
 		effects: [{ type: "heal", amount: 1, target: "self" }],
 		xp: 0,
@@ -15,7 +15,7 @@ export const cardLibrary: Record<Card["id"], Card> = {
 	[createCardId("bandage-2")]: {
 		id: createCardId("bandage-2"),
 		name: "Bandage",
-		range: 1,
+		range: 0,
 		playRequirement: "no_target",
 		effects: [{ type: "heal", amount: 2, target: "self" }],
 		xp: 0,
@@ -25,7 +25,7 @@ export const cardLibrary: Record<Card["id"], Card> = {
 	[createCardId("bandage-3")]: {
 		id: createCardId("bandage-3"),
 		name: "Bandage",
-		range: 1,
+		range: 0,
 		playRequirement: "no_target",
 		effects: [{ type: "heal", amount: 3, target: "self" }],
 		xp: 0,

@@ -86,7 +86,7 @@ export const PROTOTYPE_MAP: MapData = {
 		name: "Northern Road",
 		type: "BATTLE",
 		position: { x: 67, y: 35 },
-		connectedNodeIds: ["ironhold_city"],
+		connectedNodeIds: ["ironhold_city", "connury_town"],
 		encounterId: createEncounterId("cultists_ambush"),
 		terrain: "GRASS",
 	},

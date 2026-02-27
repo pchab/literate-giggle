@@ -32,9 +32,14 @@ Battle:
 * class based stat bonuses
 * class based passive bonuses
 * LoS interception
+* AI that try to optimize its move to hit a hero
+* Intent system to show the AI's plan
+* vfx animation on card resolution
 
 World Map:
-* node exploration
+* node exploration with different kinds of node (battle, town, camp)
 * battle on nodes which hand the predetermined encounters to the battle system.
+* battle terrain depending on the current node (forest, city, dungeon, etc)
+* Menu to choose the card deck for each hero
 ***
 
