@@ -6,6 +6,10 @@ export const GRID_BOUNDS = {
 	cols: 5,
 };
 
+export function getCellId(pos: GridPosition): string {
+	return `${pos.row}-${pos.col}`;
+}
+
 export const isTileOccupied = (
 	pos: GridPosition,
 	figures: (Hero | Monster | Summon)[],

@@ -15,7 +15,11 @@ export default function SummonSprite({ unitInCell }: SummonSpriteProps) {
 		<div className="absolute inset-0 z-20 flex items-center justify-center">
 			<FloatingDamage texts={texts} />
 
-			<UnitSprite id={unitInCell.id} spriteBase={unitInCell.spriteBase} isHit={isHit} />
+			<UnitSprite
+				id={unitInCell.id}
+				spriteBase={unitInCell.spriteBase}
+				isHit={isHit}
+			/>
 
 			<HealthBar currentHp={unitInCell.currentHp} maxHp={unitInCell.maxHp} />
 		</div>

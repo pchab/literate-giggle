@@ -46,8 +46,10 @@ export default function Home() {
 			{} as Record<Hero["id"], number>,
 		);
 
-		stageBattleRewards(remainingHealth, cardUsageLog);
-		redirect("/");
+		setTimeout(() => {
+			stageBattleRewards(remainingHealth, cardUsageLog);
+			redirect("/");
+		}, 1000);
 	}
 
 	const terrainBgPath = terrainImageMapping[mapData[currentNodeId].terrain];

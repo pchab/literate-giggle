@@ -1,5 +1,7 @@
 import { intentService } from "@/modules/attacks/intents.service";
 import { summonLibrary } from "@/modules/figures/domain/summons/summons.data";
+import { getVfxForEffect } from "@/modules/grid/vfx/vfx.helper";
+import type { VfxType } from "@/modules/grid/vfx/vfx.type";
 import type { BattleStoreServerAction } from "@/store/battle.store";
 import type { Hero, Monster, Summon } from "../../figures/domain/figures.type";
 import { applyEffectToHero, applyEffectToMonster } from "../cards.helper";
@@ -63,6 +65,7 @@ export function resolveCard(
 		let draftHeroes = [...heroes];
 		let draftMonsters = [...monsters];
 		const draftSummons = [...summons];
+		const vfx: Record<string, VfxType> = {};
 
 		// --- 3. THE PIPELINE ---
 		card.effects.forEach((effect) => {
@@ -117,7 +120,20 @@ export function resolveCard(
 					: monster,
 			);
 
-			// Note: If you ever want Summons to take damage/heals, you just add `applyEffectToSummon` here!
+			const newVfx = getVfxForEffect(effect, {
+				monsterPositions: targets.monsterIds
+					.map(
+						(monsterId) =>
+							draftMonsters.find((m) => m.id === monsterId)?.gridPosition,
+					)
+					.filter((pos) => pos !== undefined),
+				heroPositions: targets.heroIds
+					.map(
+						(heroId) => draftHeroes.find((h) => h.id === heroId)?.gridPosition,
+					)
+					.filter((pos) => pos !== undefined),
+			});
+			Object.assign(vfx, newVfx);
 		});
 
 		// --- 4. FINALIZE & UPDATE STORE ---
@@ -146,6 +162,7 @@ export function resolveCard(
 					[card.id]: (cardUsageLog[heroId]?.[card.id] || 0) + 1,
 				},
 			},
+			currentVfx: vfx,
 		};
 	};
 }

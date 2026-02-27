@@ -15,5 +15,6 @@ export function stageBattleRewards(
 		})),
 		pendingBattleLog: cardLog,
 		phase: "REWARD",
+		currentVfx: {},
 	});
 }

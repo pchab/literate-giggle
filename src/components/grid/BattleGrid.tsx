@@ -6,6 +6,7 @@ import {
 	calculateAttackableCells,
 	calculateReachableCells,
 	GRID_BOUNDS,
+	getCellId,
 } from "@/modules/grid/grid.helpers";
 import type { GridPosition } from "@/modules/grid/grid.type";
 import { useBattleStore } from "@/store/battle.store";
@@ -13,7 +14,7 @@ import { GridCell } from "./GridCell";
 
 const cells = Array.from({ length: GRID_BOUNDS.rows }, (_, col) => {
 	return Array.from({ length: GRID_BOUNDS.cols }, (_, row) => {
-		return { id: `${col}-${row}`, col, row };
+		return { id: getCellId({ col, row }), col, row };
 	});
 }).flat();
 

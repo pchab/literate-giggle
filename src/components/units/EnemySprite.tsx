@@ -24,7 +24,7 @@ export default function EnemySprite({ unitInCell }: { unitInCell: Monster }) {
 	const isEnemyTurn =
 		!activeCard &&
 		Object.keys(usedCardsThisTurn).length ===
-		heroes.filter(({ currentHp }) => currentHp > 0).length;
+			heroes.filter(({ currentHp }) => currentHp > 0).length;
 
 	const stance = isEnemyTurn ? 1 : 0;
 	const intent = enemyIntents?.[unitInCell.id];

@@ -13,7 +13,7 @@ import { useWorldStore } from "@/store/world.store";
 import EvolutionModal from "./EvolutionModal";
 
 export default function RewardScreen() {
-	const { roster, pendingBattleLog, claimRewardsAndReturnToMap, evolveCard } =
+	const { roster, pendingBattleLog, claimRewardsAndReturnToMap, evolveCard, setPhase } =
 		useWorldStore();
 
 	const [initialRoster] = useState(roster);
@@ -26,6 +26,7 @@ export default function RewardScreen() {
 	} | null>(null);
 
 	if (Object.keys(pendingBattleLog).length === 0) {
+		setPhase("MAP");
 		redirect("/");
 	}
 

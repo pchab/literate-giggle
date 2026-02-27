@@ -15,6 +15,7 @@ import type {
 import { enemyService } from "@/modules/figures/enemy.service";
 import { heroService } from "@/modules/figures/heroes.service";
 import type { GridPosition } from "@/modules/grid/grid.type";
+import type { VfxType } from "@/modules/grid/vfx/vfx.type";
 import type { Encounter } from "@/modules/map/encounters.data";
 import { encountersService } from "@/modules/map/encounters.service";
 
@@ -34,6 +35,7 @@ export type BattleState = {
 	enemyIntents: Record<Monster["id"], MonsterIntent>;
 	hoveredCard: { heroId: Hero["id"]; cardId: Card["id"] } | null;
 	summons: Summon[];
+	currentVfx: Record<string, VfxType>; // key is cell id
 };
 
 type BattleAction = {
@@ -47,6 +49,7 @@ type BattleAction = {
 	setHoveredCard: (
 		hovered: { heroId: Hero["id"]; cardId: Card["id"] } | null,
 	) => void;
+	setVfx: (cellId: string, vfx: VfxType | null) => void;
 };
 
 const initialState: BattleState = {
@@ -60,6 +63,7 @@ const initialState: BattleState = {
 	cardUsageLog: {},
 	hoveredCard: null,
 	summons: [],
+	currentVfx: {},
 };
 
 export type BattleStoreServerAction = (
@@ -85,6 +89,10 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 				await enemyService.resolveEnemyActions(get, set);
 			},
 			setHoveredCard: (hoveredCard) => set(() => ({ hoveredCard })),
+			setVfx: (cellId, vfx) =>
+				set(({ currentVfx: { [cellId]: cellVfx, ...otherVfx } }) => ({
+					currentVfx: vfx ? { ...otherVfx, [cellId]: vfx } : otherVfx,
+				})),
 		}),
 		{
 			name: "alpha-battle-state",

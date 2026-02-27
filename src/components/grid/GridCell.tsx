@@ -1,4 +1,6 @@
-import { motion } from "motion/react";
+"use client";
+
+import { useShallow } from "zustand/shallow";
 import type { AnchorTarget } from "@/modules/cards/domain/cards.type";
 import type {
 	Hero,
@@ -6,9 +8,11 @@ import type {
 	Summon,
 } from "@/modules/figures/domain/figures.type";
 import type { GridPosition } from "@/modules/grid/grid.type";
+import { useBattleStore } from "@/store/battle.store";
 import EnemySprite from "../units/EnemySprite";
 import HeroSprite from "../units/HeroSprite";
 import SummonSprite from "../units/SummonSprite";
+import { VfxOverlay } from "./VfxOverlay";
 
 interface GridCellProps {
 	cell: { id: string } & GridPosition;
@@ -53,6 +57,12 @@ export function GridCell({
 	activeMoveHeroId,
 	hasMoved,
 }: GridCellProps) {
+	const { currentVfx, setVfx } = useBattleStore(
+		useShallow((state) => ({
+			currentVfx: state.currentVfx,
+			setVfx: state.setVfx,
+		})),
+	);
 	const isCellEmpty = !enemyInCell && !heroInCell && !summonInCell;
 	const isHoveredHero = hoveredHeroId && heroInCell?.id === hoveredHeroId;
 
@@ -134,6 +144,8 @@ export function GridCell({
 			{summonInCell && <SummonSprite unitInCell={summonInCell} />}
 
 			{heroInCell && <HeroSprite unitInCell={heroInCell} />}
+
+			<VfxOverlay type={currentVfx[cell.id]} onComplete={() => setVfx(cell.id, null)} />
 		</button>
 	);
 }
