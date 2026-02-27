@@ -1,4 +1,3 @@
-import { intentService } from "@/modules/attacks/intents.service";
 import type { BattleStoreServerAction } from "@/store/battle.store";
 import type { Hero } from "../../figures/domain/figures.type";
 import type { Card } from "../domain/cards.type";
@@ -9,7 +8,7 @@ export function selectCard(
 	cardId: Card["id"],
 ): BattleStoreServerAction {
 	return (state) => {
-		const { heroes, monsters, activeCard, usedCardsThisTurn } = state;
+		const { heroes, activeCard, usedCardsThisTurn } = state;
 		if (activeCard) {
 			console.warn("Another card is already selected.");
 			return {};
@@ -23,7 +22,7 @@ export function selectCard(
 			console.warn(`Hero with ID ${heroId} not found.`);
 			return {};
 		}
-		const card = hero.cards.find((c) => c.id === cardId);
+		const card = hero.cards.filter((c) => !!c).find((c) => c.id === cardId);
 		if (!card) {
 			console.warn(
 				`Card with ID ${cardId} not found for hero with ID ${heroId}`,
@@ -46,9 +45,7 @@ export function selectCard(
 			};
 		}
 
-		const newIntents = intentService.calculateAllIntents(heroes, monsters);
 		return {
-			enemyIntents: newIntents,
 			activeCard: { heroId, card },
 		};
 	};

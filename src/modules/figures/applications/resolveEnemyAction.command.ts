@@ -1,10 +1,11 @@
 import { intentService } from "@/modules/attacks/intents.service";
+import { getManhattanDistance } from "@/modules/grid/grid.helpers";
 import type { BattleState } from "@/store/battle.store"; // <-- Import your actual state interface!
 import {
 	filterGridByAttackPattern,
-	findTargetedHero,
 	getActualTarget,
 } from "../../attacks/attacks";
+import { getReachableTarget } from "../ai.helpers";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -25,26 +26,50 @@ export const resolveEnemyActions = async (get: StoreGet, set: StoreSet) => {
 		const intent = state.enemyIntents[freshMonster.id];
 		if (!intent) continue;
 
-		const { intendedMove, attackData: plannedAttack } = intent;
+		const { attackData: plannedAttack } = intent;
+		const { reachableTarget, moveDest } = getReachableTarget(
+			freshMonster,
+			plannedAttack,
+			state.heroes,
+			state.monsters,
+		);
+		if (!reachableTarget || !moveDest) {
+			continue;
+		}
 
 		const nextMonsters = state.monsters.map((m) =>
-			m.id === freshMonster.id ? { ...m, gridPosition: intendedMove } : m,
+			m.id === freshMonster.id ? { ...m, gridPosition: moveDest } : m,
 		);
 
 		// biome-ignore lint/style/noNonNullAssertion: <We just mapped it on the line above>
 		const movedMonster = nextMonsters.find((m) => m.id === freshMonster.id)!;
 
-		const idealTarget = findTargetedHero(plannedAttack, state.heroes);
+		const distanceToTarget = getManhattanDistance(
+			movedMonster.gridPosition,
+			reachableTarget.gridPosition,
+		);
+		if (
+			distanceToTarget < plannedAttack.minRange ||
+			distanceToTarget > plannedAttack.maxRange
+		) {
+			// Cannot attack, store move
+			set((prev) => ({
+				...prev,
+				monsters: nextMonsters,
+			}));
+			continue;
+		}
+
 		const collision = getActualTarget(
 			movedMonster.gridPosition,
-			idealTarget.gridPosition,
+			reachableTarget.gridPosition,
 			state.heroes,
 			nextMonsters,
 		);
 
 		const finalTargetPos = collision
 			? collision.unit.gridPosition
-			: idealTarget.gridPosition;
+			: reachableTarget.gridPosition;
 		const targetedCells = filterGridByAttackPattern(
 			plannedAttack,
 			finalTargetPos,

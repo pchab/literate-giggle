@@ -1,4 +1,4 @@
-import type { Attack } from "../attacks/attacks";
+import { type Attack, getOrderedTargets } from "../attacks/attacks";
 import {
 	GRID_BOUNDS,
 	getManhattanDistance,
@@ -13,7 +13,7 @@ export const calculateAIMove = (
 	plannedAttack: Attack,
 	heroes: Hero[],
 	monsters: Monster[],
-): GridPosition => {
+): GridPosition | null => {
 	if (plannedAttack.move === 0) {
 		return monster.gridPosition;
 	}
@@ -36,7 +36,7 @@ export const calculateAIMove = (
 		monsters,
 	);
 
-	if (fullPath.length === 0) return monster.gridPosition;
+	if (fullPath.length === 0) return null;
 
 	const stepsToTake = Math.min(plannedAttack.move, fullPath.length);
 	return fullPath[stepsToTake - 1];
@@ -98,4 +98,34 @@ const calculatePathToTarget = (
 	}
 
 	return [];
+};
+
+export const getReachableTarget = (
+	monster: Monster,
+	plannedAttack: Attack,
+	heroes: Hero[],
+	monsters: Monster[],
+) => {
+	const orderedTargets = getOrderedTargets(plannedAttack, heroes);
+
+	return orderedTargets.reduce(
+		(acc, hero) => {
+			if (acc.moveDest) return acc;
+			const moveDest = calculateAIMove(
+				monster,
+				hero,
+				plannedAttack,
+				heroes,
+				monsters,
+			);
+			if (moveDest) {
+				return { reachableTarget: hero, moveDest };
+			}
+			return acc;
+		},
+		{
+			reachableTarget: null as Hero | null,
+			moveDest: null as GridPosition | null,
+		},
+	);
 };

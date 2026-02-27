@@ -51,19 +51,21 @@ export type MonsterIntent = {
 	attackData: Attack;
 };
 
-export function findTargetedHero(attack: Attack, heroes: Hero[]): Hero {
+export function getOrderedTargets(attack: Attack, heroes: Hero[]): Hero[] {
 	const { target } = attack;
-	const reduceFunction = (hero: Hero, currentTarget: Hero) => {
+	const sortFunction = (heroA: Hero, heroB: Hero) => {
 		switch (target) {
 			case "lowestDef":
-				return hero.baseDef < currentTarget.baseDef ? hero : currentTarget;
+				return heroA.baseDef - heroB.baseDef;
 			case "lowestHp":
-				return hero.currentHp < currentTarget.currentHp ? hero : currentTarget;
+				return heroA.currentHp - heroB.currentHp;
 			default:
-				return Math.random() < 0.5 ? hero : currentTarget;
+				return Math.random() < 0.5 ? -1 : 1;
 		}
 	};
-	return heroes.reduce(reduceFunction);
+	return [...heroes]
+		.filter(({ currentHp }) => currentHp > 0)
+		.sort(sortFunction);
 }
 
 export function getActualTarget(
