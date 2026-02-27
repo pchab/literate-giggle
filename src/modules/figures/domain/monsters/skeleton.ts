@@ -6,7 +6,7 @@ export const skeleton: Omit<
 	"id" | "currentHp" | "gridPosition" | "plannedAttack"
 > = {
 	enemyType: "SKELETON",
-	spriteBase: "skeleton",
+	spriteBase: "monsters/skeleton",
 	maxHp: 10,
 	baseMove: 2,
 	baseDef: 0,

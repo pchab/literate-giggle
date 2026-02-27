@@ -5,34 +5,40 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 	HOBO: {
 		id: "HOBO",
 		name: "Hobo",
-		spriteBase: "peasant", // Assuming you have a peasant_0.png!
+		spriteBase: "heroes/hobo",
 		bonusMaxHp: 0,
 		bonusBaseDef: 0,
 		bonusBaseMove: 0,
-		utilityCardChoices: [createCardId("bandage-1")], // Start with a basic heal
+		utilityCardChoices: [createCardId("bandage-1")],
 	},
 	FIGHTER: {
 		id: "FIGHTER",
 		name: "Fighter",
-		spriteBase: "squire",
+		spriteBase: "heroes/fighter",
 		bonusMaxHp: 2,
 		bonusBaseDef: 1,
 		bonusBaseMove: 0,
-		utilityCardChoices: [createCardId("shield-block-1")],
+		utilityCardChoices: [
+			createCardId("shield-block-1"),
+			createCardId("battle-cry-1"),
+		],
 	},
 	MAGE: {
 		id: "MAGE",
 		name: "Mage",
-		spriteBase: "apprentice",
+		spriteBase: "heroes/mage",
 		bonusMaxHp: 0,
 		bonusBaseDef: 0,
 		bonusBaseMove: 0,
-		utilityCardChoices: [createCardId("push-1")],
+		utilityCardChoices: [
+			createCardId("arcane-shield-1"),
+			createCardId("push-1"),
+		],
 	},
 	ROGUE: {
 		id: "ROGUE",
 		name: "Rogue",
-		spriteBase: "rogue",
+		spriteBase: "heroes/rogue",
 		bonusMaxHp: 0,
 		bonusBaseDef: 0,
 		bonusBaseMove: 0,
@@ -41,7 +47,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 	ARCHER: {
 		id: "ARCHER",
 		name: "Archer",
-		spriteBase: "archer",
+		spriteBase: "heroes/archer",
 		bonusMaxHp: 0,
 		bonusBaseDef: 0,
 		bonusBaseMove: 0,
@@ -50,7 +56,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 	KNIGHT: {
 		id: "KNIGHT",
 		name: "Knight",
-		spriteBase: "knight",
+		spriteBase: "heroes/knight",
 		bonusMaxHp: 0,
 		bonusBaseDef: 0,
 		bonusBaseMove: 0,
@@ -59,7 +65,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 	BARBARIAN: {
 		id: "BARBARIAN",
 		name: "Barbarian",
-		spriteBase: "barbarian",
+		spriteBase: "heroes/barbarian",
 		bonusMaxHp: 0,
 		bonusBaseDef: 0,
 		bonusBaseMove: 0,
@@ -68,7 +74,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 	PYROMANCER: {
 		id: "PYROMANCER",
 		name: "Pyromancer",
-		spriteBase: "pyromancer",
+		spriteBase: "heroes/pyromancer",
 		bonusMaxHp: 0,
 		bonusBaseDef: 0,
 		bonusBaseMove: 0,
@@ -77,7 +83,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 	CRYOMANCER: {
 		id: "CRYOMANCER",
 		name: " Cryomancer",
-		spriteBase: "cryomancer",
+		spriteBase: "heroes/cryomancer",
 		bonusMaxHp: 0,
 		bonusBaseDef: 0,
 		bonusBaseMove: 0,
@@ -86,7 +92,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 	CLERIC: {
 		id: "CLERIC",
 		name: "Cleric",
-		spriteBase: "cleric",
+		spriteBase: "heroes/cleric",
 		bonusMaxHp: 0,
 		bonusBaseDef: 0,
 		bonusBaseMove: 0,

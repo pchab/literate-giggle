@@ -6,7 +6,7 @@ export const testBoss: Omit<
 	"id" | "currentHp" | "gridPosition" | "plannedAttack"
 > = {
 	enemyType: "BOSS",
-	spriteBase: "boss",
+	spriteBase: "monsters/boss",
 	maxHp: 20,
 	baseMove: 2,
 	baseDef: 1,

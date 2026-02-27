@@ -3,7 +3,7 @@
 import { AnimatePresence, domAnimation, LazyMotion, m } from "framer-motion";
 import { redirect } from "next/navigation";
 import { useState } from "react";
-import { CardComponent } from "@/components/cards/Card";
+import { BattleCard } from "@/components/cards/BattleCard";
 import { formatCardEffect } from "@/modules/cards/cards.helper";
 import { cardLibrary } from "@/modules/cards/domain/cards.data";
 import type { Card } from "@/modules/cards/domain/cards.type";
@@ -99,7 +99,7 @@ export default function RewardScreen() {
 										return (
 											<div key={card.id} className="flex items-center gap-6">
 												<div className="w-20 shrink-0 transform hover:scale-105 transition-transform">
-													<CardComponent {...card} />
+													<BattleCard {...card} />
 												</div>
 
 												<div className="flex-1 flex flex-col gap-2">

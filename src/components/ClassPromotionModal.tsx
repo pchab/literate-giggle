@@ -3,11 +3,11 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { useShallow } from "zustand/shallow";
+import { BattleCard } from "@/components/cards/BattleCard";
 import { cardLibrary } from "@/modules/cards/domain/cards.data";
 import type { Card } from "@/modules/cards/domain/cards.type";
 import { CLASS_REGISTRY } from "@/modules/heroClass/domain/heroClass.data";
 import { useWorldStore } from "@/store/world.store";
-import { CardComponent } from "./cards/Card";
 import { HeroPortrait } from "./HeroPortrait";
 
 export function ClassPromotionModal() {
@@ -123,7 +123,7 @@ export function ClassPromotionModal() {
 											: "scale-100 hover:scale-105 opacity-70 hover:opacity-100 grayscale hover:grayscale-0"
 									}`}
 								>
-									<CardComponent {...cardDef} />
+									<BattleCard {...cardDef} />
 
 									{isSelected && (
 										<motion.div

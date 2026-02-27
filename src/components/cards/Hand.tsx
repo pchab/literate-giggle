@@ -4,7 +4,7 @@ import { AnimatePresence } from "motion/react";
 import { useShallow } from "zustand/shallow";
 import type { Hero } from "@/modules/figures/domain/figures.type";
 import { useBattleStore } from "@/store/battle.store";
-import { CardComponent } from "./Card";
+import { BattleCard } from "./BattleCard";
 import { CardTooltip } from "./CardTooltip";
 
 export function Hand({ id: heroId, cards }: Pick<Hero, "id" | "cards">) {
@@ -70,7 +70,7 @@ export function Hand({ id: heroId, cards }: Pick<Hero, "id" | "cards">) {
 							{isHovered && <CardTooltip card={card} />}
 						</AnimatePresence>
 
-						<CardComponent
+						<BattleCard
 							{...card}
 							isSelected={isSelected}
 							isPlayable={isPlayable}

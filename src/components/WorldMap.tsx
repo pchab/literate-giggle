@@ -2,7 +2,9 @@
 
 import { motion } from "motion/react";
 import Image from "next/image";
+import { useState } from "react";
 import { useShallow } from "zustand/shallow";
+import { LoadoutModal } from "@/components/LoadoutModal";
 import { useWorldStore } from "@/store/world.store";
 
 // Helper mappings for visuals
@@ -23,13 +25,17 @@ const NODE_STYLES = {
 };
 
 export default function WorldMap() {
-	const { mapData, currentNodeId, travelToNode } = useWorldStore(
+	const { mapData, currentNodeId, travelToNode, updateHand } = useWorldStore(
 		useShallow((state) => ({
 			mapData: state.mapData,
 			currentNodeId: state.currentNodeId,
 			travelToNode: state.travelToNode,
+			updateHand: state.updateHand,
 		})),
 	);
+
+	// --- NEW: State for the Loadout Modal ---
+	const [isLoadoutOpen, setIsLoadoutOpen] = useState(false);
 
 	const nodes = Object.values(mapData);
 	const currentNode = mapData[currentNodeId];
@@ -45,7 +51,7 @@ export default function WorldMap() {
 				quality={100}
 			/>
 
-			{/* Optional: A slight vignette/darkening overlay so your bright node buttons still pop perfectly */}
+			{/* Optional: A slight vignette/darkening overlay */}
 			<div className="absolute inset-0 bg-zinc-950/30 shadow-[inset_0_0_100px_rgba(0,0,0,0.8)] pointer-events-none z-0" />
 
 			{/* 2. SVG LAYER: Animated connecting paths */}
@@ -72,7 +78,6 @@ export default function WorldMap() {
 								stroke={isTravelable ? "#d4d4d8" : "#3f3f46"}
 								strokeWidth={isTravelable ? "3" : "2"}
 								strokeDasharray="8 8"
-								// The Magic: If travelable, animate the dashes to create a "flowing" effect!
 								animate={isTravelable ? { strokeDashoffset: [0, -16] } : {}}
 								transition={
 									isTravelable
@@ -138,7 +143,7 @@ export default function WorldMap() {
 								</span>
 							</motion.button>
 
-							{/* Node Tooltip (Fades in on hover) */}
+							{/* Node Tooltip */}
 							<div
 								className={`
                                 absolute bottom-[120%] left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 
@@ -162,7 +167,7 @@ export default function WorldMap() {
 				);
 			})}
 
-			{/* Map Legend / HUD (Optional bottom-left corner overlay) */}
+			{/* Map Legend (Bottom Left) */}
 			<div className="absolute bottom-4 left-4 bg-zinc-950/80 border border-zinc-800 p-3 rounded-lg backdrop-blur-sm z-30 pointer-events-none">
 				<h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">
 					Legend
@@ -173,6 +178,24 @@ export default function WorldMap() {
 					<span className="flex items-center gap-1">⛺ Camp</span>
 				</div>
 			</div>
+
+			{/* --- NEW: Deck Loadout Button (Bottom Right) --- */}
+			<motion.button
+				whileHover={{ scale: 1.05 }}
+				whileTap={{ scale: 0.95 }}
+				onClick={() => setIsLoadoutOpen(true)}
+				className="absolute z-30 bottom-4 right-4 flex items-center gap-2 px-6 py-3 font-bold text-black uppercase tracking-widest transition-colors bg-yellow-600 rounded-lg shadow-[0_0_15px_rgba(202,138,4,0.4)] hover:bg-yellow-500 hover:shadow-[0_0_20px_rgba(202,138,4,0.6)]"
+			>
+				<span className="text-xl">🃏</span>
+				Loadout
+			</motion.button>
+
+			{/* --- NEW: The Loadout Modal --- */}
+			<LoadoutModal
+				isOpen={isLoadoutOpen}
+				onClose={() => setIsLoadoutOpen(false)}
+				onSaveLoadout={updateHand}
+			/>
 		</div>
 	);
 }

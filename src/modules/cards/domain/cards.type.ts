@@ -85,4 +85,6 @@ export type Card = {
 	grantsPassive?: string;
 };
 
+export type Hand = [Card, Card, Card | null];
+
 export type CardLog = Record<Hero["id"], Record<Card["id"], number>>;

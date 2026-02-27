@@ -6,7 +6,7 @@ export const bat: Omit<
 	"id" | "currentHp" | "gridPosition" | "plannedAttack"
 > = {
 	enemyType: "BAT",
-	spriteBase: "bat",
+	spriteBase: "monsters/bat",
 	maxHp: 6,
 	baseMove: 4,
 	baseDef: 0,

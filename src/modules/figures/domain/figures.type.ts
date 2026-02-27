@@ -1,6 +1,6 @@
 import type { HeroClass } from "@/modules/heroClass/domain/heroClass.types";
 import type { Attack } from "../../attacks/attacks";
-import type { Card } from "../../cards/domain/cards.type";
+import type { Card, Hand } from "../../cards/domain/cards.type";
 import type { GridPosition } from "../../grid/grid.type";
 
 export enum UnitStance {
@@ -23,7 +23,7 @@ export type Hero = Figure & {
 	id: string & { readonly __brand: "HeroId" };
 	heroClass: HeroClass;
 	deck: Card[];
-	cards: [Card, Card, Card | null];
+	cards: Hand;
 	passives: string[];
 };
 

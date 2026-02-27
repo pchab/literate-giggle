@@ -84,7 +84,6 @@ export const cardLibrary: Record<Card["id"], Card> = {
 		evolutions: [createCardId("short-sword-2")],
 		promotesToClass: "FIGHTER",
 	},
-
 	[createCardId("apprentice-staff-1")]: {
 		id: createCardId("apprentice-staff-1"),
 		name: "Apprentice Staff",
@@ -95,6 +94,105 @@ export const cardLibrary: Record<Card["id"], Card> = {
 		maxXp: 5,
 		evolutions: [createCardId("apprentice-staff-2")],
 		promotesToClass: "MAGE",
+	},
+	[createCardId("arcane-shield-1")]: {
+		id: createCardId("arcane-shield-1"),
+		name: "Arcane Shield",
+		range: 2,
+		playRequirement: "requires_ally_or_self",
+		effects: [{ type: "block", amount: 2, target: "anchor" }],
+		xp: 0,
+		maxXp: 5,
+		evolutions: [createCardId("arcane-shield-2")],
+	},
+	[createCardId("arcane-shield-2")]: {
+		id: createCardId("arcane-shield-2"),
+		name: "Arcane Shield",
+		range: 2,
+		playRequirement: "requires_ally_or_self",
+		effects: [{ type: "block", amount: 3, target: "anchor" }],
+		xp: 0,
+		maxXp: 5,
+		evolutions: [createCardId("arcane-shield-3")],
+	},
+	[createCardId("arcane-shield-3")]: {
+		id: createCardId("arcane-shield-3"),
+		name: "Arcane Shield",
+		range: 2,
+		playRequirement: "requires_ally_or_self",
+		effects: [{ type: "block", amount: 4, target: "anchor" }],
+		xp: 0,
+		maxXp: 5,
+		evolutions: [],
+	},
+	[createCardId("shield-block-1")]: {
+		id: createCardId("shield-block"),
+		name: "Shield Block",
+		range: 0,
+		playRequirement: "requires_ally_or_self",
+		effects: [{ type: "block", amount: 4, target: "self" }],
+		xp: 0,
+		maxXp: 5,
+		evolutions: [createCardId("shield-block-2")],
+	},
+	[createCardId("shield-block-2")]: {
+		id: createCardId("shield-block"),
+		name: "Shield Block",
+		range: 0,
+		playRequirement: "requires_ally_or_self",
+		effects: [{ type: "block", amount: 5, target: "self" }],
+		xp: 0,
+		maxXp: 5,
+		evolutions: [createCardId("shield-block-3")],
+	},
+	[createCardId("shield-block-3")]: {
+		id: createCardId("shield-block"),
+		name: "Shield Block",
+		range: 0,
+		playRequirement: "requires_ally_or_self",
+		effects: [{ type: "block", amount: 6, target: "self" }],
+		xp: 0,
+		maxXp: 5,
+		evolutions: [createCardId("shield-bash")], // Evolves later into an attack/push!
+	},
+	[createCardId("battle-cry-1")]: {
+		id: createCardId("battle-cry"),
+		name: "Battle Cry",
+		range: 1,
+		playRequirement: "requires_enemy",
+		effects: [
+			{ type: "push", distance: 1, target: "adjacent_to_anchor" }, // Or whatever your AoE target is!
+			{ type: "block", amount: 2, target: "self" },
+		],
+		xp: 0,
+		maxXp: 5,
+		evolutions: [createCardId("battle-cry-2")],
+	},
+	[createCardId("battle-cry-2")]: {
+		id: createCardId("battle-cry"),
+		name: "Battle Cry",
+		range: 1,
+		playRequirement: "requires_enemy",
+		effects: [
+			{ type: "push", distance: 1, target: "adjacent_to_anchor" }, // Or whatever your AoE target is!
+			{ type: "block", amount: 3, target: "self" },
+		],
+		xp: 0,
+		maxXp: 5,
+		evolutions: [createCardId("battle-cry-3")],
+	},
+	[createCardId("battle-cry-3")]: {
+		id: createCardId("battle-cry"),
+		name: "Battle Cry",
+		range: 1,
+		playRequirement: "requires_enemy",
+		effects: [
+			{ type: "push", distance: 1, target: "adjacent_to_anchor" }, // Or whatever your AoE target is!
+			{ type: "block", amount: 4, target: "self" },
+		],
+		xp: 0,
+		maxXp: 5,
+		evolutions: [],
 	},
 };
 

@@ -5,7 +5,7 @@ export const iceWall: Omit<
 	"id" | "currentHp" | "gridPosition" | "allegiance"
 > = {
 	name: "Ice Wall",
-	spriteBase: "ice_wall",
+	spriteBase: "summons/ice_wall",
 	maxHp: 10,
 	baseMove: 0,
 	baseDef: 0,

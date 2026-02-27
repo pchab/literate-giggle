@@ -6,7 +6,7 @@ export const archer: Omit<
 	"id" | "currentHp" | "gridPosition" | "intent"
 > = {
 	enemyType: "ARCHER",
-	spriteBase: "archer",
+	spriteBase: "monsters/archer",
 	maxHp: 10,
 	baseMove: 2,
 	baseDef: 0,
