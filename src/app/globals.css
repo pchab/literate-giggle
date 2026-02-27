@@ -10,12 +10,33 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-pixel: var(--font-pixel);
 
   --width-card: 65px;
   --height-card: 100px;
 
   --width-card-large: 195px;
   --height-card-large: 300px;
+}
+
+@utility pixel-borders {
+  box-shadow: 
+    inset 0 0 0 2px rgba(255, 255, 255, 0.1),
+    0 0 0 2px #000,
+    0 0 0 4px #4b5563;
+}
+
+@utility pixel-panel {
+  background-color: #1e1b4b; /* very dark indigo/blue */
+  border: 4px solid #312e81; /* indigo 900 */
+  box-shadow: 
+    inset 0 0 0 2px rgba(255,255,255,0.05),
+    4px 4px 0px 0px rgba(0,0,0,0.5);
+  color: #e0e7ff;
+}
+
+@utility text-shadow-pixel {
+  text-shadow: 2px 2px 0px rgba(0,0,0,0.7);
 }
 
 @media (prefers-color-scheme: dark) {

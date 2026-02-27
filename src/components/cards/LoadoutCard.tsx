@@ -21,25 +21,30 @@ export function LoadoutCard({
 	variant = "default",
 	onClick,
 }: LoadoutCardProps) {
-	// Theme configuration based on card type
 	const theme = {
 		weapon: {
-			border: isSelected ? "border-yellow-400" : "border-yellow-600/60",
-			glow: "shadow-[0_0_15px_rgba(202,138,4,0.3)]",
-			text: "text-yellow-500",
-			bg: "bg-zinc-900",
+			border: isSelected ? "border-yellow-400" : "border-yellow-700",
+			glow: isSelected
+				? "shadow-[inset_0_0_0_2px_rgba(255,255,255,0.3),_6px_6px_0_rgba(202,138,4,0.6)]"
+				: "shadow-[inset_0_0_0_2px_rgba(255,255,255,0.1),_4px_4px_0_rgba(0,0,0,1)]",
+			text: "text-yellow-400 text-shadow-pixel",
+			bg: "bg-slate-800",
 		},
 		utility: {
-			border: isSelected ? "border-blue-400" : "border-blue-600/60",
-			glow: "shadow-[0_0_15px_rgba(59,130,246,0.3)]",
-			text: "text-blue-400",
-			bg: "bg-zinc-900",
+			border: isSelected ? "border-blue-400" : "border-blue-700",
+			glow: isSelected
+				? "shadow-[inset_0_0_0_2px_rgba(255,255,255,0.3),_6px_6px_0_rgba(59,130,246,0.6)]"
+				: "shadow-[inset_0_0_0_2px_rgba(255,255,255,0.1),_4px_4px_0_rgba(0,0,0,1)]",
+			text: "text-blue-400 text-shadow-pixel",
+			bg: "bg-slate-800",
 		},
 		default: {
-			border: isSelected ? "border-zinc-300" : "border-zinc-600/80",
-			glow: "shadow-lg",
-			text: "text-zinc-200",
-			bg: "bg-zinc-900",
+			border: isSelected ? "border-slate-300" : "border-slate-600",
+			glow: isSelected
+				? "shadow-[inset_0_0_0_2px_rgba(255,255,255,0.3),_6px_6px_0_rgba(148,163,184,0.6)]"
+				: "shadow-[inset_0_0_0_2px_rgba(255,255,255,0.1),_4px_4px_0_rgba(0,0,0,1)]",
+			text: "text-slate-200 text-shadow-pixel",
+			bg: "bg-slate-800",
 		},
 	}[variant];
 
@@ -48,7 +53,7 @@ export function LoadoutCard({
 	return (
 		<motion.div
 			onClick={!isDisabled ? onClick : undefined}
-			className={`relative w-card-large h-card-large rounded-xl border-2 overflow-hidden flex flex-col group
+			className={`relative w-card-large h-card-large border-4 flex flex-col group
         ${theme.bg} ${theme.border} ${theme.glow}
         ${isDisabled ? "opacity-50 grayscale cursor-not-allowed" : "cursor-pointer"}
     `}
@@ -72,20 +77,20 @@ export function LoadoutCard({
 
 			{/* Top Bar: Range & Level */}
 			<div className="relative z-10 flex justify-between p-3 pb-0 pointer-events-none">
-				<div className="flex flex-col items-center justify-center w-8 h-8 rounded-full bg-zinc-950 border border-zinc-700 shadow-inner font-bold text-sm text-zinc-200">
+				<div className="flex flex-col items-center justify-center w-8 h-8 bg-slate-900 border-2 border-slate-700 shadow-[inset_2px_2px_0_rgba(0,0,0,0.5)] font-pixel text-xl text-slate-200 pt-1">
 					{range}
-					<span className="text-[7px] leading-none text-zinc-500 uppercase tracking-widest mt-0.5">
+					<span className="text-[8px] leading-none text-slate-400 uppercase tracking-widest -mt-1">
 						RNG
 					</span>
 				</div>
-				<div className="flex items-center justify-center h-6 px-2 rounded bg-zinc-950 border border-zinc-700 font-bold text-[10px] uppercase tracking-wider text-zinc-400">
+				<div className="flex items-center justify-center h-6 px-2 bg-slate-900 border-2 border-slate-700 shadow-[inset_2px_2px_0_rgba(0,0,0,0.5)] font-pixel text-sm uppercase tracking-wider text-slate-300 pt-1">
 					Lvl {xp}
 				</div>
 			</div>
 
 			{/* Art Placeholder */}
-			<div className="relative z-10 flex-grow px-4 py-2 pointer-events-none">
-				<div className="w-full h-full border border-zinc-700/50 rounded flex items-center justify-center bg-zinc-950/50 shadow-[inset_0_4px_10px_rgba(0,0,0,0.5)]">
+			<div className="relative z-10 grow px-4 py-2 pointer-events-none">
+				<div className="w-full h-full border-2 border-slate-700 flex items-center justify-center bg-slate-900 shadow-[inset_0_4px_10px_rgba(0,0,0,0.5),2px_2px_0_rgba(255,255,255,0.1)]">
 					<span className="text-4xl opacity-30 drop-shadow-lg filter grayscale group-hover:grayscale-0 transition-all duration-300">
 						{variant === "weapon" ? "⚔️" : "✨"}
 					</span>
@@ -93,20 +98,20 @@ export function LoadoutCard({
 			</div>
 
 			{/* Text & Effects Area */}
-			<div className="relative z-20 flex flex-col items-center px-4 pb-4 pt-6 bg-gradient-to-t from-zinc-950 via-zinc-900/95 to-transparent mt-auto pointer-events-none">
+			<div className="relative z-20 flex flex-col items-center px-2 pb-4 pt-6 bg-linear-to-t from-slate-950 via-slate-900/95 to-transparent mt-auto pointer-events-none border-t border-slate-800">
 				<h3
-					className={`text-lg font-black text-center tracking-wider leading-none uppercase drop-shadow-md ${theme.text}`}
+					className={`text-2xl font-pixel text-center tracking-wider leading-none uppercase ${theme.text}`}
 				>
 					{name}
 				</h3>
 
-				<span className="text-[9px] text-zinc-500 uppercase tracking-[0.2em] mt-1 mb-2">
+				<span className="text-[10px] font-pixel text-slate-400 uppercase tracking-[0.2em] mt-1 mb-2">
 					{variant} Card
 				</span>
 
-				<div className="w-full border-t border-zinc-800 my-2 shadow-[0_1px_0_rgba(255,255,255,0.05)]" />
+				<div className="w-full border-t-2 border-slate-800 my-2 shadow-[0_1px_0_rgba(255,255,255,0.05)]" />
 
-				<p className="text-[10px] text-zinc-400 text-center uppercase tracking-wider font-bold mb-2">
+				<p className="text-[12px] font-pixel text-slate-300 text-center uppercase tracking-wider mb-2">
 					{formattedReq}
 				</p>
 
@@ -114,7 +119,7 @@ export function LoadoutCard({
 					{effects.map((effect, idx) => (
 						<span
 							key={idx}
-							className="text-[10px] px-1.5 py-0.5 bg-zinc-800 rounded text-zinc-300 border border-zinc-700 uppercase tracking-wider"
+							className="text-[12px] font-pixel px-1.5 py-0.5 bg-slate-800 text-slate-200 border-2 border-slate-700 uppercase tracking-wider shadow-[2px_2px_0_rgba(0,0,0,0.5)] pt-1 text-center leading-none"
 						>
 							{formatCardEffect(effect)}
 						</span>
