@@ -1,3 +1,4 @@
+import type { TerrainType } from "../grid/grid.type";
 import { createEncounterId, type Encounter } from "./encounters.data";
 
 export type NodeType = "TOWN" | "BATTLE" | "CAMP" | "EVENT";
@@ -9,6 +10,7 @@ export interface MapNode {
 	position: { x: number; y: number }; // CSS percentages (0-100)
 	connectedNodeIds: string[];
 	encounterId?: Encounter["id"];
+	terrain: TerrainType;
 }
 
 export type MapData = Record<string, MapNode>;
@@ -21,6 +23,7 @@ export const PROTOTYPE_MAP: MapData = {
 		type: "TOWN",
 		position: { x: 58, y: 45 },
 		connectedNodeIds: ["crossroads", "dark_forest", "northern_road"],
+		terrain: "CITY",
 	},
 	crossroads: {
 		id: "crossroads",
@@ -34,6 +37,7 @@ export const PROTOTYPE_MAP: MapData = {
 			"desert_ruins",
 		],
 		encounterId: createEncounterId("tutorial_fight"),
+		terrain: "GRASS",
 	},
 	wizard_tower: {
 		id: "wizard_tower",
@@ -41,6 +45,7 @@ export const PROTOTYPE_MAP: MapData = {
 		type: "CAMP",
 		position: { x: 70, y: 64 },
 		connectedNodeIds: ["crossroads", "port_city"],
+		terrain: "DUNGEON",
 	},
 	dark_forest: {
 		id: "dark_forest",
@@ -49,6 +54,7 @@ export const PROTOTYPE_MAP: MapData = {
 		position: { x: 50, y: 56 },
 		connectedNodeIds: ["crossroads", "ironhold_city", "cromee_town"],
 		encounterId: createEncounterId("bat_swarm"),
+		terrain: "FOREST",
 	},
 	port_city: {
 		id: "port_city",
@@ -56,6 +62,7 @@ export const PROTOTYPE_MAP: MapData = {
 		type: "TOWN",
 		position: { x: 80, y: 70 },
 		connectedNodeIds: ["wizard_tower"],
+		terrain: "CITY",
 	},
 	desert_ruins: {
 		id: "desert_ruins",
@@ -64,6 +71,7 @@ export const PROTOTYPE_MAP: MapData = {
 		position: { x: 52, y: 80 },
 		connectedNodeIds: ["crossroads", "cromee_town"],
 		encounterId: createEncounterId("skeleton_horde"),
+		terrain: "RUINS",
 	},
 	cromee_town: {
 		id: "cromee_town",
@@ -71,6 +79,7 @@ export const PROTOTYPE_MAP: MapData = {
 		type: "TOWN",
 		position: { x: 49, y: 67 },
 		connectedNodeIds: ["desert_ruins", "dark_forest"],
+		terrain: "CITY",
 	},
 	northern_road: {
 		id: "northern_road",
@@ -79,6 +88,7 @@ export const PROTOTYPE_MAP: MapData = {
 		position: { x: 67, y: 35 },
 		connectedNodeIds: ["ironhold_city"],
 		encounterId: createEncounterId("cultists_ambush"),
+		terrain: "GRASS",
 	},
 	connury_town: {
 		id: "connury_town",
@@ -86,5 +96,6 @@ export const PROTOTYPE_MAP: MapData = {
 		type: "TOWN",
 		position: { x: 75, y: 24 },
 		connectedNodeIds: ["northern_road"],
+		terrain: "CITY",
 	},
 };
