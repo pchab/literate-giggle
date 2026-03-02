@@ -11,6 +11,7 @@ export const testBoss: Omit<
 	baseMove: 2,
 	baseDef: 1,
 	currentBlock: 0,
+	xpReward: 20,
 	attacks: [
 		{
 			id: 1,

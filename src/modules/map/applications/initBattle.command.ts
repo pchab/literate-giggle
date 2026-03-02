@@ -30,8 +30,8 @@ export function initBattle(
 			activeMoveHeroId: null,
 			usedCardsThisTurn: {},
 			usedMovesThisTurn: {},
-			cardUsageLog: {},
 			hoveredCard: null,
+			xpEarned: 0,
 		};
 	};
 }

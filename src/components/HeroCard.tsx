@@ -19,7 +19,7 @@ export function HeroCard({
 	id,
 	heroClass,
 	baseMove,
-	cards,
+	hand,
 	currentHp,
 	maxHp,
 	currentBlock,
@@ -90,7 +90,7 @@ export function HeroCard({
 				<div className="w-px h-16 bg-gradient-to-b from-transparent via-zinc-700 to-transparent mx-2" />
 
 				<div className="flex-1">
-					<Hand id={id} cards={cards} />
+					<Hand id={id} hand={hand} />
 				</div>
 			</div>
 		</div>

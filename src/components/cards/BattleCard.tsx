@@ -1,21 +1,28 @@
 import { motion } from "motion/react";
 import Image from "next/image";
+import { cardLibrary } from "@/modules/cards/domain/cards.data";
 import type { Card } from "@/modules/cards/domain/cards.type";
 
-interface BattleCardProps extends Card {
+interface BattleCardProps {
+	cardId: Card["id"];
 	isSelected?: boolean;
 	isPlayable?: boolean;
 	onClick?: () => void;
 }
 
 export function BattleCard({
-	name,
-	range,
-	effects,
+	cardId,
 	isSelected = false,
 	isPlayable = true,
 	onClick,
 }: BattleCardProps) {
+	const card = cardLibrary[cardId];
+
+	if (!card) {
+		return null;
+	}
+
+	const { name, range, effects } = card;
 	const primaryEffect = effects[0];
 
 	let icon = "✨";
@@ -83,7 +90,7 @@ export function BattleCard({
 			<div
 				className="absolute top-[6%] left-[6%] right-[6%] bottom-[50%] z-10 overflow-hidden rounded-t-sm flex items-center justify-center mix-blend-screen"
 				style={{
-					background: `linear-gradient(to bottom, ${glowColor}, transparent)`
+					background: `linear-gradient(to bottom, ${glowColor}, transparent)`,
 				}}
 			>
 				{/* Big watermark icon until you have pixel art */}
@@ -108,7 +115,9 @@ export function BattleCard({
 
 			{/* 5. Bottom Half: Text Box */}
 			<div className="absolute top-[58%] bottom-[6%] left-[5%] right-[5%] z-30 flex flex-col justify-start items-center text-center pointer-events-none pt-2">
-				<h3 className={`text-[10px] font-bold leading-tight drop-shadow-[0_2px_2px_rgba(0,0,0,1)] ${accentColor}`}>
+				<h3
+					className={`text-[10px] font-bold leading-tight drop-shadow-[0_2px_2px_rgba(0,0,0,1)] ${accentColor}`}
+				>
 					{name}
 				</h3>
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { cardLibrary } from "@/modules/cards/domain/cards.data";
 import type { Hero } from "@/modules/figures/domain/figures.type";
 import { useBattleStore } from "@/store/battle.store";
 import FloatingDamage from "./FloatingDamage";
@@ -19,7 +20,8 @@ export default function HeroSprite({ unitInCell }: { unitInCell: Hero }) {
 
 	let stance = 0;
 	if (activeCard?.heroId === unitInCell.id) {
-		const allEffects = activeCard.card.effects.map(({ type }) => type);
+		const card = cardLibrary[activeCard.cardId];
+		const allEffects = card.effects.map(({ type }) => type);
 		if (allEffects.includes("move")) {
 			stance = 1;
 		}

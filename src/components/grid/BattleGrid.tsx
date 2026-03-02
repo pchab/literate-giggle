@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useShallow } from "zustand/shallow";
+import { cardLibrary } from "@/modules/cards/domain/cards.data";
 import {
 	calculateAttackableCells,
 	calculateReachableCells,
@@ -80,12 +81,11 @@ export function BattleGrid() {
 	let canTargetSelf = false;
 	let isMoving = false;
 
-	const cardToPreview =
-		activeCard?.card ||
-		heroes
-			.find((h) => h.id === hoveredCard?.heroId)
-			?.cards.filter((c) => !!c)
-			.find((c) => c.id === hoveredCard?.cardId);
+	const cardToPreview = activeCard
+		? cardLibrary[activeCard.cardId]
+		: hoveredCard
+			? cardLibrary[hoveredCard.cardId]
+			: null;
 
 	const previewCaster = activeCard
 		? heroes.find((h) => h.id === activeCard.heroId)

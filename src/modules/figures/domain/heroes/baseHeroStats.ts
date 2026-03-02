@@ -11,4 +11,6 @@ export const baseHeroStats: Omit<
 	baseMove: 2,
 	baseDef: 0,
 	passives: [],
+	currentXp: 0,
+	currentLevel: 1,
 };

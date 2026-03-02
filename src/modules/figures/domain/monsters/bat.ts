@@ -11,6 +11,7 @@ export const bat: Omit<
 	baseMove: 4,
 	baseDef: 0,
 	currentBlock: 0,
+	xpReward: 6,
 	attacks: [
 		{
 			id: 1,

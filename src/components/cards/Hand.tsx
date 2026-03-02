@@ -7,7 +7,7 @@ import { useBattleStore } from "@/store/battle.store";
 import { BattleCard } from "./BattleCard";
 import { CardTooltip } from "./CardTooltip";
 
-export function Hand({ id: heroId, cards }: Pick<Hero, "id" | "cards">) {
+export function Hand({ id: heroId, hand }: Pick<Hero, "id" | "hand">) {
 	const {
 		usedCardsThisTurn,
 		activeCard,
@@ -28,8 +28,8 @@ export function Hand({ id: heroId, cards }: Pick<Hero, "id" | "cards">) {
 
 	return (
 		<div className="w-full h-32 flex justify-end items-center gap-3 px-4">
-			{cards.map((card, index) => {
-				if (!card) {
+			{hand.map((cardId, index) => {
+				if (!cardId) {
 					return (
 						<div
 							key={`empty-slot-${index}`}
@@ -43,35 +43,35 @@ export function Hand({ id: heroId, cards }: Pick<Hero, "id" | "cards">) {
 				}
 
 				const isSelected =
-					activeCard?.heroId === heroId && activeCard?.card.id === card.id;
+					activeCard?.heroId === heroId && activeCard?.cardId === cardId;
 				const hasUsedCard = !!usedCardsThisTurn[heroId];
 				const isPlayable = !hasUsedCard && (!activeCard || isSelected);
 
 				// Check if THIS specific card is being hovered
 				const isHovered =
-					hoveredCard?.heroId === heroId && hoveredCard?.cardId === card.id;
+					hoveredCard?.heroId === heroId && hoveredCard?.cardId === cardId;
 
 				return (
 					<button
-						key={card.id}
+						key={cardId}
 						type="button"
 						className="relative origin-bottom focus:outline-none"
 						style={{ cursor: isPlayable ? "pointer" : "not-allowed" }}
 						disabled={!isPlayable && !isSelected}
 						onClick={() => {
 							if (hasUsedCard) return;
-							if (isSelected) cancelCard(heroId, card.id);
-							else if (!activeCard) selectCard(heroId, card.id);
+							if (isSelected) cancelCard(heroId, cardId);
+							else if (!activeCard) selectCard(heroId, cardId);
 						}}
-						onMouseEnter={() => setHoveredCard({ heroId, cardId: card.id })}
+						onMouseEnter={() => setHoveredCard({ heroId, cardId })}
 						onMouseLeave={() => setHoveredCard(null)}
 					>
 						<AnimatePresence>
-							{isHovered && <CardTooltip card={card} />}
+							{isHovered && <CardTooltip cardId={cardId} />}
 						</AnimatePresence>
 
 						<BattleCard
-							{...card}
+							cardId={cardId}
 							isSelected={isSelected}
 							isPlayable={isPlayable}
 						/>

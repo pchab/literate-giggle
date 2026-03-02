@@ -1,7 +1,7 @@
 import type { Hero, Monster } from "../figures/domain/figures.type";
 import type { Card, CardEffect } from "./domain/cards.type";
 
-export function createCardId(id: string): Card["id"] {
+export function cardId(id: string): Card["id"] {
 	return `card-${id}` as Card["id"];
 }
 

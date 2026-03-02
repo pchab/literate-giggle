@@ -2,11 +2,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import type { MonsterIntent } from "@/modules/attacks/attacks";
 import { cardService } from "@/modules/cards/cards.service";
-import type {
-	AnchorTarget,
-	Card,
-	CardLog,
-} from "@/modules/cards/domain/cards.type";
+import type { AnchorTarget, Card } from "@/modules/cards/domain/cards.type";
 import type {
 	Hero,
 	Monster,
@@ -21,7 +17,7 @@ import { encountersService } from "@/modules/map/encounters.service";
 
 export type ActiveCardContext = {
 	heroId: Hero["id"];
-	card: Card;
+	cardId: Card["id"];
 };
 
 export type BattleState = {
@@ -31,11 +27,11 @@ export type BattleState = {
 	usedMovesThisTurn: Record<Hero["id"], boolean>;
 	activeCard: ActiveCardContext | null;
 	usedCardsThisTurn: Record<Hero["id"], Card["id"]>;
-	cardUsageLog: CardLog;
 	enemyIntents: Record<Monster["id"], MonsterIntent>;
 	hoveredCard: { heroId: Hero["id"]; cardId: Card["id"] } | null;
 	summons: Summon[];
 	currentVfx: Record<string, VfxType>; // key is cell id
+	xpEarned: number;
 };
 
 type BattleAction = {
@@ -50,6 +46,7 @@ type BattleAction = {
 		hovered: { heroId: Hero["id"]; cardId: Card["id"] } | null,
 	) => void;
 	setVfx: (cellId: string, vfx: VfxType | null) => void;
+	resetXpEarned: () => void;
 };
 
 const initialState: BattleState = {
@@ -60,10 +57,10 @@ const initialState: BattleState = {
 	activeMoveHeroId: null,
 	usedMovesThisTurn: {},
 	usedCardsThisTurn: {},
-	cardUsageLog: {},
 	hoveredCard: null,
 	summons: [],
 	currentVfx: {},
+	xpEarned: 0,
 };
 
 export type BattleStoreServerAction = (
@@ -93,6 +90,7 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 				set(({ currentVfx: { [cellId]: cellVfx, ...otherVfx } }) => ({
 					currentVfx: vfx ? { ...otherVfx, [cellId]: vfx } : otherVfx,
 				})),
+			resetXpEarned: () => set({ xpEarned: 0 }),
 		}),
 		{
 			name: "alpha-battle-state",

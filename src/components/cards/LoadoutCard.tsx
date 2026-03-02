@@ -1,26 +1,25 @@
 import { motion } from "motion/react";
 import Image from "next/image";
 import { formatCardEffect } from "@/modules/cards/cards.helper";
+import { cardLibrary } from "@/modules/cards/domain/cards.data";
 import type { Card } from "@/modules/cards/domain/cards.type";
 
-export interface LoadoutCardProps extends Card {
+export type LoadoutCardProps = {
+	cardId: Card["id"];
 	isSelected?: boolean;
 	isDisabled?: boolean;
 	variant?: "weapon" | "utility" | "default";
 	onClick?: () => void;
-}
+};
 
 export function LoadoutCard({
-	name,
-	range,
-	playRequirement,
-	effects,
-	xp,
+	cardId,
 	isSelected = false,
 	isDisabled = false,
 	variant = "default",
 	onClick,
 }: LoadoutCardProps) {
+	const { playRequirement, effects, name } = cardLibrary[cardId];
 	const theme = {
 		weapon: {
 			border: isSelected ? "border-yellow-400" : "border-yellow-700",
@@ -73,19 +72,6 @@ export function LoadoutCard({
 					fill
 					className="object-cover"
 				/>
-			</div>
-
-			{/* Top Bar: Range & Level */}
-			<div className="relative z-10 flex justify-between p-3 pb-0 pointer-events-none">
-				<div className="flex flex-col items-center justify-center w-8 h-8 bg-slate-900 border-2 border-slate-700 shadow-[inset_2px_2px_0_rgba(0,0,0,0.5)] font-pixel text-xl text-slate-200 pt-1">
-					{range}
-					<span className="text-[8px] leading-none text-slate-400 uppercase tracking-widest -mt-1">
-						RNG
-					</span>
-				</div>
-				<div className="flex items-center justify-center h-6 px-2 bg-slate-900 border-2 border-slate-700 shadow-[inset_2px_2px_0_rgba(0,0,0,0.5)] font-pixel text-sm uppercase tracking-wider text-slate-300 pt-1">
-					Lvl {xp}
-				</div>
 			</div>
 
 			{/* Art Placeholder */}

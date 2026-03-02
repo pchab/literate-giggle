@@ -17,7 +17,7 @@ export function cancelCard(
 			console.warn(`Hero with ID ${heroId} not found.`);
 			return {};
 		}
-		const card = hero.cards.find((c) => c.id === cardId);
+		const card = hero.hand.find((cId) => cId === cardId);
 		if (!card) {
 			console.warn(
 				`Card with ID ${cardId} not found for hero with ID ${heroId}`,

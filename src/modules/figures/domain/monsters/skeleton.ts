@@ -11,6 +11,7 @@ export const skeleton: Omit<
 	baseMove: 2,
 	baseDef: 0,
 	currentBlock: 0,
+	xpReward: 10,
 	attacks: [
 		{
 			id: 1,

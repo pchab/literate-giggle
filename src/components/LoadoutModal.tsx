@@ -12,7 +12,7 @@ interface LoadoutModalProps {
 	onClose: () => void;
 	onSaveLoadout: (
 		heroId: Hero["id"],
-		newCards: [Card, Card, Card | null],
+		newCards: [Card["id"], Card["id"], Card["id"] | null],
 	) => void;
 }
 
@@ -24,7 +24,7 @@ export function LoadoutModal({
 	const roster = useWorldStore((state) => state.roster);
 
 	const [selectedHeroId, setSelectedHeroId] = useState<Hero["id"] | null>(null);
-	const [draftCards, setDraftCards] = useState<(Card | null)[]>([
+	const [draftCards, setDraftCards] = useState<(Card["id"] | null)[]>([
 		null,
 		null,
 		null,
@@ -34,20 +34,20 @@ export function LoadoutModal({
 		if (isOpen && roster.length > 0) {
 			const initialHero = roster[0];
 			setSelectedHeroId(initialHero.id);
-			setDraftCards([...initialHero.cards]);
+			setDraftCards([...initialHero.hand]);
 		}
 	}, [isOpen, roster]);
 
 	const handleSelectHero = (hero: Hero) => {
 		setSelectedHeroId(hero.id);
-		setDraftCards([...hero.cards]);
+		setDraftCards([...hero.hand]);
 	};
 
-	const handleEquip = (card: Card) => {
+	const handleEquip = (cardId: Card["id"]) => {
 		setDraftCards((prev) => {
 			const newCards = [...prev];
-			if (!newCards[1]) newCards[1] = card;
-			else if (!newCards[2]) newCards[2] = card;
+			if (!newCards[1]) newCards[1] = cardId;
+			else if (!newCards[2]) newCards[2] = cardId;
 			return newCards;
 		});
 	};
@@ -69,8 +69,8 @@ export function LoadoutModal({
 	const handleSave = () => {
 		if (!selectedHeroId) return;
 
-		const weapon = draftCards[0] as Card;
-		const utility1 = (draftCards[1] || draftCards[2]) as Card;
+		const weapon = draftCards[0] as Card["id"];
+		const utility1 = (draftCards[1] || draftCards[2]) as Card["id"];
 		const utility2 = draftCards[1] && draftCards[2] ? draftCards[2] : null;
 
 		onSaveLoadout(selectedHeroId, [weapon, utility1, utility2]);
@@ -82,8 +82,10 @@ export function LoadoutModal({
 	const selectedHero = roster.find((h) => h.id === selectedHeroId);
 	if (!selectedHero) return null;
 
-	const weaponId = selectedHero.cards[0]?.id;
-	const availableUtilities = selectedHero.deck.filter((c) => c.id !== weaponId);
+	const weaponId = selectedHero.hand[0];
+	const availableUtilities = selectedHero.deck.filter(
+		(cId) => cId !== weaponId,
+	);
 	const isFull = draftCards[1] !== null && draftCards[2] !== null;
 
 	return (
@@ -143,30 +145,33 @@ export function LoadoutModal({
 											Main Weapon
 										</div>
 										{draftCards[0] && (
-											<LoadoutCard {...draftCards[0]} variant="weapon" />
+											<LoadoutCard cardId={draftCards[0]} variant="weapon" />
 										)}
 									</div>
 
 									{/* Slots 1 & 2: Utilities */}
 									{[1, 2].map((slotIndex) => {
-										const card = draftCards[slotIndex];
-										return card ? (
+										const cardId = draftCards[slotIndex];
+										return cardId ? (
 											<motion.div
 												key={`slot-${slotIndex}`}
-												layoutId={card.id}
+												layoutId={cardId}
 												className="relative z-20 group"
 											>
 												<div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-30 bg-red-600 text-white px-3 py-1 font-pixel text-lg shadow-[inset_0_0_0_2px_rgba(255,255,255,0.4),3px_3px_0px_0px_rgba(0,0,0,0.8)] border-2 border-black tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
 													Unequip
 												</div>
 												<LoadoutCard
-													{...card}
+													cardId={cardId}
 													variant="utility"
 													onClick={() => handleUnequip(slotIndex)}
 												/>
 											</motion.div>
 										) : (
-											<div className="w-card-large h-card-large bg-slate-950 border-4 border-dashed border-slate-800 flex flex-col items-center justify-center pointer-events-none shadow-inner">
+											<div
+												key={`slot-${slotIndex}`}
+												className="w-card-large h-card-large bg-slate-950 border-4 border-dashed border-slate-800 flex flex-col items-center justify-center pointer-events-none shadow-inner"
+											>
 												<span className="text-slate-700 font-pixel text-xl uppercase tracking-widest">
 													Empty Slot
 												</span>
@@ -190,28 +195,26 @@ export function LoadoutModal({
 								</div>
 
 								<div className="flex gap-6 pb-8 pr-4 custom-scrollbar">
-									{availableUtilities.map((card) => {
-										const isEquipped = draftCards.some(
-											(c) => c?.id === card.id,
-										);
+									{availableUtilities.map((cardId) => {
+										const isEquipped = draftCards.some((cId) => cId === cardId);
 
 										// If equipped, leave an empty placeholder so the layout doesn't collapse
 										if (isEquipped) {
 											return (
 												<div
-													key={`placeholder-${card.id}`}
+													key={`placeholder-${cardId}`}
 													className="shrink-0 w-card-large h-card-large bg-slate-900/30 border-4 border-dashed border-slate-800"
 												/>
 											);
 										}
 
 										return (
-											<motion.div layoutId={card.id} key={card.id}>
+											<motion.div layoutId={cardId} key={cardId}>
 												<LoadoutCard
-													{...card}
+													cardId={cardId}
 													variant="utility"
 													isDisabled={isFull}
-													onClick={() => !isFull && handleEquip(card)}
+													onClick={() => !isFull && handleEquip(cardId)}
 												/>
 											</motion.div>
 										);

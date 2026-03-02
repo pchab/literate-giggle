@@ -1,5 +1,6 @@
 import type { BattleStoreServerAction } from "@/store/battle.store";
 import type { Hero } from "../../figures/domain/figures.type";
+import { cardLibrary } from "../domain/cards.data";
 import type { Card } from "../domain/cards.type";
 import { resolveCard } from "./resolveCard.command";
 
@@ -22,7 +23,7 @@ export function selectCard(
 			console.warn(`Hero with ID ${heroId} not found.`);
 			return {};
 		}
-		const card = hero.cards.filter((c) => !!c).find((c) => c.id === cardId);
+		const card = cardLibrary[cardId];
 		if (!card) {
 			console.warn(
 				`Card with ID ${cardId} not found for hero with ID ${heroId}`,
@@ -35,7 +36,7 @@ export function selectCard(
 
 			const nextState = executeEngine({
 				...state,
-				activeCard: { heroId, card },
+				activeCard: { heroId, cardId },
 			});
 
 			return {
@@ -46,7 +47,7 @@ export function selectCard(
 		}
 
 		return {
-			activeCard: { heroId, card },
+			activeCard: { heroId, cardId },
 		};
 	};
 }

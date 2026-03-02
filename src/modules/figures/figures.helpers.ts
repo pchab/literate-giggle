@@ -1,10 +1,10 @@
 import type { Hero, Monster } from "./domain/figures.type";
 
-export function createHeroId(numericOrUuid: string | number): Hero["id"] {
+export function heroId(numericOrUuid: string | number): Hero["id"] {
 	return `hero-${numericOrUuid}` as Hero["id"];
 }
 
-export function createMonsterId(numericOrUuid: string | number): Monster["id"] {
+export function monsterId(numericOrUuid: string | number): Monster["id"] {
 	return `monster-${numericOrUuid}` as Monster["id"];
 }
 

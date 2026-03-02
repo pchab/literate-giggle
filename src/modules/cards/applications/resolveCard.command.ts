@@ -5,6 +5,7 @@ import type { VfxType } from "@/modules/grid/vfx/vfx.type";
 import type { BattleStoreServerAction } from "@/store/battle.store";
 import type { Hero, Monster, Summon } from "../../figures/domain/figures.type";
 import { applyEffectToHero, applyEffectToMonster } from "../cards.helper";
+import { cardLibrary } from "../domain/cards.data";
 import {
 	type AnchorTarget,
 	anchorIsGridPosition,
@@ -52,13 +53,14 @@ export function resolveCard(
 		monsters,
 		usedCardsThisTurn,
 		usedMovesThisTurn,
-		cardUsageLog,
 		summons,
+		xpEarned,
 		...state
 	}) => {
 		if (!activeCard) return {};
 
-		const { heroId, card } = activeCard;
+		const { heroId, cardId } = activeCard;
+		const card = cardLibrary[cardId];
 		if (!heroes.some((h) => h.id === heroId)) return {};
 
 		// Mutable drafts for our sequence pipeline
@@ -136,33 +138,34 @@ export function resolveCard(
 			Object.assign(vfx, newVfx);
 		});
 
+		const deadMonsters = draftMonsters.filter((m) => m.currentHp <= 0);
+		const xpEarnedThisTurn = deadMonsters.reduce(
+			(acc, m) => acc + m.xpReward,
+			0,
+		);
+		const remainingMonsters = draftMonsters.filter((m) => m.currentHp > 0);
+
 		// --- 4. FINALIZE & UPDATE STORE ---
 		return {
 			...state,
 			activeCard: null,
 			heroes: draftHeroes,
-			monsters: draftMonsters,
+			monsters: remainingMonsters,
 			summons: draftSummons,
 			enemyIntents: intentService.calculateAllIntents(
 				draftHeroes,
-				draftMonsters,
+				remainingMonsters,
 			),
 			usedCardsThisTurn: {
 				...usedCardsThisTurn,
-				[activeCard.heroId]: activeCard.card.id,
+				[heroId]: cardId,
 			},
 			usedMovesThisTurn: {
 				...usedMovesThisTurn,
-				[activeCard.heroId]: true,
-			},
-			cardUsageLog: {
-				...cardUsageLog,
-				[heroId]: {
-					...(cardUsageLog[heroId] || {}),
-					[card.id]: (cardUsageLog[heroId]?.[card.id] || 0) + 1,
-				},
+				[heroId]: true,
 			},
 			currentVfx: vfx,
+			xpEarned: xpEarned + xpEarnedThisTurn,
 		};
 	};
 }

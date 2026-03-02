@@ -1,8 +1,9 @@
 import { motion } from "motion/react";
+import { cardLibrary } from "@/modules/cards/domain/cards.data";
 import type { Card, CardEffect } from "@/modules/cards/domain/cards.type";
 
 interface CardTooltipProps {
-	card: Card;
+	cardId: Card["id"];
 }
 
 function renderEffectText(effect: CardEffect, index: number) {
@@ -75,7 +76,13 @@ function renderRequirementText(req: string) {
 	}
 }
 
-export function CardTooltip({ card }: CardTooltipProps) {
+export function CardTooltip({ cardId }: CardTooltipProps) {
+	const card = cardLibrary[cardId];
+
+	if (!card) {
+		return null;
+	}
+
 	return (
 		<motion.div
 			initial={{ opacity: 0, y: 10, scale: 0.95 }}
