@@ -1,8 +1,8 @@
 import type { Monster } from "@/modules/figures/domain/figures.type";
-import { archer } from "../figures/domain/monsters/archer";
-import { bat } from "../figures/domain/monsters/bat";
-import { skeleton } from "../figures/domain/monsters/skeleton";
-import { monsterId } from "../figures/figures.helpers";
+import { archer } from "../../figures/domain/monsters/archer";
+import { bat } from "../../figures/domain/monsters/bat";
+import { skeleton } from "../../figures/domain/monsters/skeleton";
+import { monsterId } from "../../figures/figures.helpers";
 
 export interface Encounter {
 	id: string & { __brand: "EncounterId" };
@@ -10,25 +10,26 @@ export interface Encounter {
 	generateMonsters: () => Monster[];
 }
 
-export function createEncounterId(id: string): Encounter["id"] {
+export function encounterId(id: string): Encounter["id"] {
 	return id as Encounter["id"];
 }
 
 export const ENCOUNTER_DB: Record<string, Encounter> = {
 	tutorial_fight: {
-		id: createEncounterId("tutorial_fight"),
+		id: encounterId("tutorial_fight"),
 		name: "A lone skeleton",
 		generateMonsters: () => [
 			{
 				...skeleton,
 				id: monsterId("skel-1"),
-				currentHp: skeleton.maxHp,
+				// currentHp: skeleton.maxHp,
+				currentHp: 1,
 				gridPosition: { col: 2, row: 2 },
 			},
 		],
 	},
 	bat_swarm: {
-		id: createEncounterId("bat_swarm"),
+		id: encounterId("bat_swarm"),
 		name: "Bat swarm",
 		generateMonsters: () => [
 			{
@@ -70,7 +71,7 @@ export const ENCOUNTER_DB: Record<string, Encounter> = {
 		],
 	},
 	skeleton_horde: {
-		id: createEncounterId("skeleton_horde"),
+		id: encounterId("skeleton_horde"),
 		name: "Skeleton horde",
 		generateMonsters: () => [
 			{
@@ -100,7 +101,7 @@ export const ENCOUNTER_DB: Record<string, Encounter> = {
 		],
 	},
 	cultists_ambush: {
-		id: createEncounterId("cultists_ambush"),
+		id: encounterId("cultists_ambush"),
 		name: "Cultists ambush",
 		generateMonsters: () => [
 			{

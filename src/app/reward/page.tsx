@@ -10,19 +10,21 @@ import { RetroPanel } from "@/components/ui/RetroPanel";
 import { cardLibrary } from "@/modules/cards/domain/cards.data";
 import { CLASS_REGISTRY } from "@/modules/heroClass/domain/heroClass.data";
 import { useBattleStore } from "@/store/battle.store";
+import { useCampaignStore } from "@/store/campaign.store";
 import { useWorldStore } from "@/store/world.store";
 
 export default function RewardScreen() {
-	const { roster, claimRewards, phase, setPhase } = useWorldStore(
-		useShallow((state) => ({
-			roster: state.roster,
-			claimRewards: state.claimRewards,
-			phase: state.phase,
-			setPhase: state.setPhase,
-		})),
-	);
+	const { roster, claimRewards, phase, setPhase, currentNodeId } =
+		useWorldStore(
+			useShallow((state) => ({
+				roster: state.roster,
+				claimRewards: state.claimRewards,
+				phase: state.phase,
+				setPhase: state.setPhase,
+				currentNodeId: state.currentNodeId,
+			})),
+		);
 
-	// Grab the XP we just earned from the Battle Store
 	const { xpEarned, resetXpEarned } = useBattleStore(
 		useShallow((state) => ({
 			xpEarned: state.xpEarned,
@@ -30,16 +32,31 @@ export default function RewardScreen() {
 		})),
 	);
 
-	// Snapshot the roster so animations don't break when state updates
+	const { getOverride, setActiveSceneId } = useCampaignStore(
+		useShallow((state) => ({
+			getOverride: state.getOverride,
+			setActiveSceneId: state.setActiveSceneId,
+		})),
+	);
+
 	const [initialRoster] = useState(roster);
 
+	const sceneId = getOverride(currentNodeId, "onWin");
 	if (phase !== "REWARD") {
 		redirect("/");
 	}
-	// If there's no XP and no roster, something went wrong (or we refreshed), send back to map
 	if (xpEarned === 0 || initialRoster.length === 0) {
 		setPhase("MAP");
 	}
+
+	const handleClaimAndReturn = () => {
+		claimRewards(xpEarned);
+		resetXpEarned();
+		if (sceneId) {
+			setPhase("SCENE");
+			setActiveSceneId(sceneId);
+		}
+	};
 
 	return (
 		<LazyMotion features={domAnimation}>
@@ -171,8 +188,7 @@ export default function RewardScreen() {
 				>
 					<RetroButton
 						onClick={() => {
-							claimRewards(xpEarned);
-							resetXpEarned();
+							handleClaimAndReturn();
 						}}
 						variant="primary"
 					>

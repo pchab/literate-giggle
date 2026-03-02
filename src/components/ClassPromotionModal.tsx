@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
+import { redirect } from "next/navigation";
 import { useState } from "react";
 import { useShallow } from "zustand/shallow";
 import { BattleCard } from "@/components/cards/BattleCard";
@@ -146,6 +147,15 @@ export function ClassPromotionModal() {
 	const classDef = CLASS_REGISTRY[selectedClassId];
 	if (!classDef) return null;
 
+	const handleAcceptPromotion = () => {
+		if (!selectedCardId) return;
+		resolvePromotion(currentPromotion.heroId, selectedClassId, selectedCardId);
+		setSelectedClassId(null);
+		setSelectedCardId(null);
+
+		redirect("/");
+	};
+
 	return (
 		<AnimatePresence>
 			<motion.div
@@ -252,15 +262,7 @@ export function ClassPromotionModal() {
 				{selectedCardId && (
 					<motion.button
 						className={`mt-12 px-8 py-3 font-bold tracking-widest uppercase rounded shadow-lg transition-all z-10 bg-amber-600 hover:bg-amber-500 text-zinc-950 cursor-pointer`}
-						onClick={() => {
-							resolvePromotion(
-								currentPromotion.heroId,
-								selectedClassId,
-								selectedCardId,
-							);
-							setSelectedClassId(null);
-							setSelectedCardId(null);
-						}}
+						onClick={handleAcceptPromotion}
 						initial={{ opacity: 0, y: 10 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ delay: 0.5 }}

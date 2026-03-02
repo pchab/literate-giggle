@@ -1,5 +1,6 @@
 import type { Card } from "@/modules/cards/domain/cards.type";
 import type { Hero } from "@/modules/figures/domain/figures.type";
+import type { Quest } from "@/modules/quests/domain/quests.type";
 
 export type HeroClass =
 	| "HOBO"
@@ -19,7 +20,7 @@ export type LevelUpDefinition =
 	| { type: "statsIncrease"; amount: number; stat: "hp" | "def" | "move" }
 	| { type: "classPromotion"; classId: HeroClass[] }
 	| { type: "passiveUnlock"; passiveId: string }
-	| { type: "unlockQuest"; questId: string };
+	| { type: "unlockQuest"; questId: Quest["id"] };
 
 export type ClassDefinition = {
 	id: HeroClass;

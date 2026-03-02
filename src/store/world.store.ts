@@ -13,28 +13,29 @@ import type {
 import { heroClassService } from "@/modules/heroClass/heroClass.service";
 import {
 	type MapData,
+	type MapNode,
+	mapNodeId,
 	type NodeType,
-	PROTOTYPE_MAP,
-} from "@/modules/map/map.model";
+} from "@/modules/map/domain/map.model";
+import { WorldMapNodes } from "@/modules/map/domain/mapNodes.data";
+import type { Quest } from "@/modules/quests/domain/quests.type";
 import { worldService } from "@/modules/world/world.service";
 
-export type GamePhase = "CAMP" | "MAP" | "BATTLE" | "REWARD";
+export type GamePhase = "CAMP" | "MAP" | "BATTLE" | "REWARD" | "SCENE";
 
 export interface WorldState {
 	phase: GamePhase;
 	mapData: MapData;
-	currentNodeId: string;
+	currentNodeId: MapNode["id"];
 	roster: Hero[];
 	pendingPromotions: PendingPromotion[];
+	unlockedQuestsQueue: Quest["id"][];
 }
 
 export interface WorldAction {
 	setPhase: (phase: GamePhase) => void;
-	stageBattleRewards: (
-		remainingHp: Record<string, number>,
-		cardLog: CardLog,
-	) => void;
-	travelToNode: (nodeId: string, nodeType: NodeType) => void;
+	stageBattleRewards: (remainingHp: Record<string, number>) => void;
+	travelToNode: (nodeId: MapNode["id"], nodeType: NodeType) => void;
 	claimRewards: (earnedXp: number) => void;
 	resolvePromotion: (
 		heroId: Hero["id"],
@@ -42,6 +43,8 @@ export interface WorldAction {
 		utilityCardId: Card["id"],
 	) => void;
 	updateHand: (heroId: Hero["id"], hand: Hand) => void;
+	upgradeClassCards: (targetClass: HeroClass) => void;
+	clearUnlockedQuestsQueue: () => void;
 }
 
 export type WorldStoreServerAction = (state: WorldState) => Partial<WorldState>;
@@ -50,8 +53,8 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 	persist(
 		(set) => ({
 			phase: "MAP",
-			mapData: PROTOTYPE_MAP,
-			currentNodeId: "ironhold_city",
+			mapData: WorldMapNodes,
+			currentNodeId: mapNodeId("ironhold_city"),
 			roster: [
 				{
 					id: heroId(1),
@@ -83,12 +86,14 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 			],
 			pendingBattleLog: {} as CardLog,
 			pendingPromotions: [],
+			activeSceneId: null,
+			unlockedQuestsQueue: [],
 
 			setPhase: (phase) => set(worldService.setPhase(phase)),
 			travelToNode: (nodeId, nodeType) =>
 				set(worldService.travelToNode(nodeId, nodeType)),
-			stageBattleRewards: (remainingHp, cardLog) =>
-				set(worldService.stageBattleRewards(remainingHp, cardLog)),
+			stageBattleRewards: (remainingHp) =>
+				set(worldService.stageBattleRewards(remainingHp)),
 			claimRewards: (earnedXp: number) =>
 				set(heroClassService.claimRewards(earnedXp)),
 			resolvePromotion: (heroId, chosenClass, utilityCardId) =>
@@ -100,6 +105,21 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 					),
 				),
 			updateHand: (heroId, hand) => set(cardService.updateHand(heroId, hand)),
+			upgradeClassCards: (targetClass: HeroClass) =>
+				set((state) => {
+					const newRoster = state.roster.map((hero) => {
+						if (hero.heroClass !== targetClass) return hero;
+						// TEMP
+						console.log(`Upgrading ${hero.heroClass} cards!`);
+						return {
+							...hero,
+							currentHp: hero.maxHp,
+						};
+					});
+
+					return { roster: newRoster };
+				}),
+			clearUnlockedQuestsQueue: () => set({ unlockedQuestsQueue: [] }),
 		}),
 		{
 			name: "alpha-world-state",

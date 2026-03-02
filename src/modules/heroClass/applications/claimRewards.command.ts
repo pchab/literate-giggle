@@ -3,36 +3,47 @@ import type { WorldStoreServerAction } from "@/store/world.store";
 import { applyLevelUpTriggers } from "../levelUpEffects.helper";
 
 export function claimRewards(earnedXp: number): WorldStoreServerAction {
-    return ({ roster, pendingPromotions }) => {
-        let newPendingPromotions = [...pendingPromotions];
-        
-        const newRoster = roster.map((hero) => {
-            const classDef = CLASS_REGISTRY[hero.heroClass];
-            let newHero = { ...hero, currentXp: hero.currentXp + earnedXp };
+	return ({ roster, pendingPromotions, unlockedQuestsQueue }) => {
+		let newPendingPromotions = [...pendingPromotions];
+		let newUnlockedQuestsQueue = [...unlockedQuestsQueue];
 
-            while (
-                classDef.xpThresholds[newHero.currentLevel] !== undefined &&
-                newHero.currentXp >= classDef.xpThresholds[newHero.currentLevel]
-            ) {
-                const triggersToApply = classDef.levelUpTriggers[newHero.currentLevel] || [];
+		const newRoster = roster.map((hero) => {
+			const classDef = CLASS_REGISTRY[hero.heroClass];
+			let newHero = { ...hero, currentXp: hero.currentXp + earnedXp };
 
-                ({ hero: newHero, pendingPromotions: newPendingPromotions } = triggersToApply.reduce(applyLevelUpTriggers, { hero: newHero, pendingPromotions: newPendingPromotions }));
-                
-                newHero.currentXp -= classDef.xpThresholds[newHero.currentLevel];
-                newHero.currentLevel++;
-                
-                // Heal on level up
-                if (newHero.currentLevel > hero.currentLevel) {
-                    newHero.currentHp = newHero.maxHp;
-                }
-            }
+			while (
+				classDef.xpThresholds[newHero.currentLevel] !== undefined &&
+				newHero.currentXp >= classDef.xpThresholds[newHero.currentLevel]
+			) {
+				const triggersToApply =
+					classDef.levelUpTriggers[newHero.currentLevel] || [];
 
-            return newHero;
-        });
+				({
+					hero: newHero,
+					pendingPromotions: newPendingPromotions,
+					unlockedQuestsQueue: newUnlockedQuestsQueue,
+				} = triggersToApply.reduce(applyLevelUpTriggers, {
+					hero: newHero,
+					pendingPromotions: newPendingPromotions,
+					unlockedQuestsQueue: newUnlockedQuestsQueue,
+				}));
 
-        return {
-            roster: newRoster,
-            pendingPromotions: newPendingPromotions,
-        };
-    };
+				newHero.currentXp -= classDef.xpThresholds[newHero.currentLevel];
+				newHero.currentLevel++;
+
+				// Heal on level up
+				if (newHero.currentLevel > hero.currentLevel) {
+					newHero.currentHp = newHero.maxHp;
+				}
+			}
+
+			return newHero;
+		});
+
+		return {
+			roster: newRoster,
+			pendingPromotions: newPendingPromotions,
+			unlockedQuestsQueue: newUnlockedQuestsQueue,
+		};
+	};
 }

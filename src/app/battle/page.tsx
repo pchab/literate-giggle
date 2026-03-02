@@ -1,6 +1,5 @@
 "use client";
 
-import { getImageProps } from "next/image";
 import { redirect } from "next/navigation";
 import { useShallow } from "zustand/shallow";
 import { BattleGrid } from "@/components/grid/BattleGrid";
@@ -8,24 +7,13 @@ import type { Hero } from "@/modules/figures/domain/figures.type";
 import { terrainImageMapping } from "@/modules/grid/terrains/terrains.data";
 import { useBattleStore } from "@/store/battle.store";
 import { useWorldStore } from "@/store/world.store";
-
-function getBackgroundImage(srcSet = "") {
-	const imageSet = srcSet
-		.split(", ")
-		.map((str) => {
-			const [url, dpi] = str.split(" ");
-			return `url("${url}") ${dpi}`;
-		})
-		.join(", ");
-	return `image-set(${imageSet})`;
-}
+import { getBackgroundImage } from "@/utils/backgroundImage.helpers";
 
 export default function Home() {
-	const { heroes, monsters, cardUsageLog } = useBattleStore(
+	const { heroes, monsters } = useBattleStore(
 		useShallow((state) => ({
 			heroes: state.heroes,
 			monsters: state.monsters,
-			cardUsageLog: state.cardUsageLog,
 		})),
 	);
 	const { stageBattleRewards, mapData, currentNodeId } = useWorldStore(
@@ -46,17 +34,14 @@ export default function Home() {
 			{} as Record<Hero["id"], number>,
 		);
 
+		stageBattleRewards(remainingHealth);
 		setTimeout(() => {
-			stageBattleRewards(remainingHealth, cardUsageLog);
 			redirect("/");
 		}, 1000);
 	}
 
 	const terrainBgPath = terrainImageMapping[mapData[currentNodeId].terrain];
-	const {
-		props: { srcSet },
-	} = getImageProps({ alt: "", width: 1200, height: 817, src: terrainBgPath });
-	const backgroundImage = getBackgroundImage(srcSet);
+	const backgroundImage = getBackgroundImage(terrainBgPath, 1200, 817);
 
 	return (
 		<section

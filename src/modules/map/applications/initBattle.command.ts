@@ -1,7 +1,7 @@
 import { intentService } from "@/modules/attacks/intents.service";
 import type { Hero } from "@/modules/figures/domain/figures.type";
 import type { BattleStoreServerAction } from "@/store/battle.store";
-import { ENCOUNTER_DB, type Encounter } from "../encounters.data";
+import { ENCOUNTER_DB, type Encounter } from "../domain/encounters.data";
 
 export function initBattle(
 	roster: Hero[],

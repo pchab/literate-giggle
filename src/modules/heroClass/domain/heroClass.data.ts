@@ -1,4 +1,5 @@
 import { cardId } from "@/modules/cards/cards.helper";
+import { QUEST_MAGE_AWAKENING } from "@/modules/quests/domain/quests.data";
 import type { ClassDefinition, HeroClass } from "./heroClass.types";
 
 export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
@@ -44,10 +45,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		id: "FIGHTER",
 		name: "Fighter",
 		spriteBase: "heroes/fighter",
-		utilityCardChoices: [
-			cardId("shield-block-1"),
-			cardId("battle-cry-1"),
-		],
+		utilityCardChoices: [cardId("shield-block-1"), cardId("battle-cry-1")],
 		xpThresholds: [10, 20, 30, 40, 50],
 		levelUpTriggers: [
 			[
@@ -76,10 +74,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		id: "MAGE",
 		name: "Mage",
 		spriteBase: "heroes/mage",
-		utilityCardChoices: [
-			cardId("arcane-shield-1"),
-			cardId("push-1"),
-		],
+		utilityCardChoices: [cardId("arcane-shield-1"), cardId("push-1")],
 		xpThresholds: [10, 20, 30, 40, 50],
 		levelUpTriggers: [
 			[
@@ -89,6 +84,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 					oldCardId: cardId("club-3"),
 					newCardId: cardId("apprentice-staff-1"),
 				},
+				{ type: "unlockQuest", questId: QUEST_MAGE_AWAKENING },
 			],
 		],
 	},

@@ -12,7 +12,7 @@ import { enemyService } from "@/modules/figures/enemy.service";
 import { heroService } from "@/modules/figures/heroes.service";
 import type { GridPosition } from "@/modules/grid/grid.type";
 import type { VfxType } from "@/modules/grid/vfx/vfx.type";
-import type { Encounter } from "@/modules/map/encounters.data";
+import type { Encounter } from "@/modules/map/domain/encounters.data";
 import { encountersService } from "@/modules/map/encounters.service";
 
 export type ActiveCardContext = {

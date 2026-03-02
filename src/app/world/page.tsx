@@ -1,7 +1,7 @@
 "use client";
 
 import { redirect } from "next/navigation";
-import WorldMap from "@/components/WorldMap";
+import WorldMap from "@/app/world/WorldMap";
 import { useWorldStore } from "@/store/world.store";
 
 export default function WorldScreen() {

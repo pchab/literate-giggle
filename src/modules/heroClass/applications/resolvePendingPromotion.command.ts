@@ -7,38 +7,49 @@ import type { HeroClass } from "../domain/heroClass.types";
 import { applyLevelUpTriggers } from "../levelUpEffects.helper";
 
 export function resolvePendingPromotion(
-    heroId: Hero["id"],
-    chosenClass: HeroClass,
-    chosenUtilityCardId: Card["id"],
+	heroId: Hero["id"],
+	chosenClass: HeroClass,
+	chosenUtilityCardId: Card["id"],
 ): WorldStoreServerAction {
-    return ({ pendingPromotions, roster, ...state }) => {
-        if (!pendingPromotions.length) return {};
+	return ({ pendingPromotions, unlockedQuestsQueue, roster, ...state }) => {
+		if (!pendingPromotions.length) return {};
 
-        const heroIndex = roster.findIndex((h) => h.id === heroId);
-        if (heroIndex === -1) return {};
+		const heroIndex = roster.findIndex((h) => h.id === heroId);
+		if (heroIndex === -1) return {};
 
-        const hero = roster[heroIndex];
-        const classDef = CLASS_REGISTRY[chosenClass];
+		const hero = roster[heroIndex];
+		const classDef = CLASS_REGISTRY[chosenClass];
 
-        if (!classDef) {
-            console.error("Missing class definition!");
-            return {};
-        }
+		if (!classDef) {
+			console.error("Missing class definition!");
+			return {};
+		}
 
-        const triggers = classDef.levelUpTriggers[0] || [];
-        let { hero: newHero, pendingPromotions: newPendingPromotions } = triggers.reduce(applyLevelUpTriggers, { hero, pendingPromotions });
+		const triggers = classDef.levelUpTriggers[0] || [];
+		const {
+			hero: newHero,
+			pendingPromotions: newPendingPromotions,
+			unlockedQuestsQueue: newUnlockedQuestsQueue,
+		} = triggers.reduce(applyLevelUpTriggers, {
+			hero,
+			pendingPromotions,
+			unlockedQuestsQueue,
+		});
 
-        if (cardLibrary[chosenUtilityCardId]) {
-            newHero.deck.push(chosenUtilityCardId);
-        }
-        return {
-            ...state,
-            roster: roster.with(heroIndex, {
-                ...newHero,
-                heroClass: classDef.id,
-                spriteBase: classDef.spriteBase,
-            }),
-            pendingPromotions: newPendingPromotions.filter((p) => p.heroId !== heroId),
-        };
-    };
+		if (cardLibrary[chosenUtilityCardId]) {
+			newHero.deck.push(chosenUtilityCardId);
+		}
+		return {
+			...state,
+			roster: roster.with(heroIndex, {
+				...newHero,
+				heroClass: classDef.id,
+				spriteBase: classDef.spriteBase,
+			}),
+			pendingPromotions: newPendingPromotions.filter(
+				(p) => p.heroId !== heroId,
+			),
+			unlockedQuestsQueue: newUnlockedQuestsQueue,
+		};
+	};
 }
