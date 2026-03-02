@@ -13,9 +13,10 @@ export function useSceneEngine(setLocalStep: (stepId: string) => void) {
         completeQuest: state.completeQuest,
         setActiveSceneId: state.setActiveSceneId,
     })));
-    const { setPhase, roster } = useWorldStore(useShallow((state) => ({
+    const { setPhase, roster, travelToNode } = useWorldStore(useShallow((state) => ({
         setPhase: state.setPhase,
         roster: state.roster,
+		travelToNode: state.travelToNode,
     })));
     const { initBattle } = useBattleStore(useShallow((state) => ({
         initBattle: state.initBattle,
@@ -46,7 +47,7 @@ export function useSceneEngine(setLocalStep: (stepId: string) => void) {
                 // --- ROUTING & SIDE EFFECTS ---
                 case "START_BATTLE":
                     setActiveSceneId(null); 
-                    initBattle(roster, action.encounterId);
+                    initBattle(roster, action.encounterId, action.background);
                     setPhase("BATTLE");
                     router.push("/battle");
                     break;

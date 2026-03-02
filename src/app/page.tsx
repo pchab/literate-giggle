@@ -5,6 +5,7 @@ import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/store/battle.store";
 import { useCampaignStore } from "@/store/campaign.store";
 import { useWorldStore } from "@/store/world.store";
+import { terrainImageMapping } from "@/modules/grid/terrains/terrains.data";
 
 export default function Home() {
 	const {
@@ -49,7 +50,7 @@ export default function Home() {
 		case "BATTLE": {
 			const currentNode = mapData[currentNodeId];
 			if (currentNode.encounterId) {
-				initBattle(roster, currentNode.encounterId);
+				initBattle(roster, currentNode.encounterId, terrainImageMapping[currentNode.terrain]);
 			}
 			return redirect("/battle");
 		}

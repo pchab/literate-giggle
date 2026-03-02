@@ -29,7 +29,8 @@ export const QUEST_DB: Record<Quest["id"], Quest> = {
 				id: questStepId("defeat_necromancer"),
 				logDescription:
 					"A Crypt has been revealed! Defeat the Necromancer within to claim the book.",
-				targetNodeId: mapNodeId("desert_crypt"),
+				targetNodeId: mapNodeId("desert_ruins"),
+				onEnterSceneId: sceneId("crypt_reenter"),
 				onWinSceneId: sceneId("crypt_victory"),
 			},
 			[questStepId("return_to_tower")]: {

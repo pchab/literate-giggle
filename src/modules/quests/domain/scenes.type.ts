@@ -1,11 +1,12 @@
 import type { HeroClass } from "@/modules/heroClass/domain/heroClass.types";
 import type { Encounter } from "@/modules/map/domain/encounters.data";
 import type { Quest, QuestStep } from "./quests.type";
+import { MapNode } from "@/modules/map/domain/map.model";
 
 // --- 1. THE ACTION ENGINE ---
 // Every possible outcome of clicking a scene choice
 export type SceneAction =
-	| { type: "START_BATTLE"; encounterId: Encounter["id"] }
+	| { type: "START_BATTLE"; encounterId: Encounter["id"]; background: string }
 	| { type: "START_SCENE"; sceneId: Scene["id"] }
 	| { type: "CHANGE_STEP"; stepId: string }
 	| { type: "ADVANCE_QUEST"; questId: Quest["id"]; newStepId: QuestStep["id"] }

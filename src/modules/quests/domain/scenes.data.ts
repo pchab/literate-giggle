@@ -31,7 +31,7 @@ export const SCENE_DB: Record<Scene["id"], Scene> = {
 		initialStepId: "start",
 		steps: {
 			start: {
-				backgroundImage: "/terrains/desert_ruins.jpg",
+				backgroundImage: "/terrains/crypt_entrance.jpg",
 				text: "As the dust from the battle settles, the ground begins to tremble. A massive stone slab slides away, revealing a dark, unnatural staircase leading deep into the earth. The air reeks of death.",
 				choices: [
 					{
@@ -44,7 +44,8 @@ export const SCENE_DB: Record<Scene["id"], Scene> = {
 							},
 							{
 								type: "START_BATTLE",
-								encounterId: encounterId("encounter_necromancer_boss"),
+								encounterId: encounterId("necromancer_boss"),
+								background: "/terrains/desert_crypt.jpg"
 							},
 						],
 					},
@@ -63,6 +64,33 @@ export const SCENE_DB: Record<Scene["id"], Scene> = {
 			},
 		},
 	},
+
+	[sceneId("crypt_reenter")]: {
+        id: sceneId("crypt_reenter"),
+        initialStepId: "start",
+        steps: {
+            start: {
+                backgroundImage: "/terrains/crypt_entrance.jpg",
+                text: "The dark staircase leading into the crypt still looms before you. The stench of death is stronger now.",
+                choices: [
+                    {
+                        label: "Descend into the Crypt",
+                        actions: [
+                            {
+                                type: "START_BATTLE",
+                                encounterId: encounterId("necromancer_boss"),
+                                background: "/terrains/desert_crypt.jpg"
+                            },
+                        ],
+                    },
+                    {
+                        label: "Not yet. (Return to Map)",
+                        actions: [{ type: "END_SCENE" }],
+                    },
+                ],
+            },
+        },
+    },
 
 	// SCENE 3: After defeating the Necromancer
 	[sceneId("crypt_victory")]: {

@@ -6,6 +6,7 @@ import { ENCOUNTER_DB, type Encounter } from "../domain/encounters.data";
 export function initBattle(
 	roster: Hero[],
 	encounterId: Encounter["id"],
+	background: string,
 ): BattleStoreServerAction {
 	return () => {
 		const encounter = ENCOUNTER_DB[encounterId];
@@ -32,6 +33,7 @@ export function initBattle(
 			usedMovesThisTurn: {},
 			hoveredCard: null,
 			xpEarned: 0,
+			background,
 		};
 	};
 }

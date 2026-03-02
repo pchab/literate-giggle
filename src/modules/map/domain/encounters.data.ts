@@ -3,6 +3,7 @@ import { archer } from "../../figures/domain/monsters/archer";
 import { bat } from "../../figures/domain/monsters/bat";
 import { skeleton } from "../../figures/domain/monsters/skeleton";
 import { monsterId } from "../../figures/figures.helpers";
+import { necromancer } from "@/modules/figures/domain/monsters/necromancer";
 
 export interface Encounter {
 	id: string & { __brand: "EncounterId" };
@@ -11,24 +12,23 @@ export interface Encounter {
 }
 
 export function encounterId(id: string): Encounter["id"] {
-	return id as Encounter["id"];
+	return `encounter-${id}` as Encounter["id"];
 }
 
 export const ENCOUNTER_DB: Record<string, Encounter> = {
-	tutorial_fight: {
+	[encounterId("tutorial_fight")]: {
 		id: encounterId("tutorial_fight"),
 		name: "A lone skeleton",
 		generateMonsters: () => [
 			{
 				...skeleton,
 				id: monsterId("skel-1"),
-				// currentHp: skeleton.maxHp,
-				currentHp: 1,
+				currentHp: skeleton.maxHp,
 				gridPosition: { col: 2, row: 2 },
 			},
 		],
 	},
-	bat_swarm: {
+	[encounterId("bat_swarm")]: {
 		id: encounterId("bat_swarm"),
 		name: "Bat swarm",
 		generateMonsters: () => [
@@ -70,7 +70,7 @@ export const ENCOUNTER_DB: Record<string, Encounter> = {
 			},
 		],
 	},
-	skeleton_horde: {
+	[encounterId("skeleton_horde")]: {
 		id: encounterId("skeleton_horde"),
 		name: "Skeleton horde",
 		generateMonsters: () => [
@@ -100,7 +100,7 @@ export const ENCOUNTER_DB: Record<string, Encounter> = {
 			},
 		],
 	},
-	cultists_ambush: {
+	[encounterId("cultists_ambush")]: {
 		id: encounterId("cultists_ambush"),
 		name: "Cultists ambush",
 		generateMonsters: () => [
@@ -124,4 +124,28 @@ export const ENCOUNTER_DB: Record<string, Encounter> = {
 			},
 		],
 	},
+	[encounterId("necromancer_boss")]: {
+        id: encounterId("necromancer_boss"),
+        name: "The Crypt Master",
+        generateMonsters: () => [
+            {
+                ...necromancer,
+                id: monsterId("boss-necro-1"),
+                currentHp: necromancer.maxHp,
+                gridPosition: { col: 4, row: 4 },
+            },
+            {
+                ...skeleton,
+                id: monsterId("skel-minion-1"),
+                currentHp: skeleton.maxHp,
+                gridPosition: { col: 4, row: 3 },
+            },
+            {
+                ...skeleton,
+                id: monsterId("skel-minion-2"),
+                currentHp: skeleton.maxHp,
+                gridPosition: { col: 3, row: 4 },
+            },
+        ],
+    },
 };

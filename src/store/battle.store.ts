@@ -32,10 +32,11 @@ export type BattleState = {
 	summons: Summon[];
 	currentVfx: Record<string, VfxType>; // key is cell id
 	xpEarned: number;
+	background: string;
 };
 
 type BattleAction = {
-	initBattle: (heroRoster: Hero[], encounterId: Encounter["id"]) => void;
+	initBattle: (heroRoster: Hero[], encounterId: Encounter["id"], background: string) => void;
 	setActiveMoveHeroId: (heroId: Hero["id"] | null) => void;
 	moveHero: (newPosition: GridPosition) => void;
 	selectCard: (heroId: Hero["id"], cardId: Card["id"]) => void;
@@ -61,6 +62,7 @@ const initialState: BattleState = {
 	summons: [],
 	currentVfx: {},
 	xpEarned: 0,
+	background: "",
 };
 
 export type BattleStoreServerAction = (
@@ -71,8 +73,8 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 	persist(
 		(set, get) => ({
 			...initialState,
-			initBattle: (heroRoster: Hero[], encounterId: Encounter["id"]) =>
-				set(encountersService.initBattle(heroRoster, encounterId)),
+			initBattle: (heroRoster: Hero[], encounterId: Encounter["id"], background: string) =>
+				set(encountersService.initBattle(heroRoster, encounterId, background)),
 			selectCard: (heroId, cardId) =>
 				set(cardService.selectCard(heroId, cardId)),
 			cancelCard: (heroId, cardId) =>

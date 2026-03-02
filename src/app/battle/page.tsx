@@ -4,23 +4,21 @@ import { redirect } from "next/navigation";
 import { useShallow } from "zustand/shallow";
 import { BattleGrid } from "@/components/grid/BattleGrid";
 import type { Hero } from "@/modules/figures/domain/figures.type";
-import { terrainImageMapping } from "@/modules/grid/terrains/terrains.data";
 import { useBattleStore } from "@/store/battle.store";
 import { useWorldStore } from "@/store/world.store";
 import { getBackgroundImage } from "@/utils/backgroundImage.helpers";
 
 export default function Home() {
-	const { heroes, monsters } = useBattleStore(
+	const { heroes, monsters, background } = useBattleStore(
 		useShallow((state) => ({
 			heroes: state.heroes,
 			monsters: state.monsters,
+			background: state.background,
 		})),
 	);
-	const { stageBattleRewards, mapData, currentNodeId } = useWorldStore(
+	const { stageBattleRewards } = useWorldStore(
 		useShallow((state) => ({
 			stageBattleRewards: state.stageBattleRewards,
-			mapData: state.mapData,
-			currentNodeId: state.currentNodeId,
 		})),
 	);
 
@@ -40,8 +38,7 @@ export default function Home() {
 		}, 1000);
 	}
 
-	const terrainBgPath = terrainImageMapping[mapData[currentNodeId].terrain];
-	const backgroundImage = getBackgroundImage(terrainBgPath, 1200, 817);
+	const backgroundImage = getBackgroundImage(background, 1200, 817);
 
 	return (
 		<section
