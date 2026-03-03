@@ -1,7 +1,11 @@
-import type { Hero, Monster } from "../../figures/domain/figures.type";
+import type {
+	EnemyType,
+	Hero,
+	Monster,
+} from "@/modules/figures/domain/figures.type";
 import type { GridPosition } from "./grid.type";
 
-type Target = "lowestHp" | "random" | "lowestDef" | "grid";
+type Target = "lowestHp" | "random" | "lowestDef" | "grid" | "self";
 export type Attack = {
 	id: number;
 	target: Target;
@@ -10,6 +14,7 @@ export type Attack = {
 	damage: number;
 	minRange: number;
 	maxRange: number;
+	summonType?: EnemyType;
 };
 
 export type MonsterIntent = {

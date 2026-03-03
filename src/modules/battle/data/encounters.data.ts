@@ -24,7 +24,7 @@ export const ENCOUNTER_DB: Record<string, Encounter> = {
 				...skeleton,
 				id: monsterId("skel-1"),
 				currentHp: skeleton.maxHp,
-				gridPosition: { col: 2, row: 2 },
+				gridPosition: { col: 3, row: 3 },
 			},
 		],
 	},

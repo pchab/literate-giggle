@@ -4,7 +4,7 @@ import {
 	filterGridByAttackPattern,
 	getActualTarget,
 	getIdealTarget,
-} from "../../helpers/ai.helpers";
+} from "../../helpers/ai.move.helpers";
 
 export function calculateAllIntents(
 	heroes: Hero[],

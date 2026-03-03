@@ -1,10 +1,10 @@
 import type { Quest } from "@/modules/campaign/domain/quests.type";
 import { cardLibrary } from "@/modules/cards/data/cards.data";
-import type { Hero } from "@/modules/figures/domain/figures.type";
+import type { Hero } from "../domain/figures.type";
 import type {
 	LevelUpDefinition,
 	PendingPromotion,
-} from "../../figures/domain/heroClass.types";
+} from "../domain/heroClass.types";
 
 export function applyLevelUpTriggers(
 	{

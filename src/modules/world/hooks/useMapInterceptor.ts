@@ -34,7 +34,6 @@ export function useMapInterceptor() {
 			return;
 		}
 		const sceneId = getOverride(nodeId, "onEnter");
-		console.log({ sceneId });
 		travelToNode(nodeId, nodeType);
 
 		if (sceneId) {
