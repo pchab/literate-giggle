@@ -1,5 +1,5 @@
 import type { MapNode } from "@/modules/world/domain/map.types";
-import type { Scene } from "../../quests/domain/scenes.type";
+import type { Scene } from "./scenes.type";
 
 export interface QuestStep {
 	id: string & { readonly __brand: "StepId" };

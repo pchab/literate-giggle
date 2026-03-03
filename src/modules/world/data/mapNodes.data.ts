@@ -1,3 +1,4 @@
+import { questId, questStepId } from "@/modules/campaign/domain/quests.type";
 import { encounterId } from "../../battle/data/encounters.data";
 import { type MapData, mapNodeId } from "../../world/domain/map.types";
 
@@ -11,8 +12,10 @@ export const WorldMapNodes: MapData = {
 			mapNodeId("crossroads"),
 			mapNodeId("dark_forest"),
 			mapNodeId("northern_road"),
+			mapNodeId("stone_gates"),
+			mapNodeId("dwarven_passage"),
 		],
-		terrain: "CITY",
+		background: "/battlegrounds/city.jpg",
 	},
 	crossroads: {
 		id: mapNodeId("crossroads"),
@@ -26,15 +29,15 @@ export const WorldMapNodes: MapData = {
 			mapNodeId("desert_ruins"),
 		],
 		encounterId: encounterId("tutorial_fight"),
-		terrain: "GRASS",
+		background: "/battlegrounds/grass.jpg",
 	},
 	wizard_tower: {
 		id: mapNodeId("wizard_tower"),
 		name: "Wizard Tower",
-		type: "TOWN",
+		type: "CAMP",
 		position: { x: 70, y: 64 },
 		connectedNodeIds: [mapNodeId("crossroads"), mapNodeId("port_city")],
-		terrain: "DUNGEON",
+		background: "/battlegrounds/dungeon.jpg",
 	},
 	dark_forest: {
 		id: mapNodeId("dark_forest"),
@@ -47,7 +50,7 @@ export const WorldMapNodes: MapData = {
 			mapNodeId("cromee_town"),
 		],
 		encounterId: encounterId("bat_swarm"),
-		terrain: "FOREST",
+		background: "/battlegrounds/forest.jpg",
 	},
 	port_city: {
 		id: mapNodeId("port_city"),
@@ -55,7 +58,7 @@ export const WorldMapNodes: MapData = {
 		type: "TOWN",
 		position: { x: 80, y: 70 },
 		connectedNodeIds: [mapNodeId("wizard_tower")],
-		terrain: "CITY",
+		background: "/battlegrounds/city.jpg",
 	},
 	desert_ruins: {
 		id: mapNodeId("desert_ruins"),
@@ -64,7 +67,7 @@ export const WorldMapNodes: MapData = {
 		position: { x: 52, y: 80 },
 		connectedNodeIds: [mapNodeId("crossroads"), mapNodeId("cromee_town")],
 		encounterId: encounterId("skeleton_horde"),
-		terrain: "RUINS",
+		background: "/battlegrounds/ruins.jpg",
 	},
 	cromee_town: {
 		id: mapNodeId("cromee_town"),
@@ -72,7 +75,7 @@ export const WorldMapNodes: MapData = {
 		type: "TOWN",
 		position: { x: 49, y: 67 },
 		connectedNodeIds: [mapNodeId("desert_ruins"), mapNodeId("dark_forest")],
-		terrain: "CITY",
+		background: "/battlegrounds/city.jpg",
 	},
 	northern_road: {
 		id: mapNodeId("northern_road"),
@@ -81,7 +84,7 @@ export const WorldMapNodes: MapData = {
 		position: { x: 67, y: 35 },
 		connectedNodeIds: [mapNodeId("ironhold_city"), mapNodeId("connury_town")],
 		encounterId: encounterId("cultists_ambush"),
-		terrain: "GRASS",
+		background: "/battlegrounds/grass.jpg",
 	},
 	connury_town: {
 		id: mapNodeId("connury_town"),
@@ -89,6 +92,25 @@ export const WorldMapNodes: MapData = {
 		type: "TOWN",
 		position: { x: 75, y: 24 },
 		connectedNodeIds: [mapNodeId("northern_road")],
-		terrain: "CITY",
+		background: "/battlegrounds/city.jpg",
 	},
+	stone_gates: {
+        id: mapNodeId("stone_gates"),
+        name: "The Stone Gates",
+        type: "BATTLE",
+        position: { x: 50, y: 42 },
+        connectedNodeIds: [mapNodeId("ironhold_city"), mapNodeId("dwarven_passage")],
+        background: "/battlegrounds/cave.jpg",
+        encounterId: encounterId("stone_gate_guards"),
+        unlockCondition: { type: "QUEST_ACTIVE", questId: questId("dwarven_highway"), stepId: [questStepId("clear_gates"), questStepId("defeat_golem")] } 
+    },
+    dwarven_passage: {
+        id: mapNodeId("dwarven_passage"),
+        name: "Under-Mountain Pass",
+        type: "TOWN",
+        position: { x: 45, y: 40 },
+        connectedNodeIds: [mapNodeId("ironhold_city"), mapNodeId("cromee_town")],
+        background: "/battlegrounds/mountain_city.jpg",
+        unlockCondition: { type: "QUEST_COMPLETED", questId: questId("dwarven_highway") }
+    },
 };

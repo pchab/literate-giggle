@@ -29,7 +29,6 @@ export type GamePhase = "CAMP" | "MAP" | "BATTLE" | "REWARD" | "SCENE";
 
 export interface WorldState {
 	phase: GamePhase;
-	mapData: MapData;
 	currentNodeId: MapNode["id"];
 	roster: Hero[];
 	pendingPromotions: PendingPromotion[];
@@ -39,7 +38,7 @@ export interface WorldState {
 export interface WorldAction {
 	setPhase: (phase: GamePhase) => void;
 	stageBattleRewards: (remainingHp: Record<string, number>) => void;
-	travelToNode: (nodeId: MapNode["id"], nodeType: NodeType) => void;
+	travelToNode: (nodeId: MapNode["id"]) => void;
 	claimRewards: (earnedXp: number) => void;
 	resolvePromotion: (
 		heroId: Hero["id"],
@@ -57,7 +56,6 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 	persist(
 		(set) => ({
 			phase: "MAP",
-			mapData: WorldMapNodes,
 			currentNodeId: mapNodeId("ironhold_city"),
 			roster: [
 				{
@@ -94,7 +92,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 			unlockedQuestsQueue: [],
 
 			setPhase: (phase) => set(setPhase(phase)),
-			travelToNode: (nodeId, nodeType) => set(travelToNode(nodeId, nodeType)),
+			travelToNode: (nodeId) => set(travelToNode(nodeId)),
 			stageBattleRewards: (remainingHp) => set(stageBattleRewards(remainingHp)),
 			claimRewards: (earnedXp: number) => set(claimRewards(earnedXp)),
 			resolvePromotion: (heroId, chosenClass, utilityCardId) =>

@@ -9,7 +9,8 @@ import type { Quest, QuestStep } from "@/modules/campaign/domain/quests.type";
 import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
 import { MenuModal } from "@/modules/shared/components/MenuModal";
 import { useWorldStore } from "@/modules/world/store/world.store";
-import { useMapInterceptor } from "../hooks/useMapInterceptor";
+import { useTravelInterceptor } from "../hooks/useTravelInterceptor";
+import { useDynamicMap } from "../hooks/useDynamicMap";
 
 // Helper mappings for visuals
 const NODE_ICONS = {
@@ -29,22 +30,27 @@ const NODE_STYLES = {
 };
 
 export default function WorldMap() {
-	const { mapData, currentNodeId, updateHand } = useWorldStore(
+	const { currentNodeId, updateHand } = useWorldStore(
 		useShallow((state) => ({
-			mapData: state.mapData,
 			currentNodeId: state.currentNodeId,
 			updateHand: state.updateHand,
 		})),
 	);
 	const activeQuests = useCampaignStore((state) => state.activeQuests);
 
-	const { handleNodeClick, isTraveling } = useMapInterceptor();
+	const { handleNodeClick, isTraveling } = useTravelInterceptor();
 
 	// --- NEW: State for the Loadout Modal ---
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-	const nodes = Object.values(mapData);
-	const currentNode = mapData[currentNodeId];
+	const dynamicNodes = useDynamicMap();
+	const nodes = Object.values(dynamicNodes);
+	const currentNode = dynamicNodes[currentNodeId];
+
+	if (!currentNode) {
+		return null;
+	}
+
 	const questTargetNodeIds = new Set(
 		Object.entries(activeQuests)
 			.map(([questId, stepId]) => {
@@ -73,8 +79,8 @@ export default function WorldMap() {
 				<title>connections</title>
 				{nodes.map((node) =>
 					node.connectedNodeIds.map((targetId) => {
-						const targetNode = mapData[targetId];
-						if (node.id > targetId) return null;
+						const targetNode = dynamicNodes[targetId];
+						if (node.id > targetId || !targetNode) return null;
 
 						const isTravelable =
 							(node.id === currentNodeId &&
@@ -159,7 +165,7 @@ export default function WorldMap() {
 							<motion.button
 								type="button"
 								onClick={() => {
-									handleNodeClick(node.id, node.type);
+									handleNodeClick(node.id);
 								}}
 								disabled={isLocked}
 								whileHover={isReachable ? { scale: 1.15 } : {}}

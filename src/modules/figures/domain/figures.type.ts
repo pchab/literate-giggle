@@ -30,7 +30,7 @@ export type Hero = Figure & {
 	currentLevel: number;
 };
 
-export type EnemyType = "BOSS" | "SKELETON" | "BAT" | "ARCHER" | "NECROMANCER";
+export type EnemyType = "BOSS" | "SKELETON" | "BAT" | "ARCHER" | "NECROMANCER" | "GOLEM" | "GOLEM_OVERSEER";
 export type Monster = Figure & {
 	id: string & { readonly __brand: "MonsterId" };
 	enemyType: EnemyType;

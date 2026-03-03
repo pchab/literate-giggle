@@ -3,6 +3,7 @@ import { type Quest, questId, questStepId } from "../domain/quests.type";
 import { sceneId } from "../domain/scenes.type";
 
 export const QUEST_MAGE_AWAKENING = questId("mage_awakening");
+export const QUEST_DWARVEN_HIGHWAY = questId("dwarven_highway");
 
 export const QUEST_DB: Record<Quest["id"], Quest> = {
 	[QUEST_MAGE_AWAKENING]: {
@@ -41,4 +42,31 @@ export const QUEST_DB: Record<Quest["id"], Quest> = {
 			},
 		},
 	},
+	[questId("dwarven_highway")]: {
+        id: questId("dwarven_highway"),
+        title: "The Sealed Passage",
+        loreDescription: "A dwarven prospector in Ironhold needs someone to clear the ancient Stone Gates so trade can resume with Cromee Town.",
+        initialStepId: questStepId("visit_prospector"),
+        steps: {
+            [questStepId("visit_prospector")]: {
+                id: questStepId("visit_prospector"),
+                logDescription: "Speak to the Prospector in Ironhold City.",
+                targetNodeId: mapNodeId("ironhold_city"),
+                onEnterSceneId: sceneId("prospector_intro"),
+            },
+            [questStepId("clear_gates")]: {
+                id: questStepId("clear_gates"),
+                logDescription: "Travel to the mountains and clear the Stone Gates.",
+                targetNodeId: mapNodeId("stone_gates"),
+                onWinSceneId: sceneId("gates_cleared"),
+            },
+            [questStepId("defeat_golem")]: {
+                id: questStepId("defeat_golem"),
+                logDescription: "Destroy the Golem Overseer inside the passage.",
+                targetNodeId: mapNodeId("stone_gates"),
+                onEnterSceneId: sceneId("gates_reenter"), // If they rest
+                onWinSceneId: sceneId("golem_victory"),
+            },
+        },
+    },
 };

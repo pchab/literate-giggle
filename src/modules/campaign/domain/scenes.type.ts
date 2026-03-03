@@ -2,6 +2,7 @@ import type { Encounter } from "@/modules/battle/data/encounters.data";
 import type { HeroClass } from "@/modules/figures/domain/heroClass.types";
 import type { Quest, QuestStep } from "./quests.type";
 import { Card } from "@/modules/cards/domain/cards.type";
+import { MapNode } from "@/modules/world/domain/map.types";
 
 // --- 1. THE ACTION ENGINE ---
 // Every possible outcome of clicking a scene choice
@@ -12,7 +13,7 @@ export type SceneAction =
 	| { type: "ADVANCE_QUEST"; questId: Quest["id"]; newStepId: QuestStep["id"] }
 	| { type: "COMPLETE_QUEST"; questId: Quest["id"] }
 	| { type: "UPGRADE_CLASS_CARDS"; cardUpgrades: Record<Card["id"], Card["id"]> }
-	| { type: "GRANT_XP"; amount: number }
+	| { type: "FORCE_MOVE"; nodeId: MapNode["id"] }
 	| { type: "END_SCENE" };
 
 // --- 2. SCENE PRESENTATION ---

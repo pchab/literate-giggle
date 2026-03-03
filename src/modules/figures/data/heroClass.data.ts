@@ -1,4 +1,4 @@
-import { QUEST_MAGE_AWAKENING } from "@/modules/campaign/data/quests.data";
+import { QUEST_DWARVEN_HIGHWAY, QUEST_MAGE_AWAKENING } from "@/modules/campaign/data/quests.data";
 import { cardId } from "@/modules/cards/helpers/cards.helper";
 import type { ClassDefinition, HeroClass } from "../domain/heroClass.types";
 
@@ -56,6 +56,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 					oldCardId: cardId("club-3"),
 					newCardId: cardId("short-sword-1"),
 				},
+				{ type: "unlockQuest", questId: QUEST_DWARVEN_HIGHWAY },
 			],
 			[
 				{
@@ -66,6 +67,15 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 			],
 			[
 				{ type: "passiveUnlock", passiveId: "passive-toughness" },
+			],
+			[
+				{
+					type: "cardUpgrade",
+					oldCardId: cardId("short-sword-2"),
+					newCardId: cardId("short-sword-3"),
+				},
+			],
+			[
 				{ type: "classPromotion", classId: ["KNIGHT", "BARBARIAN"] },
 			],
 		],
@@ -85,6 +95,26 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 					newCardId: cardId("apprentice-staff-1"),
 				},
 				{ type: "unlockQuest", questId: QUEST_MAGE_AWAKENING },
+			],
+			[
+				{
+					type: "cardUpgrade",
+					oldCardId: cardId("apprentice-staff-1"),
+					newCardId: cardId("apprentice-staff-2"),
+				},
+			],
+			[
+				{ type: "passiveUnlock", passiveId: "passive-toughness" },
+			],
+			[
+				{
+					type: "cardUpgrade",
+					oldCardId: cardId("apprentice-staff-2"),
+					newCardId: cardId("apprentice-staff-3"),
+				},
+			],
+			[
+				{ type: "classPromotion", classId: ["PYROMANCER", "CRYOMANCER"] },
 			],
 		],
 	},
@@ -108,15 +138,23 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		id: "KNIGHT",
 		name: "Knight",
 		spriteBase: "heroes/knight",
-		utilityCardChoices: [],
+		utilityCardChoices: [cardId("knight-placeholder-1")],
 		xpThresholds: [10, 20, 30, 40, 50],
-		levelUpTriggers: [[]],
+		levelUpTriggers: [[
+			{ type: "statsIncrease", stat: "hp", amount: 2 },
+				{ type: "statsIncrease", stat: "def", amount: 1 },
+				{
+					type: "cardUpgrade",
+					oldCardId: cardId("short-sword-3"),
+					newCardId: cardId("knight-weapon-1"),
+				},
+		]],
 	},
 	BARBARIAN: {
 		id: "BARBARIAN",
 		name: "Barbarian",
 		spriteBase: "heroes/barbarian",
-		utilityCardChoices: [],
+		utilityCardChoices: [cardId("barbarian-placeholder-1")],
 		xpThresholds: [10, 20, 30, 40, 50],
 		levelUpTriggers: [[]],
 	},
@@ -124,17 +162,33 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		id: "PYROMANCER",
 		name: "Pyromancer",
 		spriteBase: "heroes/pyromancer",
-		utilityCardChoices: [],
+		utilityCardChoices: [cardId("pyromancer-placeholder-1")],
 		xpThresholds: [10, 20, 30, 40, 50],
-		levelUpTriggers: [[]],
+		levelUpTriggers: [[
+			{ type: "statsIncrease", stat: "hp", amount: 2 },
+				{ type: "statsIncrease", stat: "def", amount: 1 },
+				{
+					type: "cardUpgrade",
+					oldCardId: cardId("apprentice-staff-3"),
+					newCardId: cardId("pyromancer-weapon-1"),
+				},
+		]],
 	},
 	CRYOMANCER: {
 		id: "CRYOMANCER",
 		name: " Cryomancer",
 		spriteBase: "heroes/cryomancer",
-		utilityCardChoices: [cardId("ice-wall-1")],
+		utilityCardChoices: [cardId("ice-wall-1"), cardId("cryomancer-placeholder-1")],
 		xpThresholds: [10, 20, 30, 40, 50],
-		levelUpTriggers: [[]],
+		levelUpTriggers: [[
+			{ type: "statsIncrease", stat: "hp", amount: 2 },
+				{ type: "statsIncrease", stat: "def", amount: 1 },
+				{
+					type: "cardUpgrade",
+					oldCardId: cardId("apprentice-staff-3"),
+					newCardId: cardId("cryomancer-weapon-1"),
+				},
+		]],
 	},
 	CLERIC: {
 		id: "CLERIC",

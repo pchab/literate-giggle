@@ -5,7 +5,7 @@ import type {
 } from "@/modules/figures/domain/figures.type";
 import type { GridPosition } from "./grid.type";
 
-type Target = "lowestHp" | "random" | "lowestDef" | "grid" | "self";
+type Target = "lowestHp" | "random" | "lowestDef" | "grid" | "self" | "closest";
 export type Attack = {
 	id: number;
 	target: Target;

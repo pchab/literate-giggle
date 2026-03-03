@@ -107,7 +107,7 @@ export const getIdealTarget = (
 	heroes: Hero[],
 	monsters: Monster[],
 ) => {
-	const orderedTargets = getOrderedTargets(plannedAttack, heroes);
+	const orderedTargets = getOrderedTargets(monster, plannedAttack, heroes);
 
 	return orderedTargets.reduce(
 		(acc, hero) => {
@@ -141,7 +141,7 @@ export const getIdealTarget = (
 	);
 };
 
-export function getOrderedTargets(attack: Attack, heroes: Hero[]): Hero[] {
+export function getOrderedTargets(monster: Monster, attack: Attack, heroes: Hero[]): Hero[] {
 	const { target } = attack;
 	const sortFunction = (heroA: Hero, heroB: Hero) => {
 		switch (target) {
@@ -149,8 +149,10 @@ export function getOrderedTargets(attack: Attack, heroes: Hero[]): Hero[] {
 				return heroA.baseDef - heroB.baseDef;
 			case "lowestHp":
 				return heroA.currentHp - heroB.currentHp;
+			case "closest":
 			default:
-				return Math.random() < 0.5 ? -1 : 1;
+				return getManhattanDistance(heroA.gridPosition, monster.gridPosition) - getManhattanDistance(heroB.gridPosition, monster.gridPosition);
+				
 		}
 	};
 	return [...heroes]

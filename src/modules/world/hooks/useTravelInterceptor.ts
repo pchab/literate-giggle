@@ -5,8 +5,9 @@ import { useShallow } from "zustand/shallow";
 import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
 import type { MapNode, NodeType } from "@/modules/world/domain/map.types";
 import { useWorldStore } from "@/modules/world/store/world.store";
+import { WorldMapNodes } from "../data/mapNodes.data";
 
-export function useMapInterceptor() {
+export function useTravelInterceptor() {
 	const router = useRouter();
 	const [isTraveling, setIsTraveling] = useState(false);
 
@@ -17,24 +18,23 @@ export function useMapInterceptor() {
 		})),
 	);
 
-	const { travelToNode, mapData, currentNodeId, setPhase } = useWorldStore(
+	const { travelToNode, currentNodeId, setPhase } = useWorldStore(
 		useShallow((state) => ({
 			travelToNode: state.travelToNode,
-			mapData: state.mapData,
 			currentNodeId: state.currentNodeId,
 			setPhase: state.setPhase,
 		})),
 	);
 
-	const handleNodeClick = (nodeId: MapNode["id"], nodeType: NodeType) => {
-		const currentNode = mapData[currentNodeId];
+	const handleNodeClick = (nodeId: MapNode["id"]) => {
+		const currentNode = WorldMapNodes[currentNodeId];
 
 		if (!currentNode?.connectedNodeIds.includes(nodeId)) {
 			console.warn("You cannot travel there from your current location.");
 			return;
 		}
 		const sceneId = getOverride(nodeId, "onEnter");
-		travelToNode(nodeId, nodeType);
+		travelToNode(nodeId);
 
 		if (sceneId) {
 			setPhase("SCENE");

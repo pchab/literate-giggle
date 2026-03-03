@@ -2,16 +2,15 @@
 
 import { redirect } from "next/navigation";
 import { useShallow } from "zustand/shallow";
-import { terrainImageMapping } from "@/modules/battle/data/terrains.data";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
 import { useWorldStore } from "@/modules/world/store/world.store";
+import { WorldMapNodes } from "@/modules/world/data/mapNodes.data";
 
 export default function Home() {
 	const {
 		phase,
 		roster,
-		mapData,
 		currentNodeId,
 		unlockedQuestsQueue,
 		clearUnlockedQuestsQueue,
@@ -19,7 +18,6 @@ export default function Home() {
 		useShallow((state) => ({
 			phase: state.phase,
 			roster: state.roster,
-			mapData: state.mapData,
 			currentNodeId: state.currentNodeId,
 			unlockedQuestsQueue: state.unlockedQuestsQueue,
 			clearUnlockedQuestsQueue: state.clearUnlockedQuestsQueue,
@@ -48,12 +46,12 @@ export default function Home() {
 		case "MAP":
 			return redirect("/world");
 		case "BATTLE": {
-			const currentNode = mapData[currentNodeId];
+			const currentNode = WorldMapNodes[currentNodeId];
 			if (currentNode.encounterId) {
 				initBattle(
 					roster,
 					currentNode.encounterId,
-					terrainImageMapping[currentNode.terrain],
+					currentNode.background,
 				);
 			}
 			return redirect("/battle");

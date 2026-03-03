@@ -15,11 +15,12 @@ export function useSceneEngine(setLocalStep: (stepId: string) => void) {
 			setActiveSceneId: state.setActiveSceneId,
 		})),
 	);
-	const { setPhase, roster, upgradeClassCards } = useWorldStore(
+	const { setPhase, roster, upgradeClassCards, travelToNode } = useWorldStore(
 		useShallow((state) => ({
 			setPhase: state.setPhase,
 			roster: state.roster,
 			upgradeClassCards: state.upgradeClassCards,
+			travelToNode: state.travelToNode,
 		})),
 	);
 	const { initBattle } = useBattleStore(
@@ -45,6 +46,9 @@ export function useSceneEngine(setLocalStep: (stepId: string) => void) {
 				// --- WORLD/ROSTER MUTATIONS ---
 				case "UPGRADE_CLASS_CARDS":
 					upgradeClassCards(action.cardUpgrades);
+					break;
+				case "FORCE_MOVE":
+					travelToNode(action.nodeId);
 					break;
 
 				// --- ROUTING & SIDE EFFECTS ---

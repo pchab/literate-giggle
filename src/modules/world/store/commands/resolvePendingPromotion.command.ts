@@ -39,6 +39,9 @@ export function resolvePendingPromotion(
 		if (cardLibrary[chosenUtilityCardId]) {
 			newHero.deck.push(chosenUtilityCardId);
 		}
+
+		newHero.currentLevel = 1;
+
 		return {
 			...state,
 			roster: roster.with(heroIndex, {
