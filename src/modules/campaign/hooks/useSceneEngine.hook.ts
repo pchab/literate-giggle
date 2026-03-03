@@ -1,4 +1,4 @@
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import type { SceneAction } from "@/modules/campaign/domain/scenes.type";
@@ -6,8 +6,6 @@ import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
 import { useWorldStore } from "@/modules/world/store/world.store";
 
 export function useSceneEngine(setLocalStep: (stepId: string) => void) {
-	const router = useRouter();
-
 	const { advanceQuest, completeQuest, setActiveSceneId } = useCampaignStore(
 		useShallow((state) => ({
 			advanceQuest: state.advanceQuest,
@@ -56,16 +54,16 @@ export function useSceneEngine(setLocalStep: (stepId: string) => void) {
 					setActiveSceneId(null);
 					initBattle(roster, action.encounterId, action.background);
 					setPhase("BATTLE");
-					router.push("/battle");
+					redirect("/battle");
 					break;
 				case "START_SCENE":
 					setActiveSceneId(action.sceneId);
-					router.push(`/scene/${action.sceneId}`);
+					redirect(`/scene/${action.sceneId}`);
 					break;
 				case "END_SCENE":
 					setActiveSceneId(null);
 					setPhase("MAP");
-					router.push("/");
+					redirect("/");
 					break;
 
 				default:

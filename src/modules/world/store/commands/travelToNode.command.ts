@@ -5,9 +5,7 @@ import type {
 } from "@/modules/world/store/world.store";
 import { WorldMapNodes } from "../../data/mapNodes.data";
 
-export function travelToNode(
-	nodeId: MapNode["id"],
-): WorldStoreServerAction {
+export function travelToNode(nodeId: MapNode["id"]): WorldStoreServerAction {
 	return ({ currentNodeId }) => {
 		const currentNode = WorldMapNodes[currentNodeId];
 

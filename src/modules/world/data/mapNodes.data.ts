@@ -1,4 +1,5 @@
 import { questId, questStepId } from "@/modules/campaign/domain/quests.type";
+import { townId } from "@/modules/towns/domain/towns.type";
 import { encounterId } from "../../battle/data/encounters.data";
 import { type MapData, mapNodeId } from "../../world/domain/map.types";
 
@@ -16,6 +17,7 @@ export const WorldMapNodes: MapData = {
 			mapNodeId("dwarven_passage"),
 		],
 		background: "/battlegrounds/city.jpg",
+		townId: townId("ironhold"),
 	},
 	crossroads: {
 		id: mapNodeId("crossroads"),
@@ -95,22 +97,32 @@ export const WorldMapNodes: MapData = {
 		background: "/battlegrounds/city.jpg",
 	},
 	stone_gates: {
-        id: mapNodeId("stone_gates"),
-        name: "The Stone Gates",
-        type: "BATTLE",
-        position: { x: 50, y: 42 },
-        connectedNodeIds: [mapNodeId("ironhold_city"), mapNodeId("dwarven_passage")],
-        background: "/battlegrounds/cave.jpg",
-        encounterId: encounterId("stone_gate_guards"),
-        unlockCondition: { type: "QUEST_ACTIVE", questId: questId("dwarven_highway"), stepId: [questStepId("clear_gates"), questStepId("defeat_golem")] } 
-    },
-    dwarven_passage: {
-        id: mapNodeId("dwarven_passage"),
-        name: "Under-Mountain Pass",
-        type: "TOWN",
-        position: { x: 45, y: 40 },
-        connectedNodeIds: [mapNodeId("ironhold_city"), mapNodeId("cromee_town")],
-        background: "/battlegrounds/mountain_city.jpg",
-        unlockCondition: { type: "QUEST_COMPLETED", questId: questId("dwarven_highway") }
-    },
+		id: mapNodeId("stone_gates"),
+		name: "The Stone Gates",
+		type: "BATTLE",
+		position: { x: 50, y: 42 },
+		connectedNodeIds: [
+			mapNodeId("ironhold_city"),
+			mapNodeId("dwarven_passage"),
+		],
+		background: "/battlegrounds/cave.jpg",
+		encounterId: encounterId("stone_gate_guards"),
+		unlockCondition: {
+			type: "QUEST_ACTIVE",
+			questId: questId("dwarven_highway"),
+			stepId: [questStepId("clear_gates"), questStepId("defeat_golem")],
+		},
+	},
+	dwarven_passage: {
+		id: mapNodeId("dwarven_passage"),
+		name: "Under-Mountain Pass",
+		type: "TOWN",
+		position: { x: 45, y: 40 },
+		connectedNodeIds: [mapNodeId("ironhold_city"), mapNodeId("cromee_town")],
+		background: "/battlegrounds/mountain_city.jpg",
+		unlockCondition: {
+			type: "QUEST_COMPLETED",
+			questId: questId("dwarven_highway"),
+		},
+	},
 };

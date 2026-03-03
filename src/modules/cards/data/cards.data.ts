@@ -174,7 +174,7 @@ export const cardLibrary: Record<Card["id"], Card> = {
 		name: "Ice Wall",
 		range: 1,
 		playRequirement: "requires_empty_cell",
-		effects: [{ type: "summon", blueprintId: 'ice_wall', target: "anchor" }],
+		effects: [{ type: "summon", blueprintId: "ice_wall", target: "anchor" }],
 	},
 
 	[cardId("cryomancer-placeholder-1")]: {

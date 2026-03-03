@@ -9,8 +9,8 @@ import type { Quest, QuestStep } from "@/modules/campaign/domain/quests.type";
 import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
 import { MenuModal } from "@/modules/shared/components/MenuModal";
 import { useWorldStore } from "@/modules/world/store/world.store";
-import { useTravelInterceptor } from "../hooks/useTravelInterceptor";
 import { useDynamicMap } from "../hooks/useDynamicMap";
+import { useTravelInterceptor } from "../hooks/useTravelInterceptor";
 
 // Helper mappings for visuals
 const NODE_ICONS = {
@@ -61,7 +61,7 @@ export default function WorldMap() {
 	);
 
 	return (
-		<div className="relative w-full h-full bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl overflow-hidden group/map">
+		<div className="relative w-full aspect-video bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl overflow-hidden group/map">
 			{/* 1. The New Fantasy Map Background */}
 			<Image
 				src="/world_map.jpg"

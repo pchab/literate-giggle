@@ -1,3 +1,4 @@
+import type { TownLocation } from "@/modules/towns/domain/towns.type";
 import type { MapNode } from "@/modules/world/domain/map.types";
 import type { Scene } from "./scenes.type";
 
@@ -5,6 +6,7 @@ export interface QuestStep {
 	id: string & { readonly __brand: "StepId" };
 	logDescription: string;
 	targetNodeId?: MapNode["id"];
+	targetLocationId?: TownLocation["id"];
 	onEnterSceneId?: Scene["id"];
 	onWinSceneId?: Scene["id"];
 }

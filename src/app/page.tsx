@@ -4,8 +4,8 @@ import { redirect } from "next/navigation";
 import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
-import { useWorldStore } from "@/modules/world/store/world.store";
 import { WorldMapNodes } from "@/modules/world/data/mapNodes.data";
+import { useWorldStore } from "@/modules/world/store/world.store";
 
 export default function Home() {
 	const {
@@ -42,20 +42,18 @@ export default function Home() {
 		clearUnlockedQuestsQueue();
 	}
 
+	const currentNode = WorldMapNodes[currentNodeId];
 	switch (phase) {
 		case "MAP":
 			return redirect("/world");
 		case "BATTLE": {
-			const currentNode = WorldMapNodes[currentNodeId];
 			if (currentNode.encounterId) {
-				initBattle(
-					roster,
-					currentNode.encounterId,
-					currentNode.background,
-				);
+				initBattle(roster, currentNode.encounterId, currentNode.background);
 			}
 			return redirect("/battle");
 		}
+		case "TOWN":
+			return redirect(`/towns/${currentNode.townId}`);
 		case "SCENE":
 			return redirect(`/scenes/${activeSceneId}`);
 		case "REWARD":

@@ -10,14 +10,9 @@ import type {
 	PendingPromotion,
 } from "@/modules/figures/domain/heroClass.types";
 import { heroId } from "@/modules/figures/helpers/figures.helpers";
-import { WorldMapNodes } from "@/modules/world/data/mapNodes.data";
-import {
-	type MapData,
-	type MapNode,
-	mapNodeId,
-	type NodeType,
-} from "@/modules/world/domain/map.types";
+import { type MapNode, mapNodeId } from "@/modules/world/domain/map.types";
 import { claimRewards } from "./commands/claimRewards.command";
+import { healParty } from "./commands/healParty.command";
 import { resolvePendingPromotion } from "./commands/resolvePendingPromotion.command";
 import { setPhase } from "./commands/setPhase.command";
 import { stageBattleRewards } from "./commands/stageBattleRewards.command";
@@ -25,7 +20,7 @@ import { travelToNode } from "./commands/travelToNode.command";
 import { updateHand } from "./commands/updateHand.command";
 import { upgradeClassCards } from "./commands/upgradeClassCards.command";
 
-export type GamePhase = "CAMP" | "MAP" | "BATTLE" | "REWARD" | "SCENE";
+export type GamePhase = "TOWN" | "CAMP" | "MAP" | "BATTLE" | "REWARD" | "SCENE";
 
 export interface WorldState {
 	phase: GamePhase;
@@ -48,6 +43,7 @@ export interface WorldAction {
 	updateHand: (heroId: Hero["id"], hand: Hand) => void;
 	upgradeClassCards: (cardUpgrades: Record<Card["id"], Card["id"]>) => void;
 	clearUnlockedQuestsQueue: () => void;
+	healParty: (healAmount: number) => void;
 }
 
 export type WorldStoreServerAction = (state: WorldState) => Partial<WorldState>;
@@ -101,6 +97,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 			upgradeClassCards: (cardUpgrades: Record<Card["id"], Card["id"]>) =>
 				set(upgradeClassCards(cardUpgrades)),
 			clearUnlockedQuestsQueue: () => set({ unlockedQuestsQueue: [] }),
+			healParty: (healAmount: number) => set(healParty(healAmount)),
 		}),
 		{
 			name: "alpha-world-state",
