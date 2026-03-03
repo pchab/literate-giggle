@@ -1,3 +1,5 @@
+"use client";
+
 import { motion } from "motion/react";
 import Image from "next/image";
 import { cardLibrary } from "../data/cards.data";
@@ -8,6 +10,7 @@ interface BattleCardProps {
 	isSelected?: boolean;
 	isPlayable?: boolean;
 	onClick?: () => void;
+	size?: "normal" | "large";
 }
 
 export function BattleCard({
@@ -15,6 +18,7 @@ export function BattleCard({
 	isSelected = false,
 	isPlayable = true,
 	onClick,
+	size = "normal",
 }: BattleCardProps) {
 	const card = cardLibrary[cardId];
 
@@ -22,7 +26,7 @@ export function BattleCard({
 		return null;
 	}
 
-	const { name, range, effects } = card;
+	const { name, image, effects } = card;
 	const primaryEffect = effects[0];
 
 	let icon = "✨";
@@ -59,13 +63,16 @@ export function BattleCard({
 		}
 	}
 
+	const isLg = size === "large";
+
 	return (
 		<motion.div
 			onClick={onClick}
 			className={`
-                relative w-card h-card rounded-md overflow-hidden shadow-xl bg-zinc-950
+                relative rounded-md overflow-hidden shadow-xl bg-zinc-950
                 ${!isPlayable ? "opacity-50 grayscale cursor-not-allowed" : "cursor-pointer"}
                 group
+                ${isLg ? "w-card-large h-card-large" : "w-card h-card"}
             `}
 			animate={{
 				y: isSelected ? -15 : 0,
@@ -88,49 +95,38 @@ export function BattleCard({
 
 			{/* 2. Top Half: Illustration Placeholder (Behind the frame's visual space, overlaying the dark grey) */}
 			<div
-				className="absolute top-[6%] left-[6%] right-[6%] bottom-[50%] z-10 overflow-hidden rounded-t-sm flex items-center justify-center mix-blend-screen"
+				className="absolute top-0 left-0 right-0 bottom-[50%] z-30 overflow-hidden rounded-t-sm flex items-center justify-center mix-blend-screen"
 				style={{
 					background: `linear-gradient(to bottom, ${glowColor}, transparent)`,
 				}}
 			>
-				{/* Big watermark icon until you have pixel art */}
-				<span className="text-6xl opacity-30 drop-shadow-md filter group-hover:scale-110 transition-transform duration-500">
-					{icon}
-				</span>
-			</div>
-
-			{/* 3. Top-Left Diamond: Range Indicator */}
-			{/* Precise absolute positioning to perfectly overlay the cyan diamond */}
-			<div className="absolute top-[2%] left-[3%] z-30 w-[18px] h-[18px] flex items-center justify-center pointer-events-none">
-				<span className="text-[10px] font-black text-cyan-100 drop-shadow-[0_0_3px_rgba(0,255,255,0.8)] leading-none">
-					{range}
-				</span>
+				{/* Scaled watermark icon */}
+				<Image
+					src={image}
+					alt={name}
+					width={180}
+					height={150}
+					className={isLg ? "p-5" : "p-2"}
+				/>
 			</div>
 
 			{/* 4. Center Ring: The Primary Effect Value */}
 			{/* 50% / 50% with negative translation guarantees it sits dead-center in the ring */}
-			<div className="absolute top-1/2 left-1/2 -translate-x-1/2 z-30 flex items-center justify-center text-xs pointer-events-none">
+			<div
+				className={`absolute top-1/2 left-1/2 -translate-x-1/2 z-30 flex items-center justify-center pointer-events-none ${isLg ? "text-4xl" : "text-xs"}`}
+			>
 				{icon}
 			</div>
 
 			{/* 5. Bottom Half: Text Box */}
-			<div className="absolute top-[58%] bottom-[6%] left-[5%] right-[5%] z-30 flex flex-col justify-start items-center text-center pointer-events-none pt-2">
+			<div className="absolute top-[58%] bottom-[6%] left-[5%] right-[5%] z-30 flex flex-col justify-center items-center text-center pointer-events-none">
 				<h3
-					className={`text-[10px] font-bold leading-tight drop-shadow-[0_2px_2px_rgba(0,0,0,1)] ${accentColor}`}
+					className={`${isLg ? "text-xl" : "text-[10px]"} font-bold leading-tight drop-shadow-[0_2px_2px_rgba(0,0,0,1)] ${accentColor}`}
 				>
 					{name}
 				</h3>
-
-				{/* A tiny separator line */}
-				<div className="w-1/2 h-px bg-zinc-700/50 my-1.5" />
-
-				{/* Effect Type String */}
-				<span className="text-[8px] font-bold tracking-widest text-zinc-400 uppercase drop-shadow-md">
-					{primaryEffect?.type || "Utility"}
-				</span>
 			</div>
 
-			{/* Optional: Selected Overlay Ring */}
 			{isSelected && (
 				<div
 					className="absolute inset-0 z-40 border-2 rounded-md pointer-events-none"

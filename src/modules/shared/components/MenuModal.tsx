@@ -52,8 +52,8 @@ export function MenuModal({ isOpen, onClose, onSaveLoadout }: MenuModalProps) {
 									onClick={() => setActiveTab("LOADOUT")}
 									className={`px-8 py-4 font-pixel text-xl tracking-widest uppercase transition-all ${
 										activeTab === "LOADOUT"
-											? "bg-slate-800 text-yellow-500 border-t-4 border-x-4 border-slate-700 translate-y-[4px] pb-5"
-											: "bg-zinc-900 text-zinc-500 border-t-4 border-x-4 border-transparent hover:text-zinc-300 hover:bg-zinc-800"
+											? "bg-zinc-900 text-amber-500 border-t-4 border-x-4 border-zinc-700 translate-y-[4px] pb-5"
+											: "bg-zinc-950 text-zinc-500 border-t-4 border-x-4 border-transparent hover:text-zinc-300 hover:bg-zinc-900"
 									}`}
 								>
 									Camp Loadout
@@ -64,7 +64,7 @@ export function MenuModal({ isOpen, onClose, onSaveLoadout }: MenuModalProps) {
 									className={`px-8 py-4 font-pixel text-xl tracking-widest uppercase transition-all ${
 										activeTab === "QUESTS"
 											? "bg-zinc-900 text-amber-500 border-t-4 border-x-4 border-zinc-700 translate-y-[4px] pb-5"
-											: "bg-zinc-900 text-zinc-500 border-t-4 border-x-4 border-transparent hover:text-zinc-300 hover:bg-zinc-800"
+											: "bg-zinc-950 text-zinc-500 border-t-4 border-x-4 border-transparent hover:text-zinc-300 hover:bg-zinc-900"
 									}`}
 								>
 									Quest Log

@@ -71,6 +71,7 @@ export type Card = {
 	id: string & { readonly __brand: "CardId" };
 	name: string;
 	range: number;
+	image: string;
 	playRequirement: PlayRequirement;
 	effects: CardEffect[];
 };
