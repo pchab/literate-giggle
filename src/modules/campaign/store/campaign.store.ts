@@ -4,6 +4,9 @@ import { QUEST_DB } from "@/modules/campaign/data/quests.data";
 import type { Quest, QuestStep } from "@/modules/campaign/domain/quests.type";
 import type { Scene } from "@/modules/campaign/domain/scenes.type";
 import type { MapNode } from "@/modules/world/domain/map.types";
+import advanceQuest from "./commands/advanceQuest.command";
+import completeQuest from "./commands/completeQuest.command";
+import unlockQuest from "./commands/unlockQuest.command";
 
 export type NodeOverrides = {
 	onEnter?: Scene["id"];
@@ -35,44 +38,20 @@ const initialState: CampaignState = {
 	activeSceneId: null,
 };
 
+export type CampaignStoreServerAction = (
+	state: CampaignState & CampaignActions,
+) => Partial<CampaignState>;
+
 export const useCampaignStore = create<CampaignState & CampaignActions>()(
 	persist(
 		(set, get) => ({
 			...initialState,
 
-			unlockQuest: (questId) =>
-				set((state) => {
-					const quest = QUEST_DB[questId];
-					if (!quest) return {};
+			unlockQuest: (questId) => set(unlockQuest(questId)),
 
-					return {
-						activeQuests: {
-							...state.activeQuests,
-							[questId]: quest.initialStepId,
-						},
-					};
-				}),
+			advanceQuest: (questId, stepId) => set(advanceQuest(questId, stepId)),
 
-			advanceQuest: (questId, stepId) =>
-				set((state) => ({
-					activeQuests: {
-						...state.activeQuests,
-						[questId]: stepId,
-					},
-				})),
-
-			completeQuest: (questId) =>
-				set((state) => {
-					const newActive = { ...state.activeQuests };
-					delete newActive[questId];
-
-					return {
-						activeQuests: newActive,
-						completedQuests: state.completedQuests.includes(questId)
-							? state.completedQuests
-							: [...state.completedQuests, questId],
-					};
-				}),
+			completeQuest: (questId) => set(completeQuest(questId)),
 
 			getOverride: (nodeId: MapNode["id"], hook: "onEnter" | "onWin") => {
 				const { activeQuests } = get();
@@ -94,7 +73,7 @@ export const useCampaignStore = create<CampaignState & CampaignActions>()(
 		}),
 		{
 			name: "alpha-campaign-state",
-			storage: createJSONStorage(() => sessionStorage), // Change to localStorage for real saves later
+			storage: createJSONStorage(() => sessionStorage),
 		},
 	),
 );
