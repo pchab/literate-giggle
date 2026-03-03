@@ -68,8 +68,8 @@ export const cardLibrary: Record<Card["id"], Card> = {
 		id: cardId("arcane-shield-1"),
 		name: "Arcane Shield",
 		range: 2,
-		playRequirement: "requires_ally_or_self",
-		effects: [{ type: "block", amount: 2, target: "anchor" }],
+		playRequirement: "no_target",
+		effects: [{ type: "block", amount: 2, target: "self" }],
 	},
 	[cardId("arcane-shield-2")]: {
 		id: cardId("arcane-shield-2"),

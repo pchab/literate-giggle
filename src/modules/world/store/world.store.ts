@@ -23,6 +23,7 @@ import { setPhase } from "./commands/setPhase.command";
 import { stageBattleRewards } from "./commands/stageBattleRewards.command";
 import { travelToNode } from "./commands/travelToNode.command";
 import { updateHand } from "./commands/updateHand.command";
+import { upgradeClassCards } from "./commands/upgradeClassCards.command";
 
 export type GamePhase = "CAMP" | "MAP" | "BATTLE" | "REWARD" | "SCENE";
 
@@ -46,7 +47,7 @@ export interface WorldAction {
 		utilityCardId: Card["id"],
 	) => void;
 	updateHand: (heroId: Hero["id"], hand: Hand) => void;
-	upgradeClassCards: (targetClass: HeroClass) => void;
+	upgradeClassCards: (cardUpgrades: Record<Card["id"], Card["id"]>) => void;
 	clearUnlockedQuestsQueue: () => void;
 }
 
@@ -99,20 +100,8 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 			resolvePromotion: (heroId, chosenClass, utilityCardId) =>
 				set(resolvePendingPromotion(heroId, chosenClass, utilityCardId)),
 			updateHand: (heroId, hand) => set(updateHand(heroId, hand)),
-			upgradeClassCards: (targetClass: HeroClass) =>
-				set((state) => {
-					const newRoster = state.roster.map((hero) => {
-						if (hero.heroClass !== targetClass) return hero;
-						// TEMP
-						console.log(`Upgrading ${hero.heroClass} cards!`);
-						return {
-							...hero,
-							currentHp: hero.maxHp,
-						};
-					});
-
-					return { roster: newRoster };
-				}),
+			upgradeClassCards: (cardUpgrades: Record<Card["id"], Card["id"]>) =>
+				set(upgradeClassCards(cardUpgrades)),
 			clearUnlockedQuestsQueue: () => set({ unlockedQuestsQueue: [] }),
 		}),
 		{

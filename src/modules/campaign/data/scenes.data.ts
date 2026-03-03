@@ -2,6 +2,7 @@ import { encounterId } from "@/modules/battle/data/encounters.data";
 import { questStepId } from "../domain/quests.type";
 import { type Scene, sceneId } from "../domain/scenes.type";
 import { QUEST_MAGE_AWAKENING } from "./quests.data";
+import { cardId } from "@/modules/cards/helpers/cards.helper";
 
 export const SCENE_DB: Record<Scene["id"], Scene> = {
 	// SCENE 1: Arriving at the tower
@@ -123,7 +124,7 @@ export const SCENE_DB: Record<Scene["id"], Scene> = {
 				text: "You survived... I am impressed. Hand over the tome. In exchange, I shall unlock the true potential of your incantations.",
 				onNext: [
 					{ type: "COMPLETE_QUEST", questId: QUEST_MAGE_AWAKENING },
-					{ type: "UPGRADE_CLASS_CARDS", heroClass: "MAGE" },
+					{ type: "UPGRADE_CLASS_CARDS", cardUpgrades: { [cardId("arcane-shield-1")]: cardId("arcane-shield-2") } },
 					{ type: "END_SCENE" },
 				],
 			},

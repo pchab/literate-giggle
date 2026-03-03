@@ -15,10 +15,11 @@ export function useSceneEngine(setLocalStep: (stepId: string) => void) {
 			setActiveSceneId: state.setActiveSceneId,
 		})),
 	);
-	const { setPhase, roster } = useWorldStore(
+	const { setPhase, roster, upgradeClassCards } = useWorldStore(
 		useShallow((state) => ({
 			setPhase: state.setPhase,
 			roster: state.roster,
+			upgradeClassCards: state.upgradeClassCards,
 		})),
 	);
 	const { initBattle } = useBattleStore(
@@ -43,10 +44,7 @@ export function useSceneEngine(setLocalStep: (stepId: string) => void) {
 
 				// --- WORLD/ROSTER MUTATIONS ---
 				case "UPGRADE_CLASS_CARDS":
-					// TEMP
-					console.log(
-						`[Narrative Reward] Upgrading ${action.heroClass} cards!`,
-					);
+					upgradeClassCards(action.cardUpgrades);
 					break;
 
 				// --- ROUTING & SIDE EFFECTS ---
