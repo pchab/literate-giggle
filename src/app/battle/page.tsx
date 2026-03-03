@@ -2,11 +2,11 @@
 
 import { redirect } from "next/navigation";
 import { useShallow } from "zustand/shallow";
-import { BattleGrid } from "@/components/grid/BattleGrid";
+import { BattleGrid } from "@/modules/battle/components/BattleGrid";
+import { useBattleStore } from "@/modules/battle/store/battle.store";
 import type { Hero } from "@/modules/figures/domain/figures.type";
-import { useBattleStore } from "@/store/battle.store";
-import { useWorldStore } from "@/store/world.store";
-import { getBackgroundImage } from "@/utils/backgroundImage.helpers";
+import { getBackgroundImage } from "@/modules/shared/helpers/backgroundImage.helpers";
+import { useWorldStore } from "@/modules/world/store/world.store";
 
 export default function Home() {
 	const { heroes, monsters, background } = useBattleStore(

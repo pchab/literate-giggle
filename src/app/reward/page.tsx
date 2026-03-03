@@ -4,14 +4,14 @@ import { domAnimation, LazyMotion, m } from "motion/react";
 import { redirect } from "next/navigation";
 import { useState } from "react";
 import { useShallow } from "zustand/shallow";
-import { BattleCard } from "@/components/cards/BattleCard";
-import { RetroButton } from "@/components/ui/RetroButton";
-import { RetroPanel } from "@/components/ui/RetroPanel";
-import { cardLibrary } from "@/modules/cards/domain/cards.data";
-import { CLASS_REGISTRY } from "@/modules/heroClass/domain/heroClass.data";
-import { useBattleStore } from "@/store/battle.store";
-import { useCampaignStore } from "@/store/campaign.store";
-import { useWorldStore } from "@/store/world.store";
+import { useBattleStore } from "@/modules/battle/store/battle.store";
+import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
+import { BattleCard } from "@/modules/cards/components/BattleCard";
+import { cardLibrary } from "@/modules/cards/data/cards.data";
+import { CLASS_REGISTRY } from "@/modules/figures/data/heroClass.data";
+import { RetroButton } from "@/modules/shared/components/RetroButton";
+import { RetroPanel } from "@/modules/shared/components/RetroPanel";
+import { useWorldStore } from "@/modules/world/store/world.store";
 
 export default function RewardScreen() {
 	const { roster, claimRewards, phase, setPhase, currentNodeId } =

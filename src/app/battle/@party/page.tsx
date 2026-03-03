@@ -1,7 +1,7 @@
 "use client";
 
-import { HeroCard } from "@/components/HeroCard";
-import { useBattleStore } from "@/store/battle.store";
+import { useBattleStore } from "@/modules/battle/store/battle.store";
+import { HeroCard } from "@/modules/figures/components/HeroCard";
 
 export default function PartySidebar() {
 	const heroes = useBattleStore((state) => state.heroes);

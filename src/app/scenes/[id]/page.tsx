@@ -1,9 +1,8 @@
 import { redirect } from "next/navigation";
-import { SCENE_DB } from "@/modules/quests/domain/scenes.data";
-import { Scene } from "@/modules/quests/domain/scenes.type";
-import SceneComponent from "./Scene";
+import SceneComponent from "@/modules/campaign/components/Scene";
+import { SCENE_DB } from "@/modules/campaign/data/scenes.data";
+import type { Scene } from "@/modules/campaign/domain/scenes.type";
 
-// Next.js 15+ standard for unwrapping dynamic route params
 export default async function ScenePage({
 	params,
 }: {

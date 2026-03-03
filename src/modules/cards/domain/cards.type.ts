@@ -1,5 +1,8 @@
-import { isHeroId, isMonsterId } from "@/modules/figures/figures.helpers";
-import type { GridPosition } from "@/modules/grid/grid.type";
+import type { GridPosition } from "@/modules/battle/domain/grid.type";
+import {
+	isHeroId,
+	isMonsterId,
+} from "@/modules/figures/helpers/figures.helpers";
 import type { Hero, Monster, Summon } from "../../figures/domain/figures.type";
 
 export type AnchorTarget =

@@ -1,0 +1,123 @@
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
+import type { Quest } from "@/modules/campaign/domain/quests.type";
+import { initialDeck } from "@/modules/cards/data/cards.data";
+import type { Card, CardLog, Hand } from "@/modules/cards/domain/cards.type";
+import { baseHeroStats } from "@/modules/figures/data/heroes/baseHeroStats";
+import type { Hero } from "@/modules/figures/domain/figures.type";
+import type {
+	HeroClass,
+	PendingPromotion,
+} from "@/modules/figures/domain/heroClass.types";
+import { heroId } from "@/modules/figures/helpers/figures.helpers";
+import { WorldMapNodes } from "@/modules/world/data/mapNodes.data";
+import {
+	type MapData,
+	type MapNode,
+	mapNodeId,
+	type NodeType,
+} from "@/modules/world/domain/map.types";
+import { claimRewards } from "./commands/claimRewards.command";
+import { resolvePendingPromotion } from "./commands/resolvePendingPromotion.command";
+import { setPhase } from "./commands/setPhase.command";
+import { stageBattleRewards } from "./commands/stageBattleRewards.command";
+import { travelToNode } from "./commands/travelToNode.command";
+import { updateHand } from "./commands/updateHand.command";
+
+export type GamePhase = "CAMP" | "MAP" | "BATTLE" | "REWARD" | "SCENE";
+
+export interface WorldState {
+	phase: GamePhase;
+	mapData: MapData;
+	currentNodeId: MapNode["id"];
+	roster: Hero[];
+	pendingPromotions: PendingPromotion[];
+	unlockedQuestsQueue: Quest["id"][];
+}
+
+export interface WorldAction {
+	setPhase: (phase: GamePhase) => void;
+	stageBattleRewards: (remainingHp: Record<string, number>) => void;
+	travelToNode: (nodeId: MapNode["id"], nodeType: NodeType) => void;
+	claimRewards: (earnedXp: number) => void;
+	resolvePromotion: (
+		heroId: Hero["id"],
+		chosenClass: HeroClass,
+		utilityCardId: Card["id"],
+	) => void;
+	updateHand: (heroId: Hero["id"], hand: Hand) => void;
+	upgradeClassCards: (targetClass: HeroClass) => void;
+	clearUnlockedQuestsQueue: () => void;
+}
+
+export type WorldStoreServerAction = (state: WorldState) => Partial<WorldState>;
+
+export const useWorldStore = create<WorldState & WorldAction>()(
+	persist(
+		(set) => ({
+			phase: "MAP",
+			mapData: WorldMapNodes,
+			currentNodeId: mapNodeId("ironhold_city"),
+			roster: [
+				{
+					id: heroId(1),
+					...baseHeroStats,
+					currentHp: baseHeroStats.maxHp,
+					currentBlock: 0,
+					gridPosition: { row: 0, col: 0 },
+					deck: [...initialDeck],
+					hand: [initialDeck[0], initialDeck[1], null],
+				},
+				{
+					id: heroId(2),
+					...baseHeroStats,
+					currentHp: baseHeroStats.maxHp,
+					currentBlock: 0,
+					gridPosition: { row: 0, col: 1 },
+					deck: [...initialDeck],
+					hand: [initialDeck[0], initialDeck[1], null],
+				},
+				{
+					id: heroId(3),
+					...baseHeroStats,
+					currentHp: baseHeroStats.maxHp,
+					currentBlock: 0,
+					gridPosition: { row: 1, col: 0 },
+					deck: [...initialDeck],
+					hand: [initialDeck[0], initialDeck[1], null],
+				},
+			],
+			pendingBattleLog: {} as CardLog,
+			pendingPromotions: [],
+			activeSceneId: null,
+			unlockedQuestsQueue: [],
+
+			setPhase: (phase) => set(setPhase(phase)),
+			travelToNode: (nodeId, nodeType) => set(travelToNode(nodeId, nodeType)),
+			stageBattleRewards: (remainingHp) => set(stageBattleRewards(remainingHp)),
+			claimRewards: (earnedXp: number) => set(claimRewards(earnedXp)),
+			resolvePromotion: (heroId, chosenClass, utilityCardId) =>
+				set(resolvePendingPromotion(heroId, chosenClass, utilityCardId)),
+			updateHand: (heroId, hand) => set(updateHand(heroId, hand)),
+			upgradeClassCards: (targetClass: HeroClass) =>
+				set((state) => {
+					const newRoster = state.roster.map((hero) => {
+						if (hero.heroClass !== targetClass) return hero;
+						// TEMP
+						console.log(`Upgrading ${hero.heroClass} cards!`);
+						return {
+							...hero,
+							currentHp: hero.maxHp,
+						};
+					});
+
+					return { roster: newRoster };
+				}),
+			clearUnlockedQuestsQueue: () => set({ unlockedQuestsQueue: [] }),
+		}),
+		{
+			name: "alpha-world-state",
+			storage: createJSONStorage(() => sessionStorage),
+		},
+	),
+);

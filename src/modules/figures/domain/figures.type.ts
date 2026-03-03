@@ -1,7 +1,7 @@
-import type { HeroClass } from "@/modules/heroClass/domain/heroClass.types";
-import type { Attack } from "../../attacks/attacks";
-import type { Card, Hand } from "../../cards/domain/cards.type";
-import type { GridPosition } from "../../grid/grid.type";
+import type { Attack } from "@/modules/battle/domain/attacks.type";
+import type { GridPosition } from "@/modules/battle/domain/grid.type";
+import type { Card, Hand } from "@/modules/cards/domain/cards.type";
+import type { HeroClass } from "@/modules/figures/domain/heroClass.types";
 
 export enum UnitStance {
 	IDLE = 0,

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { VT323 } from "next/font/google";
 import "./globals.css";
-import { ClassPromotionModal } from "@/components/ClassPromotionModal";
+import { ClassPromotionModal } from "@/modules/figures/components/ClassPromotionModal";
 
 const vt323 = VT323({
 	variable: "--font-pixel",

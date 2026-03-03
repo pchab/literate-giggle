@@ -2,10 +2,10 @@
 
 import { redirect } from "next/navigation";
 import { useShallow } from "zustand/shallow";
-import { useBattleStore } from "@/store/battle.store";
-import { useCampaignStore } from "@/store/campaign.store";
-import { useWorldStore } from "@/store/world.store";
-import { terrainImageMapping } from "@/modules/grid/terrains/terrains.data";
+import { terrainImageMapping } from "@/modules/battle/data/terrains.data";
+import { useBattleStore } from "@/modules/battle/store/battle.store";
+import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
+import { useWorldStore } from "@/modules/world/store/world.store";
 
 export default function Home() {
 	const {
@@ -50,7 +50,11 @@ export default function Home() {
 		case "BATTLE": {
 			const currentNode = mapData[currentNodeId];
 			if (currentNode.encounterId) {
-				initBattle(roster, currentNode.encounterId, terrainImageMapping[currentNode.terrain]);
+				initBattle(
+					roster,
+					currentNode.encounterId,
+					terrainImageMapping[currentNode.terrain],
+				);
 			}
 			return redirect("/battle");
 		}
