@@ -1,12 +1,13 @@
 import type { Card } from "../domain/cards.type";
 import { cardId } from "../helpers/cards.helper";
 
-const bandageBase: Pick<Card, "name" | "range" | "image" | "playRequirement"> = {
-	name: "Bandage",
-	range: 0,
-	image: "/cards/bandage.png",
-	playRequirement: "no_target",
-};
+const bandageBase: Pick<Card, "name" | "range" | "image" | "playRequirement"> =
+	{
+		name: "Bandage",
+		range: 0,
+		image: "/cards/bandage.png",
+		playRequirement: "no_target",
+	};
 
 const clubBase: Pick<Card, "name" | "range" | "image" | "playRequirement"> = {
 	name: "Club",
@@ -15,35 +16,50 @@ const clubBase: Pick<Card, "name" | "range" | "image" | "playRequirement"> = {
 	playRequirement: "requires_enemy",
 };
 
-const shortSwordBase: Pick<Card, "name" | "range" | "image" | "playRequirement"> = {
+const shortSwordBase: Pick<
+	Card,
+	"name" | "range" | "image" | "playRequirement"
+> = {
 	name: "Short Sword",
 	range: 1,
 	image: "/cards/short-sword.png",
 	playRequirement: "requires_enemy",
 };
 
-const apprenticeStaffBase: Pick<Card, "name" | "range" | "image" | "playRequirement"> = {
+const apprenticeStaffBase: Pick<
+	Card,
+	"name" | "range" | "image" | "playRequirement"
+> = {
 	name: "Apprentice Staff",
 	range: 2,
 	image: "/cards/apprentice-staff.png",
 	playRequirement: "requires_enemy",
 };
 
-const battleCryBase: Pick<Card, "name" | "range" | "image" | "playRequirement"> = {
+const battleCryBase: Pick<
+	Card,
+	"name" | "range" | "image" | "playRequirement"
+> = {
 	name: "Battle Cry",
 	range: 1,
 	image: "/cards/battle-cry.png",
 	playRequirement: "requires_enemy",
 };
 
-const shieldBlockBase: Pick<Card, "name" | "range" | "image" | "playRequirement"> = {
+const shieldBlockBase: Pick<
+	Card,
+	"name" | "range" | "image" | "playRequirement"
+> = {
 	name: "Shield Block",
 	range: 0,
 	image: "/cards/shield-block.png",
 	playRequirement: "no_target",
 };
 
-const arcaneShieldBase: Pick<Card, "name" | "range" | "image" | "playRequirement"> = {
+const arcaneShieldBase: Pick<
+	Card,
+	"name" | "range" | "image" | "playRequirement"
+> = {
 	name: "Arcane Shield",
 	range: 2,
 	image: "/cards/arcane-shield.png",
@@ -151,24 +167,21 @@ export const cardLibrary: Record<Card["id"], Card> = {
 		id: cardId("battle-cry-1"),
 		...battleCryBase,
 		effects: [
-			{ type: "push", distance: 1, target: "adjacent_to_anchor" }, // Or whatever your AoE target is!
-			{ type: "block", amount: 2, target: "self" },
+			{ type: "push", distance: 2, collisionDamage: 3, target: "anchor" },
 		],
 	},
 	[cardId("battle-cry-2")]: {
 		id: cardId("battle-cry-2"),
 		...battleCryBase,
 		effects: [
-			{ type: "push", distance: 1, target: "adjacent_to_anchor" }, // Or whatever your AoE target is!
-			{ type: "block", amount: 3, target: "self" },
+			{ type: "push", distance: 2, collisionDamage: 4, target: "anchor" },
 		],
 	},
 	[cardId("battle-cry-3")]: {
 		id: cardId("battle-cry-3"),
 		...battleCryBase,
 		effects: [
-			{ type: "push", distance: 1, target: "adjacent_to_anchor" }, // Or whatever your AoE target is!
-			{ type: "block", amount: 4, target: "self" },
+			{ type: "push", distance: 3, collisionDamage: 5, target: "anchor" },
 		],
 	},
 

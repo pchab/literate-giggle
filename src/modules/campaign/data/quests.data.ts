@@ -53,7 +53,10 @@ export const QUEST_DB: Record<Quest["id"], Quest> = {
 			[questStepId("visit_prospector")]: {
 				id: questStepId("visit_prospector"),
 				logDescription: "Speak to the Prospector in Ironhold City.",
-				targetNodeId: { mapNodeId: mapNodeId("ironhold_city"), locationId: townLocationId("ironhold_tavern") },
+				targetNodeId: {
+					mapNodeId: mapNodeId("ironhold_city"),
+					locationId: townLocationId("ironhold_tavern"),
+				},
 				onEnterSceneId: sceneId("prospector_intro"),
 			},
 			[questStepId("clear_gates")]: {

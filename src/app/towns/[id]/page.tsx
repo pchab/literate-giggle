@@ -4,11 +4,11 @@ import Image from "next/image";
 import { redirect, useParams } from "next/navigation";
 import { QUEST_DB } from "@/modules/campaign/data/quests.data";
 import type { Quest } from "@/modules/campaign/domain/quests.type";
+import type { Scene } from "@/modules/campaign/domain/scenes.type";
 import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
 import { TOWN_DB } from "@/modules/towns/data/towns.data";
 import type { TownData, TownLocation } from "@/modules/towns/domain/towns.type";
 import { useWorldStore } from "@/modules/world/store/world.store";
-import { Scene } from "@/modules/campaign/domain/scenes.type";
 
 export default function TownPage() {
 	const params = useParams();

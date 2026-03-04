@@ -12,6 +12,8 @@ import {
 	getActualTarget,
 	getIdealTarget,
 } from "./ai.move.helpers";
+import { DamageEffect } from "@/modules/cards/domain/cards.type";
+import { applyEffectToHero } from "./effect.helpers";
 
 // --- ACTION HANDLER 1: SUMMONING ---
 export function handleSummon(
@@ -101,15 +103,11 @@ export function handleMoveAndAttack(
 
 		if (!isTargeted) return hero;
 
-		const effectiveDmg = Math.max(0, attack.damage - hero.baseDef);
-		const hpDamage = Math.max(0, effectiveDmg - hero.currentBlock);
-		const newBlock = Math.max(0, hero.currentBlock - effectiveDmg);
 
-		return {
-			...hero,
-			currentHp: Math.max(0, hero.currentHp - hpDamage),
-			currentBlock: newBlock,
-		};
+		const dmgEffect: DamageEffect = { type: "damage", amount: attack.damage, target: "self" };
+		const damagedHero = applyEffectToHero(hero, dmgEffect);
+
+		return damagedHero;
 	});
 
 	return { nextMonsters, nextHeroes };

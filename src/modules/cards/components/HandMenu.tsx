@@ -90,10 +90,11 @@ export function HandMenu({ onSaveHand }: HandMenuProps) {
 						type="button"
 						key={hero.id}
 						onClick={() => handleSelectHero(hero)}
-						className={`px-6 py-2 font-pixel tracking-widest uppercase transition-all ${selectedHeroId === hero.id
-							? "bg-zinc-800 text-amber-500 border border-zinc-600 shadow-[0_2px_10px_rgba(0,0,0,0.5)]"
-							: "bg-transparent text-zinc-500 hover:text-zinc-300 border border-transparent hover:border-zinc-700"
-							}`}
+						className={`px-6 py-2 font-pixel tracking-widest uppercase transition-all ${
+							selectedHeroId === hero.id
+								? "bg-zinc-800 text-amber-500 border border-zinc-600 shadow-[0_2px_10px_rgba(0,0,0,0.5)]"
+								: "bg-transparent text-zinc-500 hover:text-zinc-300 border border-transparent hover:border-zinc-700"
+						}`}
 					>
 						{hero.id}
 					</button>
@@ -115,10 +116,7 @@ export function HandMenu({ onSaveHand }: HandMenuProps) {
 								Main Weapon
 							</div>
 							{draftCards[0] && (
-								<BattleCard
-									cardId={draftCards[0]}
-									size="large"
-								/>
+								<BattleCard cardId={draftCards[0]} size="large" />
 							)}
 						</div>
 

@@ -50,20 +50,22 @@ export function MenuModal({ isOpen, onClose, onSaveHand }: MenuModalProps) {
 								<button
 									type="button"
 									onClick={() => setActiveTab("HAND")}
-									className={`px-8 py-4 font-pixel text-xl tracking-widest uppercase transition-all ${activeTab === "HAND"
+									className={`px-8 py-4 font-pixel text-xl tracking-widest uppercase transition-all ${
+										activeTab === "HAND"
 											? "bg-zinc-900 text-amber-500 border-t-4 border-x-4 border-zinc-700 translate-y-[4px] pb-5"
 											: "bg-zinc-950 text-zinc-500 border-t-4 border-x-4 border-transparent hover:text-zinc-300 hover:bg-zinc-900"
-										}`}
+									}`}
 								>
 									Hand
 								</button>
 								<button
 									type="button"
 									onClick={() => setActiveTab("QUESTS")}
-									className={`px-8 py-4 font-pixel text-xl tracking-widest uppercase transition-all ${activeTab === "QUESTS"
+									className={`px-8 py-4 font-pixel text-xl tracking-widest uppercase transition-all ${
+										activeTab === "QUESTS"
 											? "bg-zinc-900 text-amber-500 border-t-4 border-x-4 border-zinc-700 translate-y-[4px] pb-5"
 											: "bg-zinc-950 text-zinc-500 border-t-4 border-x-4 border-transparent hover:text-zinc-300 hover:bg-zinc-900"
-										}`}
+									}`}
 								>
 									Quest Log
 								</button>
@@ -81,9 +83,7 @@ export function MenuModal({ isOpen, onClose, onSaveHand }: MenuModalProps) {
 
 						{/* --- TAB CONTENT AREA --- */}
 						<div className="grow overflow-hidden relative min-h-[600px]">
-							{activeTab === "HAND" && (
-								<HandMenu onSaveHand={onSaveHand} />
-							)}
+							{activeTab === "HAND" && <HandMenu onSaveHand={onSaveHand} />}
 
 							{activeTab === "QUESTS" && (
 								<div className="absolute inset-0">

@@ -9,7 +9,7 @@ export enum UnitStance {
 	ATTACKING = 2,
 }
 
-export type Figure = {
+export interface Figure {
 	id: string;
 	spriteBase: string;
 	currentHp: number;
@@ -18,9 +18,9 @@ export type Figure = {
 	currentBlock: number;
 	baseMove: number;
 	gridPosition: GridPosition;
-};
+}
 
-export type Hero = Figure & {
+export interface Hero extends Figure {
 	id: string & { readonly __brand: "HeroId" };
 	heroClass: HeroClass;
 	deck: Card["id"][];
@@ -28,7 +28,7 @@ export type Hero = Figure & {
 	passives: string[];
 	currentXp: number;
 	currentLevel: number;
-};
+}
 
 export type EnemyType =
 	| "BOSS"
@@ -38,17 +38,18 @@ export type EnemyType =
 	| "NECROMANCER"
 	| "GOLEM"
 	| "GOLEM_OVERSEER";
-export type Monster = Figure & {
+
+export interface Monster extends Figure {
 	id: string & { readonly __brand: "MonsterId" };
 	enemyType: EnemyType;
 	attacks: Attack[];
 	xpReward: number;
-};
+}
 
 export type Allegiance = "PLAYER" | "ENEMY" | "NEUTRAL";
 
-export type Summon = Figure & {
+export interface Summon extends Figure {
 	id: string & { readonly __brand: "SummonId" };
 	name: string;
 	allegiance: Allegiance;
-};
+}

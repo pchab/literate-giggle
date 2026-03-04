@@ -44,28 +44,50 @@ export type EffectTarget =
 	| "all_allies"
 	| "adjacent_to_anchor";
 
+
+export type MoveEffect = {
+	type: "move";
+	target: EffectTarget;
+};
+
+export type DamageEffect = {
+	type: "damage";
+	amount: number;
+	target: EffectTarget;
+};
+
+export type HealEffect = {
+	type: "heal";
+	amount: number;
+	target: EffectTarget;
+};
+
+export type BlockEffect = {
+	type: "block";
+	amount: number;
+	target: EffectTarget;
+};
+
+export type PushEffect = {
+	type: "push";
+	distance: number;
+	collisionDamage: number;
+	target: EffectTarget;
+};
+
+export type SummonEffect = {
+	type: "summon";
+	blueprintId: string;
+	target: EffectTarget;
+};
+
 export type CardEffect =
-	| {
-			type: "move";
-			target: EffectTarget;
-	  }
-	| {
-			type: "damage";
-			amount: number;
-			target: EffectTarget;
-	  }
-	| { type: "heal"; amount: number; target: EffectTarget }
-	| {
-			type: "block";
-			amount: number;
-			target: EffectTarget;
-	  }
-	| { type: "push"; distance: number; target: EffectTarget }
-	| {
-			type: "summon";
-			blueprintId: string; // e.g., "ice_wall", "healing_totem"
-			target: EffectTarget;
-	  };
+	| MoveEffect
+	| DamageEffect
+	| HealEffect
+	| BlockEffect
+	| PushEffect
+	| SummonEffect;
 
 export type Card = {
 	id: string & { readonly __brand: "CardId" };
