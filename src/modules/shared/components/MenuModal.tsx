@@ -6,24 +6,24 @@ import type { Card } from "@/modules/cards/domain/cards.type";
 import type { Hero } from "@/modules/figures/domain/figures.type";
 import { RetroPanel } from "./RetroPanel";
 
-type MenuTab = "LOADOUT" | "QUESTS";
+type MenuTab = "HAND" | "QUESTS";
 
 interface MenuModalProps {
 	isOpen: boolean;
 	onClose: () => void;
-	onSaveLoadout: (
+	onSaveHand: (
 		heroId: Hero["id"],
 		newCards: [Card["id"], Card["id"], Card["id"] | null],
 	) => void;
 }
 
-export function MenuModal({ isOpen, onClose, onSaveLoadout }: MenuModalProps) {
-	const [activeTab, setActiveTab] = useState<MenuTab>("LOADOUT");
+export function MenuModal({ isOpen, onClose, onSaveHand }: MenuModalProps) {
+	const [activeTab, setActiveTab] = useState<MenuTab>("HAND");
 
 	// Reset tab to default whenever opened
 	useEffect(() => {
 		if (isOpen) {
-			setActiveTab("LOADOUT");
+			setActiveTab("HAND");
 		}
 	}, [isOpen]);
 
@@ -49,23 +49,21 @@ export function MenuModal({ isOpen, onClose, onSaveLoadout }: MenuModalProps) {
 							<div className="flex gap-4 pt-4">
 								<button
 									type="button"
-									onClick={() => setActiveTab("LOADOUT")}
-									className={`px-8 py-4 font-pixel text-xl tracking-widest uppercase transition-all ${
-										activeTab === "LOADOUT"
+									onClick={() => setActiveTab("HAND")}
+									className={`px-8 py-4 font-pixel text-xl tracking-widest uppercase transition-all ${activeTab === "HAND"
 											? "bg-zinc-900 text-amber-500 border-t-4 border-x-4 border-zinc-700 translate-y-[4px] pb-5"
 											: "bg-zinc-950 text-zinc-500 border-t-4 border-x-4 border-transparent hover:text-zinc-300 hover:bg-zinc-900"
-									}`}
+										}`}
 								>
-									Camp Loadout
+									Hand
 								</button>
 								<button
 									type="button"
 									onClick={() => setActiveTab("QUESTS")}
-									className={`px-8 py-4 font-pixel text-xl tracking-widest uppercase transition-all ${
-										activeTab === "QUESTS"
+									className={`px-8 py-4 font-pixel text-xl tracking-widest uppercase transition-all ${activeTab === "QUESTS"
 											? "bg-zinc-900 text-amber-500 border-t-4 border-x-4 border-zinc-700 translate-y-[4px] pb-5"
 											: "bg-zinc-950 text-zinc-500 border-t-4 border-x-4 border-transparent hover:text-zinc-300 hover:bg-zinc-900"
-									}`}
+										}`}
 								>
 									Quest Log
 								</button>
@@ -83,8 +81,8 @@ export function MenuModal({ isOpen, onClose, onSaveLoadout }: MenuModalProps) {
 
 						{/* --- TAB CONTENT AREA --- */}
 						<div className="grow overflow-hidden relative min-h-[600px]">
-							{activeTab === "LOADOUT" && (
-								<HandMenu onSaveLoadout={onSaveLoadout} />
+							{activeTab === "HAND" && (
+								<HandMenu onSaveHand={onSaveHand} />
 							)}
 
 							{activeTab === "QUESTS" && (

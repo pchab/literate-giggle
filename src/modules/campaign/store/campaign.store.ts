@@ -59,7 +59,11 @@ export const useCampaignStore = create<CampaignState & CampaignActions>()(
 					const quest = QUEST_DB[qId as Quest["id"]];
 					const step = quest?.steps[currentStepId as QuestStep["id"]];
 
-					if (step && step.targetNodeId === nodeId) {
+					if (
+						step &&
+						step.targetNodeId.mapNodeId === nodeId &&
+						!step.targetNodeId.locationId
+					) {
 						if (hook === "onEnter" && step.onEnterSceneId)
 							return step.onEnterSceneId;
 						if (hook === "onWin" && step.onWinSceneId) return step.onWinSceneId;

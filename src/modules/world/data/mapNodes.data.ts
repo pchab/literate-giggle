@@ -69,7 +69,7 @@ export const WorldMapNodes: MapData = {
 		position: { x: 52, y: 80 },
 		connectedNodeIds: [mapNodeId("crossroads"), mapNodeId("cromee_town")],
 		encounterId: encounterId("skeleton_horde"),
-		background: "/battlegrounds/ruins.jpg",
+		background: "/battlegrounds/desert_ruins.jpg",
 	},
 	cromee_town: {
 		id: mapNodeId("cromee_town"),

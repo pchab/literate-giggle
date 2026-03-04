@@ -7,13 +7,13 @@ import { useWorldStore } from "@/modules/world/store/world.store";
 import { BattleCard } from "./BattleCard";
 
 interface HandMenuProps {
-	onSaveLoadout: (
+	onSaveHand: (
 		heroId: Hero["id"],
 		newCards: [Card["id"], Card["id"], Card["id"] | null],
 	) => void;
 }
 
-export function HandMenu({ onSaveLoadout }: HandMenuProps) {
+export function HandMenu({ onSaveHand }: HandMenuProps) {
 	const roster = useWorldStore((state) => state.roster);
 
 	const [selectedHeroId, setSelectedHeroId] = useState<Hero["id"] | null>(null);
@@ -65,7 +65,7 @@ export function HandMenu({ onSaveLoadout }: HandMenuProps) {
 		const utility1 = (draftCards[1] || draftCards[2]) as Card["id"];
 		const utility2 = draftCards[1] && draftCards[2] ? draftCards[2] : null;
 
-		onSaveLoadout(selectedHeroId, [weapon, utility1, utility2]);
+		onSaveHand(selectedHeroId, [weapon, utility1, utility2]);
 		// Optional: Add a little toast notification here!
 	};
 

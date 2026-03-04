@@ -232,7 +232,7 @@ export const cardLibrary: Record<Card["id"], Card> = {
 		range: 1,
 		image: "/cards/knight.png",
 		playRequirement: "requires_enemy",
-		effects: [{ type: "damage", amount: 4, target: "anchor" }],
+		effects: [{ type: "damage", amount: 6, target: "anchor" }],
 	},
 
 	[cardId("barbarian-weapon-1")]: {
@@ -241,34 +241,34 @@ export const cardLibrary: Record<Card["id"], Card> = {
 		range: 1,
 		image: "/cards/barbarian.png",
 		playRequirement: "requires_enemy",
-		effects: [{ type: "damage", amount: 4, target: "anchor" }],
+		effects: [{ type: "damage", amount: 6, target: "anchor" }],
 	},
 
 	[cardId("archer-weapon-1")]: {
 		id: cardId("archer-weapon-1"),
 		name: "Archer Weapon",
-		range: 1,
+		range: 3,
 		image: "/cards/archer.png",
 		playRequirement: "requires_enemy",
-		effects: [{ type: "damage", amount: 4, target: "anchor" }],
+		effects: [{ type: "damage", amount: 6, target: "anchor" }],
 	},
 
 	[cardId("pyromancer-weapon-1")]: {
 		id: cardId("pyromancer-weapon-1"),
 		name: "Pyromancer Weapon",
-		range: 1,
+		range: 2,
 		image: "/cards/pyromancer.png",
 		playRequirement: "requires_enemy",
-		effects: [{ type: "damage", amount: 4, target: "anchor" }],
+		effects: [{ type: "damage", amount: 6, target: "anchor" }],
 	},
 
 	[cardId("cryomancer-weapon-1")]: {
 		id: cardId("cryomancer-weapon-1"),
 		name: "Cryomancer Weapon",
-		range: 1,
+		range: 2,
 		image: "/cards/cryomancer.png",
 		playRequirement: "requires_enemy",
-		effects: [{ type: "damage", amount: 4, target: "anchor" }],
+		effects: [{ type: "damage", amount: 6, target: "anchor" }],
 	},
 };
 

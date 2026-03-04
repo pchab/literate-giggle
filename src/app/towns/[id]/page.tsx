@@ -8,6 +8,7 @@ import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
 import { TOWN_DB } from "@/modules/towns/data/towns.data";
 import type { TownData, TownLocation } from "@/modules/towns/domain/towns.type";
 import { useWorldStore } from "@/modules/world/store/world.store";
+import { Scene } from "@/modules/campaign/domain/scenes.type";
 
 export default function TownPage() {
 	const params = useParams();
@@ -15,7 +16,7 @@ export default function TownPage() {
 	const { healParty, phase, setPhase } = useWorldStore();
 
 	if (phase !== "TOWN") {
-		return redirect("/world");
+		return redirect("/");
 	}
 
 	const townId = params.id as TownData["id"];
@@ -36,27 +37,29 @@ export default function TownPage() {
 			const activeStepIds = Array.isArray(stepId) ? stepId : [stepId];
 			for (const sId of activeStepIds) {
 				const step = quest.steps[sId];
-				if (step?.targetLocationId === locationId) return step;
+				if (step.targetNodeId.locationId === locationId) return step;
 			}
 		}
 		return null;
+	};
+
+	const loadScene = (sceneId: Scene["id"]) => {
+		setPhase("SCENE");
+		setActiveSceneId(sceneId);
+		setTimeout(() => redirect("/"), 300);
 	};
 
 	const handleLocationClick = (location: TownLocation) => {
 		const activeQuestStep = getQuestForLocation(location.id);
 
 		if (activeQuestStep?.onEnterSceneId) {
-			setPhase("SCENE");
-			setActiveSceneId(activeQuestStep.onEnterSceneId);
-			redirect("/");
+			loadScene(activeQuestStep.onEnterSceneId);
 		}
 
 		switch (location.type) {
 			case "SCENE":
 				if (location.defaultSceneId) {
-					setPhase("SCENE");
-					setActiveSceneId(location.defaultSceneId);
-					setTimeout(() => redirect("/"), 300);
+					loadScene(location.defaultSceneId);
 				}
 				break;
 			case "HEAL":

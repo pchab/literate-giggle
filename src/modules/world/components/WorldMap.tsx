@@ -55,7 +55,7 @@ export default function WorldMap() {
 		Object.entries(activeQuests)
 			.map(([questId, stepId]) => {
 				const quest = QUEST_DB[questId as Quest["id"]];
-				return quest?.steps[stepId as QuestStep["id"]]?.targetNodeId;
+				return quest?.steps[stepId as QuestStep["id"]].targetNodeId.mapNodeId;
 			})
 			.filter(Boolean),
 	);
@@ -233,7 +233,7 @@ export default function WorldMap() {
 			<MenuModal
 				isOpen={isMenuOpen}
 				onClose={() => setIsMenuOpen(false)}
-				onSaveLoadout={updateHand}
+				onSaveHand={updateHand}
 			/>
 
 			<AnimatePresence>

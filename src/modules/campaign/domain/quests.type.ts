@@ -5,8 +5,7 @@ import type { Scene } from "./scenes.type";
 export interface QuestStep {
 	id: string & { readonly __brand: "StepId" };
 	logDescription: string;
-	targetNodeId?: MapNode["id"];
-	targetLocationId?: TownLocation["id"];
+	targetNodeId: { mapNodeId: MapNode["id"]; locationId?: TownLocation["id"] };
 	onEnterSceneId?: Scene["id"];
 	onWinSceneId?: Scene["id"];
 }
