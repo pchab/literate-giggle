@@ -6,11 +6,12 @@ import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
 import { useWorldStore } from "@/modules/world/store/world.store";
 
 export function useSceneEngine(setLocalStep: (stepId: string) => void) {
-	const { advanceQuest, completeQuest, setActiveSceneId } = useCampaignStore(
+	const { advanceQuest, completeQuest, setActiveSceneId, setFlag } = useCampaignStore(
 		useShallow((state) => ({
 			advanceQuest: state.advanceQuest,
 			completeQuest: state.completeQuest,
 			setActiveSceneId: state.setActiveSceneId,
+			setFlag: state.setFlag,
 		})),
 	);
 	const { setPhase, roster, upgradeClassCards, travelToNode } = useWorldStore(
@@ -40,7 +41,9 @@ export function useSceneEngine(setLocalStep: (stepId: string) => void) {
 				case "CHANGE_STEP":
 					setLocalStep(action.stepId);
 					break;
-
+				case "SET_FLAG":
+					setFlag(action.flagId);
+					break;
 				// --- WORLD/ROSTER MUTATIONS ---
 				case "UPGRADE_CLASS_CARDS":
 					upgradeClassCards(action.cardUpgrades);

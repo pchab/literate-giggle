@@ -37,7 +37,11 @@ export type EnemyType =
 	| "ARCHER"
 	| "NECROMANCER"
 	| "GOLEM"
-	| "GOLEM_OVERSEER";
+	| "GOLEM_OVERSEER"
+	| "TREANT"
+	| "ELVEN_WEAVER"
+	| "BEASTMASTER"
+	| "BRIAR_WOLF";
 
 export interface Monster extends Figure {
 	id: string & { readonly __brand: "MonsterId" };

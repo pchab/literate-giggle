@@ -1,6 +1,6 @@
 import type { BattleStoreServerAction } from "@/modules/battle/store/battle.store";
 import type { Hero } from "@/modules/figures/domain/figures.type";
-import { ENCOUNTER_DB, type Encounter } from "../../data/encounters.data";
+import { ENCOUNTER_DB, type Encounter } from "../../../campaign/data/encounters.data";
 import { calculateAllIntents } from "./calculateAllIntents.command";
 
 export function initBattle(

@@ -82,9 +82,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 					hand: [initialDeck[0], initialDeck[1], null],
 				},
 			],
-			pendingBattleLog: {} as CardLog,
 			pendingPromotions: [],
-			activeSceneId: null,
 			unlockedQuestsQueue: [],
 
 			setPhase: (phase) => set(setPhase(phase)),

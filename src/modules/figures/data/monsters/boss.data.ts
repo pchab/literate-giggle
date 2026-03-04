@@ -17,7 +17,8 @@ export const testBoss: Omit<
 	xpReward: 20,
 	attacks: [
 		{
-			id: 1,
+			id: "attack_1",
+			name: "Attack 1",
 			target: "lowestHp",
 			pattern: crossPattern,
 			move: 2,
@@ -26,7 +27,8 @@ export const testBoss: Omit<
 			maxRange: 1,
 		},
 		{
-			id: 2,
+			id: "attack_2",
+			name: "Attack 2",
 			target: "lowestDef",
 			pattern: conePattern,
 			move: 2,

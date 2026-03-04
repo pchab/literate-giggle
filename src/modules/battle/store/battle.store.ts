@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import type { Encounter } from "@/modules/battle/data/encounters.data";
+import type { Encounter } from "@/modules/campaign/data/encounters.data";
 import type { MonsterIntent } from "@/modules/battle/domain/attacks.type";
 import type { GridPosition } from "@/modules/battle/domain/grid.type";
 import type { VfxType } from "@/modules/battle/domain/vfx.type";

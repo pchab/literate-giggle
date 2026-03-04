@@ -17,7 +17,8 @@ export const stone_elemental: Omit<
 	xpReward: 15,
 	attacks: [
 		{
-			id: 1,
+			id: "attack_1",
+			name: "Attack 1",
 			target: "lowestHp",
 			pattern: singleTargetPattern,
 			move: 1,
@@ -41,7 +42,8 @@ export const golem_overseer: Omit<
 	xpReward: 150,
 	attacks: [
 		{
-			id: 1,
+			id: "attack_1",
+			name: "Attack 1",
 			target: "closest",
 			pattern: squarePattern,
 			move: 1,

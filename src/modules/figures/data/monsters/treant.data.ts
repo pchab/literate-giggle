@@ -1,37 +1,27 @@
 import { singleTargetPattern } from "@/modules/battle/data/attackPattern.data";
 import type { Monster } from "../../domain/figures.type";
 
-export const archer: Omit<
+export const treant: Omit<
 	Monster,
 	"id" | "currentHp" | "gridPosition" | "intent"
 > = {
-	enemyType: "ARCHER",
-	spriteBase: "monsters/archer",
-	maxHp: 10,
-	baseMove: 2,
+	enemyType: "TREANT",
+	spriteBase: "monsters/treant",
+	maxHp: 25,
+	baseMove: 1,
 	baseDef: 0,
-	currentBlock: 0,
+	currentBlock: 5,
 	xpReward: 10,
 	attacks: [
 		{
-			id: "arrow",
-			name: "Arrow",
+			id: "timber_shove",
+			name: "Timber Shove",
 			target: "lowestHp",
 			pattern: singleTargetPattern,
 			move: 1,
 			damage: 3,
 			minRange: 1,
-			maxRange: 3,
-		},
-		{
-			id: "arrow_2",
-			name: "Piercing Arrow",
-			target: "lowestDef",
-			pattern: singleTargetPattern,
-			move: 0,
-			damage: 4,
-			minRange: 2,
-			maxRange: 4,
+			maxRange: 1,
 		},
 	],
 };

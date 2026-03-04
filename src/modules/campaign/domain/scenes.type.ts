@@ -1,4 +1,4 @@
-import type { Encounter } from "@/modules/battle/data/encounters.data";
+import type { Encounter } from "@/modules/campaign/data/encounters.data";
 import type { Card } from "@/modules/cards/domain/cards.type";
 import type { HeroClass } from "@/modules/figures/domain/heroClass.types";
 import type { MapNode } from "@/modules/world/domain/map.types";
@@ -16,6 +16,7 @@ export type SceneAction =
 			type: "UPGRADE_CLASS_CARDS";
 			cardUpgrades: Record<Card["id"], Card["id"]>;
 	  }
+	| { type: "SET_FLAG"; flagId: string }
 	| { type: "FORCE_MOVE"; nodeId: MapNode["id"] }
 	| { type: "END_SCENE" };
 

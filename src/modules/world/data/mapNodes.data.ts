@@ -1,128 +1,87 @@
 import { questId, questStepId } from "@/modules/campaign/domain/quests.type";
 import { townId } from "@/modules/towns/domain/towns.type";
-import { encounterId } from "../../battle/data/encounters.data";
+import { encounterId } from "../../campaign/data/encounters.data";
 import { type MapData, mapNodeId } from "../../world/domain/map.types";
 
 export const WorldMapNodes: MapData = {
-	ironhold_city: {
-		id: mapNodeId("ironhold_city"),
-		name: "Ironhold",
-		type: "TOWN",
-		position: { x: 58, y: 45 },
-		connectedNodeIds: [
-			mapNodeId("crossroads"),
-			mapNodeId("dark_forest"),
-			mapNodeId("northern_road"),
-			mapNodeId("stone_gates"),
-			mapNodeId("dwarven_passage"),
-		],
-		background: "/battlegrounds/city.jpg",
-		townId: townId("ironhold"),
-	},
-	crossroads: {
-		id: mapNodeId("crossroads"),
-		name: "The King's Road",
-		type: "BATTLE",
-		position: { x: 62, y: 60 },
-		connectedNodeIds: [
-			mapNodeId("ironhold_city"),
-			mapNodeId("wizard_tower"),
-			mapNodeId("dark_forest"),
-			mapNodeId("desert_ruins"),
-		],
-		encounterId: encounterId("tutorial_fight"),
-		background: "/battlegrounds/grass.jpg",
-	},
-	wizard_tower: {
-		id: mapNodeId("wizard_tower"),
-		name: "Wizard Tower",
-		type: "CAMP",
-		position: { x: 70, y: 64 },
-		connectedNodeIds: [mapNodeId("crossroads"), mapNodeId("port_city")],
-		background: "/battlegrounds/dungeon.jpg",
-	},
-	dark_forest: {
-		id: mapNodeId("dark_forest"),
-		name: "Deep Dark Forest",
-		type: "BATTLE",
-		position: { x: 50, y: 56 },
-		connectedNodeIds: [
-			mapNodeId("crossroads"),
-			mapNodeId("ironhold_city"),
-			mapNodeId("cromee_town"),
-		],
-		encounterId: encounterId("bat_swarm"),
-		background: "/battlegrounds/forest.jpg",
-	},
-	port_city: {
-		id: mapNodeId("port_city"),
-		name: "Port City",
-		type: "TOWN",
-		position: { x: 80, y: 70 },
-		connectedNodeIds: [mapNodeId("wizard_tower")],
-		background: "/battlegrounds/city.jpg",
-	},
-	desert_ruins: {
-		id: mapNodeId("desert_ruins"),
-		name: "Desert Ruins",
-		type: "BATTLE",
-		position: { x: 52, y: 80 },
-		connectedNodeIds: [mapNodeId("crossroads"), mapNodeId("cromee_town")],
-		encounterId: encounterId("skeleton_horde"),
-		background: "/battlegrounds/desert_ruins.jpg",
-	},
-	cromee_town: {
-		id: mapNodeId("cromee_town"),
-		name: "Cromee Town",
-		type: "TOWN",
-		position: { x: 49, y: 67 },
-		connectedNodeIds: [mapNodeId("desert_ruins"), mapNodeId("dark_forest")],
-		background: "/battlegrounds/city.jpg",
-	},
-	northern_road: {
-		id: mapNodeId("northern_road"),
-		name: "Northern Road",
-		type: "BATTLE",
-		position: { x: 67, y: 35 },
-		connectedNodeIds: [mapNodeId("ironhold_city"), mapNodeId("connury_town")],
-		encounterId: encounterId("cultists_ambush"),
-		background: "/battlegrounds/grass.jpg",
-	},
-	connury_town: {
-		id: mapNodeId("connury_town"),
-		name: "Connury Town",
-		type: "TOWN",
-		position: { x: 75, y: 24 },
-		connectedNodeIds: [mapNodeId("northern_road")],
-		background: "/battlegrounds/city.jpg",
-	},
-	stone_gates: {
-		id: mapNodeId("stone_gates"),
-		name: "The Stone Gates",
-		type: "BATTLE",
-		position: { x: 50, y: 42 },
-		connectedNodeIds: [
-			mapNodeId("ironhold_city"),
-			mapNodeId("dwarven_passage"),
-		],
-		background: "/battlegrounds/cave.jpg",
-		encounterId: encounterId("stone_gate_guards"),
-		unlockCondition: {
-			type: "QUEST_ACTIVE",
-			questId: questId("dwarven_highway"),
-			stepId: [questStepId("clear_gates"), questStepId("defeat_golem")],
-		},
-	},
-	dwarven_passage: {
-		id: mapNodeId("dwarven_passage"),
-		name: "Under-Mountain Pass",
-		type: "TOWN",
-		position: { x: 45, y: 40 },
-		connectedNodeIds: [mapNodeId("ironhold_city"), mapNodeId("cromee_town")],
-		background: "/battlegrounds/mountain_city.jpg",
-		unlockCondition: {
-			type: "QUEST_COMPLETED",
-			questId: questId("dwarven_highway"),
-		},
-	},
+	// --- THE BASTION ---
+    ironhold_city: {
+        id: mapNodeId("ironhold_city"),
+        name: "Ironhold City",
+        type: "TOWN",
+        townId: townId("ironhold_city"),
+        position: { x: 50, y: 70 },
+        connectedNodeIds: ["northern_logging_camp", "eastern_river_dam", "southern_trade_road"],
+        background: "/bgs/ironhold_peaceful.jpg",
+        variants: []
+    },
+
+    // --- FRONT 1: THE NORTH ---
+    northern_logging_camp: {
+        id: mapNodeId("northern_logging_camp"),
+        name: "Overrun Logging Camp",
+        type: "BATTLE",
+        encounterId: encounterId("encounter_treant_bruisers"),
+        position: { x: 50, y: 40 },
+        connectedNodeIds: ["ironhold_city"],
+        background: "/bgs/logging_camp_ruins.jpg",
+        unlockCondition: { type: "HAS_FLAG", flagId: "invasion_stage_1" },
+        variants: [
+            {
+                condition: { type: "HAS_FLAG", flagId: "north_cleared" },
+                override: {
+                    name: "Secured Lumber Yard",
+                    type: "CAMP",
+                    encounterId: undefined,
+                    background: "/bgs/logging_camp_secured.jpg",
+                }
+            }
+        ]
+    },
+
+    // --- FRONT 2: THE EAST ---
+    eastern_river_dam: {
+        id: mapNodeId("eastern_river_dam"),
+        name: "Eastern River Dam",
+        type: "BATTLE",
+        encounterId: encounterId("encounter_elven_weavers"),
+        position: { x: 75, y: 60 },
+        connectedNodeIds: ["ironhold_city"],
+        background: "/bgs/river_dam_hostile.jpg",
+        unlockCondition: { type: "HAS_FLAG", flagId: "invasion_stage_1" },
+        variants: [
+            {
+                condition: { type: "HAS_FLAG", flagId: "east_cleared" },
+                override: {
+                    name: "Silent Dam",
+                    type: "CAMP",
+                    encounterId: undefined,
+                    background: "/bgs/river_dam_safe.jpg",
+                }
+            }
+        ]
+    },
+
+    // --- FRONT 3: THE SOUTH ---
+    southern_trade_road: {
+        id: mapNodeId("southern_trade_road"),
+        name: "Southern Trade Road",
+        type: "BATTLE",
+        encounterId: encounterId("encounter_beastmasters"), // Summoners!
+        position: { x: 25, y: 80 }, // Bottom left
+        connectedNodeIds: ["ironhold_city"],
+        background: "/bgs/trade_road_ambush.jpg",
+        unlockCondition: { type: "HAS_FLAG", flagId: "invasion_stage_1" },
+        variants: [
+            {
+                condition: { type: "HAS_FLAG", flagId: "south_cleared" },
+                override: {
+                    name: "Cleared Trade Route",
+                    type: "CAMP",
+                    encounterId: undefined,
+                    background: "/bgs/trade_road_safe.jpg",
+                }
+            }
+        ]
+    }
 };

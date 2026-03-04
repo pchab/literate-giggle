@@ -7,7 +7,8 @@ import type { GridPosition } from "./grid.type";
 
 type Target = "lowestHp" | "random" | "lowestDef" | "grid" | "self" | "closest";
 export type Attack = {
-	id: number;
+	id: string;
+	name: string;
 	target: Target;
 	pattern: GridPosition[];
 	move: number;

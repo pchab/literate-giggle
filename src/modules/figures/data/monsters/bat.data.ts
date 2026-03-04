@@ -14,7 +14,8 @@ export const bat: Omit<
 	xpReward: 6,
 	attacks: [
 		{
-			id: 1,
+			id: "bite",
+			name: "Bite",
 			target: "lowestHp",
 			pattern: singleTargetPattern,
 			move: 4,
@@ -23,7 +24,8 @@ export const bat: Omit<
 			maxRange: 1,
 		},
 		{
-			id: 2,
+			id: "bite_2",
+			name: "Bite",
 			target: "lowestDef",
 			pattern: singleTargetPattern,
 			move: 4,

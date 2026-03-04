@@ -1,0 +1,130 @@
+import { cardId } from "@/modules/cards/helpers/cards.helper";
+import { Scene, sceneId } from "../../domain/scenes.type";
+import { questStepId } from "../../domain/quests.type";
+import { encounterId } from "@/modules/campaign/data/encounters.data";
+import { QUEST_DWARVEN_HIGHWAY } from "./dwarvenPassage.quest";
+import { mapNodeId } from "@/modules/world/domain/map.types";
+
+export const NECROMANCER_SCENE_DB: Record<Scene["id"], Scene> = {
+    [sceneId("prospector_intro")]: {
+		id: sceneId("prospector_intro"),
+		initialStepId: "start",
+		steps: {
+			start: {
+				backgroundImage: "/scenes/ironhold_tavern.jpg",
+				speaker: "Dwarven Prospector",
+				text: "Aye, the tunnel to Cromee is still there, but the old automated defenses woke up. Clear 'em out, and I'll forge you some proper steel.",
+				onNext: [
+					{
+						type: "ADVANCE_QUEST",
+						questId: QUEST_DWARVEN_HIGHWAY,
+						newStepId: questStepId("clear_gates"),
+					},
+					{ type: "END_SCENE" },
+				],
+			},
+		},
+	},
+
+	[sceneId("gates_cleared")]: {
+		id: sceneId("gates_cleared"),
+		initialStepId: "start",
+		steps: {
+			start: {
+				backgroundImage: "/scenes/stone_gates.jpg",
+				text: "The elementals crumble into gravel. The massive stone doors grind open, echoing into the darkness. Heavy, mechanical footsteps approach from within.",
+				choices: [
+					{
+						label: "Hold your ground! (Fight Boss)",
+						actions: [
+							{
+								type: "ADVANCE_QUEST",
+								questId: QUEST_DWARVEN_HIGHWAY,
+								newStepId: questStepId("defeat_golem"),
+							},
+							{
+								type: "START_BATTLE",
+								encounterId: encounterId("golem_boss"),
+								background: "/battlegrounds/mountain_city.jpg",
+							},
+						],
+					},
+					{
+						label: "Fall back and rest. (Return to Map)",
+						actions: [
+							{
+								type: "ADVANCE_QUEST",
+								questId: QUEST_DWARVEN_HIGHWAY,
+								newStepId: questStepId("defeat_golem"),
+							},
+							{ type: "END_SCENE" },
+						],
+					},
+				],
+			},
+		},
+	},
+
+	[sceneId("gates_reenter")]: {
+		id: sceneId("gates_reenter"),
+		initialStepId: "start",
+		steps: {
+			start: {
+				backgroundImage: "/scenes/stone_gates.jpg",
+				text: "The massive stone doors are still open. Heavy, mechanical footsteps approach from within.",
+				choices: [
+					{
+						label: "Hold your ground! (Fight Boss)",
+						actions: [
+							{
+								type: "ADVANCE_QUEST",
+								questId: QUEST_DWARVEN_HIGHWAY,
+								newStepId: questStepId("defeat_golem"),
+							},
+							{
+								type: "START_BATTLE",
+								encounterId: encounterId("golem_boss"),
+								background: "/battlegrounds/mountain_city.jpg",
+							},
+						],
+					},
+					{
+						label: "Fall back and rest. (Return to Map)",
+						actions: [
+							{
+								type: "ADVANCE_QUEST",
+								questId: QUEST_DWARVEN_HIGHWAY,
+								newStepId: questStepId("defeat_golem"),
+							},
+							{ type: "END_SCENE" },
+						],
+					},
+				],
+			},
+		},
+	},
+
+	[sceneId("golem_victory")]: {
+		id: sceneId("golem_victory"),
+		initialStepId: "start",
+		steps: {
+			start: {
+				backgroundImage: "/scenes/open_stone_gates.jpg",
+				speaker: "Dwarven Prospector",
+				text: "By the Ancestors, you actually did it! The passage is secure. Here, take this heavy armor plating as promised.",
+				onNext: [
+					{ type: "COMPLETE_QUEST", questId: QUEST_DWARVEN_HIGHWAY },
+					{
+						type: "UPGRADE_CLASS_CARDS",
+						cardUpgrades: {
+							[cardId("shield-block-1")]: cardId("shield-block-2"),
+							[cardId("battle-cry-1")]: cardId("battle-cry-2"),
+						},
+					},
+					{ type: "FORCE_MOVE", nodeId: mapNodeId("dwarven_passage") },
+					{ type: "END_SCENE" },
+				],
+			},
+		},
+	},
+};

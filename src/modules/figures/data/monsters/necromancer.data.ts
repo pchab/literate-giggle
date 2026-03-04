@@ -14,7 +14,8 @@ export const necromancer: Omit<
 	xpReward: 100,
 	attacks: [
 		{
-			id: 1,
+			id: "necrobolt",
+			name: "Necrobolt",
 			target: "lowestHp",
 			pattern: singleTargetPattern,
 			move: 2,
@@ -23,7 +24,8 @@ export const necromancer: Omit<
 			maxRange: 3,
 		},
 		{
-			id: 2,
+			id: "summon",
+			name: "Summon Skeleton",
 			target: "self",
 			pattern: singleTargetPattern,
 			move: 0,
