@@ -53,9 +53,11 @@ export default function WorldMap() {
 
 	const questTargetNodeIds = new Set(
 		Object.entries(activeQuests)
-			.map(([questId, stepId]) => {
+			.flatMap(([questId, stepId]) => {
 				const quest = QUEST_DB[questId as Quest["id"]];
-				return quest?.steps[stepId as QuestStep["id"]].targetNodeId.mapNodeId;
+				return quest?.steps[stepId as QuestStep["id"]].targetNodeId.map(
+					({ mapNodeId }) => mapNodeId,
+				);
 			})
 			.filter(Boolean),
 	);
@@ -186,9 +188,9 @@ export default function WorldMap() {
 							{/* Node Tooltip */}
 							<div
 								className={`
-                                absolute bottom-[120%] left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 
+                                absolute bottom-[120%] left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5
                                 bg-zinc-900 border border-zinc-700 rounded-md shadow-xl
-                                opacity-0 group-hover:opacity-100 transition-opacity duration-200 
+                                opacity-0 group-hover:opacity-100 transition-opacity duration-200
                                 pointer-events-none whitespace-nowrap z-50 flex flex-col items-center
                                 ${isLocked ? "hidden" : "block"}
                             `}
@@ -213,9 +215,11 @@ export default function WorldMap() {
 					Legend
 				</h4>
 				<div className="flex gap-3 text-xs text-zinc-300">
-					<span className="flex items-center gap-1">🏰 Town</span>
-					<span className="flex items-center gap-1">⚔️ Battle</span>
-					<span className="flex items-center gap-1">⛺ Camp</span>
+					{Object.entries(NODE_ICONS).map(([key, value]) => (
+						<span key={key} className="flex items-center gap-1">
+							{value} {key}
+						</span>
+					))}
 				</div>
 			</div>
 

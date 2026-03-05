@@ -1,6 +1,9 @@
 import type { BattleStoreServerAction } from "@/modules/battle/store/battle.store";
 import type { Hero } from "@/modules/figures/domain/figures.type";
-import { ENCOUNTER_DB, type Encounter } from "../../../campaign/data/encounters.data";
+import {
+	ENCOUNTER_DB,
+	type Encounter,
+} from "../../../campaign/data/encounters.data";
 import { calculateAllIntents } from "./calculateAllIntents.command";
 
 export function initBattle(
@@ -9,7 +12,11 @@ export function initBattle(
 	background: string,
 ): BattleStoreServerAction {
 	return () => {
-		const encounter = ENCOUNTER_DB[encounterId];
+		const encounter = {
+			...ENCOUNTER_DB[encounterId],
+			generateMonsters:
+				ENCOUNTER_DB["encounter-tutorial_fight"].generateMonsters, // Temporary fallback for testing - replace with actual encounter generator),
+		};
 
 		if (!encounter) {
 			console.error(`Encounter ${encounterId} not found!`);
@@ -21,6 +28,7 @@ export function initBattle(
 		const initialIntents = calculateAllIntents(roster, freshMonsters);
 
 		return {
+			encounterId,
 			heroes: roster,
 			monsters: freshMonsters,
 			enemyIntents: initialIntents,

@@ -1,24 +1,11 @@
-
-import { skeleton } from "@/modules/figures/data/monsters/skeleton.data";
-import { Encounter, encounterId } from "../encounters.data";
-import { monsterId } from "@/modules/figures/helpers/figures.helpers";
-import { necromancer } from "@/modules/figures/data/monsters/necromancer.data";
 import { archer } from "@/modules/figures/data/monsters/archer.data";
 import { bat } from "@/modules/figures/data/monsters/bat.data";
+import { necromancer } from "@/modules/figures/data/monsters/necromancer.data";
+import { skeleton } from "@/modules/figures/data/monsters/skeleton.data";
+import { monsterId } from "@/modules/figures/helpers/figures.helpers";
+import { type Encounter, encounterId } from "../encounters.data";
 
 export const NecromancerEncounters: Record<string, Encounter> = {
-    [encounterId("tutorial_fight")]: {
-		id: encounterId("tutorial_fight"),
-		name: "A lone skeleton",
-		generateMonsters: () => [
-			{
-				...skeleton,
-				id: monsterId("skel-1"),
-				currentHp: skeleton.maxHp,
-				gridPosition: { col: 3, row: 3 },
-			},
-		],
-	},
 	[encounterId("bat_swarm")]: {
 		id: encounterId("bat_swarm"),
 		name: "Bat swarm",
@@ -139,5 +126,4 @@ export const NecromancerEncounters: Record<string, Encounter> = {
 			},
 		],
 	},
-	
-}
+};

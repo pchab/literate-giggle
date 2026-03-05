@@ -1,9 +1,9 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import type { Encounter } from "@/modules/campaign/data/encounters.data";
 import type { MonsterIntent } from "@/modules/battle/domain/attacks.type";
 import type { GridPosition } from "@/modules/battle/domain/grid.type";
 import type { VfxType } from "@/modules/battle/domain/vfx.type";
+import type { Encounter } from "@/modules/campaign/data/encounters.data";
 import type { AnchorTarget, Card } from "@/modules/cards/domain/cards.type";
 import type {
 	Hero,
@@ -24,6 +24,7 @@ export type ActiveCardContext = {
 };
 
 export type BattleState = {
+	encounterId: Encounter["id"] | null;
 	heroes: Hero[];
 	monsters: Monster[];
 	activeMoveHeroId: Hero["id"] | null;
@@ -58,6 +59,7 @@ type BattleAction = {
 };
 
 const initialState: BattleState = {
+	encounterId: null,
 	heroes: [],
 	monsters: [],
 	enemyIntents: {},
@@ -98,7 +100,7 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 				set(({ currentVfx: { [cellId]: cellVfx, ...otherVfx } }) => ({
 					currentVfx: vfx ? { ...otherVfx, [cellId]: vfx } : otherVfx,
 				})),
-			resetXpEarned: () => set({ xpEarned: 0 }),
+			resetXpEarned: () => set({ xpEarned: 0, encounterId: null }),
 		}),
 		{
 			name: "alpha-battle-state",

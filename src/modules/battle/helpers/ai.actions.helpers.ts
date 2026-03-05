@@ -4,6 +4,7 @@ import {
 	isTileInBounds,
 } from "@/modules/battle/helpers/grid.helpers";
 import type { BattleState } from "@/modules/battle/store/battle.store";
+import type { DamageEffect } from "@/modules/cards/domain/cards.type";
 import { skeleton } from "@/modules/figures/data/monsters/skeleton.data";
 import type { Monster } from "@/modules/figures/domain/figures.type";
 import { monsterId } from "@/modules/figures/helpers/figures.helpers";
@@ -12,7 +13,6 @@ import {
 	getActualTarget,
 	getIdealTarget,
 } from "./ai.move.helpers";
-import { DamageEffect } from "@/modules/cards/domain/cards.type";
 import { applyEffectToHero } from "./effect.helpers";
 
 // --- ACTION HANDLER 1: SUMMONING ---
@@ -103,8 +103,11 @@ export function handleMoveAndAttack(
 
 		if (!isTargeted) return hero;
 
-
-		const dmgEffect: DamageEffect = { type: "damage", amount: attack.damage, target: "self" };
+		const dmgEffect: DamageEffect = {
+			type: "damage",
+			amount: attack.damage,
+			target: "self",
+		};
 		const damagedHero = applyEffectToHero(hero, dmgEffect);
 
 		return damagedHero;

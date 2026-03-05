@@ -3,18 +3,13 @@ import type {
 	GamePhase,
 	WorldStoreServerAction,
 } from "@/modules/world/store/world.store";
-import { WorldMapNodes } from "../../data/mapNodes.data";
 
-export function travelToNode(nodeId: MapNode["id"]): WorldStoreServerAction {
-	return ({ currentNodeId }) => {
-		const currentNode = WorldMapNodes[currentNodeId];
-
-		if (!currentNode.connectedNodeIds.includes(nodeId)) {
-			console.warn("You cannot travel there from your current location.");
-			return {};
-		}
-
-		const nextNode = WorldMapNodes[nodeId];
+export function travelToNode(
+	nodeId: MapNode["id"],
+	dynamicMap: Record<MapNode["id"], MapNode>,
+): WorldStoreServerAction {
+	return () => {
+		const nextNode = dynamicMap[nodeId];
 		let nextPhase: GamePhase = "MAP";
 		if (nextNode.type === "BATTLE") nextPhase = "BATTLE";
 

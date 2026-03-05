@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
-import { WorldMapNodes } from "@/modules/world/data/mapNodes.data";
+import { useDynamicMap } from "@/modules/world/hooks/useDynamicMap";
 import { useWorldStore } from "@/modules/world/store/world.store";
 
 export default function Home() {
@@ -34,6 +34,7 @@ export default function Home() {
 			unlockQuest: state.unlockQuest,
 		})),
 	);
+	const dynamicMap = useDynamicMap();
 
 	if (unlockedQuestsQueue.length > 0) {
 		unlockedQuestsQueue.forEach((questId) => {
@@ -42,7 +43,7 @@ export default function Home() {
 		clearUnlockedQuestsQueue();
 	}
 
-	const currentNode = WorldMapNodes[currentNodeId];
+	const currentNode = dynamicMap[currentNodeId];
 	switch (phase) {
 		case "MAP":
 			return redirect("/world");

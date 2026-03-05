@@ -1,9 +1,12 @@
-import { golem_overseer, stone_elemental } from "@/modules/figures/data/monsters/golem.data";
-import { Encounter, encounterId } from "../encounters.data";
+import {
+	golem_overseer,
+	stone_elemental,
+} from "@/modules/figures/data/monsters/golem.data";
 import { monsterId } from "@/modules/figures/helpers/figures.helpers";
+import { type Encounter, encounterId } from "../encounters.data";
 
 export const DwarvenPassageEncounters: Record<string, Encounter> = {
-    [encounterId("stone_gate_guards")]: {
+	[encounterId("stone_gate_guards")]: {
 		id: encounterId("stone_gate_guards"),
 		name: "Awakened Stones",
 		generateMonsters: () => [
@@ -39,4 +42,4 @@ export const DwarvenPassageEncounters: Record<string, Encounter> = {
 			},
 		],
 	},
-}
+};

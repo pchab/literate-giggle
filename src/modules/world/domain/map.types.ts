@@ -9,7 +9,7 @@ export type CampaignCondition =
 	| {
 			type: "QUEST_ACTIVE";
 			questId: Quest["id"];
-			stepId?: QuestStep["id"] | QuestStep["id"][];
+			stepId?: QuestStep["id"][];
 	  }
 	| { type: "HAS_FLAG"; flagId: string };
 
@@ -22,7 +22,7 @@ export interface MapNode {
 	encounterId?: Encounter["id"];
 	background: string;
 	townId?: TownData["id"];
-	unlockCondition?: CampaignCondition;
+	unlockCondition?: CampaignCondition[];
 	variants?: Array<{
 		condition: CampaignCondition;
 		override: Partial<MapNode>; // Allows overriding name, type, encounter, etc.

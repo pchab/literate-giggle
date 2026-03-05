@@ -8,7 +8,7 @@ export default function RootBattleLayout({
 	return (
 		<>
 			{/* Left Column: Party Sidebar */}
-			<aside className="w-[500px] shrink-0 border-r border-zinc-800 bg-zinc-900 p-4">
+			<aside className="w-125 shrink-0 border-r border-zinc-800 bg-zinc-900 p-4">
 				{party}
 			</aside>
 

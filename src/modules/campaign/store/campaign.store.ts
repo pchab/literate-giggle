@@ -18,7 +18,7 @@ interface CampaignState {
 	completedQuests: Quest["id"][];
 	nodeOverrides: Record<MapNode["id"], NodeOverrides>;
 	activeSceneId: Scene["id"] | null;
-	flags: Set<string>;
+	flags: string[];
 }
 
 interface CampaignActions {
@@ -30,7 +30,7 @@ interface CampaignActions {
 		hook: "onEnter" | "onWin",
 	) => Scene["id"] | null;
 	setActiveSceneId: (sceneId: Scene["id"] | null) => void;
-	setFlag: (flagId: string, ) => void;
+	setFlag: (flagId: string) => void;
 }
 
 const initialState: CampaignState = {
@@ -38,7 +38,7 @@ const initialState: CampaignState = {
 	completedQuests: [],
 	nodeOverrides: {},
 	activeSceneId: null,
-	flags: new Set(),
+	flags: [],
 };
 
 export type CampaignStoreServerAction = (
@@ -63,9 +63,10 @@ export const useCampaignStore = create<CampaignState & CampaignActions>()(
 					const step = quest?.steps[currentStepId as QuestStep["id"]];
 
 					if (
-						step &&
-						step.targetNodeId.mapNodeId === nodeId &&
-						!step.targetNodeId.locationId
+						step?.targetNodeId.some(
+							({ mapNodeId, locationId }) =>
+								mapNodeId === nodeId && !locationId,
+						)
 					) {
 						if (hook === "onEnter" && step.onEnterSceneId)
 							return step.onEnterSceneId;
@@ -77,7 +78,7 @@ export const useCampaignStore = create<CampaignState & CampaignActions>()(
 			},
 
 			setActiveSceneId: (sceneId) => set({ activeSceneId: sceneId }),
-			setFlag: (flagId) => set(({ flags }) => ({ flags: new Set(flags).add(flagId) })),
+			setFlag: (flagId) => set(({ flags }) => ({ flags: [...flags, flagId] })),
 		}),
 		{
 			name: "alpha-campaign-state",

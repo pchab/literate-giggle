@@ -1,12 +1,12 @@
-import { cardId } from "@/modules/cards/helpers/cards.helper";
-import { Scene, sceneId } from "../../domain/scenes.type";
-import { questStepId } from "../../domain/quests.type";
 import { encounterId } from "@/modules/campaign/data/encounters.data";
-import { QUEST_DWARVEN_HIGHWAY } from "./dwarvenPassage.quest";
+import { cardId } from "@/modules/cards/helpers/cards.helper";
 import { mapNodeId } from "@/modules/world/domain/map.types";
+import { questStepId } from "../../domain/quests.type";
+import { type Scene, sceneId } from "../../domain/scenes.type";
+import { QUEST_DWARVEN_HIGHWAY } from "./dwarvenPassage.quest";
 
 export const NECROMANCER_SCENE_DB: Record<Scene["id"], Scene> = {
-    [sceneId("prospector_intro")]: {
+	[sceneId("prospector_intro")]: {
 		id: sceneId("prospector_intro"),
 		initialStepId: "start",
 		steps: {

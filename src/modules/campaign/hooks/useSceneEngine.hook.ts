@@ -3,30 +3,36 @@ import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import type { SceneAction } from "@/modules/campaign/domain/scenes.type";
 import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
+import { useDynamicMap } from "@/modules/world/hooks/useDynamicMap";
 import { useWorldStore } from "@/modules/world/store/world.store";
 
 export function useSceneEngine(setLocalStep: (stepId: string) => void) {
-	const { advanceQuest, completeQuest, setActiveSceneId, setFlag } = useCampaignStore(
-		useShallow((state) => ({
-			advanceQuest: state.advanceQuest,
-			completeQuest: state.completeQuest,
-			setActiveSceneId: state.setActiveSceneId,
-			setFlag: state.setFlag,
-		})),
-	);
-	const { setPhase, roster, upgradeClassCards, travelToNode } = useWorldStore(
-		useShallow((state) => ({
-			setPhase: state.setPhase,
-			roster: state.roster,
-			upgradeClassCards: state.upgradeClassCards,
-			travelToNode: state.travelToNode,
-		})),
-	);
+	const { advanceQuest, completeQuest, setActiveSceneId, flags, setFlag } =
+		useCampaignStore(
+			useShallow((state) => ({
+				advanceQuest: state.advanceQuest,
+				completeQuest: state.completeQuest,
+				setActiveSceneId: state.setActiveSceneId,
+				flags: state.flags,
+				setFlag: state.setFlag,
+			})),
+		);
+	const { currentNodeId, setPhase, roster, upgradeClassCards, travelToNode } =
+		useWorldStore(
+			useShallow((state) => ({
+				currentNodeId: state.currentNodeId,
+				setPhase: state.setPhase,
+				roster: state.roster,
+				upgradeClassCards: state.upgradeClassCards,
+				travelToNode: state.travelToNode,
+			})),
+		);
 	const { initBattle } = useBattleStore(
 		useShallow((state) => ({
 			initBattle: state.initBattle,
 		})),
 	);
+	const dynamicMap = useDynamicMap();
 
 	const processActions = (actions: SceneAction[]) => {
 		actions.forEach((action) => {
@@ -35,6 +41,15 @@ export function useSceneEngine(setLocalStep: (stepId: string) => void) {
 				case "ADVANCE_QUEST":
 					advanceQuest(action.questId, action.newStepId);
 					break;
+				case "ADVANCE_IF_FLAGS": {
+					const hasRequiredFlags = action.requiredFlags.every((flag) =>
+						flags.includes(flag),
+					);
+					if (hasRequiredFlags) {
+						advanceQuest(action.questId, action.newStepId);
+					}
+					break;
+				}
 				case "COMPLETE_QUEST":
 					completeQuest(action.questId);
 					break;
@@ -49,7 +64,7 @@ export function useSceneEngine(setLocalStep: (stepId: string) => void) {
 					upgradeClassCards(action.cardUpgrades);
 					break;
 				case "FORCE_MOVE":
-					travelToNode(action.nodeId);
+					travelToNode(action.nodeId, dynamicMap);
 					break;
 
 				// --- ROUTING & SIDE EFFECTS ---
@@ -65,7 +80,7 @@ export function useSceneEngine(setLocalStep: (stepId: string) => void) {
 					break;
 				case "END_SCENE":
 					setActiveSceneId(null);
-					setPhase("MAP");
+					setPhase(dynamicMap[currentNodeId].type === "TOWN" ? "TOWN" : "MAP");
 					redirect("/");
 					break;
 

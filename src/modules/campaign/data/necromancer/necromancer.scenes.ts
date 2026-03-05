@@ -1,11 +1,11 @@
-import { cardId } from "@/modules/cards/helpers/cards.helper";
-import { Scene, sceneId } from "../../domain/scenes.type";
-import { NECROMANCER_QUEST_ID } from "./necromancer.quest";
-import { questStepId } from "../../domain/quests.type";
 import { encounterId } from "@/modules/campaign/data/encounters.data";
+import { cardId } from "@/modules/cards/helpers/cards.helper";
+import { questStepId } from "../../domain/quests.type";
+import { type Scene, sceneId } from "../../domain/scenes.type";
+import { NECROMANCER_QUEST_ID } from "./necromancer.quest";
 
 export const NECROMANCER_SCENE_DB: Record<Scene["id"], Scene> = {
-    [sceneId("mage_tower_intro")]: {
+	[sceneId("mage_tower_intro")]: {
 		id: sceneId("mage_tower_intro"),
 		initialStepId: "start",
 		steps: {

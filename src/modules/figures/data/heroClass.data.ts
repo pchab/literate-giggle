@@ -1,7 +1,3 @@
-import {
-	QUEST_DWARVEN_HIGHWAY,
-	QUEST_MAGE_AWAKENING,
-} from "@/modules/campaign/data/quests.data";
 import { cardId } from "@/modules/cards/helpers/cards.helper";
 import type { ClassDefinition, HeroClass } from "../domain/heroClass.types";
 
@@ -11,7 +7,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		name: "Hobo",
 		spriteBase: "heroes/hobo",
 		utilityCardChoices: [cardId("bandage-1")],
-		xpThresholds: [0, 1, 1, 1, 1, 1],
+		xpThresholds: [0, 5, 10, 15, 20, 25],
 		levelUpTriggers: [
 			[],
 			[
@@ -59,7 +55,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 					oldCardId: cardId("club-3"),
 					newCardId: cardId("short-sword-1"),
 				},
-				{ type: "unlockQuest", questId: QUEST_DWARVEN_HIGHWAY },
+				// { type: "unlockQuest", questId: QUEST_DWARVEN_HIGHWAY },
 			],
 			[
 				{
@@ -93,7 +89,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 					oldCardId: cardId("club-3"),
 					newCardId: cardId("apprentice-staff-1"),
 				},
-				{ type: "unlockQuest", questId: QUEST_MAGE_AWAKENING },
+				// { type: "unlockQuest", questId: NECROMANCER_QUEST_ID },
 			],
 			[
 				{

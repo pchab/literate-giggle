@@ -1,4 +1,5 @@
 import type { Scene } from "@/modules/campaign/domain/scenes.type";
+import type { CampaignCondition } from "@/modules/world/domain/map.types";
 
 export type TownLocation = {
 	id: string & { readonly __brand: "TownLocationId" };
@@ -7,6 +8,8 @@ export type TownLocation = {
 	defaultSceneId?: Scene["id"];
 	icon?: string;
 	position: { x: number; y: number };
+	unlockCondition?: CampaignCondition[];
+	hideCondition?: CampaignCondition[];
 };
 
 export type TownData = {

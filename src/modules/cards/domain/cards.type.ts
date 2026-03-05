@@ -44,7 +44,6 @@ export type EffectTarget =
 	| "all_allies"
 	| "adjacent_to_anchor";
 
-
 export type MoveEffect = {
 	type: "move";
 	target: EffectTarget;

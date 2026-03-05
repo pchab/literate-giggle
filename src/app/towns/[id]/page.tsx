@@ -2,9 +2,11 @@
 
 import Image from "next/image";
 import { redirect, useParams } from "next/navigation";
+import { useShallow } from "zustand/shallow";
 import { QUEST_DB } from "@/modules/campaign/data/quests.data";
 import type { Quest } from "@/modules/campaign/domain/quests.type";
 import type { Scene } from "@/modules/campaign/domain/scenes.type";
+import { useCheckConditions } from "@/modules/campaign/hooks/useCheckConditions.hook";
 import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
 import { TOWN_DB } from "@/modules/towns/data/towns.data";
 import type { TownData, TownLocation } from "@/modules/towns/domain/towns.type";
@@ -12,8 +14,21 @@ import { useWorldStore } from "@/modules/world/store/world.store";
 
 export default function TownPage() {
 	const params = useParams();
-	const { activeQuests, setActiveSceneId } = useCampaignStore();
-	const { healParty, phase, setPhase } = useWorldStore();
+	const { activeQuests, setActiveSceneId } = useCampaignStore(
+		useShallow((state) => ({
+			activeQuests: state.activeQuests,
+			setActiveSceneId: state.setActiveSceneId,
+			flags: state.flags,
+		})),
+	);
+	const { healParty, phase, setPhase } = useWorldStore(
+		useShallow((state) => ({
+			healParty: state.healParty,
+			phase: state.phase,
+			setPhase: state.setPhase,
+		})),
+	);
+	const isConditionMet = useCheckConditions();
 
 	if (phase !== "TOWN") {
 		return redirect("/");
@@ -30,6 +45,24 @@ export default function TownPage() {
 		);
 	}
 
+	const visibleLocations = town.locations.filter((loc) => {
+		// 1. Check if it should be hidden
+		if (loc.hideCondition) {
+			const shouldHide = loc.hideCondition.some((cond) => isConditionMet(cond));
+			if (shouldHide) return false;
+		}
+
+		// 2. Check if it is unlocked
+		if (loc.unlockCondition) {
+			const isUnlocked = loc.unlockCondition.every((cond) =>
+				isConditionMet(cond),
+			);
+			if (!isUnlocked) return false;
+		}
+
+		return true;
+	});
+
 	const getQuestForLocation = (locationId: TownLocation["id"]) => {
 		for (const [qId, stepId] of Object.entries(activeQuests)) {
 			const quest = QUEST_DB[qId as Quest["id"]];
@@ -37,7 +70,10 @@ export default function TownPage() {
 			const activeStepIds = Array.isArray(stepId) ? stepId : [stepId];
 			for (const sId of activeStepIds) {
 				const step = quest.steps[sId];
-				if (step.targetNodeId.locationId === locationId) return step;
+				if (
+					step.targetNodeId.map((node) => node.locationId).includes(locationId)
+				)
+					return step;
 			}
 		}
 		return null;
@@ -53,7 +89,7 @@ export default function TownPage() {
 		const activeQuestStep = getQuestForLocation(location.id);
 
 		if (activeQuestStep?.onEnterSceneId) {
-			loadScene(activeQuestStep.onEnterSceneId);
+			return loadScene(activeQuestStep.onEnterSceneId);
 		}
 
 		switch (location.type) {
@@ -100,7 +136,7 @@ export default function TownPage() {
 				</div>
 
 				{/* Render the Location Pins */}
-				{town.locations.map((location) => {
+				{visibleLocations.map((location) => {
 					const hasQuest = !!getQuestForLocation(location.id);
 
 					return (

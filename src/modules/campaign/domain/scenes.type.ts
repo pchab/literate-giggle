@@ -11,6 +11,12 @@ export type SceneAction =
 	| { type: "START_SCENE"; sceneId: Scene["id"] }
 	| { type: "CHANGE_STEP"; stepId: string }
 	| { type: "ADVANCE_QUEST"; questId: Quest["id"]; newStepId: QuestStep["id"] }
+	| {
+			type: "ADVANCE_IF_FLAGS";
+			requiredFlags: string[];
+			questId: Quest["id"];
+			newStepId: QuestStep["id"];
+	  }
 	| { type: "COMPLETE_QUEST"; questId: Quest["id"] }
 	| {
 			type: "UPGRADE_CLASS_CARDS";

@@ -1,57 +1,27 @@
-import { useShallow } from "zustand/shallow";
-import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
+import { useCheckConditions } from "@/modules/campaign/hooks/useCheckConditions.hook";
 import { WorldMapNodes } from "../data/mapNodes.data";
-import type { CampaignCondition, MapNode } from "../domain/map.types";
+import type { MapNode } from "../domain/map.types";
 
 export function useDynamicMap() {
-	const { activeQuests, completedQuests } = useCampaignStore(
-		useShallow((state) => ({
-			activeQuests: state.activeQuests,
-			completedQuests: state.completedQuests,
-		})),
-	);
-
-	const isConditionMet = (condition?: CampaignCondition) => {
-		if (!condition) return true;
-
-		switch (condition.type) {
-			case "QUEST_COMPLETED":
-				return completedQuests.includes(condition.questId);
-			case "QUEST_ACTIVE": {
-				const activeStep = activeQuests[condition.questId];
-				if (!activeStep) return false;
-				if (condition.stepId) {
-					if (Array.isArray(condition.stepId)) {
-						if (!condition.stepId.includes(activeStep)) return false;
-					} else {
-						if (activeStep !== condition.stepId) return false;
-					}
-				}
-				return true;
-			}
-			default:
-				return false;
-		}
-	};
+	const isConditionMet = useCheckConditions();
 
 	const activeMap = Object.values(WorldMapNodes).reduce<
 		Record<string, MapNode>
-	>((acc, baseNode) => {
-		if (!isConditionMet(baseNode.unlockCondition)) {
+	>((acc, { variants, ...baseNode }) => {
+		const variantNode = (variants || []).reduce((current, variant) => {
+			if (isConditionMet(variant.condition)) {
+				Object.assign(current, variant.override);
+				return current;
+			}
+			return current;
+		}, baseNode);
+
+		const conditions = variantNode.unlockCondition;
+
+		if (conditions && !conditions.some((cond) => isConditionMet(cond))) {
 			return acc;
 		}
-
-		let finalNode = { ...baseNode };
-
-		if (baseNode.variants) {
-			for (const variant of baseNode.variants) {
-				if (isConditionMet(variant.condition)) {
-					finalNode = { ...finalNode, ...variant.override };
-				}
-			}
-		}
-
-		acc[finalNode.id] = finalNode;
+		acc[variantNode.id] = variantNode;
 		return acc;
 	}, {});
 

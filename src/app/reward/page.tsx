@@ -5,12 +5,14 @@ import { redirect } from "next/navigation";
 import { useState } from "react";
 import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
+import { ENCOUNTER_DB } from "@/modules/campaign/data/encounters.data";
 import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
 import { BattleCard } from "@/modules/cards/components/BattleCard";
 import { cardLibrary } from "@/modules/cards/data/cards.data";
 import { CLASS_REGISTRY } from "@/modules/figures/data/heroClass.data";
 import { RetroButton } from "@/modules/shared/components/RetroButton";
 import { RetroPanel } from "@/modules/shared/components/RetroPanel";
+import { WorldMapNodes } from "@/modules/world/data/mapNodes.data";
 import { useWorldStore } from "@/modules/world/store/world.store";
 
 export default function RewardScreen() {
@@ -25,8 +27,9 @@ export default function RewardScreen() {
 			})),
 		);
 
-	const { xpEarned, resetXpEarned } = useBattleStore(
+	const { encounterId, xpEarned, resetXpEarned } = useBattleStore(
 		useShallow((state) => ({
+			encounterId: state.encounterId,
 			xpEarned: state.xpEarned,
 			resetXpEarned: state.resetXpEarned,
 		})),
@@ -41,12 +44,15 @@ export default function RewardScreen() {
 
 	const [initialRoster] = useState(roster);
 
-	const sceneId = getOverride(currentNodeId, "onWin");
+	const sceneIdFromEncounter = encounterId
+		? ENCOUNTER_DB[encounterId]?.onWinSceneId
+		: null;
+	const sceneId = sceneIdFromEncounter ?? getOverride(currentNodeId, "onWin");
 	if (phase !== "REWARD") {
 		redirect("/");
 	}
 	if (xpEarned === 0 || initialRoster.length === 0) {
-		setPhase("MAP");
+		setPhase(WorldMapNodes[currentNodeId].type === "TOWN" ? "TOWN" : "MAP");
 	}
 
 	const handleClaimAndReturn = () => {
@@ -101,7 +107,7 @@ export default function RewardScreen() {
 								initial={{ opacity: 0, scale: 0.95 }}
 								animate={{ opacity: 1, scale: 1 }}
 								transition={{ duration: 0.4, delay: index * 0.1 }}
-								className="flex-1 min-w-[300px]"
+								className="flex-1 min-w-75"
 							>
 								<RetroPanel
 									title={hero.id}

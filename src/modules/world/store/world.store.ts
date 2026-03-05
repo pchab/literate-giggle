@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import type { Quest } from "@/modules/campaign/domain/quests.type";
 import { initialDeck } from "@/modules/cards/data/cards.data";
-import type { Card, CardLog, Hand } from "@/modules/cards/domain/cards.type";
+import type { Card, Hand } from "@/modules/cards/domain/cards.type";
 import { baseHeroStats } from "@/modules/figures/data/heroes/baseHeroStats";
 import type { Hero } from "@/modules/figures/domain/figures.type";
 import type {
@@ -33,7 +33,10 @@ export interface WorldState {
 export interface WorldAction {
 	setPhase: (phase: GamePhase) => void;
 	stageBattleRewards: (remainingHp: Record<string, number>) => void;
-	travelToNode: (nodeId: MapNode["id"]) => void;
+	travelToNode: (
+		nodeId: MapNode["id"],
+		dynamicMap: Record<MapNode["id"], MapNode>,
+	) => void;
 	claimRewards: (earnedXp: number) => void;
 	resolvePromotion: (
 		heroId: Hero["id"],
@@ -86,7 +89,8 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 			unlockedQuestsQueue: [],
 
 			setPhase: (phase) => set(setPhase(phase)),
-			travelToNode: (nodeId) => set(travelToNode(nodeId)),
+			travelToNode: (nodeId, dynamicMap) =>
+				set(travelToNode(nodeId, dynamicMap)),
 			stageBattleRewards: (remainingHp) => set(stageBattleRewards(remainingHp)),
 			claimRewards: (earnedXp: number) => set(claimRewards(earnedXp)),
 			resolvePromotion: (heroId, chosenClass, utilityCardId) =>

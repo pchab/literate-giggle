@@ -42,7 +42,7 @@ export default function SceneComponent({ scene }: { scene: Scene }) {
 
 			{/* Dark Vignette Overlay for text readability */}
 			<div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(9,9,11,0.9)_100%)] pointer-events-none" />
-			<div className="absolute inset-x-0 bottom-0 h-2/3 bg-linear-to-t from-zinc-950 via-zinc-950/80 to-transparent z-0 pointer-events-none" />
+			<div className="absolute inset-x-0 bottom-0 h-2/3 bg-linear-to-t from-zinc-950 via-zinc-950/10 to-transparent z-0 pointer-events-none" />
 
 			{/* 2. CHOICES LAYER (Centered above dialogue) */}
 			<div className="relative z-10 w-full max-w-4xl mx-auto flex flex-col gap-4 mb-8">
@@ -79,7 +79,7 @@ export default function SceneComponent({ scene }: { scene: Scene }) {
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						exit={{ opacity: 0, y: 20 }}
-						className="relative bg-zinc-900/95 backdrop-blur-md border border-zinc-700 shadow-[0_10px_40px_rgba(0,0,0,0.9),inset_0_0_20px_rgba(0,0,0,0.8)] rounded-sm p-6 md:p-10 min-h-[160px]"
+						className="relative bg-zinc-900/95 backdrop-blur-md border border-zinc-700 shadow-[0_10px_40px_rgba(0,0,0,0.9),inset_0_0_20px_rgba(0,0,0,0.8)] rounded-sm p-6 md:p-10 min-h-40"
 					>
 						{/* Speaker Name Tag */}
 						{currentStep.speaker && (
