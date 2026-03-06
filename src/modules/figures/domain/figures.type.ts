@@ -29,22 +29,8 @@ export interface Hero extends Figure {
 	currentLevel: number;
 }
 
-export type EnemyType =
-	| "BOSS"
-	| "SKELETON"
-	| "BAT"
-	| "ARCHER"
-	| "NECROMANCER"
-	| "GOLEM"
-	| "GOLEM_OVERSEER"
-	| "TREANT"
-	| "ELVEN_WEAVER"
-	| "BEASTMASTER"
-	| "BRIAR_WOLF";
-
 export interface Monster extends Figure {
 	id: string & { readonly __brand: "MonsterId" };
-	enemyType: EnemyType;
 
 	intentPool: {
 		cardId: Card["id"];
@@ -58,7 +44,6 @@ export type Allegiance = "PLAYER" | "ENEMY" | "NEUTRAL";
 
 export interface Summon extends Figure {
 	id: string & { readonly __brand: "SummonId" };
-	summonType: EnemyType;
 	allegiance: Allegiance;
 
 	intentPool: {

@@ -44,26 +44,26 @@ export function resolveTargets<T extends Figure>(
 	}
 
 	if (targetType === "anchor" && anchorTargetId) {
-		if (anchorIsGridPosition(anchorTargetId)) {
-			if (!patternCells) {
-				return currentFigures
-					.filter(
-						(f) =>
-							f.gridPosition.col === anchorTargetId.col &&
-							f.gridPosition.row === anchorTargetId.row,
-					)
-					.map((f) => f.id);
-			} else {
-				return currentFigures
-					.filter((f) =>
-						patternCells.some(
-							(p) =>
-								p.col === f.gridPosition.col && p.row === f.gridPosition.row,
-						),
-					)
-					.map((f) => f.id);
-			}
+		if (patternCells && patternCells.length > 0) {
+			return currentFigures
+				.filter((f) =>
+					patternCells.some(
+						(p) => p.col === f.gridPosition.col && p.row === f.gridPosition.row,
+					),
+				)
+				.map((f) => f.id);
 		}
+
+		if (anchorIsGridPosition(anchorTargetId)) {
+			return currentFigures
+				.filter(
+					(f) =>
+						f.gridPosition.col === anchorTargetId.col &&
+						f.gridPosition.row === anchorTargetId.row,
+				)
+				.map((f) => f.id);
+		}
+
 		if (typeof anchorTargetId === "string") {
 			return [anchorTargetId];
 		}

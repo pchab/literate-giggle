@@ -1,23 +1,18 @@
 import { cardId } from "@/modules/cards/helpers/cards.helper";
 import type { Monster } from "../../domain/figures.type";
 
-export const skeleton: Omit<
+export const elvenCommander: Omit<
 	Monster,
 	"id" | "currentHp" | "currentBlock" | "gridPosition"
 > = {
-	spriteBase: "monsters/skeleton",
-	maxHp: 10,
+	spriteBase: "monsters/elven_commander",
+	maxHp: 24,
+	baseDef: 1,
 	baseMove: 2,
-	baseDef: 0,
-	xpReward: 10,
+	xpReward: 100,
+
 	intentPool: [
-		{
-			cardId: cardId("skel_slash"),
-			weight: 2,
-		},
-		{
-			cardId: cardId("skel_guard"),
-			weight: 1,
-		},
+		{ cardId: cardId("commander_glaive"), weight: 3 },
+		{ cardId: cardId("elven_horn"), weight: 2 },
 	],
 };

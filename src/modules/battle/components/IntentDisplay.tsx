@@ -1,4 +1,4 @@
-import type { MonsterIntent } from "@/modules/battle/domain/intent.type";
+import type { AIIntent } from "@/modules/battle/domain/intent.type";
 import { cardLibrary } from "@/modules/cards/data/cards.data"; // Adjust import path if needed
 import type {
 	BlockEffect,
@@ -6,7 +6,7 @@ import type {
 	HealEffect,
 } from "@/modules/cards/domain/cards.type";
 
-export default function IntentDisplay({ intent }: { intent: MonsterIntent }) {
+export default function IntentDisplay({ intent }: { intent: AIIntent }) {
 	// 1. Look up the actual card the monster plans to play
 	const card = cardLibrary[intent.cardId];
 	if (!card) return null;

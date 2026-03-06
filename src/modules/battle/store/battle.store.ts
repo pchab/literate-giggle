@@ -1,11 +1,12 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import type { GridPosition } from "@/modules/battle/domain/grid.type";
-import type { MonsterIntent } from "@/modules/battle/domain/intent.type";
+import type { AIIntent } from "@/modules/battle/domain/intent.type";
 import type { VfxType } from "@/modules/battle/domain/vfx.type";
 import type { Encounter } from "@/modules/campaign/data/encounters.data";
 import type { AnchorTarget, Card } from "@/modules/cards/domain/cards.type";
 import type {
+	Figure,
 	Hero,
 	Monster,
 	Summon,
@@ -13,8 +14,8 @@ import type {
 import { cancelCard } from "./commands/cancelCard.command";
 import { initBattle } from "./commands/initBattle.command";
 import { moveHero } from "./commands/moveHero.command";
+import { resolveAIActions } from "./commands/resolveAIAction.command";
 import { resolveCard } from "./commands/resolveCard.command";
-import { resolveEnemyActions } from "./commands/resolveEnemyAction.command";
 import { selectActiveMoveHero } from "./commands/selectActiveMoveHero.command";
 import { selectCard } from "./commands/selectCard.command";
 
@@ -31,7 +32,7 @@ export type BattleState = {
 	usedMovesThisTurn: Record<Hero["id"], boolean>;
 	activeCard: ActiveCardContext | null;
 	usedCardsThisTurn: Record<Hero["id"], Card["id"]>;
-	enemyIntents: Record<Monster["id"], MonsterIntent>;
+	aiIntents: Record<Figure["id"], AIIntent>;
 	hoveredCard: { heroId: Hero["id"]; cardId: Card["id"] } | null;
 	summons: Summon[];
 	currentVfx: Record<string, VfxType>; // key is cell id
@@ -62,7 +63,7 @@ const initialState: BattleState = {
 	encounterId: null,
 	heroes: [],
 	monsters: [],
-	enemyIntents: {},
+	aiIntents: {},
 	activeCard: null,
 	activeMoveHeroId: null,
 	usedMovesThisTurn: {},
@@ -93,7 +94,7 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 			setActiveMoveHeroId: (heroId) => set(selectActiveMoveHero(heroId)),
 			moveHero: (newPosition) => set(moveHero(newPosition)),
 			enemyAction: async () => {
-				await resolveEnemyActions(get, set);
+				await resolveAIActions(get, set);
 			},
 			setHoveredCard: (hoveredCard) => set(() => ({ hoveredCard })),
 			setVfx: (cellId, vfx) =>

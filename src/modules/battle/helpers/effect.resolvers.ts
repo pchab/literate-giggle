@@ -85,6 +85,7 @@ export function resolveSummonEffect<T extends Figure>({
 					id: summonId(Date.now()),
 					...blueprint,
 					currentHp: blueprint.maxHp,
+					currentBlock: 0,
 					gridPosition: anchorTargetId,
 					allegiance,
 				},
@@ -135,6 +136,7 @@ export function resolvePushEffect<T extends Figure>({
 	caster,
 	figures,
 	vfx,
+	patternCells,
 }: EffectResolverParams<T, T, PushEffect>): EffectResolverReturn<T> {
 	const draftFigures = [...figures];
 	const targets = resolveTargets(
@@ -142,6 +144,7 @@ export function resolvePushEffect<T extends Figure>({
 		anchorTargetId,
 		caster.id,
 		draftFigures,
+		patternCells,
 	);
 	const { col: cX, row: cY } = caster.gridPosition;
 

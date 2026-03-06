@@ -146,3 +146,26 @@ export function getLineOfSightPath(
 
 	return path;
 }
+
+export function rotatePattern(
+	pattern: GridPosition[],
+	casterPos: GridPosition,
+	targetPos: GridPosition,
+): GridPosition[] {
+	const dx = targetPos.col - casterPos.col;
+	const dy = targetPos.row - casterPos.row;
+
+	if (Math.abs(dx) > Math.abs(dy)) {
+		if (dx > 0) {
+			return pattern.map((p) => ({ col: -p.row, row: p.col }));
+		} else {
+			return pattern.map((p) => ({ col: p.row, row: -p.col }));
+		}
+	} else {
+		if (dy > 0) {
+			return pattern.map((p) => ({ col: -p.col, row: -p.row }));
+		} else {
+			return pattern;
+		}
+	}
+}

@@ -35,7 +35,7 @@ export function BattleGrid() {
 		summons,
 		usedCardsThisTurn,
 		enemyAction,
-		enemyIntents,
+		aiIntents,
 		hoveredCard,
 		activeCard,
 		resolveCard,
@@ -46,11 +46,11 @@ export function BattleGrid() {
 	} = useBattleStore(
 		useShallow((state) => ({
 			usedCardsThisTurn: state.usedCardsThisTurn,
-			enemyAction: state.enemyAction,
+			enemyAction: state.enemyAction, // (Assuming this points to your new resolveAIActions!)
 			monsters: state.monsters,
 			heroes: state.heroes,
 			summons: state.summons,
-			enemyIntents: state.enemyIntents,
+			aiIntents: state.aiIntents,
 			hoveredCard: state.hoveredCard,
 			activeCard: state.activeCard,
 			resolveCard: state.resolveCard,
@@ -61,7 +61,7 @@ export function BattleGrid() {
 		})),
 	);
 
-	const allDangerTiles = Object.values(enemyIntents || {}).flatMap(
+	const allDangerTiles = Object.values(aiIntents || {}).flatMap(
 		(intent) => intent.dangerZone || [],
 	);
 
@@ -91,7 +91,10 @@ export function BattleGrid() {
 		? heroes.find((h) => h.id === activeCard.heroId)
 		: heroes.find((h) => h.id === hoveredCard?.heroId);
 
-	// [NEW]: Handle Movement Range Calculation
+	// Combine all figures to act as solid obstacles for movement/spawning
+	const allObstacles = [...monsters, ...heroes, ...summons];
+
+	// Handle Movement Range Calculation
 	if (activeMoveHeroId) {
 		const movingHero = heroes.find((h) => h.id === activeMoveHeroId);
 		if (movingHero) {
@@ -101,7 +104,7 @@ export function BattleGrid() {
 			validTargetCells = calculateReachableCells(
 				movingHero.gridPosition,
 				movingHero.baseMove,
-				[...monsters, ...summons.filter((s) => s.allegiance === "ENEMY")],
+				allObstacles.filter((o) => o.id !== movingHero.id), // Ignore self when checking collision
 				true,
 			);
 		}
@@ -121,7 +124,7 @@ export function BattleGrid() {
 			validTargetCells = calculateReachableCells(
 				previewCaster.gridPosition,
 				cardToPreview.range,
-				[...monsters, ...summons.filter((s) => s.allegiance === "ENEMY")],
+				allObstacles.filter((o) => o.id !== previewCaster.id),
 				canTargetSelf,
 			);
 		} else {

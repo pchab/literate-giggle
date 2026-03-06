@@ -3,13 +3,9 @@ import {
 	isHeroId,
 	isMonsterId,
 } from "@/modules/figures/helpers/figures.helpers";
-import type { Hero, Monster, Summon } from "../../figures/domain/figures.type";
+import type { Figure, Hero, Monster } from "../../figures/domain/figures.type";
 
-export type AnchorTarget =
-	| Hero["id"]
-	| Monster["id"]
-	| Summon["id"]
-	| GridPosition;
+export type AnchorTarget = Figure["id"] | GridPosition;
 
 export function anchorIsGridPosition(
 	anchorTarget: AnchorTarget,
@@ -57,8 +53,7 @@ export type EffectTarget =
 	| "self"
 	| "all_enemies"
 	| "all_allies"
-	| "adjacent_to_anchor"
-	| "pattern";
+	| "adjacent_to_anchor";
 
 export type MoveEffect = {
 	type: "move";

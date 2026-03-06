@@ -11,15 +11,8 @@ export function initBattle(
 	encounterId: Encounter["id"],
 	background: string,
 ): BattleStoreServerAction {
-	return ({
-		enemyIntents,
-		summons,
-	}) => {
-		const encounter = {
-			...ENCOUNTER_DB[encounterId],
-			generateMonsters:
-				ENCOUNTER_DB["encounter-tutorial_fight"].generateMonsters, // Temporary fallback for testing - replace with actual encounter generator),
-		};
+	return ({ aiIntents: enemyIntents, summons }) => {
+		const encounter = ENCOUNTER_DB[encounterId];
 
 		if (!encounter) {
 			console.error(`Encounter ${encounterId} not found!`);
@@ -28,13 +21,18 @@ export function initBattle(
 
 		const freshMonsters = encounter.generateMonsters();
 
-		const initialIntents = calculateAllIntents(roster, freshMonsters, summons, enemyIntents);
+		const initialIntents = calculateAllIntents(
+			roster,
+			freshMonsters,
+			summons,
+			enemyIntents,
+		);
 
 		return {
 			encounterId,
 			heroes: roster,
 			monsters: freshMonsters,
-			enemyIntents: initialIntents,
+			aiIntents: initialIntents,
 			activeCard: null,
 			activeMoveHeroId: null,
 			usedCardsThisTurn: {},

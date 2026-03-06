@@ -63,11 +63,25 @@ export function GridCell({
 			setVfx: state.setVfx,
 		})),
 	);
+
 	const isCellEmpty = !enemyInCell && !heroInCell && !summonInCell;
 	const isHoveredHero = hoveredHeroId && heroInCell?.id === hoveredHeroId;
 
+	// --- FACTION GROUPING ---
+	const isPlayerSummon = summonInCell?.allegiance === "PLAYER";
+	const isEnemySummon = summonInCell?.allegiance === "ENEMY";
+
+	// Resolves true if there is a valid unit of that faction in the cell
+	const hasAllyTarget = !!heroInCell || isPlayerSummon;
+	const hasEnemyTarget = !!enemyInCell || isEnemySummon;
+
+	// Gets the exact ID of the targetable unit for the click handler
+	const targetableAllyId =
+		heroInCell?.id || (isPlayerSummon ? summonInCell.id : null);
+	const targetableEnemyId =
+		enemyInCell?.id || (isEnemySummon ? summonInCell.id : null);
+
 	// --- DYNAMIC CELL STYLING ---
-	// Notice we use highly transparent backgrounds (/30, /40) so the parent terrain shows through
 	const baseClasses =
 		"w-24 h-24 relative flex items-center justify-center transition-colors duration-300";
 	let stateClasses =
@@ -83,10 +97,10 @@ export function GridCell({
 		if (isTargetingEmpty && isCellEmpty) {
 			stateClasses =
 				"bg-blue-950/50 border border-blue-500/50 hover:bg-blue-900/60 z-10 cursor-pointer backdrop-blur-none";
-		} else if (isTargetingEnemy && enemyInCell) {
+		} else if (isTargetingEnemy && hasEnemyTarget) {
 			stateClasses =
 				"bg-orange-900/50 border border-orange-500/50 hover:bg-orange-800/60 z-10 shadow-[inset_0_0_15px_rgba(249,115,22,0.2)] cursor-crosshair backdrop-blur-none";
-		} else if (isTargetingAlly && heroInCell) {
+		} else if (isTargetingAlly && hasAllyTarget) {
 			stateClasses =
 				"bg-green-900/50 border border-green-500/50 hover:bg-green-800/60 z-10 shadow-[inset_0_0_15px_rgba(34,197,94,0.2)] cursor-pointer backdrop-blur-none";
 		}
@@ -96,8 +110,8 @@ export function GridCell({
 		hasActiveAction &&
 		(!inRange ||
 			(isTargetingEmpty && !isCellEmpty) ||
-			(isTargetingEnemy && !enemyInCell) ||
-			(isTargetingAlly && !heroInCell));
+			(isTargetingEnemy && !hasEnemyTarget) ||
+			(isTargetingAlly && !hasAllyTarget));
 
 	if (isInvalidTarget && !canTargetSelf && heroInCell?.id !== previewCasterId) {
 		stateClasses += " cursor-not-allowed opacity-50";
@@ -111,11 +125,19 @@ export function GridCell({
 		}
 
 		if (hasActiveAction && !isMoving && inRange) {
-			if (isTargetingEmpty && isCellEmpty) onResolveCard(cell);
-			else if (isTargetingEnemy && enemyInCell) onResolveCard(enemyInCell.id);
-			else if (isTargetingAlly && heroInCell) onResolveCard(heroInCell.id);
-			else if (canTargetSelf && heroInCell && heroInCell.id === previewCasterId)
+			if (isTargetingEmpty && isCellEmpty) {
+				onResolveCard(cell);
+			} else if (isTargetingEnemy && targetableEnemyId) {
+				onResolveCard(targetableEnemyId);
+			} else if (isTargetingAlly && targetableAllyId) {
+				onResolveCard(targetableAllyId);
+			} else if (
+				canTargetSelf &&
+				heroInCell &&
+				heroInCell.id === previewCasterId
+			) {
 				onResolveCard(heroInCell.id);
+			}
 			return;
 		}
 
@@ -132,7 +154,9 @@ export function GridCell({
 		<button
 			type="button"
 			className={`${baseClasses} ${stateClasses} ${
-				heroInCell && !isInvalidTarget ? "hover:brightness-110" : ""
+				(heroInCell || summonInCell) && !isInvalidTarget
+					? "hover:brightness-110"
+					: ""
 			}`}
 			onClick={handleClick}
 		>
@@ -141,9 +165,7 @@ export function GridCell({
 			</span>
 
 			{enemyInCell && <EnemySprite unitInCell={enemyInCell} />}
-
 			{summonInCell && <SummonSprite unitInCell={summonInCell} />}
-
 			{heroInCell && <HeroSprite unitInCell={heroInCell} />}
 
 			<VfxOverlay

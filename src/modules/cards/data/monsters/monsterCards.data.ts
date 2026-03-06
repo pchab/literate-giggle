@@ -1,10 +1,11 @@
 import type { Card } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
+import { elvenCards } from "./elvenCards.data";
 
 export const monsterCardLibrary: Record<Card["id"], Card> = {
 	// BASIC MONSTER CARDS (Shared)
 	[cardId("monster_melee_attack")]: {
-		id: cardId("monster_attack"),
+		id: cardId("monster_melee_attack"),
 		name: "Basic Attack",
 		range: 1,
 		iconType: "MELEE",
@@ -77,4 +78,6 @@ export const monsterCardLibrary: Record<Card["id"], Card> = {
 		aiTargetPreference: "self",
 		effects: [{ type: "summon", blueprintId: "SKELETON", target: "self" }],
 	},
+
+	...elvenCards,
 };

@@ -16,7 +16,7 @@ export default function EnemySprite({ unitInCell }: { unitInCell: Monster }) {
 				heroes: state.heroes,
 				usedCardsThisTurn: state.usedCardsThisTurn,
 				activeCard: state.activeCard,
-				enemyIntents: state.enemyIntents,
+				enemyIntents: state.aiIntents,
 			})),
 		);
 	const { texts, isHit } = useCombatText(unitInCell.currentHp);

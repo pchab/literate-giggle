@@ -1,15 +1,25 @@
 import type { Card } from "@/modules/cards/domain/cards.type";
-import type { Figure, Monster } from "../../figures/domain/figures.type";
+import {
+	isHero,
+	isMonster,
+	isSummon,
+} from "@/modules/figures/helpers/figures.helpers";
+import type {
+	Figure,
+	Monster,
+	Summon,
+} from "../../figures/domain/figures.type";
 import type { GridPosition } from "../domain/grid.type";
 import {
 	GRID_BOUNDS,
 	getLineOfSightPath,
 	getManhattanDistance,
 	isTileOccupied,
+	rotatePattern,
 } from "./grid.helpers";
 
 export const calculateAIMove = <T extends Figure>(
-	monster: Monster,
+	monster: Monster | Summon,
 	targetFigure: T,
 	card: Card,
 	figures: T[],
@@ -94,29 +104,56 @@ const calculatePathToTarget = <T extends Figure>(
 	return [];
 };
 
-export const getIdealTarget = <T extends Figure, A extends Figure>(
-	monster: Monster,
+export const getIdealTarget = <T extends Figure>(
+	aiFigure: Monster | Summon,
 	card: Card,
-	targets: T[],
-	allies: A[],
+	figures: T[],
 ) => {
 	if (card.aiTargetPreference === "self") {
 		return {
-			reachableTarget: monster,
-			moveDest: monster.gridPosition,
+			reachableTarget: aiFigure,
+			moveDest: aiFigure.gridPosition,
 			canHit: true,
 		};
 	}
 
-	const orderedTargets = getOrderedTargets(monster, card, targets);
+	const isPlayerAligned =
+		isSummon(aiFigure) && aiFigure.allegiance === "PLAYER";
+	const heroes = figures.filter((f) => isHero(f));
+	const monsters = figures.filter((f) => isMonster(f));
+	const summons = figures.filter((f) => isSummon(f));
+	const heroAlignedSummons = summons.filter((s) => s.allegiance === "PLAYER");
+	const monsterAlignedSummons = summons.filter((s) => s.allegiance === "ENEMY");
+	const playerAlignedTargets = [...heroes, ...heroAlignedSummons];
+	const enemyAlignedObstacles = [...monsters, ...monsterAlignedSummons];
+	const enemyFaction = isPlayerAligned
+		? enemyAlignedObstacles
+		: playerAlignedTargets;
+
+	const allyFaction = isPlayerAligned
+		? playerAlignedTargets
+		: enemyAlignedObstacles;
+
+	const targetsAllies =
+		card.playRequirement === "requires_ally" ||
+		card.playRequirement === "requires_ally_or_self";
+
+	const validTargetsToEvaluate = targetsAllies ? allyFaction : enemyFaction;
+	const obstaclesToAvoid = targetsAllies ? enemyFaction : allyFaction;
+
+	const orderedTargets = getOrderedTargets<T>(
+		aiFigure,
+		card,
+		validTargetsToEvaluate,
+	);
 
 	return orderedTargets.reduce(
 		(acc, figure) => {
 			if (acc.moveDest && acc.canHit) return acc;
 
-			const moveDest = calculateAIMove(monster, figure, card, [
-				...targets,
-				...allies,
+			const moveDest = calculateAIMove(aiFigure, figure, card, [
+				...validTargetsToEvaluate,
+				...obstaclesToAvoid,
 			]);
 
 			if (moveDest) {
@@ -144,7 +181,7 @@ export const getIdealTarget = <T extends Figure, A extends Figure>(
 };
 
 export function getOrderedTargets<T extends Figure>(
-	monster: Monster,
+	aiFigure: Monster | Summon,
 	card: Card,
 	targets: T[],
 ): T[] {
@@ -158,8 +195,8 @@ export function getOrderedTargets<T extends Figure>(
 				return Math.random() - 0.5;
 			default:
 				return (
-					getManhattanDistance(figureA.gridPosition, monster.gridPosition) -
-					getManhattanDistance(figureB.gridPosition, monster.gridPosition)
+					getManhattanDistance(figureA.gridPosition, aiFigure.gridPosition) -
+					getManhattanDistance(figureB.gridPosition, aiFigure.gridPosition)
 				);
 		}
 	};
@@ -201,10 +238,13 @@ export function getActualTarget<T extends Figure>(
 export function filterGridByAttackPattern(
 	card: Card,
 	targetPos: GridPosition,
+	casterPos: GridPosition,
 ): GridPosition[] {
 	const pattern = card.aoePattern || [{ col: 0, row: 0 }];
 
-	return pattern.map(({ col, row }) => ({
+	const rotatedPattern = rotatePattern(pattern, casterPos, targetPos);
+
+	return rotatedPattern.map(({ col, row }) => ({
 		col: targetPos.col + col,
 		row: targetPos.row + row,
 	}));

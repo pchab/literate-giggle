@@ -3,14 +3,12 @@ import type { Monster } from "../../domain/figures.type";
 
 export const stone_elemental: Omit<
 	Monster,
-	"id" | "currentHp" | "gridPosition"
+	"id" | "currentHp" | "currentBlock" | "gridPosition"
 > = {
-	enemyType: "GOLEM",
 	spriteBase: "monsters/stone_elemental",
 	maxHp: 20,
 	baseMove: 1, // Very slow!
 	baseDef: 2, // Hard to crack
-	currentBlock: 0,
 	xpReward: 15,
 	intentPool: [
 		{
@@ -22,14 +20,12 @@ export const stone_elemental: Omit<
 
 export const golem_overseer: Omit<
 	Monster,
-	"id" | "currentHp" | "gridPosition"
+	"id" | "currentHp" | "currentBlock" | "gridPosition"
 > = {
-	enemyType: "GOLEM_OVERSEER",
 	spriteBase: "monsters/golem_overseer",
 	maxHp: 60,
 	baseMove: 1,
 	baseDef: 3,
-	currentBlock: 0,
 	xpReward: 150,
 	intentPool: [
 		{

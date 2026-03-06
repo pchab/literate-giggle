@@ -1,10 +1,12 @@
 import { cardLibrary } from "@/modules/cards/data/cards.data";
 import type {
+	Figure,
 	Hero,
 	Monster,
 	Summon,
 } from "@/modules/figures/domain/figures.type";
-import type { MonsterIntent } from "../../domain/intent.type";
+import { isMonster, isSummon } from "@/modules/figures/helpers/figures.helpers";
+import type { AIIntent } from "../../domain/intent.type";
 import {
 	filterGridByAttackPattern,
 	getActualTarget,
@@ -15,75 +17,89 @@ export function calculateAllIntents(
 	heroes: Hero[],
 	monsters: Monster[],
 	summons: Summon[],
-	existingIntents: Record<Monster["id"], MonsterIntent> = {},
-): Record<Monster["id"], MonsterIntent> {
-	const intents: Record<Monster["id"], MonsterIntent> = {};
+	existingIntents: Record<Figure["id"], AIIntent> = {},
+): Record<Figure["id"], AIIntent> {
+	const intents: Record<Figure["id"], AIIntent> = {};
 	const simulatedMonsters = [...monsters];
+	const simulatedSummons = [...summons];
+	const heroAlignedSummons = simulatedSummons.filter(
+		(s) => s.allegiance === "PLAYER",
+	);
+	const monsterAlignedSummons = simulatedSummons.filter(
+		(s) => s.allegiance === "ENEMY",
+	);
 
-	const playerAlignedTargets = [
+	const allFigures = [
 		...heroes,
-		...summons.filter((s) => s.allegiance === "PLAYER"),
-	];
-
-	const enemyAlignedObstacles = [
+		...heroAlignedSummons,
 		...simulatedMonsters,
-		...summons.filter((s) => s.allegiance === "ENEMY"),
+		...monsterAlignedSummons,
 	];
 
-	monsters
+	[...heroAlignedSummons, ...monsters, ...monsterAlignedSummons]
 		.filter((m) => m.currentHp > 0)
-		.forEach((monster) => {
-			let selectedCardId = existingIntents[monster.id]?.cardId;
+		.forEach((aiFigure) => {
+			let selectedCardId = existingIntents[aiFigure.id]?.cardId;
 
 			if (!selectedCardId) {
-				console.log("selecting new card for monster", monster.id);
-				const totalWeight = monster.intentPool.reduce(
+				const totalWeight = aiFigure.intentPool.reduce(
 					(sum, intent) => sum + intent.weight,
 					0,
 				);
 				let randomNum = Math.random() * totalWeight;
-				selectedCardId = monster.intentPool[0].cardId;
+				selectedCardId = aiFigure.intentPool[0].cardId;
 
-				for (const intent of monster.intentPool) {
+				for (const intent of aiFigure.intentPool) {
 					randomNum -= intent.weight;
 					if (randomNum <= 0) {
 						selectedCardId = intent.cardId;
 						break;
 					}
 				}
-				console.log(`selected card ${selectedCardId} for monster ${monster.id}`);
 			}
 
 			const plannedCard = cardLibrary[selectedCardId];
-			if (!plannedCard) return;
+			if (!plannedCard) {
+				console.warn(`Missing card data for cardId: ${selectedCardId}`);
+				return;
+			}
 
 			if (plannedCard.aiTargetPreference === "self") {
-				intents[monster.id] = {
-					monsterId: monster.id,
-					targetId: monster.id,
-					intendedMove: monster.gridPosition,
-					dangerZone: filterGridByAttackPattern(plannedCard, monster.gridPosition),
+				intents[aiFigure.id] = {
+					figureId: aiFigure.id,
+					targetId: aiFigure.id,
+					intendedMove: aiFigure.gridPosition,
+					dangerZone: filterGridByAttackPattern(
+						plannedCard,
+						aiFigure.gridPosition,
+						aiFigure.gridPosition,
+					),
 					cardId: plannedCard.id,
 				};
 				return;
 			}
 
 			const { reachableTarget, moveDest } = getIdealTarget(
-				monster,
+				aiFigure,
 				plannedCard,
-				playerAlignedTargets as Hero[],
-				enemyAlignedObstacles as Monster[],
+				allFigures,
 			);
 
 			if (!reachableTarget || !moveDest) return;
 
-			const index = simulatedMonsters.findIndex((m) => m.id === monster.id);
-			simulatedMonsters[index] = { ...monster, gridPosition: moveDest };
+			if (isMonster(aiFigure)) {
+				const index = simulatedMonsters.findIndex((m) => m.id === aiFigure.id);
+				simulatedMonsters[index] = { ...aiFigure, gridPosition: moveDest };
+			}
+			if (isSummon(aiFigure)) {
+				const index = simulatedSummons.findIndex((s) => s.id === aiFigure.id);
+				simulatedSummons[index] = { ...aiFigure, gridPosition: moveDest };
+			}
 
 			const actualCollision = getActualTarget(
 				moveDest,
 				reachableTarget.gridPosition,
-				[...playerAlignedTargets, ...enemyAlignedObstacles],
+				allFigures,
 			);
 
 			const finalTargetPos = actualCollision
@@ -93,10 +109,11 @@ export function calculateAllIntents(
 			const dangerTiles = filterGridByAttackPattern(
 				plannedCard,
 				finalTargetPos,
+				moveDest,
 			);
 
-			intents[monster.id] = {
-				monsterId: monster.id,
+			intents[aiFigure.id] = {
+				figureId: aiFigure.id,
 				targetId: reachableTarget.id,
 				intendedMove: moveDest,
 				dangerZone: dangerTiles,

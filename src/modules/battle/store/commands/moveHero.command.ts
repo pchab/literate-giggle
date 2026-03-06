@@ -4,7 +4,14 @@ import type { BattleStoreServerAction } from "@/modules/battle/store/battle.stor
 import { calculateAllIntents } from "./calculateAllIntents.command";
 
 export function moveHero(newPosition: GridPosition): BattleStoreServerAction {
-	return ({ heroes, monsters, summons, enemyIntents, activeMoveHeroId, usedMovesThisTurn }) => {
+	return ({
+		heroes,
+		monsters,
+		summons,
+		aiIntents: enemyIntents,
+		activeMoveHeroId,
+		usedMovesThisTurn,
+	}) => {
 		if (!activeMoveHeroId || usedMovesThisTurn[activeMoveHeroId]) return {};
 
 		const heroId = activeMoveHeroId;
@@ -24,13 +31,18 @@ export function moveHero(newPosition: GridPosition): BattleStoreServerAction {
 		const newHeroes = heroes.map((h) =>
 			h.id === heroId ? { ...h, gridPosition: newPosition } : h,
 		);
-		const newIntents = calculateAllIntents(newHeroes, monsters, summons, enemyIntents);
+		const newIntents = calculateAllIntents(
+			newHeroes,
+			monsters,
+			summons,
+			enemyIntents,
+		);
 
 		return {
 			heroes: newHeroes,
 			activeMoveHeroId: null,
 			usedMovesThisTurn: { ...usedMovesThisTurn, [heroId]: true },
-			enemyIntents: newIntents,
+			aiIntents: newIntents,
 		};
 	};
 }
