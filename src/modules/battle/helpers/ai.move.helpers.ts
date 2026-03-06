@@ -18,7 +18,7 @@ import {
 	rotatePattern,
 } from "./grid.helpers";
 
-export const calculateAIMove = <T extends Figure>(
+const calculateAIMove = <T extends Figure>(
 	monster: Monster | Summon,
 	targetFigure: T,
 	card: Card,
@@ -33,7 +33,8 @@ export const calculateAIMove = <T extends Figure>(
 		targetFigure.gridPosition,
 	);
 
-	const minRange = 1;
+	const canTargetSelf = card.playRequirement === "requires_ally_or_self";
+	const minRange = canTargetSelf ? 0 : 1;
 
 	if (distance >= minRange && distance <= card.range) {
 		return monster.gridPosition;
@@ -137,6 +138,7 @@ export const getIdealTarget = <T extends Figure>(
 	const targetsAllies =
 		card.playRequirement === "requires_ally" ||
 		card.playRequirement === "requires_ally_or_self";
+	const canTargetSelf = card.playRequirement === "requires_ally_or_self";
 
 	const validTargetsToEvaluate = targetsAllies ? allyFaction : enemyFaction;
 	const obstaclesToAvoid = targetsAllies ? enemyFaction : allyFaction;
@@ -157,7 +159,7 @@ export const getIdealTarget = <T extends Figure>(
 			]);
 
 			if (moveDest) {
-				const minRange = 1;
+				const minRange = canTargetSelf ? 0 : 1;
 				const canHit = isTargetInRange(
 					card,
 					minRange,

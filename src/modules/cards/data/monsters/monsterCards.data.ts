@@ -43,22 +43,6 @@ export const monsterCardLibrary: Record<Card["id"], Card> = {
 		effects: [{ type: "block", amount: 5, target: "self" }],
 	},
 
-	// --- TREANT CARDS ---
-	[cardId("treant_sweep")]: {
-		id: cardId("treant_sweep"),
-		name: "Branch Sweep",
-		range: 1,
-		iconType: "MELEE",
-		playRequirement: "requires_enemy",
-		aiTargetPreference: "closest",
-		aoePattern: [
-			{ col: 0, row: 0 },
-			{ col: -1, row: 0 },
-			{ col: 1, row: 0 },
-		],
-		effects: [{ type: "damage", amount: 8, target: "pattern" }],
-	},
-
 	// --- NECROMANCER CARDS ---
 	[cardId("necromancer_bolt")]: {
 		id: cardId("necromancer_bolt"),

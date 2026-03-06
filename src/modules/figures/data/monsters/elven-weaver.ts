@@ -13,6 +13,6 @@ export const elvenWeaver: Omit<
 
 	intentPool: [
 		{ cardId: cardId("weaver_thorn"), weight: 7 },
-		{ cardId: cardId("weaver_mend"), weight: 3 },
+		{ cardId: cardId("weaver_mend"), weight: 30 },
 	],
 };

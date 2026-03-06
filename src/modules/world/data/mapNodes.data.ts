@@ -1,7 +1,8 @@
-import { questId, questStepId } from "@/modules/campaign/domain/quests.type";
+import { questStepId } from "@/modules/campaign/domain/quests.type";
 import { townId } from "@/modules/towns/domain/towns.type";
 import { encounterId } from "../../campaign/data/encounters.data";
 import { type MapData, mapNodeId } from "../../world/domain/map.types";
+import { VERDANT_RECLAMATION } from '@/modules/campaign/data/verdant-reclamation/verdantReclamation.quest';
 
 export const WorldMapNodes: MapData = {
 	// --- THE BASTION ---
@@ -25,8 +26,8 @@ export const WorldMapNodes: MapData = {
 			{
 				condition: {
 					type: "QUEST_ACTIVE",
-					questId: questId("verdant_reclamation"),
-					stepId: [questStepId("defend_ironhold")],
+					questId: VERDANT_RECLAMATION.id,
+					stepId: [VERDANT_RECLAMATION.steps.defend_ironhold],
 				},
 				override: {
 					name: "Ironhold (Under Siege)",
@@ -122,8 +123,8 @@ export const WorldMapNodes: MapData = {
 		unlockCondition: [
 			{
 				type: "QUEST_ACTIVE",
-				questId: questId("verdant_reclamation"),
-				stepId: [questStepId("investigate_camp")],
+				questId: VERDANT_RECLAMATION.id,
+				stepId: [VERDANT_RECLAMATION.steps.investigate_camp],
 			},
 		],
 	},
@@ -131,7 +132,7 @@ export const WorldMapNodes: MapData = {
 	kiven_river_bridge: {
 		id: mapNodeId("kiven_river_bridge"),
 		name: "Kiven River Bridge",
-		type: "BATTLE",
+		type: "EVENT",
 		encounterId: encounterId("elven_commander"),
 		position: { x: 47, y: 46 },
 		connectedNodeIds: [
@@ -145,15 +146,20 @@ export const WorldMapNodes: MapData = {
 		unlockCondition: [
 			{
 				type: "QUEST_ACTIVE",
-				questId: questId("verdant_reclamation"),
-				stepId: [questStepId("investigate_camp")],
-			},
-			{
-				type: "QUEST_ACTIVE",
-				questId: questId("verdant_reclamation"),
+				questId: VERDANT_RECLAMATION.id,
 			},
 		],
 		variants: [
+			{
+				condition: {
+					type: "QUEST_ACTIVE",
+					questId: VERDANT_RECLAMATION.id,
+					stepId: [VERDANT_RECLAMATION.steps.the_ultimatum],
+				},
+				override: {
+					type: "BATTLE",
+				}
+			},
 			{
 				condition: { type: "HAS_FLAG", flagId: "aligned_with_forest" },
 				override: {
@@ -167,8 +173,8 @@ export const WorldMapNodes: MapData = {
 			{
 				condition: {
 					type: "QUEST_ACTIVE",
-					questId: questId("verdant_reclamation"),
-					stepId: [questStepId("stop_invasion_N")],
+					questId: VERDANT_RECLAMATION.id,
+					stepId: [VERDANT_RECLAMATION.steps.stop_invasion_N],
 				},
 				override: {
 					name: "Contested River Bridge",
@@ -180,8 +186,8 @@ export const WorldMapNodes: MapData = {
 			{
 				condition: {
 					type: "QUEST_ACTIVE",
-					questId: questId("verdant_reclamation"),
-					stepId: [questStepId("stop_invasion_W")],
+					questId: VERDANT_RECLAMATION.id,
+					stepId: [VERDANT_RECLAMATION.steps.stop_invasion_W],
 				},
 				override: {
 					name: "Contested River Bridge",
@@ -193,8 +199,8 @@ export const WorldMapNodes: MapData = {
 			{
 				condition: {
 					type: "QUEST_ACTIVE",
-					questId: questId("verdant_reclamation"),
-					stepId: [questStepId("stop_invasion_S")],
+					questId: VERDANT_RECLAMATION.id,
+					stepId: [VERDANT_RECLAMATION.steps.stop_invasion_S],
 				},
 				override: {
 					name: "Contested River Bridge",
@@ -230,11 +236,11 @@ export const WorldMapNodes: MapData = {
 		unlockCondition: [
 			{
 				type: "QUEST_ACTIVE",
-				questId: questId("verdant_reclamation"),
+				questId: VERDANT_RECLAMATION.id,
 				stepId: [
-					questStepId("stop_invasion_N_W_S"),
-					questStepId("stop_invasion_N_S"),
-					questStepId("stop_invasion_N_W"),
+					VERDANT_RECLAMATION.steps.stop_invasion_N_W_S,
+					VERDANT_RECLAMATION.steps.stop_invasion_N_S,
+					VERDANT_RECLAMATION.steps.stop_invasion_N_W,
 				],
 			},
 		],
@@ -242,10 +248,10 @@ export const WorldMapNodes: MapData = {
 			{
 				condition: {
 					type: "QUEST_ACTIVE",
-					questId: questId("verdant_reclamation"),
+					questId: VERDANT_RECLAMATION.id,
 					stepId: [
-						questStepId("stop_invasion_N_W"),
-						questStepId("stop_invasion_N_S"),
+						VERDANT_RECLAMATION.steps.stop_invasion_N_W,
+						VERDANT_RECLAMATION.steps.stop_invasion_N_S,
 					],
 				},
 				override: {
@@ -279,11 +285,11 @@ export const WorldMapNodes: MapData = {
 		unlockCondition: [
 			{
 				type: "QUEST_ACTIVE",
-				questId: questId("verdant_reclamation"),
+				questId: VERDANT_RECLAMATION.id,
 				stepId: [
-					questStepId("stop_invasion_N_W_S"),
-					questStepId("stop_invasion_N_W"),
-					questStepId("stop_invasion_W_S"),
+					VERDANT_RECLAMATION.steps.stop_invasion_N_W_S,
+					VERDANT_RECLAMATION.steps.stop_invasion_N_W,
+					VERDANT_RECLAMATION.steps.stop_invasion_W_S,
 				],
 			},
 		],
@@ -291,14 +297,14 @@ export const WorldMapNodes: MapData = {
 			{
 				condition: {
 					type: "QUEST_ACTIVE",
-					questId: questId("verdant_reclamation"),
+					questId: VERDANT_RECLAMATION.id,
 					stepId: [
-						questStepId("stop_invasion_N_W"),
-						questStepId("stop_invasion_W_S"),
+						VERDANT_RECLAMATION.steps.stop_invasion_N_W,
+						VERDANT_RECLAMATION.steps.stop_invasion_W_S,
 					],
 				},
 				override: {
-					position: { x: 34, y: 40 },
+					position: { x: 40, y: 40 },
 				},
 			},
 			{
@@ -328,11 +334,11 @@ export const WorldMapNodes: MapData = {
 		unlockCondition: [
 			{
 				type: "QUEST_ACTIVE",
-				questId: questId("verdant_reclamation"),
+				questId: VERDANT_RECLAMATION.id,
 				stepId: [
-					questStepId("stop_invasion_N_W_S"),
-					questStepId("stop_invasion_N_S"),
-					questStepId("stop_invasion_W_S"),
+					VERDANT_RECLAMATION.steps.stop_invasion_N_W_S,
+					VERDANT_RECLAMATION.steps.stop_invasion_N_S,
+					VERDANT_RECLAMATION.steps.stop_invasion_W_S,
 				],
 			},
 		],
@@ -340,10 +346,10 @@ export const WorldMapNodes: MapData = {
 			{
 				condition: {
 					type: "QUEST_ACTIVE",
-					questId: questId("verdant_reclamation"),
+					questId: VERDANT_RECLAMATION.id,
 					stepId: [
-						questStepId("stop_invasion_N_S"),
-						questStepId("stop_invasion_W_S"),
+						VERDANT_RECLAMATION.steps.stop_invasion_N_S,
+						VERDANT_RECLAMATION.steps.stop_invasion_W_S,
 					],
 				},
 				override: {

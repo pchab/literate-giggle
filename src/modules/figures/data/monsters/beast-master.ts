@@ -12,7 +12,7 @@ export const beastMaster: Omit<
 	xpReward: 20,
 	intentPool: [
 		{
-			cardId: cardId("monster_melee_attack"),
+			cardId: cardId("elven_horn"),
 			weight: 1,
 		},
 	],

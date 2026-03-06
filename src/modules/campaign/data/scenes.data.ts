@@ -1,6 +1,5 @@
-import { questStepId } from "../domain/quests.type";
 import { type Scene, sceneId } from "../domain/scenes.type";
-import { VERDANT_RECLAMATION_QUEST_ID } from "./verdant-reclamation/verdantReclamation.quest";
+import { VERDANT_RECLAMATION } from "./verdant-reclamation/verdantReclamation.quest";
 import { VERDANT_RECLAMATION_SCENE_DB } from "./verdant-reclamation/verdantReclamation.scenes";
 
 export const SCENE_DB: Record<Scene["id"], Scene> = {
@@ -19,8 +18,8 @@ export const SCENE_DB: Record<Scene["id"], Scene> = {
 						actions: [
 							{
 								type: "ADVANCE_QUEST",
-								questId: VERDANT_RECLAMATION_QUEST_ID,
-								newStepId: questStepId("investigate_camp"),
+								questId: VERDANT_RECLAMATION.id,
+								newStepId: VERDANT_RECLAMATION.steps.investigate_camp,
 							},
 							{ type: "END_SCENE" },
 						],

@@ -33,7 +33,7 @@ export const elvenCards: Record<Card["id"], Card> = {
 		name: "Nature's Mend",
 		range: 2,
 		iconType: "MAGIC",
-		playRequirement: "requires_ally",
+		playRequirement: "requires_ally_or_self",
 		aiTargetPreference: "lowestHp",
 		effects: [{ type: "heal", amount: 8, target: "anchor" }],
 	},
@@ -45,5 +45,21 @@ export const elvenCards: Record<Card["id"], Card> = {
 		playRequirement: "requires_enemy",
 		aiTargetPreference: "lowestHp",
 		effects: [{ type: "damage", amount: 4, target: "anchor" }],
+	},
+
+	// --- TREANT CARDS ---
+	[cardId("treant_sweep")]: {
+		id: cardId("treant_sweep"),
+		name: "Branch Sweep",
+		range: 1,
+		iconType: "MELEE",
+		playRequirement: "requires_enemy",
+		aiTargetPreference: "closest",
+		aoePattern: [
+			{ col: 0, row: 0 },
+			{ col: -1, row: 0 },
+			{ col: 1, row: 0 },
+		],
+		effects: [{ type: "damage", amount: 8, target: "anchor" }],
 	},
 };

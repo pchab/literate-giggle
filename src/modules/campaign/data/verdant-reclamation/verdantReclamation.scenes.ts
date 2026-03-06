@@ -1,9 +1,8 @@
 import { cardId } from "@/modules/cards/helpers/cards.helper";
 import { mapNodeId } from "@/modules/world/domain/map.types";
-import { questStepId } from "../../domain/quests.type";
 import { type Scene, sceneId } from "../../domain/scenes.type";
 import { encounterId } from "../encounters.data";
-import { VERDANT_RECLAMATION_QUEST_ID } from "./verdantReclamation.quest";
+import { VERDANT_RECLAMATION } from "./verdantReclamation.quest";
 
 export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 	// --- ACT I: THE HOOK ---
@@ -21,8 +20,8 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 						actions: [
 							{
 								type: "ADVANCE_QUEST",
-								questId: VERDANT_RECLAMATION_QUEST_ID,
-								newStepId: questStepId("report_attack"),
+								questId: VERDANT_RECLAMATION.id,
+								newStepId: VERDANT_RECLAMATION.steps.report_attack,
 							},
 							{ type: "FORCE_MOVE", nodeId: mapNodeId("kiven_river_bridge") },
 							{ type: "END_SCENE" },
@@ -49,8 +48,8 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 				onNext: [
 					{
 						type: "ADVANCE_QUEST",
-						questId: VERDANT_RECLAMATION_QUEST_ID,
-						newStepId: questStepId("the_ultimatum"),
+						questId: VERDANT_RECLAMATION.id,
+						newStepId: VERDANT_RECLAMATION.steps.the_ultimatum,
 					},
 					{ type: "END_SCENE" },
 				],
@@ -74,8 +73,8 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 							{ type: "SET_FLAG", flagId: "aligned_with_ironhold" },
 							{
 								type: "ADVANCE_QUEST",
-								questId: VERDANT_RECLAMATION_QUEST_ID,
-								newStepId: questStepId("stop_invasion_N_W_S"),
+								questId: VERDANT_RECLAMATION.id,
+								newStepId: VERDANT_RECLAMATION.steps.stop_invasion_N_W_S,
 							},
 							{
 								type: "START_BATTLE",
@@ -91,8 +90,8 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 							{ type: "SET_FLAG", flagId: "aligned_with_forest" }, // Map variants lock Ironhold and open Heart-Tree
 							{
 								type: "ADVANCE_QUEST",
-								questId: VERDANT_RECLAMATION_QUEST_ID,
-								newStepId: questStepId("assault_ironhold"),
+								questId: VERDANT_RECLAMATION.id,
+								newStepId: VERDANT_RECLAMATION.steps.assault_ironhold,
 							},
 							{ type: "END_SCENE" }, // Bypasses the battle entirely!
 						],
@@ -117,26 +116,26 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 							{ type: "SET_FLAG", flagId: "north_cleared" },
 							{
 								type: "ADVANCE_QUEST",
-								questId: VERDANT_RECLAMATION_QUEST_ID,
-								newStepId: questStepId("stop_invasion_W_S"),
+								questId: VERDANT_RECLAMATION.id,
+								newStepId: VERDANT_RECLAMATION.steps.stop_invasion_W_S,
 							},
 							{
 								type: "ADVANCE_IF_FLAGS",
 								requiredFlags: ["west_cleared"],
-								questId: VERDANT_RECLAMATION_QUEST_ID,
-								newStepId: questStepId("stop_invasion_S"),
+								questId: VERDANT_RECLAMATION.id,
+								newStepId: VERDANT_RECLAMATION.steps.stop_invasion_S,
 							},
 							{
 								type: "ADVANCE_IF_FLAGS",
 								requiredFlags: ["south_cleared"],
-								questId: VERDANT_RECLAMATION_QUEST_ID,
-								newStepId: questStepId("stop_invasion_W"),
+								questId: VERDANT_RECLAMATION.id,
+								newStepId: VERDANT_RECLAMATION.steps.stop_invasion_W,
 							},
 							{
 								type: "ADVANCE_IF_FLAGS",
 								requiredFlags: ["west_cleared", "south_cleared"],
-								questId: VERDANT_RECLAMATION_QUEST_ID,
-								newStepId: questStepId("defend_ironhold"),
+								questId: VERDANT_RECLAMATION.id,
+								newStepId: VERDANT_RECLAMATION.steps.defend_ironhold,
 							},
 							{ type: "FORCE_MOVE", nodeId: mapNodeId("kiven_river_bridge") },
 							{ type: "END_SCENE" },
@@ -161,26 +160,26 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 							{ type: "SET_FLAG", flagId: "west_cleared" },
 							{
 								type: "ADVANCE_QUEST",
-								questId: VERDANT_RECLAMATION_QUEST_ID,
-								newStepId: questStepId("stop_invasion_N_S"),
+								questId: VERDANT_RECLAMATION.id,
+								newStepId: VERDANT_RECLAMATION.steps.stop_invasion_N_S,
 							},
 							{
 								type: "ADVANCE_IF_FLAGS",
 								requiredFlags: ["north_cleared"],
-								questId: VERDANT_RECLAMATION_QUEST_ID,
-								newStepId: questStepId("stop_invasion_S"),
+								questId: VERDANT_RECLAMATION.id,
+								newStepId: VERDANT_RECLAMATION.steps.stop_invasion_S,
 							},
 							{
 								type: "ADVANCE_IF_FLAGS",
 								requiredFlags: ["south_cleared"],
-								questId: VERDANT_RECLAMATION_QUEST_ID,
-								newStepId: questStepId("stop_invasion_N"),
+								questId: VERDANT_RECLAMATION.id,
+								newStepId: VERDANT_RECLAMATION.steps.stop_invasion_N,
 							},
 							{
 								type: "ADVANCE_IF_FLAGS",
 								requiredFlags: ["north_cleared", "south_cleared"],
-								questId: VERDANT_RECLAMATION_QUEST_ID,
-								newStepId: questStepId("defend_ironhold"),
+								questId: VERDANT_RECLAMATION.id,
+								newStepId: VERDANT_RECLAMATION.steps.defend_ironhold,
 							},
 							{ type: "FORCE_MOVE", nodeId: mapNodeId("kiven_river_bridge") },
 							{ type: "END_SCENE" },
@@ -205,26 +204,26 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 							{ type: "SET_FLAG", flagId: "south_cleared" },
 							{
 								type: "ADVANCE_QUEST",
-								questId: VERDANT_RECLAMATION_QUEST_ID,
-								newStepId: questStepId("stop_invasion_N_W"),
+								questId: VERDANT_RECLAMATION.id,
+								newStepId: VERDANT_RECLAMATION.steps.stop_invasion_N_W,
 							},
 							{
 								type: "ADVANCE_IF_FLAGS",
 								requiredFlags: ["north_cleared"],
-								questId: VERDANT_RECLAMATION_QUEST_ID,
-								newStepId: questStepId("stop_invasion_W"),
+								questId: VERDANT_RECLAMATION.id,
+								newStepId: VERDANT_RECLAMATION.steps.stop_invasion_W,
 							},
 							{
 								type: "ADVANCE_IF_FLAGS",
 								requiredFlags: ["west_cleared"],
-								questId: VERDANT_RECLAMATION_QUEST_ID,
-								newStepId: questStepId("stop_invasion_N"),
+								questId: VERDANT_RECLAMATION.id,
+								newStepId: VERDANT_RECLAMATION.steps.stop_invasion_N,
 							},
 							{
 								type: "ADVANCE_IF_FLAGS",
 								requiredFlags: ["north_cleared", "west_cleared"],
-								questId: VERDANT_RECLAMATION_QUEST_ID,
-								newStepId: questStepId("defend_ironhold"),
+								questId: VERDANT_RECLAMATION.id,
+								newStepId: VERDANT_RECLAMATION.steps.defend_ironhold,
 							},
 							{ type: "FORCE_MOVE", nodeId: mapNodeId("kiven_river_bridge") },
 							{ type: "END_SCENE" },
@@ -524,7 +523,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 								},
 							},
 							{ type: "SET_FLAG", flagId: "ironhold_saved" },
-							{ type: "COMPLETE_QUEST", questId: VERDANT_RECLAMATION_QUEST_ID },
+							{ type: "COMPLETE_QUEST", questId: VERDANT_RECLAMATION.id },
 						],
 					},
 					{
@@ -537,7 +536,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 								},
 							},
 							{ type: "SET_FLAG", flagId: "ironhold_saved" },
-							{ type: "COMPLETE_QUEST", questId: VERDANT_RECLAMATION_QUEST_ID },
+							{ type: "COMPLETE_QUEST", questId: VERDANT_RECLAMATION.id },
 						],
 					},
 				],
@@ -564,7 +563,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 								},
 							},
 							{ type: "SET_FLAG", flagId: "ironhold_fallen" },
-							{ type: "COMPLETE_QUEST", questId: VERDANT_RECLAMATION_QUEST_ID },
+							{ type: "COMPLETE_QUEST", questId: VERDANT_RECLAMATION.id },
 						],
 					},
 					{
@@ -577,7 +576,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 								},
 							},
 							{ type: "SET_FLAG", flagId: "ironhold_fallen" },
-							{ type: "COMPLETE_QUEST", questId: VERDANT_RECLAMATION_QUEST_ID },
+							{ type: "COMPLETE_QUEST", questId: VERDANT_RECLAMATION.id },
 						],
 					},
 				],
