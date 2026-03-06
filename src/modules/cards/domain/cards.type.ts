@@ -29,6 +29,21 @@ export function anchorIsMonsterId(
 	return !anchorIsGridPosition(anchorTarget) && isMonsterId(anchorTarget);
 }
 
+export type IntentIcon =
+	| "MELEE"
+	| "RANGED"
+	| "MAGIC"
+	| "DEFEND"
+	| "DEBUFF"
+	| "SUMMON";
+
+export type AITargetPreference =
+	| "lowestHp"
+	| "random"
+	| "lowestDef"
+	| "closest"
+	| "self";
+
 export type PlayRequirement =
 	| "requires_enemy"
 	| "requires_ally"
@@ -42,7 +57,8 @@ export type EffectTarget =
 	| "self"
 	| "all_enemies"
 	| "all_allies"
-	| "adjacent_to_anchor";
+	| "adjacent_to_anchor"
+	| "pattern";
 
 export type MoveEffect = {
 	type: "move";
@@ -92,11 +108,18 @@ export type Card = {
 	id: string & { readonly __brand: "CardId" };
 	name: string;
 	range: number;
-	image: string;
+
+	// Visuals
+	image?: string;
+	iconType?: IntentIcon;
+
+	// Rules
 	playRequirement: PlayRequirement;
 	effects: CardEffect[];
+
+	// --- AI & Spatial Data (Ported from Attack) ---
+	aiTargetPreference?: AITargetPreference;
+	aoePattern?: GridPosition[];
 };
 
 export type Hand = [Card["id"], Card["id"], Card["id"] | null];
-
-export type CardLog = Record<Hero["id"], Record<Card["id"], number>>;

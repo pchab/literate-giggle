@@ -11,7 +11,10 @@ export function initBattle(
 	encounterId: Encounter["id"],
 	background: string,
 ): BattleStoreServerAction {
-	return () => {
+	return ({
+		enemyIntents,
+		summons,
+	}) => {
 		const encounter = {
 			...ENCOUNTER_DB[encounterId],
 			generateMonsters:
@@ -25,7 +28,7 @@ export function initBattle(
 
 		const freshMonsters = encounter.generateMonsters();
 
-		const initialIntents = calculateAllIntents(roster, freshMonsters);
+		const initialIntents = calculateAllIntents(roster, freshMonsters, summons, enemyIntents);
 
 		return {
 			encounterId,

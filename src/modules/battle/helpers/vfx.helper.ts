@@ -1,31 +1,28 @@
 import type { CardEffect } from "@/modules/cards/domain/cards.type";
-import type { Hero, Monster } from "@/modules/figures/domain/figures.type";
+import type { Figure } from "@/modules/figures/domain/figures.type";
 import type { VfxType } from "../domain/vfx.type";
 import { getCellId } from "./grid.helpers";
 
-export function getVfxForEffect(
+export function getVfxForEffect<T extends Figure>(
 	effect: CardEffect,
-	targets: {
-		monsterPositions: Monster["gridPosition"][];
-		heroPositions: Hero["gridPosition"][];
-	},
+	targets: T["gridPosition"][],
 ): Record<string, VfxType> {
 	const vfx: Record<string, VfxType> = {};
 
 	switch (effect.type) {
 		case "heal":
-			targets.heroPositions.forEach((heroPosition) => {
-				vfx[getCellId(heroPosition)] = "HEAL";
+			targets.forEach((position) => {
+				vfx[getCellId(position)] = "HEAL";
 			});
 			break;
 		case "damage":
-			targets.monsterPositions.forEach((monsterPosition) => {
-				vfx[getCellId(monsterPosition)] = "SLASH";
+			targets.forEach((position) => {
+				vfx[getCellId(position)] = "SLASH";
 			});
 			break;
 		case "block":
-			targets.heroPositions.forEach((heroPosition) => {
-				vfx[getCellId(heroPosition)] = "BLOCK";
+			targets.forEach((position) => {
+				vfx[getCellId(position)] = "BLOCK";
 			});
 			break;
 	}

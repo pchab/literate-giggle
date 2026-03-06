@@ -4,7 +4,7 @@ import type { BattleStoreServerAction } from "@/modules/battle/store/battle.stor
 import { calculateAllIntents } from "./calculateAllIntents.command";
 
 export function moveHero(newPosition: GridPosition): BattleStoreServerAction {
-	return ({ heroes, monsters, activeMoveHeroId, usedMovesThisTurn }) => {
+	return ({ heroes, monsters, summons, enemyIntents, activeMoveHeroId, usedMovesThisTurn }) => {
 		if (!activeMoveHeroId || usedMovesThisTurn[activeMoveHeroId]) return {};
 
 		const heroId = activeMoveHeroId;
@@ -24,7 +24,7 @@ export function moveHero(newPosition: GridPosition): BattleStoreServerAction {
 		const newHeroes = heroes.map((h) =>
 			h.id === heroId ? { ...h, gridPosition: newPosition } : h,
 		);
-		const newIntents = calculateAllIntents(newHeroes, monsters);
+		const newIntents = calculateAllIntents(newHeroes, monsters, summons, enemyIntents);
 
 		return {
 			heroes: newHeroes,

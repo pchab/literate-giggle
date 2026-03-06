@@ -1,10 +1,7 @@
-import { singleTargetPattern } from "@/modules/battle/data/attackPattern.data";
+import { cardId } from "@/modules/cards/helpers/cards.helper";
 import type { Monster } from "../../domain/figures.type";
 
-export const archer: Omit<
-	Monster,
-	"id" | "currentHp" | "gridPosition" | "intent"
-> = {
+export const archer: Omit<Monster, "id" | "currentHp" | "gridPosition"> = {
 	enemyType: "ARCHER",
 	spriteBase: "monsters/archer",
 	maxHp: 10,
@@ -12,26 +9,10 @@ export const archer: Omit<
 	baseDef: 0,
 	currentBlock: 0,
 	xpReward: 10,
-	attacks: [
+	intentPool: [
 		{
-			id: "arrow",
-			name: "Arrow",
-			target: "lowestHp",
-			pattern: singleTargetPattern,
-			move: 1,
-			damage: 3,
-			minRange: 1,
-			maxRange: 3,
-		},
-		{
-			id: "arrow_2",
-			name: "Piercing Arrow",
-			target: "lowestDef",
-			pattern: singleTargetPattern,
-			move: 0,
-			damage: 4,
-			minRange: 2,
-			maxRange: 4,
+			cardId: cardId("monster_ranged_attack"),
+			weight: 1,
 		},
 	],
 };

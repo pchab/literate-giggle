@@ -1,10 +1,7 @@
-import { singleTargetPattern } from "@/modules/battle/data/attackPattern.data";
+import { cardId } from "@/modules/cards/helpers/cards.helper";
 import type { Monster } from "../../domain/figures.type";
 
-export const skeleton: Omit<
-	Monster,
-	"id" | "currentHp" | "gridPosition" | "plannedAttack"
-> = {
+export const skeleton: Omit<Monster, "id" | "currentHp" | "gridPosition"> = {
 	enemyType: "SKELETON",
 	spriteBase: "monsters/skeleton",
 	maxHp: 10,
@@ -12,16 +9,14 @@ export const skeleton: Omit<
 	baseDef: 0,
 	currentBlock: 0,
 	xpReward: 10,
-	attacks: [
+	intentPool: [
 		{
-			id: "bone_club",
-			name: "Bone club",
-			target: "lowestHp",
-			pattern: singleTargetPattern,
-			move: 2,
-			damage: 2,
-			minRange: 1,
-			maxRange: 1,
+			cardId: cardId("skel_slash"),
+			weight: 2,
+		},
+		{
+			cardId: cardId("skel_guard"),
+			weight: 1,
 		},
 	],
 };

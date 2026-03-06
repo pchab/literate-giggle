@@ -7,7 +7,7 @@ export function cancelCard(
 	heroId: Hero["id"],
 	cardId: Card["id"],
 ): BattleStoreServerAction {
-	return ({ heroes, monsters, activeCard }) => {
+	return ({ enemyIntents, heroes, monsters, summons, activeCard }) => {
 		if (!activeCard) {
 			console.warn("No card is currently selected.");
 			return {};
@@ -24,7 +24,7 @@ export function cancelCard(
 			);
 			return {};
 		}
-		const newIntents = calculateAllIntents(heroes, monsters);
+		const newIntents = calculateAllIntents(heroes, monsters, summons, enemyIntents);
 		return {
 			enemyIntents: newIntents,
 			activeCard: null,

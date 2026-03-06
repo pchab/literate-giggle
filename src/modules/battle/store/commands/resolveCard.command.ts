@@ -1,5 +1,10 @@
 import { cardLibrary } from "@/modules/cards/data/cards.data";
 import type { AnchorTarget } from "@/modules/cards/domain/cards.type";
+import {
+	isHero,
+	isMonster,
+	isSummon,
+} from "@/modules/figures/helpers/figures.helpers";
 import type { VfxType } from "../../domain/vfx.type";
 import {
 	resolveMoveEffect,
@@ -21,13 +26,15 @@ export function resolveCard(
 		usedCardsThisTurn,
 		usedMovesThisTurn,
 		xpEarned,
+		enemyIntents,
 		...state
 	}) => {
 		if (!activeCard) return {};
 
 		const { heroId, cardId } = activeCard;
 		const card = cardLibrary[cardId];
-		if (!heroes.some((h) => h.id === heroId)) return {};
+		const hero = heroes.find((h) => h.id === heroId);
+		if (!hero) return {};
 
 		let draftHeroes = [...heroes];
 		let draftMonsters = [...monsters];
@@ -37,44 +44,47 @@ export function resolveCard(
 		card.effects.forEach((effect) => {
 			switch (effect.type) {
 				case "move":
-					draftHeroes = resolveMoveEffect(
+					draftHeroes = resolveMoveEffect({
 						effect,
 						anchorTargetId,
-						heroId,
-						draftHeroes,
-					);
+						caster: hero,
+						figures: draftHeroes,
+						vfx,
+					}).figures;
 					break;
 				case "summon":
-					draftSummons = resolveSummonEffect(
+					draftSummons = resolveSummonEffect({
 						effect,
 						anchorTargetId,
-						draftSummons,
-					);
+						caster: hero,
+						figures: draftSummons,
+						vfx,
+					}).figures;
 					break;
 				case "push": {
-					const pushResult = resolvePushEffect(
+					const pushResult = resolvePushEffect({
 						effect,
 						anchorTargetId,
-						heroId,
-						draftHeroes,
-						draftMonsters,
-						draftSummons,
-					);
-					draftHeroes = pushResult.heroes;
-					draftMonsters = pushResult.monsters;
+						caster: hero,
+						figures: [...draftHeroes, ...draftMonsters, ...draftSummons],
+						vfx,
+					});
+					draftHeroes = pushResult.figures.filter((f) => isHero(f));
+					draftMonsters = pushResult.figures.filter((f) => isMonster(f));
+					draftSummons = pushResult.figures.filter((f) => isSummon(f));
 					break;
 				}
 				default: {
-					const stdResult = resolveStandardEffect(
+					const stdResult = resolveStandardEffect({
 						effect,
 						anchorTargetId,
-						heroId,
-						draftHeroes,
-						draftMonsters,
+						caster: hero,
+						figures: [...draftHeroes, ...draftMonsters, ...draftSummons],
 						vfx,
-					);
-					draftHeroes = stdResult.heroes;
-					draftMonsters = stdResult.monsters;
+					});
+					draftHeroes = stdResult.figures.filter((f) => isHero(f));
+					draftMonsters = stdResult.figures.filter((f) => isMonster(f));
+					draftSummons = stdResult.figures.filter((f) => isSummon(f));
 					break;
 				}
 			}
@@ -93,7 +103,7 @@ export function resolveCard(
 			heroes: draftHeroes,
 			monsters: remainingMonsters,
 			summons: draftSummons,
-			enemyIntents: calculateAllIntents(draftHeroes, remainingMonsters),
+			enemyIntents: calculateAllIntents(draftHeroes, remainingMonsters, draftSummons, enemyIntents),
 			usedCardsThisTurn: { ...usedCardsThisTurn, [heroId]: cardId },
 			usedMovesThisTurn: { ...usedMovesThisTurn, [heroId]: true },
 			currentVfx: vfx,

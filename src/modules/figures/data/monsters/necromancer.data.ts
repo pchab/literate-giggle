@@ -1,10 +1,7 @@
-import { singleTargetPattern } from "@/modules/battle/data/attackPattern.data";
+import { cardId } from "@/modules/cards/helpers/cards.helper";
 import type { Monster } from "../../domain/figures.type";
 
-export const necromancer: Omit<
-	Monster,
-	"id" | "currentHp" | "gridPosition" | "plannedAttack"
-> = {
+export const necromancer: Omit<Monster, "id" | "currentHp" | "gridPosition"> = {
 	enemyType: "NECROMANCER",
 	spriteBase: "monsters/necromancer",
 	maxHp: 50,
@@ -12,27 +9,14 @@ export const necromancer: Omit<
 	baseDef: 1,
 	currentBlock: 0,
 	xpReward: 100,
-	attacks: [
+	intentPool: [
 		{
-			id: "necrobolt",
-			name: "Necrobolt",
-			target: "lowestHp",
-			pattern: singleTargetPattern,
-			move: 2,
-			damage: 4,
-			minRange: 2,
-			maxRange: 3,
+			cardId: cardId("necromancer_bolt"),
+			weight: 1,
 		},
 		{
-			id: "summon",
-			name: "Summon Skeleton",
-			target: "self",
-			pattern: singleTargetPattern,
-			move: 0,
-			damage: 0,
-			minRange: 0,
-			maxRange: 0,
-			summonType: "SKELETON",
+			cardId: cardId("necromancer_summon"),
+			weight: 1,
 		},
 	],
 };

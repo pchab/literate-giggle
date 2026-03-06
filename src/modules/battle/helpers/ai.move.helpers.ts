@@ -1,5 +1,5 @@
-import type { Hero, Monster } from "../../figures/domain/figures.type";
-import type { Attack } from "../domain/attacks.type";
+import type { Card } from "@/modules/cards/domain/cards.type";
+import type { Figure, Monster } from "../../figures/domain/figures.type";
 import type { GridPosition } from "../domain/grid.type";
 import {
 	GRID_BOUNDS,
@@ -8,50 +8,49 @@ import {
 	isTileOccupied,
 } from "./grid.helpers";
 
-export const calculateAIMove = (
+export const calculateAIMove = <T extends Figure>(
 	monster: Monster,
-	targetHero: Hero,
-	plannedAttack: Attack,
-	heroes: Hero[],
-	monsters: Monster[],
+	targetFigure: T,
+	card: Card,
+	figures: T[],
 ): GridPosition | null => {
-	if (plannedAttack.move === 0) {
+	if (monster.baseMove === 0) {
 		return monster.gridPosition;
 	}
+
 	const distance = getManhattanDistance(
 		monster.gridPosition,
-		targetHero.gridPosition,
+		targetFigure.gridPosition,
 	);
-	if (
-		distance >= plannedAttack.minRange &&
-		distance <= plannedAttack.maxRange
-	) {
+
+	const minRange = 1;
+
+	if (distance >= minRange && distance <= card.range) {
 		return monster.gridPosition;
 	}
 
 	const fullPath = calculatePathToTarget(
 		monster.gridPosition,
-		targetHero.gridPosition,
-		plannedAttack,
-		heroes,
-		monsters,
+		targetFigure.gridPosition,
+		card,
+		minRange,
+		figures,
 	);
 
 	if (fullPath.length === 0) return null;
 
-	const stepsToTake = Math.min(plannedAttack.move, fullPath.length);
+	const stepsToTake = Math.min(monster.baseMove, fullPath.length);
 	return fullPath[stepsToTake - 1];
 };
 
-const calculatePathToTarget = (
+const calculatePathToTarget = <T extends Figure>(
 	startPos: GridPosition,
 	targetPos: GridPosition,
-	attackData: Attack,
-	heroes: Hero[],
-	monsters: Monster[],
+	card: Card,
+	minRange: number,
+	figures: T[],
 ): GridPosition[] => {
 	const queue: GridPosition[][] = [[startPos]];
-
 	const visited = new Set<string>();
 	visited.add(`${startPos.row},${startPos.col}`);
 
@@ -61,10 +60,7 @@ const calculatePathToTarget = (
 		const currentPos = currentPath[currentPath.length - 1];
 
 		const distToTarget = getManhattanDistance(currentPos, targetPos);
-		if (
-			distToTarget >= attackData.minRange &&
-			distToTarget <= attackData.maxRange
-		) {
+		if (distToTarget >= minRange && distToTarget <= card.range) {
 			return currentPath.slice(1);
 		}
 
@@ -84,138 +80,130 @@ const calculatePathToTarget = (
 			})
 			.forEach((next) => {
 				const key = `${next.row},${next.col}`;
+				if (visited.has(key)) return;
 
-				if (visited.has(key)) {
-					return;
-				}
 				const isTargetTile =
 					next.row === targetPos.row && next.col === targetPos.col;
-				if (!isTargetTile && isTileOccupied(next, [...heroes, ...monsters])) {
+				if (!isTargetTile && isTileOccupied(next, figures)) {
 					return;
 				}
 				visited.add(key);
 				queue.push([...currentPath, next]);
 			});
 	}
-
 	return [];
 };
 
-export const getIdealTarget = (
+export const getIdealTarget = <T extends Figure, A extends Figure>(
 	monster: Monster,
-	plannedAttack: Attack,
-	heroes: Hero[],
-	monsters: Monster[],
+	card: Card,
+	targets: T[],
+	allies: A[],
 ) => {
-	const orderedTargets = getOrderedTargets(monster, plannedAttack, heroes);
+	if (card.aiTargetPreference === "self") {
+		return {
+			reachableTarget: monster,
+			moveDest: monster.gridPosition,
+			canHit: true,
+		};
+	}
+
+	const orderedTargets = getOrderedTargets(monster, card, targets);
 
 	return orderedTargets.reduce(
-		(acc, hero) => {
+		(acc, figure) => {
 			if (acc.moveDest && acc.canHit) return acc;
-			const moveDest = calculateAIMove(
-				monster,
-				hero,
-				plannedAttack,
-				heroes,
-				monsters,
-			);
+
+			const moveDest = calculateAIMove(monster, figure, card, [
+				...targets,
+				...allies,
+			]);
+
 			if (moveDest) {
+				const minRange = 1;
 				const canHit = isTargetInRange(
-					plannedAttack,
+					card,
+					minRange,
 					moveDest,
-					hero.gridPosition,
+					figure.gridPosition,
 				);
 				return canHit
-					? { reachableTarget: hero, moveDest, canHit }
+					? { reachableTarget: figure, moveDest, canHit }
 					: moveDest
-						? { reachableTarget: hero, moveDest, canHit }
+						? { reachableTarget: figure, moveDest, canHit }
 						: acc;
 			}
 			return acc;
 		},
 		{
-			reachableTarget: null as Hero | null,
+			reachableTarget: null as T | null,
 			moveDest: null as GridPosition | null,
 			canHit: false,
 		},
 	);
 };
 
-export function getOrderedTargets(
+export function getOrderedTargets<T extends Figure>(
 	monster: Monster,
-	attack: Attack,
-	heroes: Hero[],
-): Hero[] {
-	const { target } = attack;
-	const sortFunction = (heroA: Hero, heroB: Hero) => {
-		switch (target) {
+	card: Card,
+	targets: T[],
+): T[] {
+	const sortFunction = (figureA: T, figureB: T) => {
+		switch (card.aiTargetPreference) {
 			case "lowestDef":
-				return heroA.baseDef - heroB.baseDef;
+				return figureA.baseDef - figureB.baseDef;
 			case "lowestHp":
-				return heroA.currentHp - heroB.currentHp;
+				return figureA.currentHp - figureB.currentHp;
+			case "random":
+				return Math.random() - 0.5;
 			default:
 				return (
-					getManhattanDistance(heroA.gridPosition, monster.gridPosition) -
-					getManhattanDistance(heroB.gridPosition, monster.gridPosition)
+					getManhattanDistance(figureA.gridPosition, monster.gridPosition) -
+					getManhattanDistance(figureB.gridPosition, monster.gridPosition)
 				);
 		}
 	};
-	return [...heroes]
+	return [...targets]
 		.filter(({ currentHp }) => currentHp > 0)
 		.sort(sortFunction);
 }
 
 export function isTargetInRange(
-	attack: Attack,
+	card: Card,
+	minRange: number,
 	attackerPos: GridPosition,
 	targetPos: GridPosition,
 ) {
 	const distance = getManhattanDistance(attackerPos, targetPos);
-	return distance >= attack.minRange && distance <= attack.maxRange;
+	return distance >= minRange && distance <= card.range;
 }
 
-export function getActualTarget(
+export function getActualTarget<T extends Figure>(
 	attackerPos: GridPosition,
 	intendedTargetPos: GridPosition,
-	heroes: Hero[],
-	monsters: Monster[],
-): { type: "hero"; unit: Hero } | { type: "monster"; unit: Monster } | null {
+	figures: T[],
+) {
 	const flightPath = getLineOfSightPath(attackerPos, intendedTargetPos);
 
-	// Start at i = 1 to skip the tile the Attacker is standing on!
 	for (let i = 1; i < flightPath.length; i++) {
 		const tile = flightPath[i];
-
-		// Did it hit a Hero?
-		const heroHit = heroes.find(
-			(h) =>
-				h.gridPosition.col === tile.col &&
-				h.gridPosition.row === tile.row &&
-				h.currentHp > 0,
+		const figureHit = figures.find(
+			(f) =>
+				f.gridPosition.col === tile.col &&
+				f.gridPosition.row === tile.row &&
+				f.currentHp > 0,
 		);
-		if (heroHit) return { type: "hero", unit: heroHit };
-
-		// Did it hit a Monster? (Friendly fire is a great mechanic)
-		const monsterHit = monsters.find(
-			(m) =>
-				m.gridPosition.col === tile.col &&
-				m.gridPosition.row === tile.row &&
-				m.currentHp > 0,
-		);
-		if (monsterHit) return { type: "monster", unit: monsterHit };
+		if (figureHit) return figureHit;
 	}
-
-	return null; // Arrow flew perfectly to the intended empty tile
+	return null;
 }
 
 export function filterGridByAttackPattern(
-	attack: Attack,
+	card: Card,
 	targetPos: GridPosition,
 ): GridPosition[] {
-	const { target, pattern } = attack;
-	if (target === "grid") {
-		return pattern;
-	}
+	const pattern = card.aoePattern || [{ col: 0, row: 0 }];
+
 	return pattern.map(({ col, row }) => ({
 		col: targetPos.col + col,
 		row: targetPos.row + row,

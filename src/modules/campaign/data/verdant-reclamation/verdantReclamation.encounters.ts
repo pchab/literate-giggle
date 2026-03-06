@@ -1,6 +1,6 @@
 import { beastMaster } from "@/modules/figures/data/monsters/beast-master";
 import { elvenWeaver } from "@/modules/figures/data/monsters/elven-weaver";
-import { treant } from "@/modules/figures/data/monsters/treant.data";
+import { treant_bruiser } from "@/modules/figures/data/monsters/treant.data";
 import type { Monster } from "@/modules/figures/domain/figures.type";
 import { monsterId } from "@/modules/figures/helpers/figures.helpers";
 import { sceneId } from "../../domain/scenes.type";
@@ -28,14 +28,14 @@ export const VERDANT_RECLAMATION_ENCOUNTER_DB: Record<string, Encounter> = {
 		generateMonsters: (): Monster[] => [
 			{
 				id: monsterId("treant_1"),
-				...treant,
-				currentHp: treant.maxHp,
+				...treant_bruiser,
+				currentHp: treant_bruiser.maxHp,
 				gridPosition: { col: 3, row: 3 },
 			},
 			{
-				id: monsterId("treant_2"),
-				...treant,
-				currentHp: treant.maxHp,
+				id: monsterId("treant__2"),
+				...treant_bruiser,
+				currentHp: treant_bruiser.maxHp,
 				gridPosition: { col: 4, row: 4 },
 			},
 		],

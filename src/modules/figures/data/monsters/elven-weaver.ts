@@ -1,10 +1,7 @@
-import { singleTargetPattern } from "@/modules/battle/data/attackPattern.data";
+import { cardId } from "@/modules/cards/helpers/cards.helper";
 import type { Monster } from "../../domain/figures.type";
 
-export const elvenWeaver: Omit<
-	Monster,
-	"id" | "currentHp" | "gridPosition" | "intent"
-> = {
+export const elvenWeaver: Omit<Monster, "id" | "currentHp" | "gridPosition"> = {
 	enemyType: "ELVEN_WEAVER",
 	spriteBase: "monsters/elven_weaver",
 	maxHp: 12,
@@ -12,16 +9,10 @@ export const elvenWeaver: Omit<
 	baseDef: 0,
 	currentBlock: 0,
 	xpReward: 10,
-	attacks: [
+	intentPool: [
 		{
-			id: "water_whip",
-			name: "Water Whip",
-			target: "lowestHp",
-			pattern: singleTargetPattern,
-			move: 1,
-			damage: 4,
-			minRange: 1,
-			maxRange: 1,
+			cardId: cardId("monster_ranged_attack"),
+			weight: 1,
 		},
 	],
 };

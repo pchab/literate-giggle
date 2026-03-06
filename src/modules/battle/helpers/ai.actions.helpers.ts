@@ -1,117 +1,146 @@
-import type { Attack } from "@/modules/battle/domain/attacks.type";
 import {
 	getManhattanDistance,
 	isTileInBounds,
 } from "@/modules/battle/helpers/grid.helpers";
 import type { BattleState } from "@/modules/battle/store/battle.store";
-import type { DamageEffect } from "@/modules/cards/domain/cards.type";
-import { skeleton } from "@/modules/figures/data/monsters/skeleton.data";
+import type { Card } from "@/modules/cards/domain/cards.type";
 import type { Monster } from "@/modules/figures/domain/figures.type";
-import { monsterId } from "@/modules/figures/helpers/figures.helpers";
+import {
+	isHero,
+	isMonster,
+	isSummon,
+} from "@/modules/figures/helpers/figures.helpers";
 import {
 	filterGridByAttackPattern,
 	getActualTarget,
 	getIdealTarget,
 } from "./ai.move.helpers";
-import { applyEffectToHero } from "./effect.helpers";
+import {
+	resolvePushEffect,
+	resolveStandardEffect,
+	resolveSummonEffect,
+} from "./effect.resolvers";
 
-// --- ACTION HANDLER 1: SUMMONING ---
-export function handleSummon(
-	state: BattleState,
-	caster: Monster,
-	attack: Attack,
-): Monster[] {
-	const possibleSpawns = [
-		{ col: caster.gridPosition.col, row: caster.gridPosition.row - 1 },
-		{ col: caster.gridPosition.col - 1, row: caster.gridPosition.row },
-		{ col: caster.gridPosition.col, row: caster.gridPosition.row + 1 },
-		{ col: caster.gridPosition.col + 1, row: caster.gridPosition.row },
-	].filter(isTileInBounds);
-
-	const spawnPos = possibleSpawns.find((pos) => {
-		const isOccupiedByHero = state.heroes.some(
-			(h) => h.gridPosition.col === pos.col && h.gridPosition.row === pos.row,
-		);
-		const isOccupiedByMonster = state.monsters.some(
-			(m) => m.gridPosition.col === pos.col && m.gridPosition.row === pos.row,
-		);
-		return !isOccupiedByHero && !isOccupiedByMonster;
-	});
-
-	if (spawnPos && attack.summonType === "SKELETON") {
-		const newSkeleton: Monster = {
-			...skeleton,
-			id: monsterId(`skel-summon-${Date.now()}`),
-			currentHp: skeleton.maxHp,
-			gridPosition: spawnPos,
-		};
-		// Return a NEW array to respect immutability
-		return [...state.monsters, newSkeleton];
-	}
-
-	return state.monsters;
-}
-
-// --- ACTION HANDLER 2: MOVE & ATTACK ---
-export function handleMoveAndAttack(
+export function handleCardIntent(
 	state: BattleState,
 	attacker: Monster,
-	attack: Attack,
+	card: Card,
 ) {
 	const { reachableTarget, moveDest } = getIdealTarget(
 		attacker,
-		attack,
-		state.heroes,
-		state.monsters,
+		card,
+		[...state.heroes, ...state.summons.filter((s) => s.allegiance === "PLAYER")],
+		[...state.monsters, ...state.summons.filter((s) => s.allegiance === "ENEMY")],
 	);
 
-	if (!reachableTarget || !moveDest) return null; // Can't do anything
+	if (!reachableTarget || !moveDest) return null;
 
 	// 1. Resolve Movement
-	const nextMonsters = state.monsters.map((m) =>
+	let draftMonsters = state.monsters.map((m) =>
 		m.id === attacker.id ? { ...m, gridPosition: moveDest } : m,
 	);
+	let draftHeroes = [...state.heroes];
+	let draftSummons = [...state.summons];
+	let draftVfx = { ...state.currentVfx };
 
 	const distanceToTarget = getManhattanDistance(
 		moveDest,
 		reachableTarget.gridPosition,
 	);
-	if (
-		distanceToTarget < attack.minRange ||
-		distanceToTarget > attack.maxRange
-	) {
-		return { nextMonsters, nextHeroes: state.heroes }; // Moved, but out of range to attack
+
+	if (card.aiTargetPreference !== "self" && distanceToTarget > card.range) {
+		return {
+			nextMonsters: draftMonsters,
+			nextHeroes: draftHeroes,
+			nextSummons: draftSummons,
+			nextVfx: draftVfx,
+		};
 	}
 
-	// 2. Resolve Combat
-	const collision = getActualTarget(
-		moveDest,
-		reachableTarget.gridPosition,
-		state.heroes,
-		nextMonsters,
-	);
+	// 2. Find spatial targets
+	const collision = getActualTarget(moveDest, reachableTarget.gridPosition, [
+		...draftHeroes,
+		...draftMonsters,
+		...draftSummons,
+	]);
 	const finalTargetPos = collision
-		? collision.unit.gridPosition
+		? collision.gridPosition
 		: reachableTarget.gridPosition;
-	const targetedCells = filterGridByAttackPattern(attack, finalTargetPos);
 
-	const nextHeroes = state.heroes.map((hero) => {
-		const isTargeted = targetedCells.some(
-			({ col, row }) =>
-				col === hero.gridPosition.col && row === hero.gridPosition.row,
-		);
+	// This is the array of GridPositions the AoE hits!
+	const targetedCells = filterGridByAttackPattern(card, finalTargetPos);
+	// The primary target is the anchor (used if an effect is target: "anchor")
+	const anchorTargetId = collision ? collision.id : reachableTarget.id;
 
-		if (!isTargeted) return hero;
+	// 3. PIpe everything through your unified resolvers!
+	for (const effect of card.effects) {
+		if (
+			effect.type === "damage" ||
+			effect.type === "heal" ||
+			effect.type === "block"
+		) {
+			const result = resolveStandardEffect({
+				effect,
+				anchorTargetId,
+				caster: attacker,
+				figures: [...draftHeroes, ...draftMonsters, ...draftSummons],
+				vfx: draftVfx,
+				patternCells: targetedCells,
+			});
+			draftHeroes = result.figures.filter((f) => isHero(f));
+			draftMonsters = result.figures.filter((f) => isMonster(f));
+			draftSummons = result.figures.filter((f) => isSummon(f));
+			draftVfx = result.vfx;
+		}
 
-		const dmgEffect: DamageEffect = {
-			type: "damage",
-			amount: attack.damage,
-			target: "self",
-		};
-		const damagedHero = applyEffectToHero(hero, dmgEffect);
+		if (effect.type === "summon") {
+			const possibleSpawns = [
+				{ col: attacker.gridPosition.col, row: attacker.gridPosition.row - 1 },
+				{ col: attacker.gridPosition.col - 1, row: attacker.gridPosition.row },
+				{ col: attacker.gridPosition.col, row: attacker.gridPosition.row + 1 },
+				{ col: attacker.gridPosition.col + 1, row: attacker.gridPosition.row },
+			].filter(isTileInBounds)
+				.filter(
+					(pos) =>
+						![...draftHeroes, ...draftMonsters, ...draftSummons].some(
+							(f) =>
+								f.gridPosition.col === pos.col &&
+								f.gridPosition.row === pos.row,
+						),
+				);
+			const spawnPos = possibleSpawns.length > 0 ? possibleSpawns[0] : null;
+			if (spawnPos) {
+				draftSummons = resolveSummonEffect({
+					effect,
+					anchorTargetId: spawnPos,
+					caster: attacker,
+					figures: draftSummons,
+					vfx: draftVfx,
+				}).figures;
+			}
+		}
 
-		return damagedHero;
-	});
+		if (effect.type === "push") {
+			const result = resolvePushEffect({
+				effect,
+				anchorTargetId,
+				caster: attacker,
+				figures: [...draftHeroes, ...draftMonsters, ...draftSummons],
+				vfx: draftVfx,
+			});
+			draftHeroes = result.figures.filter((f) => isHero(f));
+			draftMonsters = result.figures.filter((f) => isMonster(f));
+			draftSummons = result.figures.filter((f) => isSummon(f));
+			draftVfx = result.vfx;
+		}
 
-	return { nextMonsters, nextHeroes };
+		// You can add `effect.type === "heal"` here later for enemy medics!
+	}
+
+	return {
+		nextMonsters: draftMonsters,
+		nextHeroes: draftHeroes,
+		nextSummons: draftSummons,
+		nextVfx: draftVfx,
+	};
 }

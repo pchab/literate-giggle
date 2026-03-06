@@ -1,4 +1,9 @@
-import type { Hero, Monster, Summon } from "../../figures/domain/figures.type";
+import type {
+	Figure,
+	Hero,
+	Monster,
+	Summon,
+} from "../../figures/domain/figures.type";
 import type { GridPosition } from "../domain/grid.type";
 
 export const GRID_BOUNDS = {
@@ -10,9 +15,9 @@ export function getCellId(pos: GridPosition): string {
 	return `${pos.row}-${pos.col}`;
 }
 
-export const isTileOccupied = (
+export const isTileOccupied = <T extends Figure>(
 	pos: GridPosition,
-	figures: (Hero | Monster | Summon)[],
+	figures: T[],
 ) => {
 	return figures.some(
 		({ gridPosition, currentHp }) =>

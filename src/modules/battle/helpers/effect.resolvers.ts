@@ -1,162 +1,147 @@
 import {
 	type AnchorTarget,
 	anchorIsGridPosition,
-	anchorIsHeroId,
-	anchorIsMonsterId,
 	type BlockEffect,
+	type CardEffect,
 	type DamageEffect,
-	type EffectTarget,
 	type HealEffect,
 	type MoveEffect,
 	type PushEffect,
 	type SummonEffect,
 } from "@/modules/cards/domain/cards.type";
 import { summonLibrary } from "@/modules/figures/data/summons/summons.data";
-import type {
-	Allegiance,
-	Figure,
-	Hero,
-	Monster,
-	Summon,
-} from "@/modules/figures/domain/figures.type";
+import type { Figure, Summon } from "@/modules/figures/domain/figures.type";
 import { summonId } from "@/modules/figures/helpers/figures.helpers";
 import type { VfxType } from "../domain/vfx.type";
 import {
 	applyDamageToEntity,
-	applyEffectToHero,
-	applyEffectToMonster,
+	applyEffectToEntity,
+	getCasterFaction,
+	resolveTargets,
 } from "./effect.helpers";
 import { isTileInBounds } from "./grid.helpers";
 import { getVfxForEffect } from "./vfx.helper";
 
-function resolveTargets(
-	targetType: EffectTarget,
-	anchorTargetId: AnchorTarget | null,
-	casterId: Hero["id"],
-	currentMonsters: Monster[],
-) {
-	const heroIds: string[] = [];
-	const monsterIds: string[] = [];
-
-	if (targetType === "self") {
-		heroIds.push(casterId);
-	} else if (
-		targetType === "anchor" &&
-		anchorTargetId &&
-		typeof anchorTargetId === "string"
-	) {
-		if (anchorIsHeroId(anchorTargetId)) heroIds.push(anchorTargetId);
-		if (anchorIsMonsterId(anchorTargetId)) monsterIds.push(anchorTargetId);
-	} else if (targetType === "all_enemies") {
-		monsterIds.push(...currentMonsters.map((m) => m.id));
-	}
-
-	return { heroIds, monsterIds };
+interface EffectResolverParams<
+	C extends Figure,
+	T extends Figure,
+	E extends CardEffect,
+> {
+	effect: E;
+	anchorTargetId: AnchorTarget | null;
+	caster: C;
+	figures: T[];
+	vfx: Record<string, VfxType>;
+	patternCells?: { col: number; row: number }[];
+}
+interface EffectResolverReturn<T extends Figure> {
+	figures: T[];
+	vfx: Record<string, VfxType>;
 }
 
-// --- 1. MOVE RESOLVER ---
-export function resolveMoveEffect(
-	effect: MoveEffect,
-	anchorTargetId: AnchorTarget | null,
-	heroId: Hero["id"],
-	heroes: Hero[],
-) {
+export function resolveMoveEffect<T extends Figure>({
+	effect,
+	anchorTargetId,
+	caster,
+	figures,
+	vfx,
+}: EffectResolverParams<T, T, MoveEffect>): EffectResolverReturn<T> {
 	if (
 		anchorTargetId &&
 		anchorIsGridPosition(anchorTargetId) &&
 		effect.target === "self"
 	) {
-		return heroes.map((hero) =>
-			hero.id === heroId ? { ...hero, gridPosition: anchorTargetId } : hero,
-		);
+		return {
+			figures: figures.map((figure) =>
+				figure.id === caster.id
+					? { ...figure, gridPosition: anchorTargetId }
+					: figure,
+			),
+			vfx,
+		};
 	}
-	return heroes;
+	return { figures, vfx };
 }
 
-// --- 2. SUMMON RESOLVER ---
-export function resolveSummonEffect(
-	effect: SummonEffect,
-	anchorTargetId: AnchorTarget | null,
-	summons: Summon[],
-) {
+export function resolveSummonEffect<T extends Figure>({
+	effect,
+	anchorTargetId,
+	caster,
+	figures: summons,
+	vfx,
+}: EffectResolverParams<
+	T,
+	Summon,
+	SummonEffect
+>): EffectResolverReturn<Summon> {
+	const allegiance = getCasterFaction(caster) === "HERO" ? "PLAYER" : "ENEMY";
+
 	if (anchorTargetId && anchorIsGridPosition(anchorTargetId)) {
 		const blueprint = summonLibrary[effect.blueprintId];
-		return [
-			...summons,
-			{
-				id: summonId(Date.now()),
-				...blueprint,
-				currentHp: blueprint.maxHp,
-				gridPosition: anchorTargetId,
-				allegiance: "PLAYER" as Allegiance,
-			},
-		];
+		return {
+			figures: [
+				...summons,
+				{
+					id: summonId(Date.now()),
+					...blueprint,
+					currentHp: blueprint.maxHp,
+					gridPosition: anchorTargetId,
+					allegiance,
+				},
+			],
+			vfx,
+		};
 	}
-	return summons;
+	return { figures: summons, vfx };
 }
 
-// --- 3. STANDARD EFFECT RESOLVER (Damage, Heal, Block) ---
-export function resolveStandardEffect(
-	effect: DamageEffect | HealEffect | BlockEffect,
-	anchorTargetId: AnchorTarget | null,
-	casterId: Hero["id"],
-	heroes: Hero[],
-	monsters: Monster[],
-	vfx: Record<string, VfxType>,
-) {
+export function resolveStandardEffect<T extends Figure>({
+	effect,
+	anchorTargetId,
+	caster,
+	figures,
+	vfx,
+	patternCells,
+}: EffectResolverParams<
+	T,
+	T,
+	DamageEffect | HealEffect | BlockEffect
+>): EffectResolverReturn<T> {
 	const targets = resolveTargets(
 		effect.target,
 		anchorTargetId,
-		casterId,
-		monsters,
+		caster.id,
+		figures,
+		patternCells,
 	);
 
-	const updatedHeroes = heroes.map((hero) =>
-		targets.heroIds.includes(hero.id) ? applyEffectToHero(hero, effect) : hero,
+	const updatedFigures = figures.map((figure) =>
+		targets.includes(figure.id) ? applyEffectToEntity(figure, effect) : figure,
 	);
-	const updatedMonsters = monsters.map((monster) =>
-		targets.monsterIds.includes(monster.id)
-			? applyEffectToMonster(monster, effect)
-			: monster,
+	const newVfx = getVfxForEffect(
+		effect,
+		updatedFigures
+			.filter((f) => targets.includes(f.id))
+			.map((f) => f.gridPosition),
 	);
-
-	const newVfx = getVfxForEffect(effect, {
-		monsterPositions: targets.monsterIds
-			.map(
-				(monsterId) =>
-					updatedMonsters.find((m) => m.id === monsterId)?.gridPosition,
-			)
-			.filter((pos) => pos !== undefined),
-		heroPositions: targets.heroIds
-			.map((heroId) => updatedHeroes.find((h) => h.id === heroId)?.gridPosition)
-			.filter((pos) => pos !== undefined),
-	});
 	Object.assign(vfx, newVfx);
 
-	return { heroes: updatedHeroes, monsters: updatedMonsters, vfx };
+	return { figures: updatedFigures, vfx };
 }
 
-// --- 4. PUSH RESOLVER (The New Engine!) ---
-export function resolvePushEffect(
-	effect: PushEffect,
-	anchorTargetId: AnchorTarget | null,
-	casterId: Hero["id"],
-	heroes: Hero[],
-	monsters: Monster[],
-	summons: Summon[],
-) {
-	let draftHeroes = [...heroes];
-	let draftMonsters = [...monsters];
-
-	const caster = draftHeroes.find((h) => h.id === casterId);
-	if (!caster || !caster.gridPosition)
-		return { heroes: draftHeroes, monsters: draftMonsters };
-
+export function resolvePushEffect<T extends Figure>({
+	effect,
+	anchorTargetId,
+	caster,
+	figures,
+	vfx,
+}: EffectResolverParams<T, T, PushEffect>): EffectResolverReturn<T> {
+	const draftFigures = [...figures];
 	const targets = resolveTargets(
 		effect.target,
 		anchorTargetId,
-		casterId,
-		draftMonsters,
+		caster.id,
+		draftFigures,
 	);
 	const { col: cX, row: cY } = caster.gridPosition;
 
@@ -177,22 +162,11 @@ export function resolvePushEffect(
 			const nextY = currentY + dy;
 			const nextPos = { col: nextX, row: nextY };
 
-			const isOccupied =
-				draftHeroes.some(
-					(h) =>
-						h.gridPosition.col === nextPos.col &&
-						h.gridPosition.row === nextPos.row,
-				) ||
-				draftMonsters.some(
-					(m) =>
-						m.gridPosition.col === nextPos.col &&
-						m.gridPosition.row === nextPos.row,
-				) ||
-				summons.some(
-					(s) =>
-						s.gridPosition.col === nextPos.col &&
-						s.gridPosition.row === nextPos.row,
-				);
+			const isOccupied = draftFigures.some(
+				(f) =>
+					f.gridPosition.col === nextPos.col &&
+					f.gridPosition.row === nextPos.row,
+			);
 
 			if (!isTileInBounds(nextPos) || isOccupied) {
 				collided = true;
@@ -218,12 +192,10 @@ export function resolvePushEffect(
 		return updatedEntity;
 	};
 
-	draftMonsters = draftMonsters.map((m) =>
-		targets.monsterIds.includes(m.id) ? processPush(m) : m,
-	);
-	draftHeroes = draftHeroes.map((h) =>
-		targets.heroIds.includes(h.id) ? processPush(h) : h,
-	);
-
-	return { heroes: draftHeroes, monsters: draftMonsters };
+	return {
+		figures: draftFigures.map((figure) =>
+			targets.includes(figure.id) ? processPush(figure) : figure,
+		),
+		vfx,
+	};
 }

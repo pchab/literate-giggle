@@ -1,10 +1,7 @@
-import { singleTargetPattern } from "@/modules/battle/data/attackPattern.data";
+import { cardId } from "@/modules/cards/helpers/cards.helper";
 import type { Monster } from "../../domain/figures.type";
 
-export const briarWolf: Omit<
-	Monster,
-	"id" | "currentHp" | "gridPosition" | "intent"
-> = {
+export const briarWolf: Omit<Monster, "id" | "currentHp" | "gridPosition"> = {
 	enemyType: "BRIAR_WOLF",
 	spriteBase: "monsters/briar_wolf",
 	maxHp: 8,
@@ -12,16 +9,10 @@ export const briarWolf: Omit<
 	baseDef: 0,
 	currentBlock: 0,
 	xpReward: 5,
-	attacks: [
+	intentPool: [
 		{
-			id: "bite",
-			name: "Bite",
-			target: "lowestHp",
-			pattern: singleTargetPattern,
-			move: 3,
-			damage: 3,
-			minRange: 1,
-			maxRange: 1,
+			cardId: cardId("monster_melee_attack"),
+			weight: 1,
 		},
 	],
 };

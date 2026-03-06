@@ -1,8 +1,6 @@
+import { cardLibrary } from "@/modules/cards/data/cards.data";
 import { sleep } from "@/modules/shared/helpers/sleep";
-import {
-	handleMoveAndAttack,
-	handleSummon,
-} from "../../helpers/ai.actions.helpers";
+import { handleCardIntent } from "../../helpers/ai.actions.helpers";
 import type { BattleState } from "../battle.store";
 import { calculateAllIntents } from "./calculateAllIntents.command";
 
@@ -17,44 +15,34 @@ export const resolveEnemyActions = async (get: StoreGet, set: StoreSet) => {
 	for (const currentMonster of initialMonsters) {
 		const state = get();
 
-		// Ensure monster is still alive before it acts
 		const freshMonster = state.monsters.find((m) => m.id === currentMonster.id);
 		if (!freshMonster || freshMonster.currentHp <= 0) continue;
 
 		const intent = state.enemyIntents[freshMonster.id];
 		if (!intent) continue;
 
-		const { attackData: plannedAttack } = intent;
+		const cardToPlay = cardLibrary[intent.cardId];
+		if (!cardToPlay) continue;
 
-		// --- BRANCH: SUMMON ---
-		if (plannedAttack.summonType) {
-			const nextMonsters = handleSummon(state, freshMonster, plannedAttack);
-			set((prev) => ({ ...prev, monsters: nextMonsters }));
-			await sleep(800);
-			continue;
-		}
+		const actionResult = handleCardIntent(state, freshMonster, cardToPlay);
 
-		// --- BRANCH: ATTACK ---
-		const attackResult = handleMoveAndAttack(
-			state,
-			freshMonster,
-			plannedAttack,
-		);
-		if (attackResult) {
+		if (actionResult) {
 			set((prev) => ({
 				...prev,
-				monsters: attackResult.nextMonsters,
-				heroes: attackResult.nextHeroes,
+				monsters: actionResult.nextMonsters,
+				heroes: actionResult.nextHeroes,
+				summons: actionResult.nextSummons,
+				currentVfx: actionResult.nextVfx,
 			}));
 			await sleep(800);
 		}
 	}
 
-	// --- END OF TURN CLEANUP ---
 	const finalState = get();
 	const nextEnemyIntents = calculateAllIntents(
 		finalState.heroes,
 		finalState.monsters,
+		finalState.summons,
 	);
 
 	set((prev) => ({

@@ -1,4 +1,3 @@
-import type { Attack } from "@/modules/battle/domain/attacks.type";
 import type { GridPosition } from "@/modules/battle/domain/grid.type";
 import type { Card, Hand } from "@/modules/cards/domain/cards.type";
 import type { HeroClass } from "@/modules/figures/domain/heroClass.types";
@@ -46,7 +45,12 @@ export type EnemyType =
 export interface Monster extends Figure {
 	id: string & { readonly __brand: "MonsterId" };
 	enemyType: EnemyType;
-	attacks: Attack[];
+
+	intentPool: {
+		cardId: Card["id"];
+		weight: number;
+	}[];
+
 	xpReward: number;
 }
 
@@ -54,6 +58,11 @@ export type Allegiance = "PLAYER" | "ENEMY" | "NEUTRAL";
 
 export interface Summon extends Figure {
 	id: string & { readonly __brand: "SummonId" };
-	name: string;
+	summonType: EnemyType;
 	allegiance: Allegiance;
+
+	intentPool: {
+		cardId: Card["id"];
+		weight: number;
+	}[];
 }
