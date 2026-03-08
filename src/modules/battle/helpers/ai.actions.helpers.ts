@@ -85,7 +85,7 @@ export function handleAICardIntent(
 		if (
 			effect.type === "damage" ||
 			effect.type === "heal" ||
-			effect.type === "block"
+			effect.type === "apply_status"
 		) {
 			const result = resolveStandardEffect({
 				effect,

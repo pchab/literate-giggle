@@ -1,7 +1,8 @@
 import type { AIIntent } from "@/modules/battle/domain/intent.type";
 import { cardLibrary } from "@/modules/cards/data/cards.data"; // Adjust import path if needed
 import type {
-	BlockEffect,
+	ApplyStatusEffect,
+	CardEffect,
 	DamageEffect,
 	HealEffect,
 } from "@/modules/cards/domain/cards.type";
@@ -19,7 +20,14 @@ export default function IntentDisplay({ intent }: { intent: AIIntent }) {
 	card.effects.forEach((effect) => {
 		if (effect.type === "damage")
 			totalDamage += (effect as DamageEffect).amount;
-		if (effect.type === "block") totalBlock += (effect as BlockEffect).amount;
+		if (
+			effect.type === "apply_status" &&
+			["temp_block", "perma_shield"].includes(
+				(effect as ApplyStatusEffect).statusType,
+			)
+		) {
+			totalBlock += (effect as ApplyStatusEffect).amount;
+		}
 		if (effect.type === "heal") totalHeal += (effect as HealEffect).amount;
 	});
 

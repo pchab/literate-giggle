@@ -40,7 +40,13 @@ export const monsterCardLibrary: Record<Card["id"], Card> = {
 		iconType: "DEFEND",
 		playRequirement: "no_target",
 		aiTargetPreference: "self",
-		effects: [{ type: "block", amount: 5, target: "self" }],
+		effects: [{
+			type: "apply_status",
+			statusType: "temp_block",
+			amount: 5,
+			target: "self",
+			duration: 1,
+		},],
 	},
 
 	// --- NECROMANCER CARDS ---

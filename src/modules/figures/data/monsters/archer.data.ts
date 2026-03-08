@@ -3,7 +3,7 @@ import type { Monster } from "../../domain/figures.type";
 
 export const archer: Omit<
 	Monster,
-	"id" | "currentHp" | "currentBlock" | "gridPosition"
+	"id" | "currentHp" | "gridPosition" | "statuses"
 > = {
 	spriteBase: "monsters/archer",
 	maxHp: 10,

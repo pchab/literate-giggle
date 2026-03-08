@@ -5,10 +5,7 @@ import { iceWall } from "./iceWall";
 
 export const summonLibrary: Record<
 	string,
-	Omit<
-		Summon,
-		"id" | "gridPosition" | "allegiance" | "currentHp" | "currentBlock"
-	>
+	Omit<Summon, "id" | "gridPosition" | "allegiance" | "currentHp" | "statuses">
 > = {
 	ice_wall: iceWall,
 	skeleton,

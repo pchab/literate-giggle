@@ -3,7 +3,7 @@ import type { Monster } from "../../domain/figures.type";
 
 export const stone_elemental: Omit<
 	Monster,
-	"id" | "currentHp" | "currentBlock" | "gridPosition"
+	"id" | "currentHp" | "gridPosition" | "statuses"
 > = {
 	spriteBase: "monsters/stone_elemental",
 	maxHp: 20,
@@ -20,7 +20,7 @@ export const stone_elemental: Omit<
 
 export const golem_overseer: Omit<
 	Monster,
-	"id" | "currentHp" | "currentBlock" | "gridPosition"
+	"id" | "currentHp" | "gridPosition" | "statuses"
 > = {
 	spriteBase: "monsters/golem_overseer",
 	maxHp: 60,

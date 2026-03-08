@@ -117,16 +117,48 @@ export function resolveTargets<T extends Figure>(
 
 export function applyDamageToEntity<T extends Figure>(
 	entity: T,
-	damage: number,
+	baseDamage: number,
 ): T {
-	const effectiveDmg = Math.max(0, damage - entity.baseDef);
-	const hpDamage = Math.max(0, effectiveDmg - entity.currentBlock);
-	const newBlock = Math.max(0, entity.currentBlock - effectiveDmg);
+	let incomingDamage = baseDamage;
+
+	const isVulnerable = entity.statuses.some((s) => s.type === "vulnerable");
+	if (isVulnerable) {
+		incomingDamage += 2;
+	}
+
+	let effectiveDmg = Math.max(0, incomingDamage - entity.baseDef);
+
+	const updatedStatuses = entity.statuses.map((status) => {
+		if (status.type !== "temp_block" && status.type !== "perma_shield") {
+			return status;
+		}
+
+		if (effectiveDmg <= 0) return status;
+
+		if (status.amount >= effectiveDmg) {
+			status.amount -= effectiveDmg;
+			effectiveDmg = 0;
+		} else {
+			effectiveDmg -= status.amount;
+			status.amount = 0;
+		}
+		return status;
+	});
+
+	const finalStatuses = updatedStatuses.filter((s) => {
+		if (
+			(s.type === "temp_block" || s.type === "perma_shield") &&
+			s.amount <= 0
+		) {
+			return false;
+		}
+		return true;
+	});
 
 	return {
 		...entity,
-		currentHp: Math.max(0, entity.currentHp - hpDamage),
-		currentBlock: newBlock,
+		currentHp: Math.max(0, entity.currentHp - effectiveDmg),
+		statuses: finalStatuses,
 	};
 }
 
@@ -141,16 +173,64 @@ export function applyEffectToEntity<T extends Figure>(
 		};
 	}
 
-	if (effect.type === "block") {
-		return {
-			...entity,
-			currentBlock: Math.max(entity.currentBlock, effect.amount),
-		};
-	}
-
 	if (effect.type === "damage") {
 		return applyDamageToEntity(entity, effect.amount);
 	}
 
+	if (effect.type === "apply_status") {
+		const newStatuses = [...entity.statuses];
+		const existingStatusIndex = newStatuses.findIndex(
+			(s) => s.type === effect.statusType,
+		);
+
+		if (existingStatusIndex !== -1) {
+			const current = newStatuses[existingStatusIndex];
+			newStatuses[existingStatusIndex] = {
+				...current,
+				amount: current.amount + effect.amount,
+				duration:
+					current.duration === -1 || effect.duration === -1
+						? -1
+						: Math.max(current.duration, effect.duration),
+			};
+		} else {
+			newStatuses.push({
+				type: effect.statusType,
+				amount: effect.amount,
+				duration: effect.duration,
+			});
+		}
+
+		return { ...entity, statuses: newStatuses };
+	}
+
 	return entity;
+}
+
+export function tickStatuses<T extends Figure>(figures: T[]): T[] {
+	return figures.map((figure) => {
+		if (figure.currentHp <= 0) return figure;
+
+		let poisonDamage = 0;
+
+		const poison = figure.statuses.find((s) => s.type === "poison");
+		if (poison) {
+			poisonDamage += poison.amount;
+		}
+
+		const newHp = Math.max(0, figure.currentHp - poisonDamage);
+
+		const newStatuses = figure.statuses
+			.map((status) => ({
+				...status,
+				duration: status.duration === -1 ? -1 : status.duration - 1,
+			}))
+			.filter((status) => status.duration > 0 || status.duration === -1);
+
+		return {
+			...figure,
+			currentHp: newHp,
+			statuses: newStatuses,
+		};
+	});
 }

@@ -1,4 +1,5 @@
 import type { GridPosition } from "@/modules/battle/domain/grid.type";
+import type { StatusType } from "@/modules/figures/domain/status.type";
 import {
 	isHeroId,
 	isMonsterId,
@@ -91,13 +92,21 @@ export type SummonEffect = {
 	target: EffectTarget;
 };
 
+export type ApplyStatusEffect = {
+	type: "apply_status";
+	statusType: StatusType;
+	amount: number;
+	duration: number;
+	target: EffectTarget;
+};
+
 export type CardEffect =
 	| MoveEffect
 	| DamageEffect
 	| HealEffect
-	| BlockEffect
 	| PushEffect
-	| SummonEffect;
+	| SummonEffect
+	| ApplyStatusEffect;
 
 export type Card = {
 	id: string & { readonly __brand: "CardId" };

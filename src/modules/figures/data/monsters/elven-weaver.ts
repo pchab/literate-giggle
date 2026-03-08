@@ -3,7 +3,7 @@ import type { Monster } from "../../domain/figures.type";
 
 export const elvenWeaver: Omit<
 	Monster,
-	"id" | "currentHp" | "currentBlock" | "gridPosition"
+	"id" | "currentHp" | "gridPosition" | "statuses"
 > = {
 	spriteBase: "monsters/elven_weaver",
 	maxHp: 18,

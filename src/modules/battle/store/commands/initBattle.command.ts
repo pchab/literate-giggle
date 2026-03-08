@@ -21,12 +21,7 @@ export function initBattle(
 
 		const freshMonsters = encounter.generateMonsters();
 
-		const initialIntents = calculateAllIntents(
-			roster,
-			freshMonsters,
-			[],
-			{},
-		);
+		const initialIntents = calculateAllIntents(roster, freshMonsters, [], {});
 
 		return {
 			encounterId,

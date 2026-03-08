@@ -16,16 +16,40 @@ export const arcaneShieldCards: Record<Card["id"], Card> = {
 		id: cardId("arcane-shield-1"),
 		...arcaneShieldBase,
 		playRequirement: "no_target",
-		effects: [{ type: "block", amount: 2, target: "self" }],
+		effects: [
+			{
+				type: "apply_status",
+				statusType: "perma_shield",
+				amount: 2,
+				target: "self",
+				duration: 999,
+			},
+		],
 	},
 	[cardId("arcane-shield-2")]: {
 		id: cardId("arcane-shield-2"),
 		...arcaneShieldBase,
-		effects: [{ type: "block", amount: 3, target: "anchor" }],
+		effects: [
+			{
+				type: "apply_status",
+				statusType: "perma_shield",
+				amount: 3,
+				target: "anchor",
+				duration: 999,
+			},
+		],
 	},
 	[cardId("arcane-shield-3")]: {
 		id: cardId("arcane-shield-3"),
 		...arcaneShieldBase,
-		effects: [{ type: "block", amount: 4, target: "anchor" }],
+		effects: [
+			{
+				type: "apply_status",
+				statusType: "perma_shield",
+				amount: 4,
+				target: "anchor",
+				duration: 999,
+			},
+		],
 	},
 };

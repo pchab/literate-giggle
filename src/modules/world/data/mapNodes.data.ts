@@ -1,8 +1,7 @@
-import { questStepId } from "@/modules/campaign/domain/quests.type";
+import { VERDANT_RECLAMATION } from "@/modules/campaign/data/verdant-reclamation/verdantReclamation.quest";
 import { townId } from "@/modules/towns/domain/towns.type";
 import { encounterId } from "../../campaign/data/encounters.data";
 import { type MapData, mapNodeId } from "../../world/domain/map.types";
-import { VERDANT_RECLAMATION } from '@/modules/campaign/data/verdant-reclamation/verdantReclamation.quest';
 
 export const WorldMapNodes: MapData = {
 	// --- THE BASTION ---
@@ -158,7 +157,7 @@ export const WorldMapNodes: MapData = {
 				},
 				override: {
 					type: "BATTLE",
-				}
+				},
 			},
 			{
 				condition: { type: "HAS_FLAG", flagId: "aligned_with_forest" },

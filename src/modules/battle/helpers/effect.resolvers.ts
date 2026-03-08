@@ -1,13 +1,13 @@
 import {
 	type AnchorTarget,
 	anchorIsGridPosition,
-	type BlockEffect,
 	type CardEffect,
 	type DamageEffect,
 	type HealEffect,
 	type MoveEffect,
 	type PushEffect,
 	type SummonEffect,
+	type ApplyStatusEffect,
 } from "@/modules/cards/domain/cards.type";
 import { summonLibrary } from "@/modules/figures/data/summons/summons.data";
 import type { Figure, Summon } from "@/modules/figures/domain/figures.type";
@@ -85,7 +85,7 @@ export function resolveSummonEffect<T extends Figure>({
 					id: summonId(Date.now()),
 					...blueprint,
 					currentHp: blueprint.maxHp,
-					currentBlock: 0,
+					statuses: [],
 					gridPosition: anchorTargetId,
 					allegiance,
 				},
@@ -106,7 +106,7 @@ export function resolveStandardEffect<T extends Figure>({
 }: EffectResolverParams<
 	T,
 	T,
-	DamageEffect | HealEffect | BlockEffect
+	DamageEffect | HealEffect | ApplyStatusEffect
 >): EffectResolverReturn<T> {
 	const targets = resolveTargets(
 		effect.target,

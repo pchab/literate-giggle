@@ -3,7 +3,7 @@ import type { Monster } from "../../domain/figures.type";
 
 export const treant_bruiser: Omit<
 	Monster,
-	"id" | "currentHp" | "currentBlock" | "gridPosition"
+	"id" | "currentHp" | "gridPosition" | "statuses"
 > = {
 	spriteBase: "treant",
 	maxHp: 45,

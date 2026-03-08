@@ -15,16 +15,40 @@ export const shieldBlockCards: Record<Card["id"], Card> = {
 	[cardId("shield-block-1")]: {
 		id: cardId("shield-block-1"),
 		...shieldBlockBase,
-		effects: [{ type: "block", amount: 4, target: "self" }],
+		effects: [
+			{
+				type: "apply_status",
+				statusType: "temp_block",
+				amount: 4,
+				target: "self",
+				duration: 1,
+			},
+		],
 	},
 	[cardId("shield-block-2")]: {
 		id: cardId("shield-block-2"),
 		...shieldBlockBase,
-		effects: [{ type: "block", amount: 5, target: "self" }],
+		effects: [
+			{
+				type: "apply_status",
+				statusType: "temp_block",
+				amount: 5,
+				target: "self",
+				duration: 1,
+			},
+		],
 	},
 	[cardId("shield-block-3")]: {
 		id: cardId("shield-block-3"),
 		...shieldBlockBase,
-		effects: [{ type: "block", amount: 6, target: "self" }],
+		effects: [
+			{
+				type: "apply_status",
+				statusType: "temp_block",
+				amount: 6,
+				target: "self",
+				duration: 1,
+			},
+		],
 	},
 };
