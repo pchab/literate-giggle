@@ -3,11 +3,11 @@
 import { AnimatePresence } from "motion/react";
 import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
-import type { Hero } from "@/modules/figures/domain/figures.type";
+import type { BattleHero } from "@/modules/figures/domain/figures.type";
 import { BattleCard } from "./BattleCard";
 import { CardTooltip } from "./CardTooltip";
 
-export function Hand({ id: heroId, hand }: Pick<Hero, "id" | "hand">) {
+export function Hand({ id: heroId, hand }: Pick<BattleHero, "id" | "hand">) {
 	const {
 		usedCardsThisTurn,
 		activeCard,
@@ -28,8 +28,8 @@ export function Hand({ id: heroId, hand }: Pick<Hero, "id" | "hand">) {
 
 	return (
 		<div className="w-full h-32 flex justify-end items-center gap-3 px-4">
-			{hand.map((cardId, index) => {
-				if (!cardId) {
+			{hand.map((card, index) => {
+				if (!card) {
 					return (
 						<div
 							key={`empty-slot-${index}`}
@@ -43,35 +43,34 @@ export function Hand({ id: heroId, hand }: Pick<Hero, "id" | "hand">) {
 				}
 
 				const isSelected =
-					activeCard?.heroId === heroId && activeCard?.cardId === cardId;
+					activeCard?.heroId === heroId && activeCard?.card.id === card.id;
 				const hasUsedCard = !!usedCardsThisTurn[heroId];
 				const isPlayable = !hasUsedCard && (!activeCard || isSelected);
 
-				// Check if THIS specific card is being hovered
 				const isHovered =
-					hoveredCard?.heroId === heroId && hoveredCard?.cardId === cardId;
+					hoveredCard?.heroId === heroId && hoveredCard?.card.id === card.id;
 
 				return (
 					<button
-						key={cardId}
+						key={card.id}
 						type="button"
 						className="relative origin-bottom focus:outline-none"
 						style={{ cursor: isPlayable ? "pointer" : "not-allowed" }}
 						disabled={!isPlayable && !isSelected}
 						onClick={() => {
 							if (hasUsedCard) return;
-							if (isSelected) cancelCard(heroId, cardId);
-							else if (!activeCard) selectCard(heroId, cardId);
+							if (isSelected) cancelCard();
+							else if (!activeCard) selectCard(heroId, card);
 						}}
-						onMouseEnter={() => setHoveredCard({ heroId, cardId })}
+						onMouseEnter={() => setHoveredCard({ heroId, card })}
 						onMouseLeave={() => setHoveredCard(null)}
 					>
 						<AnimatePresence>
-							{isHovered && <CardTooltip cardId={cardId} />}
+							{isHovered && <CardTooltip card={card} />}
 						</AnimatePresence>
 
 						<BattleCard
-							cardId={cardId}
+							card={card}
 							isSelected={isSelected}
 							isPlayable={isPlayable}
 						/>

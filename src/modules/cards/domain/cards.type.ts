@@ -113,17 +113,34 @@ export type Card = {
 	name: string;
 	range: number;
 
-	// Visuals
 	image?: string;
 	iconType?: IntentIcon;
 
-	// Rules
 	playRequirement: PlayRequirement;
 	effects: CardEffect[];
 
-	// --- AI & Spatial Data (Ported from Attack) ---
 	aiTargetPreference?: AITargetPreference;
 	aoePattern?: GridPosition[];
 };
 
-export type Hand = [Card["id"], Card["id"], Card["id"] | null];
+export type HeroCard = Card & {
+	instanceId: Card["id"];
+	baseCardId: Card["id"];
+	powerRunes: PowerRunes;
+};
+
+export type PowerRunes = {
+	// --- CARD-LEVEL MODIFIERS (Applies to the whole card) ---
+	bonusRange?: number;
+	bonusAoe?: { row: number; col: number }[];
+
+	// --- EFFECT-LEVEL MODIFIERS (Applies to specific effect types) ---
+	bonusDamage?: number; // Assumes mostly 1 damage effect per card
+	bonusHeal?: number;
+
+	// --- STATUS-SPECIFIC MODIFIERS ---
+	bonusStatusAmount?: Partial<Record<StatusType, number>>;
+	bonusStatusDuration?: Partial<Record<StatusType, number>>;
+};
+
+export type Hand = [Card, Card | null, Card | null];

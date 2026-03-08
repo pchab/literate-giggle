@@ -2,11 +2,10 @@
 
 import { motion } from "motion/react";
 import Image from "next/image";
-import { cardLibrary } from "../data/cards.data";
 import type { Card } from "../domain/cards.type";
 
 interface BattleCardProps {
-	cardId: Card["id"];
+	card: Card;
 	isSelected?: boolean;
 	isPlayable?: boolean;
 	onClick?: () => void;
@@ -14,19 +13,17 @@ interface BattleCardProps {
 }
 
 export function BattleCard({
-	cardId,
+	card,
 	isSelected = false,
 	isPlayable = true,
 	onClick,
 	size = "normal",
 }: BattleCardProps) {
-	const card = cardLibrary[cardId];
-
 	if (!card) {
 		return null;
 	}
 
-	const { name, image, effects } = card;
+	const { name, image, effects, iconType } = card;
 	const primaryEffect = effects[0];
 
 	let icon = "✨";
@@ -45,8 +42,8 @@ export function BattleCard({
 				glowColor = "rgba(34, 197, 94, 0.4)"; // Green
 				accentColor = "text-green-300";
 				break;
-			case "block":
-				icon = "🛡️";
+			case "apply_status":
+				icon = "❓";
 				glowColor = "rgba(59, 130, 246, 0.5)"; // Blue
 				accentColor = "text-blue-300";
 				break;
@@ -102,7 +99,7 @@ export function BattleCard({
 			>
 				{/* Scaled watermark icon */}
 				<Image
-					src={image}
+					src={image ?? iconType ?? ""}
 					alt={name}
 					width={180}
 					height={150}

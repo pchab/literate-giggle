@@ -1,9 +1,9 @@
 import { motion } from "motion/react";
 import type { Card, CardEffect } from "@/modules/cards/domain/cards.type";
-import { cardLibrary } from "../data/cards.data";
+import { getStatusEffectText } from "../helpers/cards.helper";
 
 interface CardTooltipProps {
-	cardId: Card["id"];
+	card: Card;
 }
 
 function renderEffectText(effect: CardEffect, index: number) {
@@ -19,15 +19,24 @@ function renderEffectText(effect: CardEffect, index: number) {
 				</span>
 			);
 		}
-		case "block": {
-			const targetText = effect.target === "self" ? "Gain" : "Apply";
+		case "apply_status": {
+			const verbText = effect.target === "self" ? "Gain" : "Apply";
+			const { icon, statusName, durationText } = getStatusEffectText(effect);
 			return (
 				<span
 					key={index}
 					className="text-xs text-zinc-300 flex items-center gap-1.5"
 				>
-					🛡️ {targetText}{" "}
-					<strong className="text-zinc-200">{effect.amount}</strong> Block.
+					<span>{icon}</span>
+					<span>
+						{verbText}{" "}
+						{/* Rooted might have an amount of 0, so only show the number if it's > 0 */}
+						{effect.amount > 0 && (
+							<strong className="text-zinc-200">{effect.amount} </strong>
+						)}
+						<span className="text-zinc-400">{statusName}</span>
+						{durationText}.
+					</span>
 				</span>
 			);
 		}
@@ -76,9 +85,7 @@ function renderRequirementText(req: string) {
 	}
 }
 
-export function CardTooltip({ cardId }: CardTooltipProps) {
-	const card = cardLibrary[cardId];
-
+export function CardTooltip({ card }: CardTooltipProps) {
 	if (!card) {
 		return null;
 	}

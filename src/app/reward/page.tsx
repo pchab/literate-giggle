@@ -8,7 +8,6 @@ import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { ENCOUNTER_DB } from "@/modules/campaign/data/encounters.data";
 import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
 import { BattleCard } from "@/modules/cards/components/BattleCard";
-import { cardLibrary } from "@/modules/cards/data/cards.data";
 import { CLASS_REGISTRY } from "@/modules/figures/data/heroClass.data";
 import { RetroButton } from "@/modules/shared/components/RetroButton";
 import { RetroPanel } from "@/modules/shared/components/RetroPanel";
@@ -99,7 +98,7 @@ export default function RewardScreen() {
 						);
 						const isLevelUp = hero.currentXp + xpEarned >= targetMaxXp;
 
-						const primaryWeapon = cardLibrary[hero.deck[0]];
+						const primaryWeapon = hero.deck[0];
 
 						return (
 							<m.div
@@ -118,10 +117,7 @@ export default function RewardScreen() {
 											{/* Show their primary weapon or Hero Sprite here */}
 											{primaryWeapon && (
 												<div className="w-20 shrink-0 transform hover:scale-105 transition-transform">
-													<BattleCard
-														cardId={primaryWeapon.id}
-														isPlayable={false}
-													/>
+													<BattleCard card={primaryWeapon} isPlayable={false} />
 												</div>
 											)}
 

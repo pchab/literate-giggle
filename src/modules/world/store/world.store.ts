@@ -3,6 +3,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import type { Quest } from "@/modules/campaign/domain/quests.type";
 import { initialDeck } from "@/modules/cards/data/cards.data";
 import type { Card, Hand } from "@/modules/cards/domain/cards.type";
+import { createHeroCard } from "@/modules/cards/helpers/cards.helper";
 import { baseHeroStats } from "@/modules/figures/data/heroes/baseHeroStats";
 import type { Hero } from "@/modules/figures/domain/figures.type";
 import type {
@@ -62,9 +63,13 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 					...baseHeroStats,
 					currentHp: baseHeroStats.maxHp,
 					statuses: [],
-					gridPosition: { row: 0, col: 0 },
-					deck: [...initialDeck],
-					hand: [initialDeck[0], initialDeck[1], null],
+					gridPosition: { row: 1, col: 1 },
+					deck: [...initialDeck].map(createHeroCard(heroId(1))),
+					selectedCards: [
+						createHeroCard(heroId(1))(initialDeck[0]),
+						createHeroCard(heroId(1))(initialDeck[1]),
+						null,
+					],
 				},
 				{
 					id: heroId(2),
@@ -72,8 +77,12 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 					currentHp: baseHeroStats.maxHp,
 					statuses: [],
 					gridPosition: { row: 0, col: 1 },
-					deck: [...initialDeck],
-					hand: [initialDeck[0], initialDeck[1], null],
+					deck: [...initialDeck].map(createHeroCard(heroId(2))),
+					selectedCards: [
+						createHeroCard(heroId(2))(initialDeck[0]),
+						createHeroCard(heroId(2))(initialDeck[1]),
+						null,
+					],
 				},
 				{
 					id: heroId(3),
@@ -81,8 +90,12 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 					currentHp: baseHeroStats.maxHp,
 					statuses: [],
 					gridPosition: { row: 1, col: 0 },
-					deck: [...initialDeck],
-					hand: [initialDeck[0], initialDeck[1], null],
+					deck: [...initialDeck].map(createHeroCard(heroId(3))),
+					selectedCards: [
+						createHeroCard(heroId(3))(initialDeck[0]),
+						createHeroCard(heroId(3))(initialDeck[1]),
+						null,
+					],
 				},
 			],
 			pendingPromotions: [],

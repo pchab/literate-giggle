@@ -1,4 +1,3 @@
-import { cardLibrary } from "@/modules/cards/data/cards.data";
 import {
 	type AnchorTarget,
 	anchorIsGridPosition,
@@ -36,8 +35,7 @@ export function resolveCard(
 	}) => {
 		if (!activeCard) return {};
 
-		const { heroId, cardId } = activeCard;
-		const card = cardLibrary[cardId];
+		const { heroId, card } = activeCard;
 		const hero = heroes.find((h) => h.id === heroId);
 		if (!hero) return {};
 
@@ -147,7 +145,7 @@ export function resolveCard(
 				draftSummons,
 				enemyIntents,
 			),
-			usedCardsThisTurn: { ...usedCardsThisTurn, [heroId]: cardId },
+			usedCardsThisTurn: { ...usedCardsThisTurn, [heroId]: card },
 			usedMovesThisTurn: { ...usedMovesThisTurn, [heroId]: true },
 			currentVfx: vfx,
 			xpEarned: xpEarned + xpEarnedThisTurn,

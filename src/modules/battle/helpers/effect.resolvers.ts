@@ -1,5 +1,6 @@
 import {
 	type AnchorTarget,
+	type ApplyStatusEffect,
 	anchorIsGridPosition,
 	type CardEffect,
 	type DamageEffect,
@@ -7,7 +8,6 @@ import {
 	type MoveEffect,
 	type PushEffect,
 	type SummonEffect,
-	type ApplyStatusEffect,
 } from "@/modules/cards/domain/cards.type";
 import { summonLibrary } from "@/modules/figures/data/summons/summons.data";
 import type { Figure, Summon } from "@/modules/figures/domain/figures.type";

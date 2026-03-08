@@ -1,5 +1,6 @@
 import type { Quest } from "@/modules/campaign/domain/quests.type";
 import { cardLibrary } from "@/modules/cards/data/cards.data";
+import { createHeroCard } from "@/modules/cards/helpers/cards.helper";
 import type { Hero } from "../domain/figures.type";
 import type {
 	LevelUpDefinition,
@@ -21,7 +22,7 @@ export function applyLevelUpTriggers(
 	const newHero: Hero = {
 		...hero,
 		deck: [...hero.deck],
-		hand: [...hero.hand],
+		selectedCards: [...hero.selectedCards],
 		passives: [...hero.passives],
 	};
 	const newPendingPromotions = [...pendingPromotions];
@@ -35,13 +36,21 @@ export function applyLevelUpTriggers(
 			break;
 
 		case "cardUpgrade": {
-			const deckIndex = newHero.deck.indexOf(trigger.oldCardId);
-			const handIndex = newHero.hand.indexOf(trigger.oldCardId); // Fixed cardsIndex to handIndex
+			const deckIndex = newHero.deck.findIndex(
+				(card) => card.baseCardId === trigger.oldCardId,
+			);
+			const handIndex = newHero.selectedCards.findIndex(
+				(card) => card?.baseCardId === trigger.oldCardId,
+			);
 			if (deckIndex !== -1 && cardLibrary[trigger.newCardId]) {
-				newHero.deck[deckIndex] = trigger.newCardId;
+				newHero.deck[deckIndex].baseCardId = trigger.newCardId;
 			}
-			if (handIndex !== -1 && cardLibrary[trigger.newCardId]) {
-				newHero.hand[handIndex] = trigger.newCardId;
+			if (
+				handIndex !== -1 &&
+				newHero.selectedCards[handIndex] &&
+				cardLibrary[trigger.newCardId]
+			) {
+				newHero.selectedCards[handIndex].baseCardId = trigger.newCardId;
 			}
 			break;
 		}
@@ -49,7 +58,7 @@ export function applyLevelUpTriggers(
 		case "cardUnlock":
 			trigger.newCards.forEach((cardId) => {
 				if (cardLibrary[cardId]) {
-					newHero.deck.push(cardId);
+					newHero.deck.push(createHeroCard(hero.id)(cardId));
 				}
 			});
 			break;

@@ -1,5 +1,6 @@
 import type { BattleStoreServerAction } from "@/modules/battle/store/battle.store";
-import type { Hero } from "@/modules/figures/domain/figures.type";
+import { getComputedCard } from "@/modules/cards/helpers/cards.helper";
+import type { BattleHero, Hero } from "@/modules/figures/domain/figures.type";
 import {
 	ENCOUNTER_DB,
 	type Encounter,
@@ -22,10 +23,22 @@ export function initBattle(
 		const freshMonsters = encounter.generateMonsters();
 
 		const initialIntents = calculateAllIntents(roster, freshMonsters, [], {});
+		const battleRoster: BattleHero[] = roster.map((hero) => {
+			const [card1, card2, card3] = hero.selectedCards
+				.filter((c) => !!c)
+				.map(getComputedCard);
+			if (!card1) {
+				throw new Error(`Error instanciating card ${hero.selectedCards[0]}`);
+			}
+			return {
+				...hero,
+				hand: [card1, card2, card3],
+			};
+		});
 
 		return {
 			encounterId,
-			heroes: roster,
+			heroes: battleRoster,
 			monsters: freshMonsters,
 			summons: [],
 			aiIntents: initialIntents,

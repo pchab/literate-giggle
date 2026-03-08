@@ -4,7 +4,8 @@ import Image from "next/image";
 import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { Hand } from "@/modules/cards/components/Hand";
-import type { Hero } from "@/modules/figures/domain/figures.type";
+import type { BattleHero } from "@/modules/figures/domain/figures.type";
+import { getBlockFromStatuses } from "../helpers/figures.helpers";
 import { HeroPortrait } from "./HeroPortrait";
 
 function hpPercentToColor(percent: number): string {
@@ -22,8 +23,8 @@ export function HeroCard({
 	hand,
 	currentHp,
 	maxHp,
-	currentBlock,
-}: Hero) {
+	statuses,
+}: BattleHero) {
 	const { setActiveMoveHeroId, activeMoveHeroId, usedMovesThisTurn } =
 		useBattleStore(
 			useShallow((state) => ({
@@ -35,6 +36,9 @@ export function HeroCard({
 
 	const hasMoved = usedMovesThisTurn[id];
 	const isMoving = activeMoveHeroId === id;
+
+	const currentBlock = getBlockFromStatuses(statuses);
+
 	return (
 		<div className="relative flex items-center w-full max-w-2xl h-32 rounded-lg border border-zinc-800 shadow-xl bg-zinc-950 mb-2">
 			<div className="absolute inset-0 z-0 overflow-hidden rounded-lg pointer-events-none">

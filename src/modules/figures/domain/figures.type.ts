@@ -1,5 +1,5 @@
 import type { GridPosition } from "@/modules/battle/domain/grid.type";
-import type { Card, Hand } from "@/modules/cards/domain/cards.type";
+import type { Card, Hand, HeroCard } from "@/modules/cards/domain/cards.type";
 import type { HeroClass } from "@/modules/figures/domain/heroClass.types";
 import type { Status } from "./status.type";
 
@@ -12,10 +12,11 @@ export enum UnitStance {
 export interface Figure {
 	id: string;
 	spriteBase: string;
-	currentHp: number;
 	maxHp: number;
 	baseDef: number;
 	baseMove: number;
+	// battle stats
+	currentHp: number;
 	gridPosition: GridPosition;
 	statuses: Status[];
 }
@@ -23,8 +24,8 @@ export interface Figure {
 export interface Hero extends Figure {
 	id: string & { readonly __brand: "HeroId" };
 	heroClass: HeroClass;
-	deck: Card["id"][];
-	hand: Hand;
+	deck: HeroCard[];
+	selectedCards: [HeroCard, HeroCard | null, HeroCard | null];
 	passives: string[];
 	currentXp: number;
 	currentLevel: number;
@@ -52,3 +53,6 @@ export interface Summon extends Figure {
 		weight: number;
 	}[];
 }
+export type BattleHero = Hero & {
+	hand: Hand;
+};

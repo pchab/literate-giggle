@@ -10,7 +10,6 @@ import {
 	getCellId,
 } from "@/modules/battle/helpers/grid.helpers";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
-import { cardLibrary } from "@/modules/cards/data/cards.data";
 import { GridCell } from "./GridCell";
 
 const cells = Array.from({ length: GRID_BOUNDS.rows }, (_, col) => {
@@ -82,9 +81,9 @@ export function BattleGrid() {
 	let isMoving = false;
 
 	const cardToPreview = activeCard
-		? cardLibrary[activeCard.cardId]
+		? activeCard.card
 		: hoveredCard
-			? cardLibrary[hoveredCard.cardId]
+			? hoveredCard.card
 			: null;
 
 	const previewCaster = activeCard

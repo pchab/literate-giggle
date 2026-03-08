@@ -1,8 +1,7 @@
 import type { AIIntent } from "@/modules/battle/domain/intent.type";
-import { cardLibrary } from "@/modules/cards/data/cards.data"; // Adjust import path if needed
+import { cardLibrary } from "@/modules/cards/data/cards.data";
 import type {
 	ApplyStatusEffect,
-	CardEffect,
 	DamageEffect,
 	HealEffect,
 } from "@/modules/cards/domain/cards.type";

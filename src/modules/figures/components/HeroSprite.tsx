@@ -1,18 +1,16 @@
 "use client";
 
 import { useBattleStore } from "@/modules/battle/store/battle.store";
-import { cardLibrary } from "@/modules/cards/data/cards.data";
 import type { Hero } from "@/modules/figures/domain/figures.type";
 import FloatingDamage from "../../battle/components/FloatingDamage";
 import HealthBar from "../../battle/components/HealthBar";
 import { useCombatText } from "../../battle/hooks/useCombatText.hook";
+import { getBlockFromStatuses } from "../helpers/figures.helpers";
 import { UnitSprite } from "./UnitSprite";
 
 export default function HeroSprite({ unitInCell }: { unitInCell: Hero }) {
-	const { texts, isHit } = useCombatText(
-		unitInCell.currentHp,
-		unitInCell.currentBlock,
-	);
+	const currentBlock = getBlockFromStatuses(unitInCell.statuses);
+	const { texts, isHit } = useCombatText(unitInCell.currentHp, currentBlock);
 	const activeCard = useBattleStore((state) => state.activeCard);
 
 	const currentHp = unitInCell.currentHp;
@@ -20,7 +18,7 @@ export default function HeroSprite({ unitInCell }: { unitInCell: Hero }) {
 
 	let stance = 0;
 	if (activeCard?.heroId === unitInCell.id) {
-		const card = cardLibrary[activeCard.cardId];
+		const { card } = activeCard;
 		const allEffects = card.effects.map(({ type }) => type);
 		if (allEffects.includes("move")) {
 			stance = 1;
@@ -45,7 +43,7 @@ export default function HeroSprite({ unitInCell }: { unitInCell: Hero }) {
 			<HealthBar
 				currentHp={currentHp}
 				maxHp={maxHp}
-				currentBlock={unitInCell.currentBlock}
+				currentBlock={currentBlock}
 			/>
 		</div>
 	);

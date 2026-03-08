@@ -6,6 +6,7 @@ import type { VfxType } from "@/modules/battle/domain/vfx.type";
 import type { Encounter } from "@/modules/campaign/data/encounters.data";
 import type { AnchorTarget, Card } from "@/modules/cards/domain/cards.type";
 import type {
+	BattleHero,
 	Figure,
 	Hero,
 	Monster,
@@ -21,20 +22,20 @@ import { selectCard } from "./commands/selectCard.command";
 
 export type ActiveCardContext = {
 	heroId: Hero["id"];
-	cardId: Card["id"];
+	card: Card;
 };
 
 export type BattleState = {
 	encounterId: Encounter["id"] | null;
-	heroes: Hero[];
+	heroes: BattleHero[];
 	monsters: Monster[];
+	summons: Summon[];
 	activeMoveHeroId: Hero["id"] | null;
 	usedMovesThisTurn: Record<Hero["id"], boolean>;
 	activeCard: ActiveCardContext | null;
 	usedCardsThisTurn: Record<Hero["id"], Card["id"]>;
 	aiIntents: Record<Figure["id"], AIIntent>;
-	hoveredCard: { heroId: Hero["id"]; cardId: Card["id"] } | null;
-	summons: Summon[];
+	hoveredCard: { heroId: Hero["id"]; card: Card } | null;
 	currentVfx: Record<string, VfxType>; // key is cell id
 	xpEarned: number;
 	background: string;
@@ -48,13 +49,11 @@ type BattleAction = {
 	) => void;
 	setActiveMoveHeroId: (heroId: Hero["id"] | null) => void;
 	moveHero: (newPosition: GridPosition) => void;
-	selectCard: (heroId: Hero["id"], cardId: Card["id"]) => void;
-	cancelCard: (heroId: Hero["id"], cardId: Card["id"]) => void;
+	selectCard: (heroId: Hero["id"], card: Card) => void;
+	cancelCard: () => void;
 	resolveCard: (anchorTargetId: AnchorTarget | null) => void;
 	enemyAction: () => Promise<void>;
-	setHoveredCard: (
-		hovered: { heroId: Hero["id"]; cardId: Card["id"] } | null,
-	) => void;
+	setHoveredCard: (hovered: { heroId: Hero["id"]; card: Card } | null) => void;
 	setVfx: (cellId: string, vfx: VfxType | null) => void;
 	resetXpEarned: () => void;
 };
@@ -88,8 +87,8 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 				encounterId: Encounter["id"],
 				background: string,
 			) => set(initBattle(heroRoster, encounterId, background)),
-			selectCard: (heroId, cardId) => set(selectCard(heroId, cardId)),
-			cancelCard: (heroId, cardId) => set(cancelCard(heroId, cardId)),
+			selectCard: (heroId, card) => set(selectCard(heroId, card)),
+			cancelCard: () => set(cancelCard()),
 			resolveCard: (anchorTargetId) => set(resolveCard(anchorTargetId)),
 			setActiveMoveHeroId: (heroId) => set(selectActiveMoveHero(heroId)),
 			moveHero: (newPosition) => set(moveHero(newPosition)),

@@ -35,3 +35,12 @@ export function isMonster(entity: Figure): entity is Monster {
 export function isSummon(entity: Figure): entity is Summon {
 	return isSummonId(entity.id);
 }
+
+export function getBlockFromStatuses(statuses: Hero["statuses"]): number {
+	return statuses.reduce((block, status) => {
+		if (["temp_block", "perma_shield"].includes(status.type)) {
+			return block + status.amount;
+		}
+		return block;
+	}, 0);
+}

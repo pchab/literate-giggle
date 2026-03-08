@@ -1,5 +1,6 @@
 import { cardLibrary } from "@/modules/cards/data/cards.data";
 import type { Card } from "@/modules/cards/domain/cards.type";
+import { createHeroCard } from "@/modules/cards/helpers/cards.helper";
 import { CLASS_REGISTRY } from "@/modules/figures/data/heroClass.data";
 import type { Hero } from "@/modules/figures/domain/figures.type";
 import { applyLevelUpTriggers } from "@/modules/figures/helpers/levelUpEffects.helper";
@@ -37,7 +38,7 @@ export function resolvePendingPromotion(
 		});
 
 		if (cardLibrary[chosenUtilityCardId]) {
-			newHero.deck.push(chosenUtilityCardId);
+			newHero.deck.push(createHeroCard(heroId)(chosenUtilityCardId));
 		}
 
 		newHero.currentLevel = 1;
