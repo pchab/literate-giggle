@@ -28,7 +28,6 @@ export function initBattle(
 
 		const freshMonsters = encounter.generateMonsters();
 
-		const initialIntents = calculateAllIntents(roster, freshMonsters, [], {});
 		const battleRoster: BattleHero[] = roster.map((hero, index) => {
 			const [card1, card2, card3] = hero.selectedCards
 				.filter((c) => !!c)
@@ -43,6 +42,12 @@ export function initBattle(
 				hand: [card1, card2, card3],
 			};
 		});
+		const initialIntents = calculateAllIntents(
+			battleRoster,
+			freshMonsters,
+			[],
+			{},
+		);
 
 		return {
 			encounterId,

@@ -23,6 +23,12 @@ export const TOWN_DB: Record<TownData["id"], TownData> = {
 				position: { x: 48, y: 50 },
 			},
 			{
+				id: townLocationId("ironhold_forge"),
+				name: "Rune Forge",
+				type: "FORGE",
+				position: { x: 36, y: 72 },
+			},
+			{
 				id: townLocationId("ironhold_throne"),
 				name: "King's Throne Room",
 				type: "SCENE",

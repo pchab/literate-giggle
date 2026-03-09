@@ -2,12 +2,14 @@
 
 import Image from "next/image";
 import { redirect, useParams } from "next/navigation";
+import { useState } from "react";
 import { useShallow } from "zustand/shallow";
 import { QUEST_DB } from "@/modules/campaign/data/quests.data";
 import type { Quest } from "@/modules/campaign/domain/quests.type";
 import type { Scene } from "@/modules/campaign/domain/scenes.type";
 import { useCheckConditions } from "@/modules/campaign/hooks/useCheckConditions.hook";
 import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
+import { ForgeScreen } from "@/modules/towns/components/ForgeScreen";
 import { TOWN_DB } from "@/modules/towns/data/towns.data";
 import type { TownData, TownLocation } from "@/modules/towns/domain/towns.type";
 import { useWorldStore } from "@/modules/world/store/world.store";
@@ -29,6 +31,7 @@ export default function TownPage() {
 		})),
 	);
 	const isConditionMet = useCheckConditions();
+	const [isForgeOpen, setIsForgeOpen] = useState(false);
 
 	if (phase !== "TOWN") {
 		return redirect("/");
@@ -102,8 +105,15 @@ export default function TownPage() {
 				healParty(10);
 				alert("The party rests at the Inn. HP fully restored!");
 				break;
+			case "FORGE":
+				setIsForgeOpen(true);
+				break;
 		}
 	};
+
+	if (isForgeOpen) {
+		return <ForgeScreen onClose={() => setIsForgeOpen(false)} />;
+	}
 
 	return (
 		<div className="w-full h-screen bg-zinc-950 relative overflow-hidden flex items-center justify-center">

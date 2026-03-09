@@ -6,6 +6,7 @@ import type { HeroCard } from "@/modules/cards/domain/cards.type";
 import type { Hero } from "@/modules/figures/domain/figures.type";
 import { RetroButton } from "@/modules/shared/components/RetroButton";
 import { useWorldStore } from "@/modules/world/store/world.store";
+import { getComputedCard } from "../helpers/cards.helper";
 import { BattleCard } from "./BattleCard";
 
 interface HandMenuProps {
@@ -65,7 +66,7 @@ export function HandMenu({ onSaveHand }: HandMenuProps) {
 
 	const weapon = selectedHero.selectedCards[0];
 	const availableUtilities = selectedHero.deck.filter(
-		(c) => c.id !== weapon.id,
+		(c) => c.instanceId !== weapon.instanceId,
 	);
 	const isFull = draftCards[1] !== null && draftCards[2] !== null;
 
@@ -107,7 +108,7 @@ export function HandMenu({ onSaveHand }: HandMenuProps) {
 								Main Weapon
 							</div>
 							{draftCards[0] && (
-								<BattleCard card={draftCards[0]} size="large" />
+								<BattleCard card={getComputedCard(weapon)} size="large" />
 							)}
 						</div>
 
@@ -117,14 +118,14 @@ export function HandMenu({ onSaveHand }: HandMenuProps) {
 							return card ? (
 								<motion.div
 									key={`slot-${slotIndex}`}
-									layoutId={card.id}
+									layoutId={card.instanceId}
 									className="relative z-20 group"
 								>
 									<div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-30 bg-red-950 text-red-400 px-3 py-1 font-pixel text-xs border border-red-900 tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">
 										Unequip
 									</div>
 									<BattleCard
-										card={card}
+										card={getComputedCard(card)}
 										onClick={() => handleUnequip(slotIndex)}
 										size="large"
 									/>
@@ -160,19 +161,21 @@ export function HandMenu({ onSaveHand }: HandMenuProps) {
 					<div className="flex flex-wrap gap-6 pb-8 custom-scrollbar overflow-y-auto content-start">
 						{/* ... (Keep your existing mapping logic here) ... */}
 						{availableUtilities.map((card) => {
-							const isEquipped = draftCards.some((c) => c?.id === card.id);
+							const isEquipped = draftCards.some(
+								(c) => c?.instanceId === card.instanceId,
+							);
 							if (isEquipped) {
 								return (
 									<div
-										key={`placeholder-${card.id}`}
+										key={`placeholder-${card.instanceId}`}
 										className="shrink-0 w-card-large h-card-large bg-zinc-950/30 border border-dashed border-zinc-800/50 rounded-sm"
 									/>
 								);
 							}
 							return (
-								<motion.div layoutId={card.id} key={card.id}>
+								<motion.div layoutId={card.instanceId} key={card.instanceId}>
 									<BattleCard
-										card={card}
+										card={getComputedCard(card)}
 										isPlayable={!isFull}
 										onClick={() => !isFull && handleEquip(card)}
 										size="large"

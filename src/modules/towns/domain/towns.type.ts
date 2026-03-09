@@ -4,7 +4,7 @@ import type { CampaignCondition } from "@/modules/world/domain/map.types";
 export type TownLocation = {
 	id: string & { readonly __brand: "TownLocationId" };
 	name: string;
-	type: "HEAL" | "SCENE";
+	type: "HEAL" | "SCENE" | "FORGE";
 	defaultSceneId?: Scene["id"];
 	icon?: string;
 	position: { x: number; y: number };

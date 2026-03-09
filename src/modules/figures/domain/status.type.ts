@@ -3,7 +3,8 @@ export type StatusType =
 	| "perma_shield"
 	| "poison"
 	| "rooted"
-	| "vulnerable";
+	| "vulnerable"
+	| "regen";
 
 export interface Status {
 	type: StatusType;

@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import type { Quest } from "@/modules/campaign/domain/quests.type";
 import { initialDeck } from "@/modules/cards/data/cards.data";
+import type { EvolutionRuneId } from "@/modules/cards/data/evolutionRecipes.data";
 import type { Card, Hand } from "@/modules/cards/domain/cards.type";
 import { createHeroCard } from "@/modules/cards/helpers/cards.helper";
 import { baseHeroStats } from "@/modules/figures/data/heroes/baseHeroStats";
@@ -15,6 +16,7 @@ import type {
 import { heroId } from "@/modules/figures/helpers/figures.helpers";
 import { type MapNode, mapNodeId } from "@/modules/world/domain/map.types";
 import { claimRewards } from "./commands/claimRewards.command";
+import { forgeEvolution } from "./commands/forgeEvolution.command";
 import { healParty } from "./commands/healParty.command";
 import { resolvePendingPromotion } from "./commands/resolvePendingPromotion.command";
 import { resolvePowerRune } from "./commands/resolvePowerRune.command";
@@ -33,6 +35,7 @@ export interface WorldState {
 	pendingPromotions: PendingPromotion[];
 	unlockedQuestsQueue: Quest["id"][];
 	pendingPowerRunes: PendingPowerRune[];
+	evolutionRunesInventory: EvolutionRuneId[];
 }
 
 export interface WorldAction {
@@ -66,6 +69,11 @@ export interface WorldAction {
 	upgradeClassCards: (cardUpgrades: Record<Card["id"], Card["id"]>) => void;
 	clearUnlockedQuestsQueue: () => void;
 	healParty: (healAmount: number) => void;
+	forgeEvolution: (
+		heroId: Hero["id"],
+		cardInstanceId: string,
+		runeId: EvolutionRuneId,
+	) => void;
 }
 
 export type WorldStoreServerAction = (state: WorldState) => Partial<WorldState>;
@@ -119,6 +127,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 			pendingPromotions: [],
 			pendingPowerRunes: [],
 			unlockedQuestsQueue: [],
+			evolutionRunesInventory: ["rune_iron", "rune_nature"],
 
 			setPhase: (phase) => set(setPhase(phase)),
 			travelToNode: (nodeId, dynamicMap) =>
@@ -145,6 +154,8 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 				set(upgradeClassCards(cardUpgrades)),
 			clearUnlockedQuestsQueue: () => set({ unlockedQuestsQueue: [] }),
 			healParty: (healAmount: number) => set(healParty(healAmount)),
+			forgeEvolution: (heroId, cardInstanceId, runeId) =>
+				set((state) => forgeEvolution(state, heroId, cardInstanceId, runeId)),
 		}),
 		{
 			name: "alpha-world-state",

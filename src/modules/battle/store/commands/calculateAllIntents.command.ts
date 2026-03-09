@@ -1,7 +1,7 @@
 import { cardLibrary } from "@/modules/cards/data/cards.data";
 import type {
+	BattleHero,
 	BattleUnit,
-	Hero,
 	Monster,
 	Summon,
 } from "@/modules/figures/domain/figures.type";
@@ -14,7 +14,7 @@ import {
 } from "../../helpers/ai.move.helpers";
 
 export function calculateAllIntents(
-	heroes: Hero[],
+	heroes: BattleHero[],
 	monsters: Monster[],
 	summons: Summon[],
 	existingIntents: Record<BattleUnit["id"], AIIntent> = {},

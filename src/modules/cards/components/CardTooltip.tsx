@@ -10,10 +10,7 @@ function renderEffectText(effect: CardEffect, index: number) {
 	switch (effect.type) {
 		case "damage": {
 			return (
-				<span
-					key={index}
-					className="text-xs text-zinc-300 flex items-center gap-1.5"
-				>
+				<span key={index} className="text-xs text-zinc-300 text-left">
 					⚔️ Deal <strong className="text-red-400">{effect.amount}</strong>{" "}
 					damage.
 				</span>
@@ -23,45 +20,32 @@ function renderEffectText(effect: CardEffect, index: number) {
 			const verbText = effect.target === "self" ? "Gain" : "Apply";
 			const { icon, statusName, durationText } = getStatusEffectText(effect);
 			return (
-				<span
-					key={index}
-					className="text-xs text-zinc-300 flex items-center gap-1.5"
-				>
-					<span>{icon}</span>
-					<span>
-						{verbText}{" "}
-						{/* Rooted might have an amount of 0, so only show the number if it's > 0 */}
-						{effect.amount > 0 && (
-							<strong className="text-zinc-200">{effect.amount} </strong>
-						)}
-						<span className="text-zinc-400">{statusName}</span>
-						{durationText}.
-					</span>
+				<span key={index} className="text-xs text-zinc-300 text-left">
+					{icon} {verbText}{" "}
+					{effect.amount > 0 && (
+						<strong className="text-zinc-200">{effect.amount} </strong>
+					)}
+					<span className="text-zinc-400">{statusName}</span>
+					{durationText}.
 				</span>
 			);
 		}
 		case "heal":
 			return (
-				<span
-					key={index}
-					className="text-xs text-zinc-300 flex items-center gap-1.5"
-				>
+				<span key={index} className="text-xs text-zinc-300 text-left">
 					💚 Heal <strong className="text-green-400">{effect.amount}</strong>{" "}
 					HP.
 				</span>
 			);
 		case "move":
 			return (
-				<span
-					key={index}
-					className="text-xs text-zinc-300 flex items-center gap-1.5"
-				>
+				<span key={index} className="text-xs text-zinc-300 text-left">
 					👟 Move to target cell.
 				</span>
 			);
 		default:
 			return (
-				<span key={index} className="text-xs text-zinc-500">
+				<span key={index} className="text-xs text-zinc-500 text-left">
 					Unknown effect
 				</span>
 			);
@@ -107,7 +91,7 @@ export function CardTooltip({ card }: CardTooltipProps) {
 				</span>
 			</div>
 
-			<div className="flex flex-col gap-2">
+			<div className="flex flex-col gap-2 items-start">
 				{card.effects.map((effect, idx) => renderEffectText(effect, idx))}
 			</div>
 

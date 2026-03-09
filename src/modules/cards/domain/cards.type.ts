@@ -127,7 +127,7 @@ export type Card = {
 	aoePattern?: GridPosition[];
 };
 
-export type HeroCard = Card & {
+export type HeroCard = {
 	instanceId: Card["id"];
 	baseCardId: Card["id"];
 	powerRunes: PowerRunes;

@@ -121,12 +121,9 @@ export function applyDamageToEntity<T extends BattleUnit>(
 	entity: T,
 	baseDamage: number,
 ): T {
-	let incomingDamage = baseDamage;
-
-	const isVulnerable = entity.statuses.some((s) => s.type === "vulnerable");
-	if (isVulnerable) {
-		incomingDamage += 2;
-	}
+	const vulnerableBonusDamage =
+		entity.statuses.find((s) => s.type === "vulnerable")?.amount ?? 0;
+	const incomingDamage = baseDamage + vulnerableBonusDamage;
 
 	let effectiveDmg = Math.max(0, incomingDamage - entity.baseDef);
 
@@ -213,14 +210,15 @@ export function tickStatuses<T extends BattleUnit>(figures: T[]): T[] {
 	return figures.map((figure) => {
 		if (figure.currentHp <= 0) return figure;
 
-		let poisonDamage = 0;
+		const poison =
+			figure.statuses.find(({ type }) => type === "poison")?.amount ?? 0;
+		const regen =
+			figure.statuses.find(({ type }) => type === "regen")?.amount ?? 0;
 
-		const poison = figure.statuses.find((s) => s.type === "poison");
-		if (poison) {
-			poisonDamage += poison.amount;
-		}
-
-		const newHp = Math.max(0, figure.currentHp - poisonDamage);
+		const newHp = Math.min(
+			figure.maxHp,
+			Math.max(0, figure.currentHp - poison + regen),
+		);
 
 		const newStatuses = figure.statuses
 			.map((status) => ({

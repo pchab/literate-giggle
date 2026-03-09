@@ -56,14 +56,13 @@ export function formatCardEffect(effect: CardEffect): string {
 }
 
 export function createHeroCard(heroId: Hero["id"]) {
-	return (baseCardId: Card["id"]) => {
+	return (baseCardId: Card["id"]): HeroCard => {
 		const baseCard = cardLibrary[baseCardId];
 		if (!baseCard) {
 			throw new Error(`Missing base card id ${baseCardId}`);
 		}
 
 		return {
-			...baseCard,
 			baseCardId,
 			instanceId: cardId(`${heroId}-${baseCardId}`),
 			powerRunes: {},
