@@ -1,48 +1,39 @@
+"use client";
+
 import { motion } from "motion/react";
-import { useEffect, useState } from "react";
-import type { Card } from "@/modules/cards/domain/cards.type";
+import { useState } from "react";
+import type { HeroCard } from "@/modules/cards/domain/cards.type";
 import type { Hero } from "@/modules/figures/domain/figures.type";
 import { RetroButton } from "@/modules/shared/components/RetroButton";
 import { useWorldStore } from "@/modules/world/store/world.store";
 import { BattleCard } from "./BattleCard";
 
 interface HandMenuProps {
-	onSaveHand: (
-		heroId: Hero["id"],
-		newCards: [Card["id"], Card["id"], Card["id"] | null],
-	) => void;
+	onSaveHand: (heroId: Hero["id"], newCards: Hero["selectedCards"]) => void;
 }
 
 export function HandMenu({ onSaveHand }: HandMenuProps) {
 	const roster = useWorldStore((state) => state.roster);
 
-	const [selectedHeroId, setSelectedHeroId] = useState<Hero["id"] | null>(null);
-	const [draftCards, setDraftCards] = useState<(Card["id"] | null)[]>([
-		null,
-		null,
-		null,
-	]);
-
-	// Initialize with the first hero when the component mounts
-	useEffect(() => {
-		if (roster.length > 0 && !selectedHeroId) {
-			const initialHero = roster[0];
-			setSelectedHeroId(initialHero.id);
-			setDraftCards([...initialHero.hand]);
-		}
-	}, [roster, selectedHeroId]);
+	const initialHero = roster[0];
+	const [selectedHeroId, setSelectedHeroId] = useState<Hero["id"] | null>(
+		initialHero.id,
+	);
+	const [draftCards, setDraftCards] = useState<Hero["selectedCards"]>(
+		initialHero.selectedCards,
+	);
 
 	const handleSelectHero = (hero: Hero) => {
 		setSelectedHeroId(hero.id);
-		setDraftCards([...hero.hand]);
+		setDraftCards([...hero.selectedCards]);
 	};
 
-	const handleEquip = (cardId: Card["id"]) => {
+	const handleEquip = (card: HeroCard) => {
 		setDraftCards((prev) => {
 			const newCards = [...prev];
-			if (!newCards[1]) newCards[1] = cardId;
-			else if (!newCards[2]) newCards[2] = cardId;
-			return newCards;
+			if (!newCards[1]) newCards[1] = card;
+			else if (!newCards[2]) newCards[2] = card;
+			return newCards as Hero["selectedCards"];
 		});
 	};
 
@@ -55,14 +46,14 @@ export function HandMenu({ onSaveHand }: HandMenuProps) {
 				newCards[1] = newCards[2];
 				newCards[2] = null;
 			}
-			return newCards;
+			return newCards as Hero["selectedCards"];
 		});
 	};
 
 	const handleSave = () => {
 		if (!selectedHeroId) return;
-		const weapon = draftCards[0] as Card["id"];
-		const utility1 = (draftCards[1] || draftCards[2]) as Card["id"];
+		const weapon = draftCards[0];
+		const utility1 = draftCards[1] || draftCards[2];
 		const utility2 = draftCards[1] && draftCards[2] ? draftCards[2] : null;
 
 		onSaveHand(selectedHeroId, [weapon, utility1, utility2]);
@@ -72,9 +63,9 @@ export function HandMenu({ onSaveHand }: HandMenuProps) {
 	const selectedHero = roster.find((h) => h.id === selectedHeroId);
 	if (!selectedHero) return null;
 
-	const weaponId = selectedHero.hand[0];
+	const weapon = selectedHero.selectedCards[0];
 	const availableUtilities = selectedHero.deck.filter(
-		(cId) => cId !== weaponId,
+		(c) => c.id !== weapon.id,
 	);
 	const isFull = draftCards[1] !== null && draftCards[2] !== null;
 
@@ -116,24 +107,24 @@ export function HandMenu({ onSaveHand }: HandMenuProps) {
 								Main Weapon
 							</div>
 							{draftCards[0] && (
-								<BattleCard cardId={draftCards[0]} size="large" />
+								<BattleCard card={draftCards[0]} size="large" />
 							)}
 						</div>
 
 						{/* UTILITY SLOTS */}
 						{[1, 2].map((slotIndex) => {
-							const cardId = draftCards[slotIndex];
-							return cardId ? (
+							const card = draftCards[slotIndex];
+							return card ? (
 								<motion.div
 									key={`slot-${slotIndex}`}
-									layoutId={cardId}
+									layoutId={card.id}
 									className="relative z-20 group"
 								>
 									<div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-30 bg-red-950 text-red-400 px-3 py-1 font-pixel text-xs border border-red-900 tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">
 										Unequip
 									</div>
 									<BattleCard
-										cardId={cardId}
+										card={card}
 										onClick={() => handleUnequip(slotIndex)}
 										size="large"
 									/>
@@ -168,22 +159,22 @@ export function HandMenu({ onSaveHand }: HandMenuProps) {
 					</div>
 					<div className="flex flex-wrap gap-6 pb-8 custom-scrollbar overflow-y-auto content-start">
 						{/* ... (Keep your existing mapping logic here) ... */}
-						{availableUtilities.map((cardId) => {
-							const isEquipped = draftCards.some((cId) => cId === cardId);
+						{availableUtilities.map((card) => {
+							const isEquipped = draftCards.some((c) => c?.id === card.id);
 							if (isEquipped) {
 								return (
 									<div
-										key={`placeholder-${cardId}`}
+										key={`placeholder-${card.id}`}
 										className="shrink-0 w-card-large h-card-large bg-zinc-950/30 border border-dashed border-zinc-800/50 rounded-sm"
 									/>
 								);
 							}
 							return (
-								<motion.div layoutId={cardId} key={cardId}>
+								<motion.div layoutId={card.id} key={card.id}>
 									<BattleCard
-										cardId={cardId}
+										card={card}
 										isPlayable={!isFull}
-										onClick={() => !isFull && handleEquip(cardId)}
+										onClick={() => !isFull && handleEquip(card)}
 										size="large"
 									/>
 								</motion.div>

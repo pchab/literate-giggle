@@ -1,6 +1,4 @@
-import type {
-	BattleUnit,
-} from "../../figures/domain/figures.type";
+import type { BattleUnit } from "../../figures/domain/figures.type";
 import type { GridPosition } from "../domain/grid.type";
 
 export const GRID_BOUNDS = {

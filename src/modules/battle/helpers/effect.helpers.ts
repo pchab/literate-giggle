@@ -12,7 +12,9 @@ import {
 } from "@/modules/figures/helpers/figures.helpers";
 
 type CasterFaction = "HERO" | "MONSTER";
-export function getCasterFaction<T extends BattleUnit>(caster: T): CasterFaction {
+export function getCasterFaction<T extends BattleUnit>(
+	caster: T,
+): CasterFaction {
 	if (isHeroId(caster.id)) return "HERO";
 	if (isMonsterId(caster.id)) return "MONSTER";
 	if (isSummon(caster)) {

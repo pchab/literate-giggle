@@ -96,7 +96,10 @@ export function resolveSummonEffect<T extends BattleUnit>({
 	return { figures: summons, vfx };
 }
 
-export function resolveStandardEffect<C extends BattleUnit, T extends BattleUnit>({
+export function resolveStandardEffect<
+	C extends BattleUnit,
+	T extends BattleUnit,
+>({
 	effect,
 	anchorTargetId,
 	caster,

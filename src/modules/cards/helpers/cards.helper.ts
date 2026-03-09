@@ -71,9 +71,11 @@ export function createHeroCard(heroId: Hero["id"]) {
 	};
 }
 
-export function getComputedCard(instance: HeroCard): Card | null {
+export function getComputedCard(instance: HeroCard): Card {
 	const baseCard = cardLibrary[instance.baseCardId];
-	if (!baseCard) return null;
+	if (!baseCard) {
+		throw new Error(`Missing card definition ${instance.baseCardId}`);
+	}
 
 	const { effects, range, ...cardStats } = baseCard;
 	const computedEffects: CardEffect[] = effects.map((effect) => {

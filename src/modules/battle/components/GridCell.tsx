@@ -5,7 +5,7 @@ import type { GridPosition } from "@/modules/battle/domain/grid.type";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import type { AnchorTarget } from "@/modules/cards/domain/cards.type";
 import type {
-	Hero,
+	BattleHero,
 	Monster,
 	Summon,
 } from "@/modules/figures/domain/figures.type";
@@ -17,7 +17,7 @@ import { VfxOverlay } from "./VfxOverlay";
 interface GridCellProps {
 	cell: { id: string } & GridPosition;
 	enemyInCell?: Monster;
-	heroInCell?: Hero;
+	heroInCell?: BattleHero;
 	summonInCell?: Summon;
 	isDanger: boolean;
 	inRange: boolean;
@@ -27,12 +27,12 @@ interface GridCellProps {
 	isMoving: boolean;
 	canTargetSelf: boolean;
 	hasActiveAction: boolean;
-	previewCasterId?: Hero["id"];
-	hoveredHeroId?: Hero["id"];
+	previewCasterId?: BattleHero["id"];
+	hoveredHeroId?: BattleHero["id"];
 	onResolveCard: (target: AnchorTarget | null) => void;
 	onMoveHero: (target: GridPosition) => void;
-	onSelectForMove: (heroId: Hero["id"] | null) => void;
-	activeMoveHeroId?: Hero["id"] | null;
+	onSelectForMove: (heroId: BattleHero["id"] | null) => void;
+	activeMoveHeroId?: BattleHero["id"] | null;
 	hasMoved: boolean;
 }
 

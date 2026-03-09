@@ -1,14 +1,14 @@
 "use client";
 
 import { useBattleStore } from "@/modules/battle/store/battle.store";
-import type { Hero } from "@/modules/figures/domain/figures.type";
 import FloatingDamage from "../../battle/components/FloatingDamage";
 import HealthBar from "../../battle/components/HealthBar";
 import { useCombatText } from "../../battle/hooks/useCombatText.hook";
+import type { BattleHero } from "../domain/figures.type";
 import { getBlockFromStatuses } from "../helpers/figures.helpers";
 import { UnitSprite } from "./UnitSprite";
 
-export default function HeroSprite({ unitInCell }: { unitInCell: Hero }) {
+export default function HeroSprite({ unitInCell }: { unitInCell: BattleHero }) {
 	const currentBlock = getBlockFromStatuses(unitInCell.statuses);
 	const { texts, isHit } = useCombatText(unitInCell.currentHp, currentBlock);
 	const activeCard = useBattleStore((state) => state.activeCard);

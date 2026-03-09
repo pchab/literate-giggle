@@ -1,5 +1,15 @@
 import { cardId } from "@/modules/cards/helpers/cards.helper";
-import type { ClassDefinition, HeroClass } from "../domain/heroClass.types";
+import type {
+	ClassDefinition,
+	HeroClass,
+	RuneDraftOption,
+} from "../domain/heroClass.types";
+
+const basicRuneChoice: RuneDraftOption[] = [
+	{ type: "bonusDamage", amount: 2, label: "Increase damage" },
+	{ type: "bonusHeal", amount: 1, label: "Increase heal" },
+	{ type: "bonusRange", amount: 1, label: "Increase range" },
+];
 
 export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 	HOBO: {
@@ -9,30 +19,32 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		utilityCardChoices: [cardId("bandage-1")],
 		xpThresholds: [0, 5, 10, 15, 20, 25],
 		levelUpTriggers: [
-			[],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
 			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
 				{
-					type: "cardUpgrade",
-					oldCardId: cardId("club-1"),
-					newCardId: cardId("club-2"),
+					type: "powerRune",
+					choices: basicRuneChoice,
 				},
 			],
-			[{ type: "statsIncrease", amount: 2, stat: "hp" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
 			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
 				{
-					type: "cardUpgrade",
-					oldCardId: cardId("club-2"),
-					newCardId: cardId("club-3"),
-				},
-			],
-			[
-				{
-					type: "cardUpgrade",
-					oldCardId: cardId("bandage-1"),
-					newCardId: cardId("bandage-2"),
+					type: "powerRune",
+					choices: basicRuneChoice,
 				},
 			],
 			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
+				{
+					type: "powerRune",
+					choices: basicRuneChoice,
+				},
+			],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
+			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
 				{
 					type: "classPromotion",
 					classId: ["MAGE", "FIGHTER", "ROGUE", "ARCHER"],
@@ -44,7 +56,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		id: "FIGHTER",
 		name: "Fighter",
 		spriteBase: "heroes/fighter",
-		utilityCardChoices: [cardId("shield-block-1"), cardId("battle-cry-1")],
+		utilityCardChoices: [cardId("shield-block"), cardId("battle-cry")],
 		xpThresholds: [10, 20, 30, 40, 50],
 		levelUpTriggers: [
 			[
@@ -52,24 +64,24 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				{ type: "statsIncrease", stat: "def", amount: 1 },
 				{
 					type: "cardUpgrade",
-					oldCardId: cardId("club-3"),
-					newCardId: cardId("short-sword-1"),
+					oldCardId: cardId("club"),
+					newCardId: cardId("short-sword"),
 				},
 				// { type: "unlockQuest", questId: QUEST_DWARVEN_HIGHWAY },
 			],
 			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
 				{
-					type: "cardUpgrade",
-					oldCardId: cardId("short-sword-1"),
-					newCardId: cardId("short-sword-2"),
+					type: "powerRune",
+					choices: basicRuneChoice,
 				},
 			],
 			[{ type: "passiveUnlock", passiveId: "passive-toughness" }],
 			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
 				{
-					type: "cardUpgrade",
-					oldCardId: cardId("short-sword-2"),
-					newCardId: cardId("short-sword-3"),
+					type: "powerRune",
+					choices: basicRuneChoice,
 				},
 			],
 			[{ type: "classPromotion", classId: ["KNIGHT", "BARBARIAN"] }],
@@ -79,31 +91,31 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		id: "MAGE",
 		name: "Mage",
 		spriteBase: "heroes/mage",
-		utilityCardChoices: [cardId("arcane-shield-1"), cardId("push-1")],
+		utilityCardChoices: [cardId("arcane-shield"), cardId("push")],
 		xpThresholds: [10, 20, 30, 40, 50],
 		levelUpTriggers: [
 			[
 				{ type: "statsIncrease", stat: "hp", amount: 1 },
 				{
 					type: "cardUpgrade",
-					oldCardId: cardId("club-3"),
-					newCardId: cardId("apprentice-staff-1"),
+					oldCardId: cardId("club"),
+					newCardId: cardId("apprentice-staff"),
 				},
 				// { type: "unlockQuest", questId: NECROMANCER_QUEST_ID },
 			],
 			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
 				{
-					type: "cardUpgrade",
-					oldCardId: cardId("apprentice-staff-1"),
-					newCardId: cardId("apprentice-staff-2"),
+					type: "powerRune",
+					choices: basicRuneChoice,
 				},
 			],
 			[{ type: "passiveUnlock", passiveId: "passive-toughness" }],
 			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
 				{
-					type: "cardUpgrade",
-					oldCardId: cardId("apprentice-staff-2"),
-					newCardId: cardId("apprentice-staff-3"),
+					type: "powerRune",
+					choices: basicRuneChoice,
 				},
 			],
 			[{ type: "classPromotion", classId: ["PYROMANCER", "CRYOMANCER"] }],
@@ -137,8 +149,8 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				{ type: "statsIncrease", stat: "def", amount: 1 },
 				{
 					type: "cardUpgrade",
-					oldCardId: cardId("short-sword-3"),
-					newCardId: cardId("knight-weapon-1"),
+					oldCardId: cardId("short-sword"),
+					newCardId: cardId("knight-weapon"),
 				},
 			],
 		],
@@ -163,8 +175,8 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				{ type: "statsIncrease", stat: "def", amount: 1 },
 				{
 					type: "cardUpgrade",
-					oldCardId: cardId("apprentice-staff-3"),
-					newCardId: cardId("pyromancer-weapon-1"),
+					oldCardId: cardId("apprentice-staff"),
+					newCardId: cardId("pyromancer-weapon"),
 				},
 			],
 		],
@@ -184,8 +196,8 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				{ type: "statsIncrease", stat: "def", amount: 1 },
 				{
 					type: "cardUpgrade",
-					oldCardId: cardId("apprentice-staff-3"),
-					newCardId: cardId("cryomancer-weapon-1"),
+					oldCardId: cardId("apprentice-staff"),
+					newCardId: cardId("cryomancer-weapon"),
 				},
 			],
 		],

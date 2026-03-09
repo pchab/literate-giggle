@@ -4,7 +4,11 @@ import {
 	isHeroId,
 	isMonsterId,
 } from "@/modules/figures/helpers/figures.helpers";
-import type { BattleUnit, Hero, Monster } from "../../figures/domain/figures.type";
+import type {
+	BattleUnit,
+	Hero,
+	Monster,
+} from "../../figures/domain/figures.type";
 
 export type AnchorTarget = BattleUnit["id"] | GridPosition;
 
@@ -135,7 +139,7 @@ export type PowerRunes = {
 	bonusAoe?: { row: number; col: number }[];
 
 	// --- EFFECT-LEVEL MODIFIERS (Applies to specific effect types) ---
-	bonusDamage?: number; // Assumes mostly 1 damage effect per card
+	bonusDamage?: number;
 	bonusHeal?: number;
 
 	// --- STATUS-SPECIFIC MODIFIERS ---

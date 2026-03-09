@@ -8,13 +8,16 @@ import { baseHeroStats } from "@/modules/figures/data/heroes/baseHeroStats";
 import type { Hero } from "@/modules/figures/domain/figures.type";
 import type {
 	HeroClass,
+	PendingPowerRune,
 	PendingPromotion,
+	RuneDraftOption,
 } from "@/modules/figures/domain/heroClass.types";
 import { heroId } from "@/modules/figures/helpers/figures.helpers";
 import { type MapNode, mapNodeId } from "@/modules/world/domain/map.types";
 import { claimRewards } from "./commands/claimRewards.command";
 import { healParty } from "./commands/healParty.command";
 import { resolvePendingPromotion } from "./commands/resolvePendingPromotion.command";
+import { resolvePowerRune } from "./commands/resolvePowerRune.command";
 import { setPhase } from "./commands/setPhase.command";
 import { stageBattleRewards } from "./commands/stageBattleRewards.command";
 import { travelToNode } from "./commands/travelToNode.command";
@@ -29,6 +32,7 @@ export interface WorldState {
 	roster: Hero[];
 	pendingPromotions: PendingPromotion[];
 	unlockedQuestsQueue: Quest["id"][];
+	pendingPowerRunes: PendingPowerRune[];
 }
 
 export interface WorldAction {
@@ -38,11 +42,25 @@ export interface WorldAction {
 		nodeId: MapNode["id"],
 		dynamicMap: Record<MapNode["id"], MapNode>,
 	) => void;
-	claimRewards: (earnedXp: number) => void;
+	claimRewards: (
+		earnedXp: number,
+		completedDraft: Record<
+			Hero["id"],
+			{
+				rune: RuneDraftOption;
+				cardInstanceId: Card["id"];
+			} | null
+		>,
+	) => void;
 	resolvePromotion: (
 		heroId: Hero["id"],
 		chosenClass: HeroClass,
 		utilityCardId: Card["id"],
+	) => void;
+	resolvePowerRune: (
+		heroId: Hero["id"],
+		cardInstanceId: string,
+		chosenRune: RuneDraftOption,
 	) => void;
 	updateHand: (heroId: Hero["id"], hand: Hand) => void;
 	upgradeClassCards: (cardUpgrades: Record<Card["id"], Card["id"]>) => void;
@@ -99,15 +117,29 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 				},
 			],
 			pendingPromotions: [],
+			pendingPowerRunes: [],
 			unlockedQuestsQueue: [],
 
 			setPhase: (phase) => set(setPhase(phase)),
 			travelToNode: (nodeId, dynamicMap) =>
 				set(travelToNode(nodeId, dynamicMap)),
 			stageBattleRewards: (remainingHp) => set(stageBattleRewards(remainingHp)),
-			claimRewards: (earnedXp: number) => set(claimRewards(earnedXp)),
+			claimRewards: (
+				earnedXp: number,
+				completedDraft: Record<
+					Hero["id"],
+					{
+						rune: RuneDraftOption;
+						cardInstanceId: Card["id"];
+					} | null
+				>,
+			) => set(claimRewards(earnedXp, completedDraft)),
 			resolvePromotion: (heroId, chosenClass, utilityCardId) =>
 				set(resolvePendingPromotion(heroId, chosenClass, utilityCardId)),
+			resolvePowerRune: (heroId, cardInstanceId, chosenRune) =>
+				set((state) =>
+					resolvePowerRune(state, heroId, cardInstanceId, chosenRune),
+				),
 			updateHand: (heroId, hand) => set(updateHand(heroId, hand)),
 			upgradeClassCards: (cardUpgrades: Record<Card["id"], Card["id"]>) =>
 				set(upgradeClassCards(cardUpgrades)),

@@ -1,4 +1,10 @@
-import type { BattleHero, BattleUnit, Hero, Monster, Summon } from "../domain/figures.type";
+import type {
+	BattleHero,
+	BattleUnit,
+	Hero,
+	Monster,
+	Summon,
+} from "../domain/figures.type";
 
 export function heroId(numericOrUuid: string | number): Hero["id"] {
 	return `hero-${numericOrUuid}` as Hero["id"];
