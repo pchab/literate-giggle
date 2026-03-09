@@ -159,10 +159,11 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 				set(upgradeClassCards(cardUpgrades)),
 			clearUnlockedQuestsQueue: () => set({ unlockedQuestsQueue: [] }),
 			healParty: (healAmount: number) => set(healParty(healAmount)),
-			rewardEvoRune: (runeId: EvolutionRuneId) => set(({ evolutionRunesInventory }) => {
-				evolutionRunesInventory.push(runeId);
-				return { evolutionRunesInventory };
-			}),
+			rewardEvoRune: (runeId: EvolutionRuneId) =>
+				set(({ evolutionRunesInventory }) => {
+					evolutionRunesInventory.push(runeId);
+					return { evolutionRunesInventory };
+				}),
 			forgeEvolution: (heroId, cardInstanceId, runeId) =>
 				set((state) => forgeEvolution(state, heroId, cardInstanceId, runeId)),
 		}),

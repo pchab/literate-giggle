@@ -2,17 +2,7 @@ import { QUEST_DWARVEN_HIGHWAY } from "@/modules/campaign/data/dwarven-passage/d
 import { NECROMANCER_QUEST_ID } from "@/modules/campaign/data/necromancer/necromancer.quest";
 import { VERDANT_RECLAMATION } from "@/modules/campaign/data/verdant-reclamation/verdantReclamation.quest";
 import { cardId } from "@/modules/cards/helpers/cards.helper";
-import type {
-	ClassDefinition,
-	HeroClass,
-	RuneDraftOption,
-} from "../domain/heroClass.types";
-
-const basicRuneChoice: RuneDraftOption[] = [
-	{ type: "bonusDamage", amount: 2, label: "Increase damage" },
-	{ type: "bonusHeal", amount: 1, label: "Increase heal" },
-	{ type: "bonusRange", amount: 1, label: "Increase range" },
-];
+import type { ClassDefinition, HeroClass } from "../domain/heroClass.types";
 
 export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 	HOBO: {
@@ -20,30 +10,12 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		name: "Hobo",
 		spriteBase: "heroes/hobo",
 		utilityCardChoices: [cardId("bandage-1")],
-		xpThresholds: [0, 1, 2, 3, 4, 5],
+		xpThresholds: [0, 5, 10, 15, 20, 25],
 		levelUpTriggers: [
-			[
-				{ type: "statsIncrease", amount: 1, stat: "hp" },
-				{
-					type: "powerRune",
-					choices: basicRuneChoice,
-				},
-			],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
-			[
-				{ type: "statsIncrease", amount: 1, stat: "hp" },
-				{
-					type: "powerRune",
-					choices: basicRuneChoice,
-				},
-			],
-			[
-				{ type: "statsIncrease", amount: 1, stat: "hp" },
-				{
-					type: "powerRune",
-					choices: basicRuneChoice,
-				},
-			],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
 			[
 				{ type: "statsIncrease", amount: 1, stat: "hp" },
@@ -75,21 +47,9 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				},
 				{ type: "unlockQuest", questId: QUEST_DWARVEN_HIGHWAY },
 			],
-			[
-				{ type: "statsIncrease", amount: 1, stat: "hp" },
-				{
-					type: "powerRune",
-					choices: basicRuneChoice,
-				},
-			],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			[{ type: "passiveUnlock", passiveId: "passive-toughness" }],
-			[
-				{ type: "statsIncrease", amount: 1, stat: "hp" },
-				{
-					type: "powerRune",
-					choices: basicRuneChoice,
-				},
-			],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			[{ type: "classPromotion", classId: ["KNIGHT", "BARBARIAN"] }],
 		],
 	},
@@ -109,21 +69,9 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				},
 				{ type: "unlockQuest", questId: NECROMANCER_QUEST_ID },
 			],
-			[
-				{ type: "statsIncrease", amount: 1, stat: "hp" },
-				{
-					type: "powerRune",
-					choices: basicRuneChoice,
-				},
-			],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			[{ type: "passiveUnlock", passiveId: "passive-toughness" }],
-			[
-				{ type: "statsIncrease", amount: 1, stat: "hp" },
-				{
-					type: "powerRune",
-					choices: basicRuneChoice,
-				},
-			],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			[{ type: "classPromotion", classId: ["PYROMANCER", "CRYOMANCER"] }],
 		],
 	},
@@ -131,9 +79,22 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		id: "ROGUE",
 		name: "Rogue",
 		spriteBase: "heroes/rogue",
-		utilityCardChoices: [],
+		utilityCardChoices: [cardId("toxic-shiv"), cardId("hamstring")],
 		xpThresholds: [10, 20, 30, 40, 50],
-		levelUpTriggers: [[]],
+		levelUpTriggers: [
+			[
+				{ type: "statsIncrease", stat: "move", amount: 1 },
+				{
+					type: "cardUpgrade",
+					oldCardId: cardId("club"),
+					newCardId: cardId("dagger"),
+				},
+			],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[{ type: "passiveUnlock", passiveId: "passive-toughness" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[{ type: "classPromotion", classId: [] }],
+		],
 	},
 	ARCHER: {
 		id: "ARCHER",
@@ -147,7 +108,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		id: "KNIGHT",
 		name: "Knight",
 		spriteBase: "heroes/knight",
-		utilityCardChoices: [cardId("knight-placeholder-1")],
+		utilityCardChoices: [cardId("knight-placeholder")],
 		xpThresholds: [10, 20, 30, 40, 50],
 		levelUpTriggers: [
 			[
@@ -165,7 +126,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		id: "BARBARIAN",
 		name: "Barbarian",
 		spriteBase: "heroes/barbarian",
-		utilityCardChoices: [cardId("barbarian-placeholder-1")],
+		utilityCardChoices: [cardId("barbarian-placeholder")],
 		xpThresholds: [10, 20, 30, 40, 50],
 		levelUpTriggers: [[]],
 	},
@@ -173,7 +134,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		id: "PYROMANCER",
 		name: "Pyromancer",
 		spriteBase: "heroes/pyromancer",
-		utilityCardChoices: [cardId("pyromancer-placeholder-1")],
+		utilityCardChoices: [cardId("pyromancer-placeholder")],
 		xpThresholds: [10, 20, 30, 40, 50],
 		levelUpTriggers: [
 			[
@@ -191,10 +152,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		id: "CRYOMANCER",
 		name: " Cryomancer",
 		spriteBase: "heroes/cryomancer",
-		utilityCardChoices: [
-			cardId("ice-wall-1"),
-			cardId("cryomancer-placeholder-1"),
-		],
+		utilityCardChoices: [cardId("ice-wall"), cardId("cryomancer-placeholder")],
 		xpThresholds: [10, 20, 30, 40, 50],
 		levelUpTriggers: [
 			[

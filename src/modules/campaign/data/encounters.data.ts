@@ -2,9 +2,9 @@ import { skeleton } from "@/modules/figures/data/monsters/skeleton.data";
 import type { Monster } from "@/modules/figures/domain/figures.type";
 import { monsterId } from "@/modules/figures/helpers/figures.helpers";
 import type { Scene } from "../domain/scenes.type";
+import { DWARVEN_PASSAGE_ENCOUNTER_DB } from "./dwarven-passage/dwarvenPassage.encounters";
+import { NECROMANCER_ENCOUNTER_DB } from "./necromancer/necromancer.encounters";
 import { VERDANT_RECLAMATION_ENCOUNTER_DB } from "./verdant-reclamation/verdantReclamation.encounters";
-import { NECROMANCER_ENCOUNTER_DB } from './necromancer/necromancer.encounters';
-import { DWARVEN_PASSAGE_ENCOUNTER_DB } from './dwarven-passage/dwarvenPassage.encounters';
 
 export interface Encounter {
 	id: string & { __brand: "EncounterId" };
@@ -26,7 +26,7 @@ export const ENCOUNTER_DB: Record<string, Encounter> = {
 			{
 				...skeleton,
 				id: monsterId("skel-1"),
-				currentHp: 1,
+				currentHp: skeleton.maxHp,
 				statuses: [],
 				gridPosition: { col: 3, row: 3 },
 			},

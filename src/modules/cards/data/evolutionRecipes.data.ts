@@ -22,4 +22,8 @@ export const EVOLUTION_RECIPES: Record<
 	[cardId("summon-arcane-wisp")]: {
 		rune_nature: cardId("summon-briar-wolf"),
 	},
+	[cardId("dagger")]: {
+		rune_nature: cardId("thorn-dagger"),
+		rune_blood: cardId("vampire-dagger"),
+	},
 };

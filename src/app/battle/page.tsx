@@ -16,11 +16,18 @@ export default function Home() {
 			background: state.background,
 		})),
 	);
-	const { stageBattleRewards } = useWorldStore(
+	const { phase, stageBattleRewards } = useWorldStore(
 		useShallow((state) => ({
+			phase: state.phase,
 			stageBattleRewards: state.stageBattleRewards,
 		})),
 	);
+
+	if (phase !== "BATTLE") {
+		setTimeout(() => {
+			redirect("/");
+		}, 300);
+	}
 
 	const isBattleWon = monsters.every((monster) => monster.currentHp <= 0);
 	if (isBattleWon) {
@@ -33,9 +40,6 @@ export default function Home() {
 		);
 
 		stageBattleRewards(remainingHealth);
-		setTimeout(() => {
-			redirect("/");
-		}, 1000);
 	}
 
 	const backgroundImage = getBackgroundImage(background, 1200, 817);

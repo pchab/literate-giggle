@@ -1,4 +1,4 @@
-import { summonId } from '@/modules/figures/helpers/figures.helpers';
+import { summonId } from "@/modules/figures/helpers/figures.helpers";
 import type { Card } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
 import { elvenCards } from "./elvenCards.data";
@@ -69,7 +69,9 @@ export const monsterCardLibrary: Record<Card["id"], Card> = {
 		iconType: "SUMMON",
 		playRequirement: "no_target",
 		aiTargetPreference: "self",
-		effects: [{ type: "summon", blueprintId: summonId("skeleton"), target: "self" }],
+		effects: [
+			{ type: "summon", blueprintId: summonId("skeleton"), target: "self" },
+		],
 	},
 
 	// --- SUMMON CARDS ---

@@ -81,11 +81,7 @@ export function UnitSprite({
 				</motion.div>
 			</motion.div>
 
-			<HealthBar
-				currentHp={currentHp}
-				maxHp={maxHp}
-				currentBlock={currentBlock}
-			/>
+			<HealthBar currentHp={currentHp} maxHp={maxHp} statuses={statuses} />
 		</div>
 	);
 }

@@ -84,7 +84,7 @@ export const heroCardLibrary: Record<Card["id"], Card> = {
 		range: 2,
 		image: "/cards/apprentice-staff.png",
 		playRequirement: "requires_enemy",
-		effects: [{ type: "damage", amount: 4, target: "anchor" }],
+		effects: [{ type: "damage", amount: 3, target: "anchor" }],
 	},
 	[cardId("battle-cry")]: {
 		id: cardId("battle-cry"),
@@ -151,6 +151,74 @@ export const heroCardLibrary: Record<Card["id"], Card> = {
 		aiTargetPreference: "self",
 		effects: [
 			{ type: "summon", blueprintId: summonId("briar-wolf"), target: "anchor" },
+		],
+	},
+	[cardId("dagger")]: {
+		id: cardId("dagger"),
+		name: "Dagger",
+		range: 2,
+		image: "/cards/dagger.png",
+		playRequirement: "requires_enemy",
+		effects: [{ type: "damage", amount: 4, target: "anchor" }],
+	},
+	[cardId("thorn-dagger")]: {
+		id: cardId("thorn-dagger"),
+		name: "Thorn Dagger",
+		range: 2,
+		image: "/cards/thorn-dagger.png",
+		playRequirement: "requires_enemy",
+		effects: [
+			{ type: "damage", amount: 4, target: "anchor" },
+			{
+				type: "apply_status",
+				statusType: "vulnerable",
+				amount: 2,
+				duration: 2,
+				target: "anchor",
+			},
+		],
+	},
+	[cardId("vampire-dagger")]: {
+		id: cardId("vampire-dagger"),
+		name: "Vampire Dagger",
+		range: 2,
+		image: "/cards/vampire-dagger.png",
+		playRequirement: "requires_enemy",
+		effects: [
+			{ type: "damage", amount: 4, target: "anchor" },
+			{ type: "heal", amount: 1, target: "self" },
+		],
+	},
+	[cardId("toxic-shiv")]: {
+		id: cardId("toxic-shiv"),
+		name: "Toxic Shiv",
+		range: 1,
+		image: "/cards/toxic-shiv.png",
+		playRequirement: "requires_enemy",
+		effects: [
+			{
+				type: "apply_status",
+				statusType: "poison",
+				amount: 2,
+				duration: 2,
+				target: "anchor",
+			},
+		],
+	},
+	[cardId("hamstring")]: {
+		id: cardId("hamstring"),
+		name: "Hamstring",
+		range: 1,
+		iconType: "DEBUFF",
+		playRequirement: "requires_enemy",
+		effects: [
+			{
+				type: "apply_status",
+				statusType: "rooted",
+				amount: 1,
+				duration: 2,
+				target: "anchor",
+			},
 		],
 	},
 

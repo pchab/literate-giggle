@@ -131,4 +131,25 @@ export const TOWN_DB: Record<TownData["id"], TownData> = {
 			},
 		],
 	},
+
+	[townId("cromee_town")]: {
+		id: townId("cromee_town"),
+		name: "Cromee Town",
+		backgroundImage: "/towns/cromee_town.jpg",
+		locations: [
+			{
+				id: townLocationId("cromee_tavern"),
+				name: "The Rusty Nail Tavern",
+				type: "SCENE",
+				defaultSceneId: sceneId("generic_tavern"),
+				position: { x: 22, y: 60 },
+			},
+			{
+				id: townLocationId("cromee_inn"),
+				name: "City Inn (Rest)",
+				type: "HEAL",
+				position: { x: 40, y: 42 },
+			},
+		],
+	},
 };

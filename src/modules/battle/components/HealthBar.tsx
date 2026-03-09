@@ -1,15 +1,18 @@
 import { motion } from "framer-motion";
+import type { BattleUnit } from "@/modules/figures/domain/figures.type";
+import { getBlockFromStatuses } from "@/modules/figures/helpers/figures.helpers";
 
 export default function HealthBar({
 	currentHp,
 	maxHp,
-	currentBlock = 0,
+	statuses = [],
 }: {
-	currentHp: number;
-	maxHp: number;
-	currentBlock?: number;
+	currentHp: BattleUnit["currentHp"];
+	maxHp: BattleUnit["maxHp"];
+	statuses?: BattleUnit["statuses"];
 }) {
 	const hpPercent = Math.max(0, Math.min(100, (currentHp / maxHp) * 100));
+	const currentBlock = getBlockFromStatuses(statuses);
 
 	return (
 		<div className="absolute -bottom-2 w-14 flex flex-col items-center pointer-events-none z-20">

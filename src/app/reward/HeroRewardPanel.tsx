@@ -8,6 +8,7 @@ import { getComputedCard } from "@/modules/cards/helpers/cards.helper";
 import { CLASS_REGISTRY } from "@/modules/figures/data/heroClass.data";
 import type { Hero } from "@/modules/figures/domain/figures.type";
 import type { RuneDraftOption } from "@/modules/figures/domain/heroClass.types";
+import { generateDynamicRuneChoices } from "@/modules/figures/helpers/draft.helper";
 import { RetroPanel } from "@/modules/shared/components/RetroPanel";
 
 const runeTypeToCardEffectType: Record<string, CardEffect["type"]> = {
@@ -35,7 +36,7 @@ export default function HeroRewardPanel({
 	// --- 1. Calculate Multi-Level Math ---
 	let tempXp = hero.currentXp + xpEarned;
 	let simulatedLevel = hero.currentLevel;
-	const powerRuneQueue: (typeof classDef.levelUpTriggers)[0][0][] = [];
+	const powerRuneQueue: { choices: RuneDraftOption[] }[] = [];
 
 	while (
 		classDef.xpThresholds[simulatedLevel] !== undefined &&
@@ -48,7 +49,8 @@ export default function HeroRewardPanel({
 			(t) => t.type === "powerRune",
 		);
 		if (runeTrigger) {
-			powerRuneQueue.push(runeTrigger);
+			const choices = generateDynamicRuneChoices(hero);
+			powerRuneQueue.push({ choices });
 		}
 
 		simulatedLevel++;
@@ -77,8 +79,7 @@ export default function HeroRewardPanel({
 		{ rune: RuneDraftOption; cardInstanceId: string }[]
 	>([]);
 
-	// The active trigger the user is currently looking at
-	const activePowerRuneTrigger = powerRuneQueue[currentDraftIndex];
+	const activeDraft = powerRuneQueue[currentDraftIndex];
 
 	// --- 3. Auto-Advance ---
 	useEffect(() => {
@@ -190,44 +191,42 @@ export default function HeroRewardPanel({
 				)}
 
 				{/* STEP 2: Choose Rune */}
-				{step === "chooseRune" &&
-					activePowerRuneTrigger &&
-					activePowerRuneTrigger.type === "powerRune" && (
-						<m.div
-							initial={{ opacity: 0, y: 10 }}
-							animate={{ opacity: 1, y: 0 }}
-							className="flex flex-col gap-3 pt-2"
-						>
-							<div className="flex justify-between items-center">
-								<span className="text-xs font-bold text-yellow-400 uppercase">
-									Draft an Upgrade:
+				{step === "chooseRune" && activeDraft && (
+					<m.div
+						initial={{ opacity: 0, y: 10 }}
+						animate={{ opacity: 1, y: 0 }}
+						className="flex flex-col gap-3 pt-2"
+					>
+						<div className="flex justify-between items-center">
+							<span className="text-xs font-bold text-yellow-400 uppercase">
+								Draft an Upgrade:
+							</span>
+							{powerRuneQueue.length > 1 && (
+								<span className="text-[10px] text-zinc-500 uppercase">
+									({currentDraftIndex + 1}/{powerRuneQueue.length})
 								</span>
-								{powerRuneQueue.length > 1 && (
-									<span className="text-[10px] text-zinc-500 uppercase">
-										({currentDraftIndex + 1}/{powerRuneQueue.length})
+							)}
+						</div>
+						<div className="flex flex-col gap-2">
+							{activeDraft.choices.map((rune, i) => (
+								<button
+									type="button"
+									key={i}
+									onClick={() => {
+										setSelectedRune(rune);
+										setStep("chooseCard");
+									}}
+									className="bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 rounded p-2 text-sm text-left transition-colors flex justify-between items-center"
+								>
+									<span className="text-slate-200">{rune.label}</span>
+									<span className="text-xs text-emerald-400 font-mono">
+										+{rune.amount}
 									</span>
-								)}
-							</div>
-							<div className="flex flex-col gap-2">
-								{activePowerRuneTrigger.choices.map((rune, i) => (
-									<button
-										type="button"
-										key={i}
-										onClick={() => {
-											setSelectedRune(rune);
-											setStep("chooseCard");
-										}}
-										className="bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 rounded p-2 text-sm text-left transition-colors flex justify-between items-center"
-									>
-										<span className="text-slate-200">{rune.label}</span>
-										<span className="text-xs text-emerald-400 font-mono">
-											+{rune.amount}
-										</span>
-									</button>
-								))}
-							</div>
-						</m.div>
-					)}
+								</button>
+							))}
+						</div>
+					</m.div>
+				)}
 
 				{/* STEP 3: Choose Card */}
 				{step === "chooseCard" && selectedRune && (

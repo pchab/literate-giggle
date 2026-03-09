@@ -1,7 +1,6 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { redirect } from "next/navigation";
 import { useState } from "react";
 import { useShallow } from "zustand/shallow";
 import { BattleCard } from "@/modules/cards/components/BattleCard";
@@ -149,8 +148,6 @@ export function ClassPromotionModal() {
 		resolvePromotion(currentPromotion.heroId, selectedClassId, selectedCardId);
 		setSelectedClassId(null);
 		setSelectedCardId(null);
-
-		redirect("/");
 	};
 
 	return (

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { VT323 } from "next/font/google";
 import "./globals.css";
-import { ClassPromotionModal } from "@/modules/figures/components/ClassPromotionModal";
 
 const vt323 = VT323({
 	variable: "--font-pixel",
@@ -25,7 +24,6 @@ export default function RootLayout({
 				className={`${vt323.variable} antialiased bg-zinc-950 text-zinc-100 font-sans h-screen w-screen overflow-hidden flex`}
 			>
 				{children}
-				<ClassPromotionModal />
 			</body>
 		</html>
 	);

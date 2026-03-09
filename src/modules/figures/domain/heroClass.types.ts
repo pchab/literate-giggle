@@ -39,10 +39,7 @@ export type LevelUpDefinition =
 	| { type: "classPromotion"; classId: HeroClass[] }
 	| { type: "passiveUnlock"; passiveId: string }
 	| { type: "unlockQuest"; questId: Quest["id"] }
-	| {
-			type: "powerRune";
-			choices: RuneDraftOption[];
-	  };
+	| { type: "powerRune" };
 
 export type ClassDefinition = {
 	id: HeroClass;

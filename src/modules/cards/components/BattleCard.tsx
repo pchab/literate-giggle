@@ -98,13 +98,16 @@ export function BattleCard({
 				}}
 			>
 				{/* Scaled watermark icon */}
-				<Image
-					src={image ?? iconType ?? ""}
-					alt={name}
-					width={180}
-					height={150}
-					className={isLg ? "p-5" : "p-2"}
-				/>
+				{image && (
+					<Image
+						src={image}
+						alt={name}
+						width={180}
+						height={150}
+						className={isLg ? "p-5" : "p-2"}
+					/>
+				)}
+				{iconType && <span className="text-4xl">{iconType}</span>}
 			</div>
 
 			{/* 4. Center Ring: The Primary Effect Value */}
