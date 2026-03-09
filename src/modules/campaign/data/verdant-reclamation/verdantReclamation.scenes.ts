@@ -6,6 +6,34 @@ import { VERDANT_RECLAMATION } from "./verdantReclamation.quest";
 
 export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 	// --- ACT I: THE HOOK ---
+	[sceneId("war_rumors")]: {
+		id: sceneId("war_rumors"),
+		initialStepId: "intro",
+		steps: {
+			intro: {
+				speaker: "Off-Duty Soldier",
+				text: "Grab a stool, friend. It's tense in the city today. We lost contact with the Dragon's Tooth Logging Camp three days ago, and the scouts we sent never came back. The Captain is paying good coin for anyone brave enough to go check it out.",
+				backgroundImage: "/scenes/generic_tavern.jpg",
+				choices: [
+					{
+						label: "I'll head to the camp and investigate.",
+						actions: [
+							{
+								type: "ADVANCE_QUEST",
+								questId: VERDANT_RECLAMATION.id,
+								newStepId: VERDANT_RECLAMATION.steps.investigate_camp,
+							},
+							{ type: "END_SCENE" },
+						],
+					},
+					{
+						label: "Sounds dangerous. I just want an ale.",
+						actions: [{ type: "END_SCENE" }],
+					},
+				],
+			},
+		},
+	},
 	[sceneId("invasion_start")]: {
 		id: sceneId("invasion_start"),
 		initialStepId: "intro",

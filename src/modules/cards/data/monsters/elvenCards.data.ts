@@ -33,7 +33,7 @@ export const elvenCards: Record<Card["id"], Card> = {
 		name: "Nature's Mend",
 		range: 2,
 		iconType: "MAGIC",
-		playRequirement: "requires_ally_or_self",
+		playRequirement: "requires_ally",
 		aiTargetPreference: "lowestHp",
 		effects: [{ type: "heal", amount: 8, target: "anchor" }],
 	},

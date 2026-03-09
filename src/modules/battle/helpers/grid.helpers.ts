@@ -11,14 +11,12 @@ export function getCellId(pos: GridPosition): string {
 }
 
 export const isTileOccupied = <T extends BattleUnit>(
-	pos: GridPosition,
+	{ col, row }: GridPosition,
 	figures: T[],
 ) => {
 	return figures.some(
 		({ gridPosition, currentHp }) =>
-			gridPosition.row === pos.row &&
-			gridPosition.col === pos.col &&
-			currentHp > 0,
+			gridPosition.row === row && gridPosition.col === col && currentHp > 0,
 	);
 };
 

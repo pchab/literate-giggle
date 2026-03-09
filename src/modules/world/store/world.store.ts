@@ -3,7 +3,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import type { Quest } from "@/modules/campaign/domain/quests.type";
 import { initialDeck } from "@/modules/cards/data/cards.data";
 import type { EvolutionRuneId } from "@/modules/cards/data/evolutionRecipes.data";
-import type { Card, Hand } from "@/modules/cards/domain/cards.type";
+import type { Card } from "@/modules/cards/domain/cards.type";
 import { createHeroCard } from "@/modules/cards/helpers/cards.helper";
 import { baseHeroStats } from "@/modules/figures/data/heroes/baseHeroStats";
 import type { Hero } from "@/modules/figures/domain/figures.type";
@@ -23,7 +23,7 @@ import { resolvePowerRune } from "./commands/resolvePowerRune.command";
 import { setPhase } from "./commands/setPhase.command";
 import { stageBattleRewards } from "./commands/stageBattleRewards.command";
 import { travelToNode } from "./commands/travelToNode.command";
-import { updateHand } from "./commands/updateHand.command";
+import { updateSelectedCards } from "./commands/updateSelectedCards.command";
 import { upgradeClassCards } from "./commands/upgradeClassCards.command";
 
 export type GamePhase = "TOWN" | "CAMP" | "MAP" | "BATTLE" | "REWARD" | "SCENE";
@@ -52,7 +52,7 @@ export interface WorldAction {
 			{
 				rune: RuneDraftOption;
 				cardInstanceId: Card["id"];
-			} | null
+			}[]
 		>,
 	) => void;
 	resolvePromotion: (
@@ -65,7 +65,10 @@ export interface WorldAction {
 		cardInstanceId: string,
 		chosenRune: RuneDraftOption,
 	) => void;
-	updateHand: (heroId: Hero["id"], hand: Hand) => void;
+	updateSelectedCards: (
+		heroId: Hero["id"],
+		cards: Hero["selectedCards"],
+	) => void;
 	upgradeClassCards: (cardUpgrades: Record<Card["id"], Card["id"]>) => void;
 	clearUnlockedQuestsQueue: () => void;
 	healParty: (healAmount: number) => void;
@@ -140,7 +143,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 					{
 						rune: RuneDraftOption;
 						cardInstanceId: Card["id"];
-					} | null
+					}[]
 				>,
 			) => set(claimRewards(earnedXp, completedDraft)),
 			resolvePromotion: (heroId, chosenClass, utilityCardId) =>
@@ -149,7 +152,8 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 				set((state) =>
 					resolvePowerRune(state, heroId, cardInstanceId, chosenRune),
 				),
-			updateHand: (heroId, hand) => set(updateHand(heroId, hand)),
+			updateSelectedCards: (heroId, selectedCards) =>
+				set(updateSelectedCards(heroId, selectedCards)),
 			upgradeClassCards: (cardUpgrades: Record<Card["id"], Card["id"]>) =>
 				set(upgradeClassCards(cardUpgrades)),
 			clearUnlockedQuestsQueue: () => set({ unlockedQuestsQueue: [] }),

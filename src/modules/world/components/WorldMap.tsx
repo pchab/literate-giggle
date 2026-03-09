@@ -30,10 +30,9 @@ const NODE_STYLES = {
 };
 
 export default function WorldMap() {
-	const { currentNodeId, updateHand } = useWorldStore(
+	const { currentNodeId } = useWorldStore(
 		useShallow((state) => ({
 			currentNodeId: state.currentNodeId,
-			updateHand: state.updateHand,
 		})),
 	);
 	const activeQuests = useCampaignStore((state) => state.activeQuests);
@@ -234,11 +233,7 @@ export default function WorldMap() {
 			</motion.button>
 
 			{/* --- NEW: The Hand Modal --- */}
-			<MenuModal
-				isOpen={isMenuOpen}
-				onClose={() => setIsMenuOpen(false)}
-				onSaveHand={updateHand}
-			/>
+			<MenuModal isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
 
 			<AnimatePresence>
 				{isTraveling && (

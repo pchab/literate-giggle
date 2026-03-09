@@ -5,6 +5,7 @@ import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { Hand } from "@/modules/cards/components/Hand";
 import type { BattleHero } from "@/modules/figures/domain/figures.type";
+import { RetroButton } from "@/modules/shared/components/RetroButton";
 import { getBlockFromStatuses } from "../helpers/figures.helpers";
 import { HeroPortrait } from "./HeroPortrait";
 
@@ -25,17 +26,29 @@ export function HeroCard({
 	maxHp,
 	statuses,
 }: BattleHero) {
-	const { setActiveMoveHeroId, activeMoveHeroId, usedMovesThisTurn } =
-		useBattleStore(
-			useShallow((state) => ({
-				setActiveMoveHeroId: state.setActiveMoveHeroId,
-				activeMoveHeroId: state.activeMoveHeroId,
-				usedMovesThisTurn: state.usedMovesThisTurn,
-			})),
-		);
+	const {
+		endTurn,
+		setActiveMoveHeroId,
+		activeMoveUnitId,
+		activeCard,
+		usedMovesThisTurn,
+		usedCardsThisTurn,
+	} = useBattleStore(
+		useShallow((state) => ({
+			endTurn: state.endTurn,
+			setActiveMoveHeroId: state.setActiveMoveHeroId,
+			activeMoveUnitId: state.activeMoveUnitId,
+			activeCard: state.activeCard,
+			usedMovesThisTurn: state.usedMovesThisTurn,
+			usedCardsThisTurn: state.usedCardsThisTurn,
+		})),
+	);
 
 	const hasMoved = usedMovesThisTurn[id];
-	const isMoving = activeMoveHeroId === id;
+	const isMoving = activeMoveUnitId === id;
+
+	const hasUsedCard = !!usedCardsThisTurn[id];
+	const isUsingCard = !!activeCard && activeCard.unitId === id;
 
 	const currentBlock = getBlockFromStatuses(statuses);
 
@@ -50,10 +63,10 @@ export function HeroCard({
 				/>
 			</div>
 
-			<div className="z-10 w-full flex items-center px-4">
+			<div className="z-10 w-full flex items-center pl-4">
 				<HeroPortrait classType={heroClass} />
 
-				<div className="flex flex-col">
+				<div className="flex flex-col gap-2">
 					<span className="text-sm font-black drop-shadow-md flex gap-1">
 						❤️{" "}
 						<span className={hpPercentToColor(currentHp / maxHp)}>
@@ -64,7 +77,7 @@ export function HeroCard({
 					</span>
 
 					{currentBlock > 0 && (
-						<div className="flex gap-1.5 mt-1">
+						<div className="flex gap-1 mt-1">
 							{currentBlock > 0 && (
 								<span className="text-[10px] font-bold text-zinc-300 bg-zinc-800/80 px-1.5 py-0.5 rounded border border-zinc-600 shadow-sm">
 									🛡️ {currentBlock}
@@ -72,12 +85,11 @@ export function HeroCard({
 							)}
 						</div>
 					)}
-					<button
-						type="button"
+					<RetroButton
 						onClick={() => setActiveMoveHeroId(isMoving ? null : id)}
 						disabled={hasMoved}
 						className={`
-            px-3 py-1 text-xs rounded-full border transition-colors
+            text-[8px]
             ${
 							hasMoved
 								? "bg-zinc-800 text-zinc-600 border-zinc-700"
@@ -88,14 +100,29 @@ export function HeroCard({
         `}
 					>
 						{hasMoved ? "Moved" : `Move (${baseMove})`}
-					</button>
+					</RetroButton>
+
+					<RetroButton
+						onClick={() => endTurn(id)}
+						disabled={hasUsedCard}
+						className={`
+            text-[8px]
+            ${
+							hasUsedCard
+								? "bg-zinc-800 text-zinc-600 border-zinc-700"
+								: isUsingCard
+									? "bg-blue-600 text-white border-blue-400 shadow-[0_0_10px_rgba(37,99,235,0.5)]"
+									: "bg-zinc-800 text-zinc-300 border-zinc-600 hover:bg-zinc-700"
+						}
+        `}
+					>
+						{hasUsedCard ? "Turn ended" : "End turn"}
+					</RetroButton>
 				</div>
 
 				<div className="w-px h-16 bg-linear-to-b from-transparent via-zinc-700 to-transparent mx-2" />
 
-				<div className="flex-1">
-					<Hand id={id} hand={hand} />
-				</div>
+				<Hand id={id} hand={hand} />
 			</div>
 		</div>
 	);

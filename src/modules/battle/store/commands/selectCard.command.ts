@@ -23,7 +23,7 @@ export function selectCard(
 
 			const nextState = executeEngine({
 				...state,
-				activeCard: { heroId, card },
+				activeCard: { unitId: heroId, card },
 			});
 
 			return {
@@ -34,7 +34,7 @@ export function selectCard(
 		}
 
 		return {
-			activeCard: { heroId, card },
+			activeCard: { unitId: heroId, card },
 		};
 	};
 }

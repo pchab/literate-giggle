@@ -27,44 +27,91 @@ export default function HeroRewardPanel({
 	xpEarned: number;
 	index: number;
 	onDraftComplete: (
-		draft: { rune: RuneDraftOption; cardInstanceId: string } | null,
+		drafts: { rune: RuneDraftOption; cardInstanceId: string }[],
 	) => void;
 }) {
 	const classDef = CLASS_REGISTRY[hero.heroClass];
-	const targetMaxXp = classDef.xpThresholds[hero.currentLevel] || 999;
 
+	// --- 1. Calculate Multi-Level Math ---
+	let tempXp = hero.currentXp + xpEarned;
+	let simulatedLevel = hero.currentLevel;
+	const powerRuneQueue: (typeof classDef.levelUpTriggers)[0][0][] = [];
+
+	while (
+		classDef.xpThresholds[simulatedLevel] !== undefined &&
+		tempXp >= classDef.xpThresholds[simulatedLevel]
+	) {
+		tempXp -= classDef.xpThresholds[simulatedLevel];
+
+		// Find if THIS specific level up granted a rune
+		const runeTrigger = classDef.levelUpTriggers[simulatedLevel]?.find(
+			(t) => t.type === "powerRune",
+		);
+		if (runeTrigger) {
+			powerRuneQueue.push(runeTrigger);
+		}
+
+		simulatedLevel++;
+	}
+
+	const levelsGained = simulatedLevel - hero.currentLevel;
+	const isLevelUp = levelsGained > 0;
+
+	// For the UI bar animation (just shows the journey to the FIRST level up if multiple)
+	const targetMaxXp = classDef.xpThresholds[hero.currentLevel] || 999;
 	const startPercent = Math.min((hero.currentXp / targetMaxXp) * 100, 100);
 	const endPercent = Math.min(
 		((hero.currentXp + xpEarned) / targetMaxXp) * 100,
 		100,
 	);
-	const isLevelUp = hero.currentXp + xpEarned >= targetMaxXp;
 
-	// Find if this specific level-up grants a Power Rune
-	const powerRuneTrigger = isLevelUp
-		? classDef.levelUpTriggers[hero.currentLevel]?.find(
-				(t) => t.type === "powerRune",
-			)
-		: null;
-
-	// State machine for the panel
+	// --- 2. State Machine ---
 	const [step, setStep] = useState<"xp" | "chooseRune" | "chooseCard" | "done">(
 		"xp",
 	);
+	const [currentDraftIndex, setCurrentDraftIndex] = useState(0); // Tracks which rune in the queue we are drafting
 	const [selectedRune, setSelectedRune] = useState<RuneDraftOption | null>(
 		null,
 	);
+	const [completedDrafts, setCompletedDrafts] = useState<
+		{ rune: RuneDraftOption; cardInstanceId: string }[]
+	>([]);
 
-	// Auto-advance to Draft UI after XP bar fills (if they leveled up & get a rune)
+	// The active trigger the user is currently looking at
+	const activePowerRuneTrigger = powerRuneQueue[currentDraftIndex];
+
+	// --- 3. Auto-Advance ---
 	useEffect(() => {
-		if (isLevelUp && powerRuneTrigger) {
-			const timer = setTimeout(() => setStep("chooseRune"), 2500); // Waits for bar animation
+		if (isLevelUp && powerRuneQueue.length > 0) {
+			const timer = setTimeout(() => setStep("chooseRune"), 2500);
 			return () => clearTimeout(timer);
 		} else {
-			// If no draft needed, immediately signal readiness
-			onDraftComplete(null);
+			// If no drafts needed, signal readiness immediately with empty array
+			onDraftComplete([]);
 		}
-	}, [isLevelUp, powerRuneTrigger, onDraftComplete]);
+	}, [isLevelUp, powerRuneQueue.length, onDraftComplete]);
+
+	// --- 4. Handle completing a single draft ---
+	const handleCardChosen = (cardId: string) => {
+		if (!selectedRune) return;
+
+		const newDrafts = [
+			...completedDrafts,
+			{ rune: selectedRune, cardInstanceId: cardId },
+		];
+		setCompletedDrafts(newDrafts);
+
+		if (currentDraftIndex + 1 < powerRuneQueue.length) {
+			// If there are more runes to draft, loop back to "chooseRune" for the next index!
+			setCurrentDraftIndex((prev) => prev + 1);
+			setSelectedRune(null);
+			setStep("chooseRune");
+		} else {
+			// We finished all drafts!
+			setStep("done");
+			onDraftComplete(newDrafts);
+		}
+	};
 
 	const primaryWeapon = hero.deck[0];
 
@@ -75,12 +122,10 @@ export default function HeroRewardPanel({
 			transition={{ duration: 0.4, delay: index * 0.1 }}
 			className="flex-1 min-w-75"
 		>
-			<RetroPanel
-				title={hero.id}
-				className="h-full relative overflow-hidden min-h-40"
-			>
+			<RetroPanel title={hero.id} className="h-full relative min-h-60">
 				{/* STEP 1: Default XP Bar */}
 				{step === "xp" && (
+					// ... (Keep your exact existing "xp" step UI here) ...
 					<m.div
 						className="flex flex-col gap-6 pt-4"
 						exit={{ opacity: 0, y: -10 }}
@@ -94,19 +139,18 @@ export default function HeroRewardPanel({
 									/>
 								</div>
 							)}
-
 							<div className="flex-1 flex flex-col gap-2">
 								<div className="flex justify-between items-end">
 									<div className="flex flex-col">
 										<span className="text-xs font-bold text-yellow-500 uppercase tracking-wider">
-											{classDef.name} Lv.{hero.currentLevel}
+											{classDef.name} Lv.{hero.currentLevel}{" "}
+											{levelsGained > 1 && `(+${levelsGained}!)`}
 										</span>
 									</div>
 									<span className="text-cyan-400 font-mono text-sm font-bold">
 										+{xpEarned} XP
 									</span>
 								</div>
-
 								<div className="h-4 w-full bg-slate-950 rounded border border-slate-700 relative overflow-hidden shadow-inner">
 									<div
 										className="absolute top-0 left-0 h-full bg-cyan-950"
@@ -124,7 +168,6 @@ export default function HeroRewardPanel({
 										}}
 									/>
 								</div>
-
 								<div className="flex justify-between items-center text-xs font-mono h-6">
 									<span className="text-slate-500">
 										{Math.min(hero.currentXp + xpEarned, targetMaxXp)} /{" "}
@@ -148,18 +191,25 @@ export default function HeroRewardPanel({
 
 				{/* STEP 2: Choose Rune */}
 				{step === "chooseRune" &&
-					powerRuneTrigger &&
-					powerRuneTrigger.type === "powerRune" && (
+					activePowerRuneTrigger &&
+					activePowerRuneTrigger.type === "powerRune" && (
 						<m.div
 							initial={{ opacity: 0, y: 10 }}
 							animate={{ opacity: 1, y: 0 }}
 							className="flex flex-col gap-3 pt-2"
 						>
-							<span className="text-xs font-bold text-yellow-400 uppercase">
-								Draft an Upgrade:
-							</span>
+							<div className="flex justify-between items-center">
+								<span className="text-xs font-bold text-yellow-400 uppercase">
+									Draft an Upgrade:
+								</span>
+								{powerRuneQueue.length > 1 && (
+									<span className="text-[10px] text-zinc-500 uppercase">
+										({currentDraftIndex + 1}/{powerRuneQueue.length})
+									</span>
+								)}
+							</div>
 							<div className="flex flex-col gap-2">
-								{powerRuneTrigger.choices.map((rune, i) => (
+								{activePowerRuneTrigger.choices.map((rune, i) => (
 									<button
 										type="button"
 										key={i}
@@ -201,10 +251,11 @@ export default function HeroRewardPanel({
 						{/* Scrollable grid of deck */}
 						<div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-zinc-700">
 							{hero.deck
-								.filter((cardInstance) => {
+								.map(getComputedCard)
+								// Filter logic remains exactly the same...
+								.filter((card) => {
 									if (selectedRune.type === "bonusRange") return true;
-
-									return cardInstance.effects.some((effect) => {
+									return card.effects.some((effect) => {
 										if (
 											selectedRune.type === "bonusStatusAmount" ||
 											selectedRune.type === "bonusStatusDuration"
@@ -214,30 +265,20 @@ export default function HeroRewardPanel({
 												effect.statusType === selectedRune.statusType
 											);
 										}
-
 										return (
 											effect.type ===
 											runeTypeToCardEffectType[selectedRune.type]
 										);
 									});
 								})
-								.map((cardInstance) => (
+								.map((card) => (
 									<button
 										type="button"
-										key={cardInstance.instanceId}
+										key={card.id}
 										className="w-20 shrink-0 cursor-pointer transform hover:scale-105 hover:-translate-y-1 transition-all"
-										onClick={() => {
-											setStep("done");
-											onDraftComplete({
-												rune: selectedRune,
-												cardInstanceId: cardInstance.instanceId,
-											});
-										}}
+										onClick={() => handleCardChosen(card.id)}
 									>
-										<BattleCard
-											card={getComputedCard(cardInstance)}
-											isPlayable={false}
-										/>
+										<BattleCard card={card} isPlayable={false} />
 									</button>
 								))}
 						</div>
@@ -245,7 +286,7 @@ export default function HeroRewardPanel({
 				)}
 
 				{/* STEP 4: Done */}
-				{step === "done" && selectedRune && (
+				{step === "done" && (
 					<m.div
 						initial={{ opacity: 0, scale: 0.9 }}
 						animate={{ opacity: 1, scale: 1 }}
@@ -253,10 +294,12 @@ export default function HeroRewardPanel({
 					>
 						<span className="text-4xl mb-2">✨</span>
 						<span className="text-sm font-bold text-emerald-400 uppercase">
-							Upgrade Applied!
+							{powerRuneQueue.length > 1
+								? "Upgrades Applied!"
+								: "Upgrade Applied!"}
 						</span>
 						<span className="text-xs text-slate-400 mt-1">
-							{selectedRune.label} successfully forged.
+							Forging complete.
 						</span>
 					</m.div>
 				)}

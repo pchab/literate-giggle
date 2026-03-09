@@ -89,10 +89,7 @@ export function ClassPromotionModal() {
 
 										{showcaseCard && (
 											<div className="mt-6 pointer-events-none transform transition-transform duration-500 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">
-												<BattleCard
-													cardId={showcaseCard.id}
-													isPlayable={false}
-												/>
+												<BattleCard card={showcaseCard} isPlayable={false} />
 											</div>
 										)}
 
@@ -233,11 +230,12 @@ export function ClassPromotionModal() {
 						transition={{ delay: 1.2 }}
 					>
 						<h3 className="text-zinc-300 uppercase tracking-widest mb-6 font-bold">
-							Choose your Class Art
+							Choose your Class Skill
 						</h3>
 						<div className="flex gap-8">
 							{classDef.utilityCardChoices.map((cardId) => {
 								const isSelected = selectedCardId === cardId;
+								const card = cardLibrary[cardId];
 								return (
 									<button
 										type="button"
@@ -245,7 +243,7 @@ export function ClassPromotionModal() {
 										onClick={() => setSelectedCardId(cardId)}
 										className={`relative transition-all duration-300 ${isSelected ? "scale-110 shadow-[0_0_30px_rgba(251,191,36,0.4)]" : "scale-100 hover:scale-105 opacity-70 hover:opacity-100 grayscale hover:grayscale-0"}`}
 									>
-										<BattleCard cardId={cardId} isPlayable={false} />
+										<BattleCard card={card} isPlayable={false} />
 										{isSelected && (
 											<motion.div
 												layoutId="card-selection-ring"

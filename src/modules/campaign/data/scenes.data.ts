@@ -1,5 +1,6 @@
 import { type Scene, sceneId } from "../domain/scenes.type";
-import { VERDANT_RECLAMATION } from "./verdant-reclamation/verdantReclamation.quest";
+import { DWARVEN_PASSAGE_SCENE_DB } from "./dwarven-passage/dwarvenPassage.scenes";
+import { NECROMANCER_SCENE_DB } from "./necromancer/necromancer.scenes";
 import { VERDANT_RECLAMATION_SCENE_DB } from "./verdant-reclamation/verdantReclamation.scenes";
 
 export const SCENE_DB: Record<Scene["id"], Scene> = {
@@ -9,23 +10,16 @@ export const SCENE_DB: Record<Scene["id"], Scene> = {
 		initialStepId: "intro",
 		steps: {
 			intro: {
-				speaker: "Off-Duty Soldier",
-				text: "Grab a stool, friend. It's tense in the city today. We lost contact with the Dragon's Tooth Logging Camp three days ago, and the scouts we sent never came back. The Captain is paying good coin for anyone brave enough to go check it out.",
+				speaker: "Bartender",
+				text: "What can I get you ?",
 				backgroundImage: "/scenes/generic_tavern.jpg",
 				choices: [
 					{
-						label: "I'll head to the camp and investigate.",
-						actions: [
-							{
-								type: "ADVANCE_QUEST",
-								questId: VERDANT_RECLAMATION.id,
-								newStepId: VERDANT_RECLAMATION.steps.investigate_camp,
-							},
-							{ type: "END_SCENE" },
-						],
+						label: "An ale.",
+						actions: [{ type: "END_SCENE" }],
 					},
 					{
-						label: "Sounds dangerous. I just want an ale.",
+						label: "Nothing.",
 						actions: [{ type: "END_SCENE" }],
 					},
 				],
@@ -52,4 +46,6 @@ export const SCENE_DB: Record<Scene["id"], Scene> = {
 	},
 
 	...VERDANT_RECLAMATION_SCENE_DB,
+	...NECROMANCER_SCENE_DB,
+	...DWARVEN_PASSAGE_SCENE_DB,
 };

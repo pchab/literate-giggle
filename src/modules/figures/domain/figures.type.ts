@@ -43,6 +43,8 @@ export interface Hero extends Figure {
 
 export interface BattleHero extends BattleUnit {
 	id: string & { readonly __brand: "HeroId" };
+	heroClass: HeroClass;
+	passives: string[];
 	hand: Hand;
 }
 

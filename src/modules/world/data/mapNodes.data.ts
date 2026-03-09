@@ -54,7 +54,7 @@ export const WorldMapNodes: MapData = {
 	wizard_tower: {
 		id: mapNodeId("wizard_tower"),
 		name: "Wizard Tower",
-		type: "CAMP",
+		type: "EVENT",
 		position: { x: 70, y: 64 },
 		connectedNodeIds: [mapNodeId("crossroads"), mapNodeId("port_city")],
 		background: "/battlegrounds/dungeon.jpg",

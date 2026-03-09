@@ -1,10 +1,9 @@
 import type { Hero } from "@/modules/figures/domain/figures.type";
 import type { WorldStoreServerAction } from "@/modules/world/store/world.store";
-import type { Hand } from "../../../cards/domain/cards.type";
 
-export function updateHand(
+export function updateSelectedCards(
 	heroId: Hero["id"],
-	hand: Hand,
+	selectedCards: Hero["selectedCards"],
 ): WorldStoreServerAction {
 	return ({ roster }) => {
 		return {
@@ -12,7 +11,7 @@ export function updateHand(
 				if (hero.id === heroId) {
 					return {
 						...hero,
-						hand,
+						selectedCards,
 					};
 				}
 				return hero;

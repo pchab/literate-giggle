@@ -8,9 +8,12 @@ import {
 	calculateReachableCells,
 	GRID_BOUNDS,
 	getCellId,
+	isTileOccupied,
 } from "@/modules/battle/helpers/grid.helpers";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
-import { GridCell } from "./GridCell";
+import type { BattleUnit } from "@/modules/figures/domain/figures.type";
+import { isHeroId } from "@/modules/figures/helpers/figures.helpers";
+import { GridCell, type Targeting } from "./GridCell";
 
 const cells = Array.from({ length: GRID_BOUNDS.rows }, (_, col) => {
 	return Array.from({ length: GRID_BOUNDS.cols }, (_, row) => {
@@ -38,7 +41,7 @@ export function BattleGrid() {
 		hoveredCard,
 		activeCard,
 		resolveCard,
-		activeMoveHeroId,
+		activeMoveUnitId,
 		moveHero,
 		setActiveMoveHeroId,
 		usedMovesThisTurn,
@@ -53,7 +56,7 @@ export function BattleGrid() {
 			hoveredCard: state.hoveredCard,
 			activeCard: state.activeCard,
 			resolveCard: state.resolveCard,
-			activeMoveHeroId: state.activeMoveHeroId,
+			activeMoveUnitId: state.activeMoveUnitId,
 			moveHero: state.moveHero,
 			setActiveMoveHeroId: state.setActiveMoveHeroId,
 			usedMovesThisTurn: state.usedMovesThisTurn,
@@ -68,17 +71,12 @@ export function BattleGrid() {
 
 	const isEnemyTurn =
 		!activeCard &&
-		!activeMoveHeroId &&
 		aliveHeroesCount > 0 &&
 		Object.keys(usedCardsThisTurn).length === aliveHeroesCount;
 
 	// --- 1. RANGE CALCULATIONS ---
 	let validTargetCells: GridPosition[] = [];
-	let isTargetingEnemy = false;
-	let isTargetingAlly = false;
-	let isTargetingEmpty = false;
-	let canTargetSelf = false;
-	let isMoving = false;
+	let targeting: Targeting = "none";
 
 	const cardToPreview = activeCard
 		? activeCard.card
@@ -87,57 +85,64 @@ export function BattleGrid() {
 			: null;
 
 	const previewCaster = activeCard
-		? heroes.find((h) => h.id === activeCard.heroId)
+		? heroes.find((h) => h.id === activeCard.unitId)
 		: heroes.find((h) => h.id === hoveredCard?.heroId);
 
-	// Combine all figures to act as solid obstacles for movement/spawning
 	const allObstacles = [...monsters, ...heroes, ...summons];
+	const allyFaction = [
+		...heroes,
+		...summons.filter(({ allegiance }) => allegiance === "PLAYER"),
+	];
+	const enemyFaction = [
+		...monsters,
+		...summons.filter(({ allegiance }) => allegiance === "ENEMY"),
+	];
 
 	// Handle Movement Range Calculation
-	if (activeMoveHeroId) {
-		const movingHero = heroes.find((h) => h.id === activeMoveHeroId);
+	if (activeMoveUnitId) {
+		const movingHero = heroes.find((h) => h.id === activeMoveUnitId);
 		if (movingHero) {
-			isMoving = true;
-			isTargetingEmpty = true;
-			canTargetSelf = false;
+			targeting = "cell";
 			validTargetCells = calculateReachableCells(
 				movingHero.gridPosition,
 				movingHero.baseMove,
-				allObstacles.filter((o) => o.id !== movingHero.id), // Ignore self when checking collision
-				true,
-			);
+				enemyFaction,
+				false,
+			).filter((cell) => !isTileOccupied(cell, allyFaction));
 		}
 	}
 	// Handle Card Range Calculation
 	else if (cardToPreview && previewCaster) {
 		const req = cardToPreview.playRequirement;
-		isTargetingEnemy = req === "requires_enemy";
-		isTargetingAlly =
-			req === "requires_ally" || req === "requires_ally_or_self";
-		isTargetingEmpty =
-			req === "requires_empty_cell" || req === "requires_empty_cell_or_self";
-		canTargetSelf =
-			req === "requires_ally_or_self" || req === "requires_empty_cell_or_self";
+		if (req === "requires_enemy") {
+			targeting = "enemy";
+		}
+		if (req === "requires_ally") {
+			targeting = "ally";
+		}
+		if (req === "requires_empty_cell") {
+			targeting = "cell";
+		}
 
-		if (isTargetingEmpty) {
+		if (targeting === "cell") {
 			validTargetCells = calculateReachableCells(
 				previewCaster.gridPosition,
 				cardToPreview.range,
 				allObstacles.filter((o) => o.id !== previewCaster.id),
-				canTargetSelf,
-			);
+			).filter((cell) => !isTileOccupied(cell, allObstacles));
 		} else {
+			const obstacles = targeting === "ally" ? allyFaction : enemyFaction;
 			validTargetCells = calculateAttackableCells(
 				previewCaster.gridPosition,
 				cardToPreview.range,
-				canTargetSelf,
-			);
+				targeting === "ally",
+			).filter((cell) => isTileOccupied<BattleUnit>(cell, obstacles));
 		}
 	}
 
 	useEffect(() => {
 		if (isEnemyTurn) {
-			const timeoutId = setTimeout(() => enemyAction(), 1000);
+			const timeoutId = setTimeout(() => enemyAction(), 200);
 			return () => clearTimeout(timeoutId);
 		}
 	}, [isEnemyTurn, enemyAction]);
@@ -147,23 +152,11 @@ export function BattleGrid() {
 			className={`grid ${tailwindGridCols[GRID_BOUNDS.cols]} gap-1 p-1 bg-zinc-900/80 rounded-lg border border-zinc-800 relative`}
 		>
 			{cells.map((cell) => {
-				const enemyInCell = monsters.find(
+				const unitInCell = [...monsters, ...heroes, ...summons].find(
 					(m) =>
 						m.currentHp > 0 &&
 						m.gridPosition.col === cell.col &&
 						m.gridPosition.row === cell.row,
-				);
-				const heroInCell = heroes.find(
-					(h) =>
-						h.currentHp > 0 &&
-						h.gridPosition.col === cell.col &&
-						h.gridPosition.row === cell.row,
-				);
-				const summonInCell = summons.find(
-					(s) =>
-						s.currentHp > 0 &&
-						s.gridPosition.col === cell.col &&
-						s.gridPosition.row === cell.row,
 				);
 
 				const isDanger = allDangerTiles.some(
@@ -177,24 +170,25 @@ export function BattleGrid() {
 					<GridCell
 						key={cell.id}
 						cell={cell}
-						enemyInCell={enemyInCell}
-						heroInCell={heroInCell}
-						summonInCell={summonInCell}
+						unitInCell={unitInCell}
 						isDanger={isDanger}
 						inRange={inRange}
-						isTargetingEmpty={isTargetingEmpty}
-						isTargetingEnemy={isTargetingEnemy}
-						isTargetingAlly={isTargetingAlly}
-						isMoving={isMoving}
-						canTargetSelf={canTargetSelf}
+						targeting={targeting}
 						hasActiveAction={!!activeCard}
-						previewCasterId={previewCaster?.id}
 						hoveredHeroId={hoveredCard?.heroId}
 						onResolveCard={resolveCard}
 						onMoveHero={moveHero}
-						activeMoveHeroId={activeMoveHeroId}
+						activeMoveHeroId={
+							activeMoveUnitId && isHeroId(activeMoveUnitId)
+								? activeMoveUnitId
+								: null
+						}
 						onSelectForMove={setActiveMoveHeroId}
-						hasMoved={heroInCell ? !!usedMovesThisTurn[heroInCell.id] : false}
+						hasMoved={
+							unitInCell && isHeroId(unitInCell.id)
+								? !!usedMovesThisTurn[unitInCell.id]
+								: false
+						}
 					/>
 				);
 			})}

@@ -43,13 +43,8 @@ export default function RewardScreen() {
 	);
 
 	const [initialRoster] = useState(roster);
-
-	// Track which heroes have finished their drafts
 	const [completedDrafts, setCompletedDrafts] = useState<
-		Record<
-			Hero["id"],
-			{ rune: RuneDraftOption; cardInstanceId: Card["id"] } | null
-		>
+		Record<Hero["id"], { rune: RuneDraftOption; cardInstanceId: Card["id"] }[]>
 	>({});
 
 	const sceneIdFromEncounter = encounterId
@@ -57,12 +52,13 @@ export default function RewardScreen() {
 		: null;
 	const sceneId = sceneIdFromEncounter ?? getOverride(currentNodeId, "onWin");
 
-	if (phase !== "REWARD") redirect("/");
+	if (phase !== "REWARD") {
+		setTimeout(() => redirect("/"), 300);
+	}
 	if (xpEarned === 0 || initialRoster.length === 0) {
 		setPhase(WorldMapNodes[currentNodeId].type === "TOWN" ? "TOWN" : "MAP");
 	}
 
-	// Check if ALL heroes have reported back (either drafted successfully, or reported null because they didn't need to draft)
 	const isReadyToClaim = initialRoster.every(
 		(h) => completedDrafts[h.id] !== undefined,
 	);
@@ -70,7 +66,6 @@ export default function RewardScreen() {
 	const handleClaimAndReturn = () => {
 		if (!isReadyToClaim) return;
 
-		// We pass the drafted runes into the claim action so the store can apply them
 		claimRewards(xpEarned, completedDrafts);
 		resetXpEarned();
 

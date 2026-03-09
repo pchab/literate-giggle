@@ -5,7 +5,7 @@ import { sceneId } from "../../domain/scenes.type";
 
 export const QUEST_DWARVEN_HIGHWAY = questId("dwarven_highway");
 
-export const DwarvenPassageQuest: Quest = {
+export const DWARVEN_PASSAGE_QUEST: Quest = {
 	id: QUEST_DWARVEN_HIGHWAY,
 	title: "The Sealed Passage",
 	loreDescription:

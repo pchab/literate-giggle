@@ -1,3 +1,4 @@
+import { summonId } from "@/modules/figures/helpers/figures.helpers";
 import type { Card } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
 
@@ -10,8 +11,8 @@ export const heroCardLibrary: Record<Card["id"], Card> = {
 		playRequirement: "requires_enemy",
 		effects: [{ type: "damage", amount: 2, target: "anchor" }],
 	},
-	[cardId("thorn_club")]: {
-		id: cardId("thorn_club"),
+	[cardId("thorn-club")]: {
+		id: cardId("thorn-club"),
 		name: "Thorn Club",
 		range: 1,
 		image: "/cards/club.png",
@@ -32,15 +33,15 @@ export const heroCardLibrary: Record<Card["id"], Card> = {
 		name: "Bandage",
 		range: 1,
 		image: "/cards/bandage.png",
-		playRequirement: "requires_ally_or_self",
+		playRequirement: "requires_ally",
 		effects: [{ type: "heal", amount: 1, target: "anchor" }],
 	},
-	[cardId("sylvan_balm")]: {
-		id: cardId("sylvan_balm"),
+	[cardId("sylvan-balm")]: {
+		id: cardId("sylvan-balm"),
 		name: "Sylvan Balm",
 		range: 1,
 		image: "/cards/bandage.png",
-		playRequirement: "requires_ally_or_self",
+		playRequirement: "requires_ally",
 		effects: [
 			{ type: "heal", amount: 1, target: "anchor" },
 			{
@@ -52,12 +53,12 @@ export const heroCardLibrary: Record<Card["id"], Card> = {
 			},
 		],
 	},
-	[cardId("fortifying_salve")]: {
-		id: cardId("fortifying_salve"),
+	[cardId("fortifying-salve")]: {
+		id: cardId("fortifying-salve"),
 		name: "Fortifying Salve",
 		range: 1,
 		image: "/cards/bandage.png",
-		playRequirement: "requires_ally_or_self",
+		playRequirement: "requires_ally",
 		effects: [
 			{ type: "heal", amount: 1, target: "anchor" },
 			{
@@ -111,20 +112,45 @@ export const heroCardLibrary: Record<Card["id"], Card> = {
 			},
 		],
 	},
-	[cardId("arcane-shield-1")]: {
-		id: cardId("arcane-shield-1"),
+	[cardId("arcane-shield")]: {
+		id: cardId("arcane-shield"),
 		name: "Arcane Shield",
 		range: 2,
 		image: "/cards/arcane-shield.png",
-		playRequirement: "requires_ally_or_self",
+		playRequirement: "requires_ally",
 		effects: [
 			{
 				type: "apply_status",
 				statusType: "perma_shield",
 				amount: 2,
-				target: "self",
+				target: "anchor",
 				duration: 999,
 			},
+		],
+	},
+	[cardId("summon-arcane-wisp")]: {
+		id: cardId("summon-arcane-wisp"),
+		name: "Summon Arcane Wisp",
+		range: 1,
+		image: "/cards/arcane-wisp.png",
+		playRequirement: "requires_empty_cell",
+		effects: [
+			{
+				type: "summon",
+				blueprintId: summonId("arcane-wisp"),
+				target: "anchor",
+			},
+		],
+	},
+	[cardId("summon-briar-wolf")]: {
+		id: cardId("summon-briar-wolf"),
+		name: "Summon Briar Wolf",
+		range: 1,
+		image: "/cards/briar-wolf.png",
+		playRequirement: "requires_empty_cell",
+		aiTargetPreference: "self",
+		effects: [
+			{ type: "summon", blueprintId: summonId("briar-wolf"), target: "anchor" },
 		],
 	},
 
@@ -170,7 +196,9 @@ export const heroCardLibrary: Record<Card["id"], Card> = {
 		range: 1,
 		image: "/cards/ice-wall.png",
 		playRequirement: "requires_empty_cell",
-		effects: [{ type: "summon", blueprintId: "ice_wall", target: "anchor" }],
+		effects: [
+			{ type: "summon", blueprintId: summonId("ice-wall"), target: "anchor" },
+		],
 	},
 
 	[cardId("cryomancer-placeholder")]: {
@@ -182,8 +210,8 @@ export const heroCardLibrary: Record<Card["id"], Card> = {
 		effects: [{ type: "damage", amount: 4, target: "anchor" }],
 	},
 
-	[cardId("knight-weapon")]: {
-		id: cardId("knight-weapon"),
+	[cardId("knight_weapon")]: {
+		id: cardId("knight_weapon"),
 		name: "Knight Weapon",
 		range: 1,
 		image: "/cards/knight.png",
@@ -191,8 +219,8 @@ export const heroCardLibrary: Record<Card["id"], Card> = {
 		effects: [{ type: "damage", amount: 6, target: "anchor" }],
 	},
 
-	[cardId("barbarian-weapon")]: {
-		id: cardId("barbarian-weapon"),
+	[cardId("barbarian_weapon")]: {
+		id: cardId("barbarian_weapon"),
 		name: "Barbarian Weapon",
 		range: 1,
 		image: "/cards/barbarian.png",
@@ -200,8 +228,8 @@ export const heroCardLibrary: Record<Card["id"], Card> = {
 		effects: [{ type: "damage", amount: 6, target: "anchor" }],
 	},
 
-	[cardId("archer-weapon")]: {
-		id: cardId("archer-weapon"),
+	[cardId("archer_weapon")]: {
+		id: cardId("archer_weapon"),
 		name: "Archer Weapon",
 		range: 3,
 		image: "/cards/archer.png",
@@ -209,8 +237,8 @@ export const heroCardLibrary: Record<Card["id"], Card> = {
 		effects: [{ type: "damage", amount: 6, target: "anchor" }],
 	},
 
-	[cardId("pyromancer-weapon")]: {
-		id: cardId("pyromancer-weapon"),
+	[cardId("pyromancer_weapon")]: {
+		id: cardId("pyromancer_weapon"),
 		name: "Pyromancer Weapon",
 		range: 2,
 		image: "/cards/pyromancer.png",
@@ -218,8 +246,8 @@ export const heroCardLibrary: Record<Card["id"], Card> = {
 		effects: [{ type: "damage", amount: 6, target: "anchor" }],
 	},
 
-	[cardId("cryomancer-weapon")]: {
-		id: cardId("cryomancer-weapon"),
+	[cardId("cryomancer_weapon")]: {
+		id: cardId("cryomancer_weapon"),
 		name: "Cryomancer Weapon",
 		range: 2,
 		image: "/cards/cryomancer.png",

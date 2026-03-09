@@ -48,9 +48,7 @@ export type AITargetPreference =
 export type PlayRequirement =
 	| "requires_enemy"
 	| "requires_ally"
-	| "requires_ally_or_self"
 	| "requires_empty_cell"
-	| "requires_empty_cell_or_self"
 	| "no_target";
 
 export type EffectTarget =

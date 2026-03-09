@@ -6,6 +6,7 @@ import { sceneId } from "../../domain/scenes.type";
 export const VERDANT_RECLAMATION = {
 	id: questId("verdant_reclamation"),
 	steps: {
+		war_rumors: questStepId("war_rumors"),
 		investigate_camp: questStepId("investigate_camp"),
 		report_attack: questStepId("report_attack"),
 		the_ultimatum: questStepId("the_ultimatum"),
@@ -28,6 +29,17 @@ export const VERDANT_RECLAMATION_QUEST: Quest = {
 		"The lumberjacks of Ironhold have pushed too far into the Whisperwood. The forest is pushing back.",
 	initialStepId: VERDANT_RECLAMATION.steps.investigate_camp,
 	steps: {
+		[VERDANT_RECLAMATION.steps.war_rumors]: {
+			id: VERDANT_RECLAMATION.steps.war_rumors,
+			logDescription: "Investigate rumors at the Ironhold tavern.",
+			targetNodeId: [
+				{
+					mapNodeId: mapNodeId("ironhold_city"),
+					locationId: townLocationId("ironhold_tavern"),
+				},
+			],
+			onEnterSceneId: sceneId("invasion_start"),
+		},
 		[VERDANT_RECLAMATION.steps.investigate_camp]: {
 			id: VERDANT_RECLAMATION.steps.investigate_camp,
 			logDescription:

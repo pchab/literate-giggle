@@ -9,7 +9,7 @@ export const skeleton: Omit<
 	maxHp: 10,
 	baseMove: 2,
 	baseDef: 0,
-	xpReward: 10,
+	xpReward: 5,
 	intentPool: [
 		{
 			cardId: cardId("skel_slash"),

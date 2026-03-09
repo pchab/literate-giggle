@@ -35,8 +35,8 @@ export function resolveCard(
 	}) => {
 		if (!activeCard) return {};
 
-		const { heroId, card } = activeCard;
-		const hero = heroes.find((h) => h.id === heroId);
+		const { unitId, card } = activeCard;
+		const hero = heroes.find((h) => h.id === unitId);
 		if (!hero) return {};
 
 		let draftHeroes = [...heroes];
@@ -145,8 +145,8 @@ export function resolveCard(
 				draftSummons,
 				enemyIntents,
 			),
-			usedCardsThisTurn: { ...usedCardsThisTurn, [heroId]: card },
-			usedMovesThisTurn: { ...usedMovesThisTurn, [heroId]: true },
+			usedCardsThisTurn: { ...usedCardsThisTurn, [hero.id]: card },
+			usedMovesThisTurn: { ...usedMovesThisTurn, [hero.id]: true },
 			currentVfx: vfx,
 			xpEarned: xpEarned + xpEarnedThisTurn,
 		};

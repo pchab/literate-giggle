@@ -11,8 +11,8 @@ export function claimRewards(
 		Hero["id"],
 		{
 			rune: RuneDraftOption;
-			cardInstanceId: HeroCard["id"];
-		} | null
+			cardInstanceId: HeroCard["instanceId"];
+		}[]
 	>,
 ): WorldStoreServerAction {
 	return ({ roster, pendingPromotions, unlockedQuestsQueue }) => {
@@ -51,8 +51,7 @@ export function claimRewards(
 			}
 
 			// 2. Apply the drafted Power Rune (if they made a choice)
-			const draft = completedDraft[hero.id];
-			if (draft) {
+			completedDraft[hero.id].forEach((draft) => {
 				const { rune, cardInstanceId } = draft;
 				const deckIndex = newHero.deck.findIndex(
 					(c) => c.instanceId === cardInstanceId,
@@ -109,7 +108,7 @@ export function claimRewards(
 						newHero.selectedCards = newSelectedCards as Hero["selectedCards"];
 					}
 				}
-			}
+			});
 
 			return newHero;
 		});

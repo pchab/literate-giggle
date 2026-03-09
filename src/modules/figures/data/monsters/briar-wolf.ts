@@ -12,7 +12,7 @@ export const briarWolf: Omit<
 	xpReward: 5,
 	intentPool: [
 		{
-			cardId: cardId("monster_melee_attack"),
+			cardId: cardId("briar_bite"),
 			weight: 1,
 		},
 	],

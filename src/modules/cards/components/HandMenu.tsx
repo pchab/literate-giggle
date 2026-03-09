@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { useState } from "react";
+import { useShallow } from "zustand/shallow";
 import type { HeroCard } from "@/modules/cards/domain/cards.type";
 import type { Hero } from "@/modules/figures/domain/figures.type";
 import { RetroButton } from "@/modules/shared/components/RetroButton";
@@ -9,12 +10,13 @@ import { useWorldStore } from "@/modules/world/store/world.store";
 import { getComputedCard } from "../helpers/cards.helper";
 import { BattleCard } from "./BattleCard";
 
-interface HandMenuProps {
-	onSaveHand: (heroId: Hero["id"], newCards: Hero["selectedCards"]) => void;
-}
-
-export function HandMenu({ onSaveHand }: HandMenuProps) {
-	const roster = useWorldStore((state) => state.roster);
+export function HandMenu() {
+	const { roster, updateSelectedCards } = useWorldStore(
+		useShallow((state) => ({
+			roster: state.roster,
+			updateSelectedCards: state.updateSelectedCards,
+		})),
+	);
 
 	const initialHero = roster[0];
 	const [selectedHeroId, setSelectedHeroId] = useState<Hero["id"] | null>(
@@ -57,7 +59,7 @@ export function HandMenu({ onSaveHand }: HandMenuProps) {
 		const utility1 = draftCards[1] || draftCards[2];
 		const utility2 = draftCards[1] && draftCards[2] ? draftCards[2] : null;
 
-		onSaveHand(selectedHeroId, [weapon, utility1, utility2]);
+		updateSelectedCards(selectedHeroId, [weapon, utility1, utility2]);
 		// Optional: Add a little toast notification here!
 	};
 

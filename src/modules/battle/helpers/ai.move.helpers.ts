@@ -32,7 +32,7 @@ const calculateAIMove = <C extends AIBattleUnit, T extends BattleUnit>(
 		targetFigure.gridPosition,
 	);
 
-	const canTargetSelf = card.playRequirement === "requires_ally_or_self";
+	const canTargetSelf = card.playRequirement === "requires_ally";
 	const minRange = canTargetSelf ? 0 : 1;
 
 	if (distance >= minRange && distance <= card.range) {
@@ -134,10 +134,7 @@ export const getIdealTarget = <C extends AIBattleUnit, T extends BattleUnit>(
 		? playerAlignedTargets
 		: enemyAlignedObstacles;
 
-	const targetsAllies =
-		card.playRequirement === "requires_ally" ||
-		card.playRequirement === "requires_ally_or_self";
-	const canTargetSelf = card.playRequirement === "requires_ally_or_self";
+	const targetsAllies = card.playRequirement === "requires_ally";
 
 	const validTargetsToEvaluate = targetsAllies ? allyFaction : enemyFaction;
 	const obstaclesToAvoid = targetsAllies ? enemyFaction : allyFaction;
@@ -158,7 +155,7 @@ export const getIdealTarget = <C extends AIBattleUnit, T extends BattleUnit>(
 			]);
 
 			if (moveDest) {
-				const minRange = canTargetSelf ? 0 : 1;
+				const minRange = targetsAllies ? 0 : 1;
 				const canHit = isTargetInRange(
 					card,
 					minRange,

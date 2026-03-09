@@ -1,6 +1,7 @@
 import type { GridPosition } from "@/modules/battle/domain/grid.type";
 import { getManhattanDistance } from "@/modules/battle/helpers/grid.helpers";
 import type { BattleStoreServerAction } from "@/modules/battle/store/battle.store";
+import { isHeroId } from "@/modules/figures/helpers/figures.helpers";
 import { calculateAllIntents } from "./calculateAllIntents.command";
 
 export function moveHero(newPosition: GridPosition): BattleStoreServerAction {
@@ -9,12 +10,17 @@ export function moveHero(newPosition: GridPosition): BattleStoreServerAction {
 		monsters,
 		summons,
 		aiIntents: enemyIntents,
-		activeMoveHeroId,
+		activeMoveUnitId,
 		usedMovesThisTurn,
 	}) => {
-		if (!activeMoveHeroId || usedMovesThisTurn[activeMoveHeroId]) return {};
+		if (
+			!activeMoveUnitId ||
+			!isHeroId(activeMoveUnitId) ||
+			usedMovesThisTurn[activeMoveUnitId]
+		)
+			return {};
 
-		const heroId = activeMoveHeroId;
+		const heroId = activeMoveUnitId;
 		const hero = heroes.find((h) => h.id === heroId);
 		if (!hero) {
 			console.warn(`Hero with ID ${heroId} not found.`);
@@ -40,7 +46,7 @@ export function moveHero(newPosition: GridPosition): BattleStoreServerAction {
 
 		return {
 			heroes: newHeroes,
-			activeMoveHeroId: null,
+			activeMoveUnitId: null,
 			usedMovesThisTurn: { ...usedMovesThisTurn, [heroId]: true },
 			aiIntents: newIntents,
 		};

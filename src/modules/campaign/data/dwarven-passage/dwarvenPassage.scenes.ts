@@ -5,7 +5,7 @@ import { questStepId } from "../../domain/quests.type";
 import { type Scene, sceneId } from "../../domain/scenes.type";
 import { QUEST_DWARVEN_HIGHWAY } from "./dwarvenPassage.quest";
 
-export const NECROMANCER_SCENE_DB: Record<Scene["id"], Scene> = {
+export const DWARVEN_PASSAGE_SCENE_DB: Record<Scene["id"], Scene> = {
 	[sceneId("prospector_intro")]: {
 		id: sceneId("prospector_intro"),
 		initialStepId: "start",

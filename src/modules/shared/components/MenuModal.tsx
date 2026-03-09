@@ -2,8 +2,6 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { QuestTracker } from "@/modules/campaign/components/QuestTracker";
 import { HandMenu } from "@/modules/cards/components/HandMenu";
-import type { Card } from "@/modules/cards/domain/cards.type";
-import type { Hero } from "@/modules/figures/domain/figures.type";
 import { RetroPanel } from "./RetroPanel";
 
 type MenuTab = "HAND" | "QUESTS";
@@ -11,13 +9,9 @@ type MenuTab = "HAND" | "QUESTS";
 interface MenuModalProps {
 	isOpen: boolean;
 	onClose: () => void;
-	onSaveHand: (
-		heroId: Hero["id"],
-		newCards: [Card["id"], Card["id"], Card["id"] | null],
-	) => void;
 }
 
-export function MenuModal({ isOpen, onClose, onSaveHand }: MenuModalProps) {
+export function MenuModal({ isOpen, onClose }: MenuModalProps) {
 	const [activeTab, setActiveTab] = useState<MenuTab>("HAND");
 
 	// Reset tab to default whenever opened
@@ -41,7 +35,7 @@ export function MenuModal({ isOpen, onClose, onSaveHand }: MenuModalProps) {
 					initial={{ scale: 0.95, y: 20 }}
 					animate={{ scale: 1, y: 0 }}
 					exit={{ scale: 0.95, y: 20 }}
-					className="flex flex-col w-full max-w-6xl h-full max-h-[850px]"
+					className="flex flex-col w-full max-w-6xl h-full max-h-212.5"
 				>
 					<RetroPanel className="flex flex-col p-0 h-full overflow-hidden shadow-2xl">
 						{/* --- MASTER MENU NAVIGATION --- */}
@@ -52,7 +46,7 @@ export function MenuModal({ isOpen, onClose, onSaveHand }: MenuModalProps) {
 									onClick={() => setActiveTab("HAND")}
 									className={`px-8 py-4 font-pixel text-xl tracking-widest uppercase transition-all ${
 										activeTab === "HAND"
-											? "bg-zinc-900 text-amber-500 border-t-4 border-x-4 border-zinc-700 translate-y-[4px] pb-5"
+											? "bg-zinc-900 text-amber-500 border-t-4 border-x-4 border-zinc-700 translate-y-1 pb-5"
 											: "bg-zinc-950 text-zinc-500 border-t-4 border-x-4 border-transparent hover:text-zinc-300 hover:bg-zinc-900"
 									}`}
 								>
@@ -63,7 +57,7 @@ export function MenuModal({ isOpen, onClose, onSaveHand }: MenuModalProps) {
 									onClick={() => setActiveTab("QUESTS")}
 									className={`px-8 py-4 font-pixel text-xl tracking-widest uppercase transition-all ${
 										activeTab === "QUESTS"
-											? "bg-zinc-900 text-amber-500 border-t-4 border-x-4 border-zinc-700 translate-y-[4px] pb-5"
+											? "bg-zinc-900 text-amber-500 border-t-4 border-x-4 border-zinc-700 translate-y-1 pb-5"
 											: "bg-zinc-950 text-zinc-500 border-t-4 border-x-4 border-transparent hover:text-zinc-300 hover:bg-zinc-900"
 									}`}
 								>
@@ -82,8 +76,8 @@ export function MenuModal({ isOpen, onClose, onSaveHand }: MenuModalProps) {
 						</div>
 
 						{/* --- TAB CONTENT AREA --- */}
-						<div className="grow overflow-hidden relative min-h-[600px]">
-							{activeTab === "HAND" && <HandMenu onSaveHand={onSaveHand} />}
+						<div className="grow overflow-hidden relative min-h-150">
+							{activeTab === "HAND" && <HandMenu />}
 
 							{activeTab === "QUESTS" && (
 								<div className="absolute inset-0">

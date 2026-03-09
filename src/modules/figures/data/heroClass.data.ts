@@ -1,3 +1,6 @@
+import { QUEST_DWARVEN_HIGHWAY } from "@/modules/campaign/data/dwarven-passage/dwarvenPassage.quest";
+import { NECROMANCER_QUEST_ID } from "@/modules/campaign/data/necromancer/necromancer.quest";
+import { VERDANT_RECLAMATION } from "@/modules/campaign/data/verdant-reclamation/verdantReclamation.quest";
 import { cardId } from "@/modules/cards/helpers/cards.helper";
 import type {
 	ClassDefinition,
@@ -17,9 +20,8 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		name: "Hobo",
 		spriteBase: "heroes/hobo",
 		utilityCardChoices: [cardId("bandage-1")],
-		xpThresholds: [0, 5, 10, 15, 20, 25],
+		xpThresholds: [0, 1, 2, 3, 4, 5],
 		levelUpTriggers: [
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
 			[
 				{ type: "statsIncrease", amount: 1, stat: "hp" },
 				{
@@ -49,6 +51,10 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 					type: "classPromotion",
 					classId: ["MAGE", "FIGHTER", "ROGUE", "ARCHER"],
 				},
+				{
+					type: "unlockQuest",
+					questId: VERDANT_RECLAMATION.id,
+				},
 			],
 		],
 	},
@@ -67,7 +73,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 					oldCardId: cardId("club"),
 					newCardId: cardId("short-sword"),
 				},
-				// { type: "unlockQuest", questId: QUEST_DWARVEN_HIGHWAY },
+				{ type: "unlockQuest", questId: QUEST_DWARVEN_HIGHWAY },
 			],
 			[
 				{ type: "statsIncrease", amount: 1, stat: "hp" },
@@ -91,7 +97,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		id: "MAGE",
 		name: "Mage",
 		spriteBase: "heroes/mage",
-		utilityCardChoices: [cardId("arcane-shield"), cardId("push")],
+		utilityCardChoices: [cardId("arcane-shield"), cardId("summon-arcane-wisp")],
 		xpThresholds: [10, 20, 30, 40, 50],
 		levelUpTriggers: [
 			[
@@ -101,7 +107,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 					oldCardId: cardId("club"),
 					newCardId: cardId("apprentice-staff"),
 				},
-				// { type: "unlockQuest", questId: NECROMANCER_QUEST_ID },
+				{ type: "unlockQuest", questId: NECROMANCER_QUEST_ID },
 			],
 			[
 				{ type: "statsIncrease", amount: 1, stat: "hp" },

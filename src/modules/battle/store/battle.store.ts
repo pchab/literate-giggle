@@ -13,6 +13,7 @@ import type {
 	Summon,
 } from "@/modules/figures/domain/figures.type";
 import { cancelCard } from "./commands/cancelCard.command";
+import { endTurn } from "./commands/endTurn.command";
 import { initBattle } from "./commands/initBattle.command";
 import { moveHero } from "./commands/moveHero.command";
 import { resolveAIActions } from "./commands/resolveAIAction.command";
@@ -21,7 +22,7 @@ import { selectActiveMoveHero } from "./commands/selectActiveMoveHero.command";
 import { selectCard } from "./commands/selectCard.command";
 
 export type ActiveCardContext = {
-	heroId: Hero["id"];
+	unitId: BattleUnit["id"];
 	card: Card;
 };
 
@@ -30,7 +31,7 @@ export type BattleState = {
 	heroes: BattleHero[];
 	monsters: Monster[];
 	summons: Summon[];
-	activeMoveHeroId: Hero["id"] | null;
+	activeMoveUnitId: BattleUnit["id"] | null;
 	usedMovesThisTurn: Record<Hero["id"], boolean>;
 	activeCard: ActiveCardContext | null;
 	usedCardsThisTurn: Record<Hero["id"], Card["id"]>;
@@ -51,6 +52,7 @@ type BattleAction = {
 	moveHero: (newPosition: GridPosition) => void;
 	selectCard: (heroId: Hero["id"], card: Card) => void;
 	cancelCard: () => void;
+	endTurn: (heroId: Hero["id"]) => void;
 	resolveCard: (anchorTargetId: AnchorTarget | null) => void;
 	enemyAction: () => Promise<void>;
 	setHoveredCard: (hovered: { heroId: Hero["id"]; card: Card } | null) => void;
@@ -64,7 +66,7 @@ const initialState: BattleState = {
 	monsters: [],
 	aiIntents: {},
 	activeCard: null,
-	activeMoveHeroId: null,
+	activeMoveUnitId: null,
 	usedMovesThisTurn: {},
 	usedCardsThisTurn: {},
 	hoveredCard: null,
@@ -90,6 +92,7 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 			selectCard: (heroId, card) => set(selectCard(heroId, card)),
 			cancelCard: () => set(cancelCard()),
 			resolveCard: (anchorTargetId) => set(resolveCard(anchorTargetId)),
+			endTurn: (heroId) => set(endTurn(heroId)),
 			setActiveMoveHeroId: (heroId) => set(selectActiveMoveHero(heroId)),
 			moveHero: (newPosition) => set(moveHero(newPosition)),
 			enemyAction: async () => {

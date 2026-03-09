@@ -27,7 +27,7 @@ export function Hand({ id: heroId, hand }: Pick<BattleHero, "id" | "hand">) {
 	);
 
 	return (
-		<div className="w-full h-32 flex justify-end items-center gap-3 px-4">
+		<div className="w-full h-32 flex justify-end items-center gap-3 pr-4">
 			{hand.map((card, index) => {
 				if (!card) {
 					return (
@@ -43,7 +43,7 @@ export function Hand({ id: heroId, hand }: Pick<BattleHero, "id" | "hand">) {
 				}
 
 				const isSelected =
-					activeCard?.heroId === heroId && activeCard?.card.id === card.id;
+					activeCard?.unitId === heroId && activeCard?.card.id === card.id;
 				const hasUsedCard = !!usedCardsThisTurn[heroId];
 				const isPlayable = !hasUsedCard && (!activeCard || isSelected);
 

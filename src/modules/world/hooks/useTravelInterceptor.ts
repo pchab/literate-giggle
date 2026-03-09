@@ -73,7 +73,7 @@ export function useTravelInterceptor() {
 		setTimeout(() => {
 			setIsTraveling(false);
 			redirect("/");
-		}, 500);
+		}, 300);
 	};
 
 	return { handleNodeClick, isTraveling };
