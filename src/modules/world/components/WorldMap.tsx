@@ -36,13 +36,10 @@ export default function WorldMap() {
 		})),
 	);
 	const activeQuests = useCampaignStore((state) => state.activeQuests);
-
 	const { handleNodeClick, isTraveling } = useTravelInterceptor();
-
-	// --- NEW: State for the Loadout Modal ---
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
-
 	const dynamicNodes = useDynamicMap();
+
 	const nodes = Object.values(dynamicNodes);
 	const currentNode = dynamicNodes[currentNodeId];
 

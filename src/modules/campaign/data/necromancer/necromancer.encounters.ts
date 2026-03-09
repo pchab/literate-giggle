@@ -5,7 +5,7 @@ import { skeleton } from "@/modules/figures/data/monsters/skeleton.data";
 import { monsterId } from "@/modules/figures/helpers/figures.helpers";
 import { type Encounter, encounterId } from "../encounters.data";
 
-export const NecromancerEncounters: Record<string, Encounter> = {
+export const NECROMANCER_ENCOUNTER_DB: Record<string, Encounter> = {
 	[encounterId("bat_swarm")]: {
 		id: encounterId("bat_swarm"),
 		name: "Bat swarm",

@@ -66,7 +66,7 @@ export const resolveAIActions = async (get: StoreGet, set: StoreSet) => {
 				summons: actionResult.nextSummons,
 				currentVfx: actionResult.nextVfx,
 			}));
-			await sleep(800);
+			await sleep(300);
 		}
 	}
 

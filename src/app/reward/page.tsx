@@ -55,9 +55,6 @@ export default function RewardScreen() {
 	if (phase !== "REWARD") {
 		setTimeout(() => redirect("/"), 300);
 	}
-	if (xpEarned === 0 || initialRoster.length === 0) {
-		setPhase(WorldMapNodes[currentNodeId].type === "TOWN" ? "TOWN" : "MAP");
-	}
 
 	const isReadyToClaim = initialRoster.every(
 		(h) => completedDrafts[h.id] !== undefined,
@@ -70,8 +67,10 @@ export default function RewardScreen() {
 		resetXpEarned();
 
 		if (sceneId) {
-			setPhase("SCENE");
 			setActiveSceneId(sceneId);
+			setPhase("SCENE");
+		} else {
+			setPhase(WorldMapNodes[currentNodeId].type === "TOWN" ? "TOWN" : "MAP");
 		}
 	};
 

@@ -72,6 +72,7 @@ export interface WorldAction {
 	upgradeClassCards: (cardUpgrades: Record<Card["id"], Card["id"]>) => void;
 	clearUnlockedQuestsQueue: () => void;
 	healParty: (healAmount: number) => void;
+	rewardEvoRune: (runeId: EvolutionRuneId) => void;
 	forgeEvolution: (
 		heroId: Hero["id"],
 		cardInstanceId: string,
@@ -130,7 +131,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 			pendingPromotions: [],
 			pendingPowerRunes: [],
 			unlockedQuestsQueue: [],
-			evolutionRunesInventory: ["rune_iron", "rune_nature"],
+			evolutionRunesInventory: [],
 
 			setPhase: (phase) => set(setPhase(phase)),
 			travelToNode: (nodeId, dynamicMap) =>
@@ -158,6 +159,10 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 				set(upgradeClassCards(cardUpgrades)),
 			clearUnlockedQuestsQueue: () => set({ unlockedQuestsQueue: [] }),
 			healParty: (healAmount: number) => set(healParty(healAmount)),
+			rewardEvoRune: (runeId: EvolutionRuneId) => set(({ evolutionRunesInventory }) => {
+				evolutionRunesInventory.push(runeId);
+				return { evolutionRunesInventory };
+			}),
 			forgeEvolution: (heroId, cardInstanceId, runeId) =>
 				set((state) => forgeEvolution(state, heroId, cardInstanceId, runeId)),
 		}),

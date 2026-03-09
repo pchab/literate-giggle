@@ -7,6 +7,10 @@ import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
 import { useDynamicMap } from "@/modules/world/hooks/useDynamicMap";
 import { useWorldStore } from "@/modules/world/store/world.store";
 
+function redirectToPhase(path: string) {
+	setTimeout(() => redirect(path), 300);
+}
+
 export default function Home() {
 	const {
 		phase,
@@ -46,18 +50,18 @@ export default function Home() {
 	const currentNode = dynamicMap[currentNodeId];
 	switch (phase) {
 		case "MAP":
-			return redirect("/world");
+			return redirectToPhase("/world");
 		case "BATTLE": {
 			if (currentNode.encounterId) {
 				initBattle(roster, currentNode.encounterId, currentNode.background);
 			}
-			return redirect("/battle");
+			return redirectToPhase("/battle");
 		}
 		case "TOWN":
-			return redirect(`/towns/${currentNode.townId}`);
+			return redirectToPhase(`/towns/${currentNode.townId}`);
 		case "SCENE":
-			return redirect(`/scenes/${activeSceneId}`);
+			return redirectToPhase(`/scenes/${activeSceneId}`);
 		case "REWARD":
-			return redirect("/reward");
+			return redirectToPhase("/reward");
 	}
 }

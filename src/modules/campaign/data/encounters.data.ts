@@ -3,6 +3,8 @@ import type { Monster } from "@/modules/figures/domain/figures.type";
 import { monsterId } from "@/modules/figures/helpers/figures.helpers";
 import type { Scene } from "../domain/scenes.type";
 import { VERDANT_RECLAMATION_ENCOUNTER_DB } from "./verdant-reclamation/verdantReclamation.encounters";
+import { NECROMANCER_ENCOUNTER_DB } from './necromancer/necromancer.encounters';
+import { DWARVEN_PASSAGE_ENCOUNTER_DB } from './dwarven-passage/dwarvenPassage.encounters';
 
 export interface Encounter {
 	id: string & { __brand: "EncounterId" };
@@ -32,4 +34,6 @@ export const ENCOUNTER_DB: Record<string, Encounter> = {
 	},
 
 	...VERDANT_RECLAMATION_ENCOUNTER_DB,
+	...NECROMANCER_ENCOUNTER_DB,
+	...DWARVEN_PASSAGE_ENCOUNTER_DB,
 };

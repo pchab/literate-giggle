@@ -56,7 +56,7 @@ export function initBattle(
 			summons: [],
 			aiIntents: initialIntents,
 			activeCard: null,
-			activeMoveHeroId: null,
+			activeMoveUnitId: null,
 			usedCardsThisTurn: {},
 			usedMovesThisTurn: {},
 			hoveredCard: null,

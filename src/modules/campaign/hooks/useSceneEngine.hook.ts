@@ -17,13 +17,13 @@ export function useSceneEngine(setLocalStep: (stepId: string) => void) {
 				setFlag: state.setFlag,
 			})),
 		);
-	const { currentNodeId, setPhase, roster, upgradeClassCards, travelToNode } =
+	const { currentNodeId, setPhase, roster, rewardEvoRune, travelToNode } =
 		useWorldStore(
 			useShallow((state) => ({
 				currentNodeId: state.currentNodeId,
 				setPhase: state.setPhase,
 				roster: state.roster,
-				upgradeClassCards: state.upgradeClassCards,
+				rewardEvoRune: state.rewardEvoRune,
 				travelToNode: state.travelToNode,
 			})),
 		);
@@ -59,9 +59,8 @@ export function useSceneEngine(setLocalStep: (stepId: string) => void) {
 				case "SET_FLAG":
 					setFlag(action.flagId);
 					break;
-				// --- WORLD/ROSTER MUTATIONS ---
-				case "UPGRADE_CLASS_CARDS":
-					upgradeClassCards(action.cardUpgrades);
+				case "REWARD_EVO_RUNE":
+					rewardEvoRune(action.evoRune);
 					break;
 				case "FORCE_MOVE":
 					travelToNode(action.nodeId, dynamicMap);
