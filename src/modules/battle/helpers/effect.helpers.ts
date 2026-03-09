@@ -4,7 +4,7 @@ import {
 	type CardEffect,
 	type EffectTarget,
 } from "@/modules/cards/domain/cards.type";
-import type { Figure, Summon } from "@/modules/figures/domain/figures.type";
+import type { BattleUnit, Summon } from "@/modules/figures/domain/figures.type";
 import {
 	isHeroId,
 	isMonsterId,
@@ -12,7 +12,7 @@ import {
 } from "@/modules/figures/helpers/figures.helpers";
 
 type CasterFaction = "HERO" | "MONSTER";
-export function getCasterFaction<T extends Figure>(caster: T): CasterFaction {
+export function getCasterFaction<T extends BattleUnit>(caster: T): CasterFaction {
 	if (isHeroId(caster.id)) return "HERO";
 	if (isMonsterId(caster.id)) return "MONSTER";
 	if (isSummon(caster)) {
@@ -26,7 +26,7 @@ function filterSummonByFaction(faction: CasterFaction) {
 		faction === "HERO" ? allegiance === "PLAYER" : allegiance === "ENEMY";
 }
 
-export function resolveTargets<T extends Figure>(
+export function resolveTargets<T extends BattleUnit>(
 	targetType: EffectTarget,
 	anchorTargetId: AnchorTarget | null,
 	casterId: T["id"],
@@ -115,7 +115,7 @@ export function resolveTargets<T extends Figure>(
 	return [];
 }
 
-export function applyDamageToEntity<T extends Figure>(
+export function applyDamageToEntity<T extends BattleUnit>(
 	entity: T,
 	baseDamage: number,
 ): T {
@@ -162,7 +162,7 @@ export function applyDamageToEntity<T extends Figure>(
 	};
 }
 
-export function applyEffectToEntity<T extends Figure>(
+export function applyEffectToEntity<T extends BattleUnit>(
 	entity: T,
 	effect: CardEffect,
 ): T {
@@ -207,7 +207,7 @@ export function applyEffectToEntity<T extends Figure>(
 	return entity;
 }
 
-export function tickStatuses<T extends Figure>(figures: T[]): T[] {
+export function tickStatuses<T extends BattleUnit>(figures: T[]): T[] {
 	return figures.map((figure) => {
 		if (figure.currentHp <= 0) return figure;
 

@@ -10,7 +10,7 @@ import {
 	type SummonEffect,
 } from "@/modules/cards/domain/cards.type";
 import { summonLibrary } from "@/modules/figures/data/summons/summons.data";
-import type { Figure, Summon } from "@/modules/figures/domain/figures.type";
+import type { BattleUnit, Summon } from "@/modules/figures/domain/figures.type";
 import { summonId } from "@/modules/figures/helpers/figures.helpers";
 import type { VfxType } from "../domain/vfx.type";
 import {
@@ -23,8 +23,8 @@ import { isTileInBounds } from "./grid.helpers";
 import { getVfxForEffect } from "./vfx.helper";
 
 interface EffectResolverParams<
-	C extends Figure,
-	T extends Figure,
+	C extends BattleUnit,
+	T extends BattleUnit,
 	E extends CardEffect,
 > {
 	effect: E;
@@ -34,12 +34,12 @@ interface EffectResolverParams<
 	vfx: Record<string, VfxType>;
 	patternCells?: { col: number; row: number }[];
 }
-interface EffectResolverReturn<T extends Figure> {
+interface EffectResolverReturn<T extends BattleUnit> {
 	figures: T[];
 	vfx: Record<string, VfxType>;
 }
 
-export function resolveMoveEffect<T extends Figure>({
+export function resolveMoveEffect<T extends BattleUnit>({
 	effect,
 	anchorTargetId,
 	caster,
@@ -63,7 +63,7 @@ export function resolveMoveEffect<T extends Figure>({
 	return { figures, vfx };
 }
 
-export function resolveSummonEffect<T extends Figure>({
+export function resolveSummonEffect<T extends BattleUnit>({
 	effect,
 	anchorTargetId,
 	caster,
@@ -96,7 +96,7 @@ export function resolveSummonEffect<T extends Figure>({
 	return { figures: summons, vfx };
 }
 
-export function resolveStandardEffect<T extends Figure>({
+export function resolveStandardEffect<C extends BattleUnit, T extends BattleUnit>({
 	effect,
 	anchorTargetId,
 	caster,
@@ -104,7 +104,7 @@ export function resolveStandardEffect<T extends Figure>({
 	vfx,
 	patternCells,
 }: EffectResolverParams<
-	T,
+	C,
 	T,
 	DamageEffect | HealEffect | ApplyStatusEffect
 >): EffectResolverReturn<T> {
@@ -130,14 +130,14 @@ export function resolveStandardEffect<T extends Figure>({
 	return { figures: updatedFigures, vfx };
 }
 
-export function resolvePushEffect<T extends Figure>({
+export function resolvePushEffect<C extends BattleUnit, T extends BattleUnit>({
 	effect,
 	anchorTargetId,
 	caster,
 	figures,
 	vfx,
 	patternCells,
-}: EffectResolverParams<T, T, PushEffect>): EffectResolverReturn<T> {
+}: EffectResolverParams<C, T, PushEffect>): EffectResolverReturn<T> {
 	const draftFigures = [...figures];
 	const targets = resolveTargets(
 		effect.target,
@@ -148,7 +148,7 @@ export function resolvePushEffect<T extends Figure>({
 	);
 	const { col: cX, row: cY } = caster.gridPosition;
 
-	const processPush = <T extends Figure>(entity: T) => {
+	const processPush = <T extends BattleUnit>(entity: T) => {
 		const { col: tX, row: tY } = entity.gridPosition;
 		const dx = Math.sign(tX - cX);
 		const dy = Math.sign(tY - cY);

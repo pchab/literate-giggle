@@ -7,6 +7,12 @@ import {
 } from "../../../campaign/data/encounters.data";
 import { calculateAllIntents } from "./calculateAllIntents.command";
 
+const startingGridPosition = [
+	{ col: 1, row: 0 },
+	{ col: 0, row: 1 },
+	{ col: 1, row: 1 },
+]
+
 export function initBattle(
 	roster: Hero[],
 	encounterId: Encounter["id"],
@@ -23,7 +29,7 @@ export function initBattle(
 		const freshMonsters = encounter.generateMonsters();
 
 		const initialIntents = calculateAllIntents(roster, freshMonsters, [], {});
-		const battleRoster: BattleHero[] = roster.map((hero) => {
+		const battleRoster: BattleHero[] = roster.map((hero, index) => {
 			const [card1, card2, card3] = hero.selectedCards
 				.filter((c) => !!c)
 				.map(getComputedCard);
@@ -32,6 +38,8 @@ export function initBattle(
 			}
 			return {
 				...hero,
+				gridPosition: startingGridPosition[index],
+				statuses: [],
 				hand: [card1, card2, card3],
 			};
 		});

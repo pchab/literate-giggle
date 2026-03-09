@@ -1,6 +1,6 @@
 import { cardLibrary } from "@/modules/cards/data/cards.data";
 import type {
-	Figure,
+	BattleUnit,
 	Hero,
 	Monster,
 	Summon,
@@ -17,9 +17,9 @@ export function calculateAllIntents(
 	heroes: Hero[],
 	monsters: Monster[],
 	summons: Summon[],
-	existingIntents: Record<Figure["id"], AIIntent> = {},
-): Record<Figure["id"], AIIntent> {
-	const intents: Record<Figure["id"], AIIntent> = {};
+	existingIntents: Record<BattleUnit["id"], AIIntent> = {},
+): Record<BattleUnit["id"], AIIntent> {
+	const intents: Record<BattleUnit["id"], AIIntent> = {};
 	const simulatedMonsters = [...monsters];
 	const simulatedSummons = [...summons];
 	const heroAlignedSummons = simulatedSummons.filter(

@@ -1,4 +1,4 @@
-import type { Figure, Hero, Monster, Summon } from "../domain/figures.type";
+import type { BattleHero, BattleUnit, Hero, Monster, Summon } from "../domain/figures.type";
 
 export function heroId(numericOrUuid: string | number): Hero["id"] {
 	return `hero-${numericOrUuid}` as Hero["id"];
@@ -24,19 +24,19 @@ export function isSummonId(id: string): id is Summon["id"] {
 	return id.startsWith("summon-");
 }
 
-export function isHero(entity: Figure): entity is Hero {
+export function isHero(entity: BattleUnit): entity is BattleHero {
 	return isHeroId(entity.id);
 }
 
-export function isMonster(entity: Figure): entity is Monster {
+export function isMonster(entity: BattleUnit): entity is Monster {
 	return isMonsterId(entity.id);
 }
 
-export function isSummon(entity: Figure): entity is Summon {
+export function isSummon(entity: BattleUnit): entity is Summon {
 	return isSummonId(entity.id);
 }
 
-export function getBlockFromStatuses(statuses: Hero["statuses"]): number {
+export function getBlockFromStatuses(statuses: BattleHero["statuses"]): number {
 	return statuses.reduce((block, status) => {
 		if (["temp_block", "perma_shield"].includes(status.type)) {
 			return block + status.amount;

@@ -1,8 +1,5 @@
 import type {
-	Figure,
-	Hero,
-	Monster,
-	Summon,
+	BattleUnit,
 } from "../../figures/domain/figures.type";
 import type { GridPosition } from "../domain/grid.type";
 
@@ -15,7 +12,7 @@ export function getCellId(pos: GridPosition): string {
 	return `${pos.row}-${pos.col}`;
 }
 
-export const isTileOccupied = <T extends Figure>(
+export const isTileOccupied = <T extends BattleUnit>(
 	pos: GridPosition,
 	figures: T[],
 ) => {
@@ -43,10 +40,10 @@ export const isTileInBounds = (pos: GridPosition) => {
 	);
 };
 
-export const calculateReachableCells = (
+export const calculateReachableCells = <T extends BattleUnit>(
 	startPos: GridPosition,
 	moveValue: number,
-	figures: (Hero | Monster | Summon)[],
+	figures: T[],
 	canTargetSelf: boolean = false,
 ): GridPosition[] => {
 	if (moveValue <= 0) return [];

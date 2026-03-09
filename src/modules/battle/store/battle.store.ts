@@ -7,7 +7,7 @@ import type { Encounter } from "@/modules/campaign/data/encounters.data";
 import type { AnchorTarget, Card } from "@/modules/cards/domain/cards.type";
 import type {
 	BattleHero,
-	Figure,
+	BattleUnit,
 	Hero,
 	Monster,
 	Summon,
@@ -34,7 +34,7 @@ export type BattleState = {
 	usedMovesThisTurn: Record<Hero["id"], boolean>;
 	activeCard: ActiveCardContext | null;
 	usedCardsThisTurn: Record<Hero["id"], Card["id"]>;
-	aiIntents: Record<Figure["id"], AIIntent>;
+	aiIntents: Record<BattleUnit["id"], AIIntent>;
 	hoveredCard: { heroId: Hero["id"]; card: Card } | null;
 	currentVfx: Record<string, VfxType>; // key is cell id
 	xpEarned: number;

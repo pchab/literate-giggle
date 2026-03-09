@@ -4,9 +4,9 @@ import {
 	isHeroId,
 	isMonsterId,
 } from "@/modules/figures/helpers/figures.helpers";
-import type { Figure, Hero, Monster } from "../../figures/domain/figures.type";
+import type { BattleUnit, Hero, Monster } from "../../figures/domain/figures.type";
 
-export type AnchorTarget = Figure["id"] | GridPosition;
+export type AnchorTarget = BattleUnit["id"] | GridPosition;
 
 export function anchorIsGridPosition(
 	anchorTarget: AnchorTarget,

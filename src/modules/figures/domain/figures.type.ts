@@ -15,10 +15,19 @@ export interface Figure {
 	maxHp: number;
 	baseDef: number;
 	baseMove: number;
-	// battle stats
+}
+
+export interface BattleUnit extends Figure {
 	currentHp: number;
 	gridPosition: GridPosition;
 	statuses: Status[];
+}
+
+export interface AIBattleUnit extends BattleUnit {
+	intentPool: {
+		cardId: Card["id"];
+		weight: number;
+	}[];
 }
 
 export interface Hero extends Figure {
@@ -27,32 +36,24 @@ export interface Hero extends Figure {
 	deck: HeroCard[];
 	selectedCards: [HeroCard, HeroCard | null, HeroCard | null];
 	passives: string[];
+	currentHp: number;
 	currentXp: number;
 	currentLevel: number;
 }
 
-export interface Monster extends Figure {
+export interface BattleHero extends BattleUnit {
+	id: string & { readonly __brand: "HeroId" };
+	hand: Hand;
+}
+
+export interface Monster extends AIBattleUnit {
 	id: string & { readonly __brand: "MonsterId" };
-
-	intentPool: {
-		cardId: Card["id"];
-		weight: number;
-	}[];
-
 	xpReward: number;
 }
 
 export type Allegiance = "PLAYER" | "ENEMY" | "NEUTRAL";
 
-export interface Summon extends Figure {
+export interface Summon extends AIBattleUnit {
 	id: string & { readonly __brand: "SummonId" };
 	allegiance: Allegiance;
-
-	intentPool: {
-		cardId: Card["id"];
-		weight: number;
-	}[];
 }
-export type BattleHero = Hero & {
-	hand: Hand;
-};

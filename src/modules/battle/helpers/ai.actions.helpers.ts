@@ -5,9 +5,8 @@ import {
 import type { BattleState } from "@/modules/battle/store/battle.store";
 import type { Card } from "@/modules/cards/domain/cards.type";
 import type {
-	Figure,
-	Monster,
-	Summon,
+	AIBattleUnit,
+	BattleUnit,
 } from "@/modules/figures/domain/figures.type";
 import {
 	isHero,
@@ -25,9 +24,9 @@ import {
 	resolveSummonEffect,
 } from "./effect.resolvers";
 
-export function handleAICardIntent(
+export function handleAICardIntent<C extends AIBattleUnit>(
 	state: BattleState,
-	attacker: Monster | Summon,
+	attacker: C,
 	card: Card,
 ) {
 	const { heroes, monsters, summons } = state;
@@ -77,7 +76,7 @@ export function handleAICardIntent(
 		finalTargetPos,
 		moveDest,
 	);
-	const anchorTargetId: Figure["id"] = collision
+	const anchorTargetId: BattleUnit["id"] = collision
 		? collision.id
 		: reachableTarget.id;
 

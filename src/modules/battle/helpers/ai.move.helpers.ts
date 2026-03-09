@@ -5,9 +5,8 @@ import {
 	isSummon,
 } from "@/modules/figures/helpers/figures.helpers";
 import type {
-	Figure,
-	Monster,
-	Summon,
+	AIBattleUnit,
+	BattleUnit,
 } from "../../figures/domain/figures.type";
 import type { GridPosition } from "../domain/grid.type";
 import {
@@ -18,8 +17,8 @@ import {
 	rotatePattern,
 } from "./grid.helpers";
 
-const calculateAIMove = <T extends Figure>(
-	monster: Monster | Summon,
+const calculateAIMove = <C extends AIBattleUnit, T extends BattleUnit>(
+	monster: C,
 	targetFigure: T,
 	card: Card,
 	figures: T[],
@@ -54,7 +53,7 @@ const calculateAIMove = <T extends Figure>(
 	return fullPath[stepsToTake - 1];
 };
 
-const calculatePathToTarget = <T extends Figure>(
+const calculatePathToTarget = <T extends BattleUnit>(
 	startPos: GridPosition,
 	targetPos: GridPosition,
 	card: Card,
@@ -105,8 +104,8 @@ const calculatePathToTarget = <T extends Figure>(
 	return [];
 };
 
-export const getIdealTarget = <T extends Figure>(
-	aiFigure: Monster | Summon,
+export const getIdealTarget = <C extends AIBattleUnit, T extends BattleUnit>(
+	aiFigure: C,
 	card: Card,
 	figures: T[],
 ) => {
@@ -143,7 +142,7 @@ export const getIdealTarget = <T extends Figure>(
 	const validTargetsToEvaluate = targetsAllies ? allyFaction : enemyFaction;
 	const obstaclesToAvoid = targetsAllies ? enemyFaction : allyFaction;
 
-	const orderedTargets = getOrderedTargets<T>(
+	const orderedTargets = getOrderedTargets<C, T>(
 		aiFigure,
 		card,
 		validTargetsToEvaluate,
@@ -182,8 +181,8 @@ export const getIdealTarget = <T extends Figure>(
 	);
 };
 
-export function getOrderedTargets<T extends Figure>(
-	aiFigure: Monster | Summon,
+export function getOrderedTargets<C extends AIBattleUnit, T extends BattleUnit>(
+	aiFigure: C,
 	card: Card,
 	targets: T[],
 ): T[] {
@@ -217,7 +216,7 @@ export function isTargetInRange(
 	return distance >= minRange && distance <= card.range;
 }
 
-export function getActualTarget<T extends Figure>(
+export function getActualTarget<T extends BattleUnit>(
 	attackerPos: GridPosition,
 	intendedTargetPos: GridPosition,
 	figures: T[],
