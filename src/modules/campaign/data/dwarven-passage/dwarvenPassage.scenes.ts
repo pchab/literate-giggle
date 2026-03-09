@@ -1,5 +1,4 @@
 import { encounterId } from "@/modules/campaign/data/encounters.data";
-import { cardId } from "@/modules/cards/helpers/cards.helper";
 import { mapNodeId } from "@/modules/world/domain/map.types";
 import { questStepId } from "../../domain/quests.type";
 import { type Scene, sceneId } from "../../domain/scenes.type";
@@ -115,11 +114,8 @@ export const DWARVEN_PASSAGE_SCENE_DB: Record<Scene["id"], Scene> = {
 				onNext: [
 					{ type: "COMPLETE_QUEST", questId: QUEST_DWARVEN_HIGHWAY },
 					{
-						type: "UPGRADE_CLASS_CARDS",
-						cardUpgrades: {
-							[cardId("shield-block-1")]: cardId("shield-block-2"),
-							[cardId("battle-cry-1")]: cardId("battle-cry-2"),
-						},
+						type: "REWARD_EVO_RUNE",
+						evoRune: "rune_mountain",
 					},
 					{ type: "FORCE_MOVE", nodeId: mapNodeId("dwarven_passage") },
 					{ type: "END_SCENE" },

@@ -1,5 +1,5 @@
 import type { Encounter } from "@/modules/campaign/data/encounters.data";
-import type { Card } from "@/modules/cards/domain/cards.type";
+import type { EvolutionRuneId } from "@/modules/cards/data/evolutionRecipes.data";
 import type { HeroClass } from "@/modules/figures/domain/heroClass.types";
 import type { MapNode } from "@/modules/world/domain/map.types";
 import type { Quest, QuestStep } from "./quests.type";
@@ -19,8 +19,8 @@ export type SceneAction =
 	  }
 	| { type: "COMPLETE_QUEST"; questId: Quest["id"] }
 	| {
-			type: "UPGRADE_CLASS_CARDS";
-			cardUpgrades: Record<Card["id"], Card["id"]>;
+			type: "REWARD_EVO_RUNE";
+			evoRune: EvolutionRuneId;
 	  }
 	| { type: "SET_FLAG"; flagId: string }
 	| { type: "FORCE_MOVE"; nodeId: MapNode["id"] }

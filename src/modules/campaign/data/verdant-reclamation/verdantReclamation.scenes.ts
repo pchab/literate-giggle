@@ -1,4 +1,3 @@
-import { cardId } from "@/modules/cards/helpers/cards.helper";
 import { mapNodeId } from "@/modules/world/domain/map.types";
 import { type Scene, sceneId } from "../../domain/scenes.type";
 import { encounterId } from "../encounters.data";
@@ -541,27 +540,11 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 				backgroundImage: "/scenes/ironhold_throne_room.jpg",
 				choices: [
 					{
-						label: "Take the Vanguard Shield (Upgrades Shield Block)",
-						reqClass: "FIGHTER",
+						label: "Take the Iron rune.",
 						actions: [
 							{
-								type: "UPGRADE_CLASS_CARDS",
-								cardUpgrades: {
-									[cardId("shield_block")]: cardId("shield_slam"),
-								},
-							},
-							{ type: "SET_FLAG", flagId: "ironhold_saved" },
-							{ type: "COMPLETE_QUEST", questId: VERDANT_RECLAMATION.id },
-						],
-					},
-					{
-						label: "Take the Combat Medic Kit (Upgrades Bandage)",
-						actions: [
-							{
-								type: "UPGRADE_CLASS_CARDS",
-								cardUpgrades: {
-									[cardId("bandage")]: cardId("combat_medic_kit"),
-								},
+								type: "REWARD_EVO_RUNE",
+								evoRune: "rune_iron",
 							},
 							{ type: "SET_FLAG", flagId: "ironhold_saved" },
 							{ type: "COMPLETE_QUEST", questId: VERDANT_RECLAMATION.id },
@@ -581,27 +564,11 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 				backgroundImage: "/scenes/ironhold_throne_room_destroyed.jpg",
 				choices: [
 					{
-						label: "Embrace the Briar (Upgrades Shield Block)",
-						reqClass: "FIGHTER",
+						label: "Take the Nature rune.",
 						actions: [
 							{
-								type: "UPGRADE_CLASS_CARDS",
-								cardUpgrades: {
-									[cardId("shield_block")]: cardId("briar_carapace"),
-								},
-							},
-							{ type: "SET_FLAG", flagId: "ironhold_fallen" },
-							{ type: "COMPLETE_QUEST", questId: VERDANT_RECLAMATION.id },
-						],
-					},
-					{
-						label: "Embrace the Sap (Upgrades Bandage)",
-						actions: [
-							{
-								type: "UPGRADE_CLASS_CARDS",
-								cardUpgrades: {
-									[cardId("bandage")]: cardId("sylvan_regrowth"),
-								},
+								type: "REWARD_EVO_RUNE",
+								evoRune: "rune_nature",
 							},
 							{ type: "SET_FLAG", flagId: "ironhold_fallen" },
 							{ type: "COMPLETE_QUEST", questId: VERDANT_RECLAMATION.id },

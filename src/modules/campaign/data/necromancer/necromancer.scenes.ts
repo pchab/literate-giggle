@@ -1,5 +1,4 @@
 import { encounterId } from "@/modules/campaign/data/encounters.data";
-import { cardId } from "@/modules/cards/helpers/cards.helper";
 import { questStepId } from "../../domain/quests.type";
 import { type Scene, sceneId } from "../../domain/scenes.type";
 import { NECROMANCER_QUEST_ID } from "./necromancer.quest";
@@ -124,10 +123,8 @@ export const NECROMANCER_SCENE_DB: Record<Scene["id"], Scene> = {
 				onNext: [
 					{ type: "COMPLETE_QUEST", questId: NECROMANCER_QUEST_ID },
 					{
-						type: "UPGRADE_CLASS_CARDS",
-						cardUpgrades: {
-							[cardId("arcane-shield-1")]: cardId("arcane-shield-2"),
-						},
+						type: "REWARD_EVO_RUNE",
+						evoRune: "rune_arcane",
 					},
 					{ type: "END_SCENE" },
 				],
