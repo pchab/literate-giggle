@@ -12,14 +12,12 @@ export const WorldMapNodes: MapData = {
 		townId: townId("ironhold_city"),
 		position: { x: 58, y: 45 },
 		connectedNodeIds: ["northern_road", "crossroads", "kiven_river_bridge"],
-		background: "/battlegrounds/ironhold_peaceful.jpg",
 		variants: [
 			{
-				condition: { type: "HAS_FLAG", flagId: "aligned_with_forest" },
+				condition: { type: "HAS_FLAG", flagId: "ironhold_fallen" },
 				override: {
-					name: "Hostile Ironhold",
-					townId: townId("ironhold_assault"),
-					background: "/battlegrounds/ironhold_siege.jpg",
+					name: "Verdantreach (Former Ironhold)",
+					townId: townId("ironhold_elven"),
 				},
 			},
 			{
@@ -31,7 +29,6 @@ export const WorldMapNodes: MapData = {
 				override: {
 					name: "Ironhold (Under Siege)",
 					townId: townId("ironhold_defense"),
-					background: "/battlegrounds/ironhold_siege.jpg",
 				},
 			},
 		],

@@ -437,7 +437,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 		steps: {
 			intro: {
 				speaker: "Arch-Druid Sylas",
-				text: "Our wolves broke through this walls! Tear apart the tavern and let the wilds reclaim this land!",
+				text: "Our wolves broke through their walls! Tear apart the tavern and let the wilds reclaim this land!",
 				backgroundImage: "/scenes/rusty_boar_ruined.jpg",
 				choices: [
 					{
@@ -548,6 +548,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 							},
 							{ type: "SET_FLAG", flagId: "ironhold_saved" },
 							{ type: "COMPLETE_QUEST", questId: VERDANT_RECLAMATION.id },
+							{ type: "END_SCENE"},
 						],
 					},
 				],
@@ -572,6 +573,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 							},
 							{ type: "SET_FLAG", flagId: "ironhold_fallen" },
 							{ type: "COMPLETE_QUEST", questId: VERDANT_RECLAMATION.id },
+							{ type: "END_SCENE"},
 						],
 					},
 				],

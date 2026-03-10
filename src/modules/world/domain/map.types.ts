@@ -20,7 +20,7 @@ export interface MapNode {
 	position: { x: number; y: number }; // CSS percentages (0-100)
 	connectedNodeIds: string[];
 	encounterId?: Encounter["id"];
-	background: string;
+	background?: string;
 	townId?: TownData["id"];
 	unlockCondition?: CampaignCondition[];
 	variants?: Array<{

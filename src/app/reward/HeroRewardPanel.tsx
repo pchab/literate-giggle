@@ -253,7 +253,9 @@ export default function HeroRewardPanel({
 								.map(getComputedCard)
 								// Filter logic remains exactly the same...
 								.filter((card) => {
-									if (selectedRune.type === "bonusRange") return true;
+									if (selectedRune.type === "bonusRange") {
+										return card.range > 1;
+									}
 									return card.effects.some((effect) => {
 										if (
 											selectedRune.type === "bonusStatusAmount" ||

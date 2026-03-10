@@ -38,6 +38,26 @@ export const TOWN_DB: Record<TownData["id"], TownData> = {
 		],
 	},
 
+	[townId("ironhold_elven")]: {
+		id: townId("ironhold_elven"),
+		name: "Verdantreach (Former Ironhold)",
+		backgroundImage: "/towns/ironhold_elven.jpg",
+		locations: [
+			{
+				id: townLocationId("ironhold_inn"),
+				name: "City Inn (Rest)",
+				type: "HEAL",
+				position: { x: 48, y: 50 },
+			},
+			{
+				id: townLocationId("ironhold_forge"),
+				name: "Rune Forge",
+				type: "FORGE",
+				position: { x: 36, y: 72 },
+			},
+		],
+	},
+
 	// --- THE BASTION DEFENSE AGAINST THE ELVEN INVASION ---
 	[townId("ironhold_defense")]: {
 		id: townId("ironhold_defense"),
