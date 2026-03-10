@@ -1,0 +1,55 @@
+import { summonId } from "@/modules/figures/helpers/figures.helpers";
+import type { Card } from "../../domain/cards.type";
+import { cardId } from "../../helpers/cards.helper";
+
+export const mageCards: Record<Card["id"], Card> = {
+	[cardId("apprentice-staff")]: {
+		id: cardId("apprentice-staff"),
+		name: "Apprentice Staff",
+		range: 2,
+		image: "/cards/apprentice-staff.png",
+		playRequirement: "requires_enemy",
+		effects: [{ type: "damage", amount: 3, target: "anchor" }],
+	},
+	[cardId("arcane-shield")]: {
+		id: cardId("arcane-shield"),
+		name: "Arcane Shield",
+		range: 2,
+		image: "/cards/arcane-shield.png",
+		playRequirement: "requires_ally",
+		effects: [
+			{
+				type: "apply_status",
+				statusType: "perma_shield",
+				amount: 2,
+				target: "anchor",
+				duration: 999,
+			},
+		],
+	},
+	[cardId("summon-arcane-wisp")]: {
+		id: cardId("summon-arcane-wisp"),
+		name: "Summon Arcane Wisp",
+		range: 1,
+		image: "/cards/arcane-wisp.png",
+		playRequirement: "requires_empty_cell",
+		effects: [
+			{
+				type: "summon",
+				blueprintId: summonId("arcane-wisp"),
+				target: "anchor",
+			},
+		],
+	},
+	[cardId("summon-briar-wolf")]: {
+		id: cardId("summon-briar-wolf"),
+		name: "Summon Briar Wolf",
+		range: 1,
+		image: "/cards/briar-wolf.png",
+		playRequirement: "requires_empty_cell",
+		aiTargetPreference: "self",
+		effects: [
+			{ type: "summon", blueprintId: summonId("briar-wolf"), target: "anchor" },
+		],
+	},
+};
