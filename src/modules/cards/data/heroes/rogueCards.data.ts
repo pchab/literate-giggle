@@ -20,9 +20,11 @@ export const rogueCards: Record<Card["id"], Card> = {
 			{ type: "damage", amount: 4, target: "anchor" },
 			{
 				type: "apply_status",
-				statusType: "vulnerable",
-				amount: 2,
-				duration: 2,
+				status: {
+					type: "vulnerable",
+					amount: 2,
+					duration: 2,
+				},
 				target: "anchor",
 			},
 		],
@@ -47,9 +49,11 @@ export const rogueCards: Record<Card["id"], Card> = {
 		effects: [
 			{
 				type: "apply_status",
-				statusType: "poison",
-				amount: 2,
-				duration: 2,
+				status: {
+					type: "poison",
+					amount: 2,
+					duration: 2,
+				},
 				target: "anchor",
 			},
 		],
@@ -63,9 +67,11 @@ export const rogueCards: Record<Card["id"], Card> = {
 		effects: [
 			{
 				type: "apply_status",
-				statusType: "rooted",
-				amount: 1,
-				duration: 2,
+				status: {
+					type: "rooted",
+					amount: 1,
+					duration: 2,
+				},
 				target: "anchor",
 			},
 		],

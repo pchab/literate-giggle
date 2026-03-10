@@ -20,9 +20,11 @@ export const hoboCards: Record<Card["id"], Card> = {
 			{ type: "damage", amount: 2, target: "anchor" },
 			{
 				type: "apply_status",
-				statusType: "vulnerable",
-				amount: 2,
-				duration: 2,
+				status: {
+					type: "vulnerable",
+					amount: 2,
+					duration: 2,
+				},
 				target: "anchor",
 			},
 		],
@@ -45,9 +47,11 @@ export const hoboCards: Record<Card["id"], Card> = {
 			{ type: "heal", amount: 1, target: "anchor" },
 			{
 				type: "apply_status",
-				statusType: "regen",
-				amount: 1,
-				duration: 1,
+				status: {
+					type: "regen",
+					amount: 1,
+					duration: 1,
+				},
 				target: "anchor",
 			},
 		],
@@ -62,9 +66,11 @@ export const hoboCards: Record<Card["id"], Card> = {
 			{ type: "heal", amount: 1, target: "anchor" },
 			{
 				type: "apply_status",
-				statusType: "temp_block",
-				amount: 1,
-				duration: 1,
+				status: {
+					type: "temp_block",
+					amount: 1,
+					duration: 1,
+				},
 				target: "anchor",
 			},
 		],

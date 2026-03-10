@@ -4,7 +4,7 @@ import type { Quest } from "@/modules/campaign/domain/quests.type";
 import { initialDeck } from "@/modules/cards/data/cards.data";
 import type { EvolutionRuneId } from "@/modules/cards/data/evolutionRecipes.data";
 import type { Card } from "@/modules/cards/domain/cards.type";
-import { createHeroCard } from "@/modules/cards/helpers/cards.helper";
+import { cardId, createHeroCard } from "@/modules/cards/helpers/cards.helper";
 import { baseHeroStats } from "@/modules/figures/data/heroes/baseHeroStats";
 import type { Hero } from "@/modules/figures/domain/figures.type";
 import type {

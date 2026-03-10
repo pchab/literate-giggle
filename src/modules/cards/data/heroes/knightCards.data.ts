@@ -2,7 +2,7 @@ import type { Card } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
 
 export const knightCards: Record<Card["id"], Card> = {
-    [cardId("knight-placeholder")]: {
+	[cardId("knight-placeholder")]: {
 		id: cardId("knight-placeholder"),
 		name: "Knight Placeholder",
 		range: 1,
@@ -11,7 +11,7 @@ export const knightCards: Record<Card["id"], Card> = {
 		effects: [{ type: "damage", amount: 4, target: "anchor" }],
 	},
 
-    [cardId("knight_weapon")]: {
+	[cardId("knight_weapon")]: {
 		id: cardId("knight_weapon"),
 		name: "Knight Weapon",
 		range: 1,

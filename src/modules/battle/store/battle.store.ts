@@ -1,6 +1,9 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import type { GridPosition } from "@/modules/battle/domain/grid.type";
+import type {
+	GridPosition,
+	SurfaceData,
+} from "@/modules/battle/domain/grid.type";
 import type { AIIntent } from "@/modules/battle/domain/intent.type";
 import type { VfxType } from "@/modules/battle/domain/vfx.type";
 import type { Encounter } from "@/modules/campaign/data/encounters.data";
@@ -32,7 +35,7 @@ export type BattleState = {
 	monsters: Monster[];
 	summons: Summon[];
 	activeMoveUnitId: BattleUnit["id"] | null;
-	usedMovesThisTurn: Record<Hero["id"], boolean>;
+	usedMovesThisTurn: Record<Hero["id"], number>;
 	activeCard: ActiveCardContext | null;
 	usedCardsThisTurn: Record<Hero["id"], Card["id"]>;
 	aiIntents: Record<BattleUnit["id"], AIIntent>;
@@ -40,6 +43,7 @@ export type BattleState = {
 	currentVfx: Record<string, VfxType>; // key is cell id
 	xpEarned: number;
 	background: string;
+	surfaces: Record<string, SurfaceData>;
 };
 
 type BattleAction = {
@@ -74,6 +78,7 @@ const initialState: BattleState = {
 	currentVfx: {},
 	xpEarned: 0,
 	background: "",
+	surfaces: {},
 };
 
 export type BattleStoreServerAction = (

@@ -29,10 +29,12 @@ export const fighterCards: Record<Card["id"], Card> = {
 		effects: [
 			{
 				type: "apply_status",
-				statusType: "temp_block",
-				amount: 4,
+				status: {
+					type: "temp_block",
+					amount: 4,
+					duration: 1,
+				},
 				target: "self",
-				duration: 1,
 			},
 		],
 	},

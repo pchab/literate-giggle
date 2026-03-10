@@ -1,5 +1,8 @@
 import type { GridPosition } from "@/modules/battle/domain/grid.type";
-import { getManhattanDistance } from "@/modules/battle/helpers/grid.helpers";
+import {
+	getManhattanDistance,
+	resolveSurfaceEffectAndReturnBreak,
+} from "@/modules/battle/helpers/grid.helpers";
 import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
 import { isHeroId } from "@/modules/figures/helpers/figures.helpers";
 import { sleep } from "@/modules/shared/helpers/sleep";
@@ -10,11 +13,20 @@ export function moveHero(newPosition: GridPosition) {
 	return async (get: StoreGet, set: StoreSet) => {
 		const { activeMoveUnitId, usedMovesThisTurn, heroes, monsters, summons } =
 			get();
-		if (
-			!activeMoveUnitId ||
-			!isHeroId(activeMoveUnitId) ||
-			usedMovesThisTurn[activeMoveUnitId]
-		) {
+
+		if (!activeMoveUnitId || !isHeroId(activeMoveUnitId)) {
+			return {};
+		}
+		const heroId = activeMoveUnitId;
+		const hero = heroes.find((h) => h.id === heroId);
+		if (!hero) {
+			console.warn(`Hero with ID ${heroId} not found.`);
+			return {};
+		}
+
+		const moveAlreadyDone = usedMovesThisTurn[activeMoveUnitId] ?? 0;
+		const remainingMove = hero.baseMove - moveAlreadyDone;
+		if (remainingMove < 1) {
 			return {};
 		}
 
@@ -27,14 +39,8 @@ export function moveHero(newPosition: GridPosition) {
 			...summons.filter(({ allegiance }) => allegiance === "ENEMY"),
 		];
 
-		const heroId = activeMoveUnitId;
-		const hero = heroes.find((h) => h.id === heroId);
-		if (!hero) {
-			console.warn(`Hero with ID ${heroId} not found.`);
-			return {};
-		}
 		const distance = getManhattanDistance(newPosition, hero.gridPosition);
-		if (distance > hero.baseMove) {
+		if (distance > remainingMove) {
 			console.warn(
 				`Hero ${heroId} cannot move more than ${hero.baseMove} squares.`,
 			);
@@ -48,20 +54,21 @@ export function moveHero(newPosition: GridPosition) {
 		);
 
 		for (const step of path) {
+			const heroIndex = heroes.findIndex((h) => h.id === heroId);
+			if (heroIndex === -1) return { heroes };
+			const movingHero = { ...heroes[heroIndex], gridPosition: step };
 			set(({ heroes }) => {
-				const heroIndex = heroes.findIndex((h) => h.id === heroId);
-				if (heroIndex === -1) return { heroes };
-				const draftHero = { ...heroes[heroIndex], gridPosition: step };
-				return { heroes: heroes.with(heroIndex, draftHero) };
+				return { heroes: heroes.with(heroIndex, movingHero) };
 			});
 			await sleep(200);
 
-			// 🔮 FUTURE TRAP LOGIC GOES HERE 🔮
-			// const currentSurface = get().surfaces[`${step.row}-${step.col}`];
-			// if (currentSurface?.type === "TRAP") {
-			//   triggerTrap();
-			//   break; // Stops the loop so they don't finish moving!
-			// }
+			const shouldBreak = resolveSurfaceEffectAndReturnBreak(get, set)(
+				step,
+				movingHero,
+			);
+			if (shouldBreak) {
+				break;
+			}
 		}
 
 		return set(({ heroes, aiIntents, usedMovesThisTurn }) => {
@@ -72,7 +79,10 @@ export function moveHero(newPosition: GridPosition) {
 				aiIntents,
 			);
 			return {
-				usedMovesThisTurn: { ...usedMovesThisTurn, [heroId]: true },
+				usedMovesThisTurn: {
+					...usedMovesThisTurn,
+					[heroId]: moveAlreadyDone + distance,
+				},
 				aiIntents: newIntents,
 			};
 		});

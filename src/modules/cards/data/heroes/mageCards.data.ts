@@ -20,10 +20,12 @@ export const mageCards: Record<Card["id"], Card> = {
 		effects: [
 			{
 				type: "apply_status",
-				statusType: "perma_shield",
-				amount: 2,
+				status: {
+					type: "perma_shield",
+					duration: 999,
+					amount: 2,
+				},
 				target: "anchor",
-				duration: 999,
 			},
 		],
 	},

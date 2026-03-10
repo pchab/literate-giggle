@@ -38,21 +38,21 @@ export const resolveAIActions = async (get: StoreGet, set: StoreSet) => {
 	].filter((f) => f.currentHp > 0);
 
 	for (const aiFigure of allAIFigures) {
-        const state = get();
+		const state = get();
 
-        const freshAIFigure = [...state.monsters, ...state.summons].find(
-            (m) => m.id === aiFigure.id,
-        );
-        if (!freshAIFigure || freshAIFigure.currentHp <= 0) continue;
+		const freshAIFigure = [...state.monsters, ...state.summons].find(
+			(m) => m.id === aiFigure.id,
+		);
+		if (!freshAIFigure || freshAIFigure.currentHp <= 0) continue;
 
-        const intent = state.aiIntents[freshAIFigure.id];
-        if (!intent) continue;
+		const intent = state.aiIntents[freshAIFigure.id];
+		if (!intent) continue;
 
-        const cardToPlay = cardLibrary[intent.cardId];
-        if (!cardToPlay) continue;
+		const cardToPlay = cardLibrary[intent.cardId];
+		if (!cardToPlay) continue;
 
-        await handleAICardIntent(get, set, freshAIFigure.id, cardToPlay);
-    }
+		await handleAICardIntent(get, set, freshAIFigure.id, cardToPlay);
+	}
 
 	// ==========================================
 	// 3. START OF PLAYER TURN (Tick Hero statuses)

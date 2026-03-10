@@ -14,6 +14,7 @@ import {
 	resolvePushEffect,
 	resolveStandardEffect,
 	resolveSummonEffect,
+	resolveSurfaceEffect,
 } from "../../helpers/effect.resolvers";
 import { rotatePattern } from "../../helpers/grid.helpers";
 import type { BattleStoreServerAction } from "../battle.store";
@@ -31,6 +32,7 @@ export function resolveCard(
 		usedMovesThisTurn,
 		xpEarned,
 		aiIntents: enemyIntents,
+		surfaces,
 		...state
 	}) => {
 		if (!activeCard) return {};
@@ -42,6 +44,7 @@ export function resolveCard(
 		let draftHeroes = [...heroes];
 		let draftMonsters = [...monsters];
 		let draftSummons = [...summons];
+		let draftSurfaces = { ...surfaces };
 		const vfx: Record<string, VfxType> = {};
 
 		// --- 1. DETERMINE THE EPICENTER OF THE AOE ---
@@ -109,6 +112,13 @@ export function resolveCard(
 					draftSummons = pushResult.figures.filter((f) => isSummon(f));
 					break;
 				}
+				case "create_surface":
+					draftSurfaces = resolveSurfaceEffect({
+						effect,
+						anchorTargetId,
+						surfaces: draftSurfaces,
+					});
+					break;
 				default: {
 					const stdResult = resolveStandardEffect({
 						effect,
@@ -139,6 +149,7 @@ export function resolveCard(
 			heroes: draftHeroes,
 			monsters: remainingMonsters,
 			summons: draftSummons,
+			surfaces: draftSurfaces,
 			aiIntents: calculateAllIntents(
 				draftHeroes,
 				remainingMonsters,
@@ -146,7 +157,7 @@ export function resolveCard(
 				enemyIntents,
 			),
 			usedCardsThisTurn: { ...usedCardsThisTurn, [hero.id]: card },
-			usedMovesThisTurn: { ...usedMovesThisTurn, [hero.id]: true },
+			usedMovesThisTurn: { ...usedMovesThisTurn, [hero.id]: 99 },
 			currentVfx: vfx,
 			xpEarned: xpEarned + xpEarnedThisTurn,
 		};

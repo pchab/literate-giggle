@@ -10,6 +10,7 @@ import {
 	isMonsterId,
 	isSummon,
 } from "@/modules/figures/helpers/figures.helpers";
+import type { SurfaceData } from "../domain/grid.type";
 
 type CasterFaction = "HERO" | "MONSTER";
 export function getCasterFaction<T extends BattleUnit>(
@@ -179,25 +180,21 @@ export function applyEffectToEntity<T extends BattleUnit>(
 	if (effect.type === "apply_status") {
 		const newStatuses = [...entity.statuses];
 		const existingStatusIndex = newStatuses.findIndex(
-			(s) => s.type === effect.statusType,
+			(s) => s.type === effect.status.type,
 		);
 
 		if (existingStatusIndex !== -1) {
 			const current = newStatuses[existingStatusIndex];
 			newStatuses[existingStatusIndex] = {
 				...current,
-				amount: current.amount + effect.amount,
+				amount: current.amount + effect.status.amount,
 				duration:
-					current.duration === -1 || effect.duration === -1
+					current.duration === -1 || effect.status.duration === -1
 						? -1
-						: Math.max(current.duration, effect.duration),
+						: Math.max(current.duration, effect.status.duration),
 			};
 		} else {
-			newStatuses.push({
-				type: effect.statusType,
-				amount: effect.amount,
-				duration: effect.duration,
-			});
+			newStatuses.push(effect.status);
 		}
 
 		return { ...entity, statuses: newStatuses };
@@ -233,4 +230,30 @@ export function tickStatuses<T extends BattleUnit>(figures: T[]): T[] {
 			statuses: newStatuses,
 		};
 	});
+}
+
+export function applySurfaceEffect<T extends BattleUnit>({
+	unit,
+	surface,
+}: {
+	unit: T;
+	surface: SurfaceData;
+}) {
+	if (surface.damage) {
+		unit.currentHp -= surface.damage;
+	}
+
+	if (surface.status) {
+		applyEffectToEntity(unit, {
+			type: "apply_status",
+			status: surface.status,
+			target: "self",
+		});
+	}
+
+	if (surface.charges) {
+		surface.charges -= 1;
+	}
+
+	return { unit, surface };
 }

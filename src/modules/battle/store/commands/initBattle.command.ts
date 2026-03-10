@@ -54,6 +54,7 @@ export function initBattle(
 			heroes: battleRoster,
 			monsters: freshMonsters,
 			summons: [],
+			surfaces: {},
 			aiIntents: initialIntents,
 			activeCard: null,
 			activeMoveUnitId: null,

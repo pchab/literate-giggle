@@ -263,7 +263,7 @@ export default function HeroRewardPanel({
 										) {
 											return (
 												effect.type === "apply_status" &&
-												effect.statusType === selectedRune.statusType
+												effect.status.type === selectedRune.statusType
 											);
 										}
 										return (

@@ -3,6 +3,7 @@ import {
 	type ApplyStatusEffect,
 	anchorIsGridPosition,
 	type CardEffect,
+	type CreateSurfaceEffect,
 	type DamageEffect,
 	type HealEffect,
 	type MoveEffect,
@@ -12,14 +13,16 @@ import {
 import { summonLibrary } from "@/modules/figures/data/summons/summons.data";
 import type { BattleUnit, Summon } from "@/modules/figures/domain/figures.type";
 import { summonId } from "@/modules/figures/helpers/figures.helpers";
+import type { SurfaceData } from "../domain/grid.type";
 import type { VfxType } from "../domain/vfx.type";
+import type { BattleState } from "../store/battle.store";
 import {
 	applyDamageToEntity,
 	applyEffectToEntity,
 	getCasterFaction,
 	resolveTargets,
 } from "./effect.helpers";
-import { isTileInBounds } from "./grid.helpers";
+import { getCellId, isTileInBounds } from "./grid.helpers";
 import { getVfxForEffect } from "./vfx.helper";
 
 interface EffectResolverParams<
@@ -203,5 +206,36 @@ export function resolvePushEffect<C extends BattleUnit, T extends BattleUnit>({
 			targets.includes(figure.id) ? processPush(figure) : figure,
 		),
 		vfx,
+	};
+}
+
+export function resolveSurfaceEffect({
+	effect,
+	anchorTargetId,
+	surfaces,
+}: {
+	effect: CreateSurfaceEffect;
+	anchorTargetId: AnchorTarget | null;
+	surfaces: Record<string, SurfaceData>;
+}): BattleState["surfaces"] {
+	if (!anchorTargetId || !anchorIsGridPosition(anchorTargetId)) {
+		console.warn(
+			`Create surface effect ${effect.surfaceType} called on non cell anchor`,
+		);
+		return surfaces;
+	}
+	const cellId = getCellId(anchorTargetId);
+
+	return {
+		...surfaces,
+		[cellId]: {
+			position: anchorTargetId,
+			type: effect.surfaceType,
+			duration: effect.duration,
+			damage: effect.damage,
+			spriteBase: effect.spriteBase,
+			status: effect.status,
+			charges: effect.charges,
+		},
 	};
 }

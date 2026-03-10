@@ -1,5 +1,8 @@
-import type { GridPosition } from "@/modules/battle/domain/grid.type";
-import type { StatusType } from "@/modules/figures/domain/status.type";
+import type {
+	GridPosition,
+	SurfaceType,
+} from "@/modules/battle/domain/grid.type";
+import type { Status, StatusType } from "@/modules/figures/domain/status.type";
 import {
 	isHeroId,
 	isMonsterId,
@@ -96,10 +99,18 @@ export type SummonEffect = {
 
 export type ApplyStatusEffect = {
 	type: "apply_status";
-	statusType: StatusType;
-	amount: number;
-	duration: number;
+	status: Status;
 	target: EffectTarget;
+};
+
+export type CreateSurfaceEffect = {
+	type: "create_surface";
+	surfaceType: SurfaceType;
+	duration: number;
+	damage?: number;
+	status?: Status;
+	spriteBase: string;
+	charges?: number;
 };
 
 export type CardEffect =
@@ -108,7 +119,8 @@ export type CardEffect =
 	| HealEffect
 	| PushEffect
 	| SummonEffect
-	| ApplyStatusEffect;
+	| ApplyStatusEffect
+	| CreateSurfaceEffect;
 
 export type Card = {
 	id: string & { readonly __brand: "CardId" };

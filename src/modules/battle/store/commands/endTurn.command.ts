@@ -6,7 +6,7 @@ export function endTurn(heroId: BattleHero["id"]): BattleStoreServerAction {
 		return {
 			usedMovesThisTurn: {
 				...usedMovesThisTurn,
-				[heroId]: true,
+				[heroId]: 99,
 			},
 			usedCardsThisTurn: {
 				...usedCardsThisTurn,

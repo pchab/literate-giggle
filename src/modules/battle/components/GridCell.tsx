@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useShallow } from "zustand/shallow";
 import type { GridPosition } from "@/modules/battle/domain/grid.type";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
@@ -26,7 +27,7 @@ interface GridCellProps {
 	onResolveCard: (target: AnchorTarget | null) => void;
 	onMoveHero: (target: GridPosition) => void;
 	onSelectForMove: (heroId: BattleHero["id"] | null) => void;
-	hasMoved: boolean;
+	remainingMoves: number;
 }
 
 export function GridCell({
@@ -41,12 +42,13 @@ export function GridCell({
 	onMoveHero,
 	onSelectForMove,
 	activeMoveHeroId,
-	hasMoved,
+	remainingMoves,
 }: GridCellProps) {
-	const { currentVfx, setVfx } = useBattleStore(
+	const { currentVfx, setVfx, surfaces } = useBattleStore(
 		useShallow((state) => ({
 			currentVfx: state.currentVfx,
 			setVfx: state.setVfx,
+			surfaces: state.surfaces,
 		})),
 	);
 
@@ -56,6 +58,8 @@ export function GridCell({
 	const unitIsHero = unitInCell && isHero(unitInCell);
 	const isHoveredHero = hoveredHeroId && unitInCell?.id === hoveredHeroId;
 	const isMoving = !!activeMoveHeroId;
+
+	const surface = surfaces[cell.id];
 
 	// --- DYNAMIC CELL STYLING ---
 	const baseClasses =
@@ -89,7 +93,6 @@ export function GridCell({
 		stateClasses += " cursor-not-allowed opacity-50";
 	}
 
-	// --- CLICK HANDLER ---
 	const handleClick = () => {
 		if (isMoving && targeting === "cell" && !hasUnitInCell && inRange) {
 			onMoveHero(cell);
@@ -105,7 +108,7 @@ export function GridCell({
 			return;
 		}
 
-		if (!hasActiveAction && unitIsHero && !hasMoved) {
+		if (!hasActiveAction && unitIsHero && remainingMoves > 0) {
 			if (activeMoveHeroId === unitInCell.id) {
 				onSelectForMove(null);
 			} else {
@@ -124,6 +127,17 @@ export function GridCell({
 			<span className="text-[10px] text-zinc-500 font-bold select-none absolute top-1 left-1 pointer-events-none">
 				{cell.col},{cell.row}
 			</span>
+
+			{surface && (
+				<div className="absolute inset-4 z-0 opacity-80 pointer-events-none flex items-center justify-center">
+					<Image
+						src={surface.spriteBase}
+						alt={surface.type}
+						fill
+						className="rounded opacity-60 mix-blend-screen"
+					/>
+				</div>
+			)}
 
 			{unitsInCell.map((unit) => (
 				<UnitSprite key={unit.id} unitInCell={unit} />

@@ -44,7 +44,8 @@ export function HeroCard({
 		})),
 	);
 
-	const hasMoved = usedMovesThisTurn[id];
+	const distanceAlreadyMoved = usedMovesThisTurn[id] ?? 0;
+	const remainingMoves = baseMove - distanceAlreadyMoved;
 	const isMoving = activeMoveUnitId === id;
 
 	const hasUsedCard = !!usedCardsThisTurn[id];
@@ -87,11 +88,11 @@ export function HeroCard({
 					)}
 					<RetroButton
 						onClick={() => setActiveMoveHeroId(isMoving ? null : id)}
-						disabled={hasMoved}
+						disabled={remainingMoves < 1}
 						className={`
             text-[8px]
             ${
-							hasMoved
+							remainingMoves < 1
 								? "bg-zinc-800 text-zinc-600 border-zinc-700"
 								: isMoving
 									? "bg-blue-600 text-white border-blue-400 shadow-[0_0_10px_rgba(37,99,235,0.5)]"
@@ -99,7 +100,7 @@ export function HeroCard({
 						}
         `}
 					>
-						{hasMoved ? "Moved" : `Move (${baseMove})`}
+						{remainingMoves < 1 ? "Moved" : `Move (${remainingMoves})`}
 					</RetroButton>
 
 					<RetroButton

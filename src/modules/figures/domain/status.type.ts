@@ -8,6 +8,6 @@ export type StatusType =
 
 export interface Status {
 	type: StatusType;
-	amount: number;
 	duration: number;
+	amount: number;
 }

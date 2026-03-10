@@ -103,9 +103,11 @@ export function BattleGrid() {
 		const movingHero = heroes.find((h) => h.id === activeMoveUnitId);
 		if (movingHero) {
 			targeting = "cell";
+			const remainingMove =
+				movingHero.baseMove - (usedMovesThisTurn[movingHero.id] ?? 0);
 			validTargetCells = calculateReachableCells(
 				movingHero.gridPosition,
-				movingHero.baseMove,
+				remainingMove,
 				enemyFaction,
 				false,
 			).filter((cell) => !isTileOccupied(cell, allyFaction));
@@ -166,6 +168,12 @@ export function BattleGrid() {
 					(pos) => pos.row === cell.row && pos.col === cell.col,
 				);
 
+				const remainingMoves =
+					unitsInCell.length > 0 && isHeroId(unitsInCell[0].id)
+						? unitsInCell[0].baseMove -
+							(usedMovesThisTurn[unitsInCell[0].id] ?? 0)
+						: 0;
+
 				return (
 					<GridCell
 						key={cell.id}
@@ -184,11 +192,7 @@ export function BattleGrid() {
 								: null
 						}
 						onSelectForMove={setActiveMoveHeroId}
-						hasMoved={
-							unitsInCell.length > 0 && isHeroId(unitsInCell[0].id)
-								? !!usedMovesThisTurn[unitsInCell[0].id]
-								: false
-						}
+						remainingMoves={remainingMoves}
 					/>
 				);
 			})}

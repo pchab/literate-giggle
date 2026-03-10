@@ -93,16 +93,29 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			[{ type: "passiveUnlock", passiveId: "passive-toughness" }],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "classPromotion", classId: [] }],
+			// [{ type: "classPromotion", classId: [] }],
 		],
 	},
 	ARCHER: {
 		id: "ARCHER",
 		name: "Archer",
 		spriteBase: "heroes/archer",
-		utilityCardChoices: [],
+		utilityCardChoices: [cardId("bear-trap")],
 		xpThresholds: [10, 20, 30, 40, 50],
-		levelUpTriggers: [[]],
+		levelUpTriggers: [
+			[
+				{ type: "statsIncrease", stat: "hp", amount: 1 },
+				{
+					type: "cardUpgrade",
+					oldCardId: cardId("club"),
+					newCardId: cardId("short-bow"),
+				},
+			],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[{ type: "passiveUnlock", passiveId: "passive-toughness" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			// [{ type: "classPromotion", classId: [] }],
+		],
 	},
 	KNIGHT: {
 		id: "KNIGHT",

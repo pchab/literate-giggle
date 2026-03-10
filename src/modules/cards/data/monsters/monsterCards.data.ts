@@ -44,10 +44,12 @@ export const monsterCardLibrary: Record<Card["id"], Card> = {
 		effects: [
 			{
 				type: "apply_status",
-				statusType: "temp_block",
-				amount: 5,
+				status: {
+					type: "temp_block",
+					amount: 5,
+					duration: 1,
+				},
 				target: "self",
-				duration: 1,
 			},
 		],
 	},
@@ -93,7 +95,14 @@ export const monsterCardLibrary: Record<Card["id"], Card> = {
 		aiTargetPreference: "closest",
 		effects: [
 			{ type: "damage", amount: 3, target: "anchor" },
-			{ type: "apply_status", statusType: "poison", amount: 2, duration: 2 },
+			{
+				type: "apply_status",
+				status: {
+					type: "poison",
+					amount: 2,
+					duration: 2,
+				},
+			},
 		],
 	},
 

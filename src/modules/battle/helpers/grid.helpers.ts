@@ -1,5 +1,8 @@
 import type { BattleUnit } from "../../figures/domain/figures.type";
 import type { GridPosition } from "../domain/grid.type";
+import type { StoreGet, StoreSet } from "../store/battle.store";
+import { applySurfaceEffect } from "./effect.helpers";
+import { updateAiBattleUnitState } from "./state.helpers";
 
 export const GRID_BOUNDS = {
 	rows: 5,
@@ -159,4 +162,38 @@ export function rotatePattern(
 			return pattern;
 		}
 	}
+}
+
+export function resolveSurfaceEffectAndReturnBreak<T extends BattleUnit>(
+	get: StoreGet,
+	set: StoreSet,
+) {
+	return (step: GridPosition, movingUnit: T) => {
+		const { surfaces: draftSurfaces } = get();
+		const stepCellId = getCellId(step);
+		const steppedOnSurface = draftSurfaces[stepCellId];
+		if (steppedOnSurface) {
+			const { surface: newSurface, unit } = applySurfaceEffect({
+				unit: movingUnit,
+				surface: draftSurfaces[stepCellId],
+			});
+			if (newSurface.charges === 0) {
+				delete draftSurfaces[stepCellId];
+			} else {
+				draftSurfaces[stepCellId] = newSurface;
+			}
+
+			set(
+				updateAiBattleUnitState(unit, {
+					surfaces: draftSurfaces,
+				}),
+			);
+
+			if (newSurface.status?.type === "rooted") {
+				return true;
+			}
+			return false;
+		}
+		return false;
+	};
 }
