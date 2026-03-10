@@ -13,6 +13,7 @@ import {
 	GRID_BOUNDS,
 	getLineOfSightPath,
 	getManhattanDistance,
+	isTileInBounds,
 	isTileOccupied,
 	rotatePattern,
 } from "./grid.helpers";
@@ -97,6 +98,48 @@ const calculatePathToTarget = <T extends BattleUnit>(
 				if (!isTargetTile && isTileOccupied(next, figures)) {
 					return;
 				}
+				visited.add(key);
+				queue.push([...currentPath, next]);
+			});
+	}
+	return [];
+};
+
+export const calculateExactPath = <T extends BattleUnit>(
+	startPos: GridPosition,
+	targetPos: GridPosition,
+	figures: T[],
+): GridPosition[] => {
+	const queue: GridPosition[][] = [[startPos]];
+	const visited = new Set<string>();
+	visited.add(`${startPos.row},${startPos.col}`);
+
+	while (queue.length > 0) {
+		const currentPath = queue.shift();
+		if (!currentPath) return [];
+		const currentPos = currentPath[currentPath.length - 1];
+
+		if (currentPos.row === targetPos.row && currentPos.col === targetPos.col) {
+			return currentPath.slice(1);
+		}
+
+		[
+			{ row: currentPos.row - 1, col: currentPos.col },
+			{ row: currentPos.row + 1, col: currentPos.col },
+			{ row: currentPos.row, col: currentPos.col - 1 },
+			{ row: currentPos.row, col: currentPos.col + 1 },
+		]
+			.filter(isTileInBounds)
+			.forEach((next) => {
+				const key = `${next.row},${next.col}`;
+				if (visited.has(key)) return;
+
+				const isTargetTile =
+					next.row === targetPos.row && next.col === targetPos.col;
+				if (!isTargetTile && isTileOccupied(next, figures)) {
+					return;
+				}
+
 				visited.add(key);
 				queue.push([...currentPath, next]);
 			});

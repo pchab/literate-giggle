@@ -2,13 +2,8 @@ import { cardLibrary } from "@/modules/cards/data/cards.data";
 import { sleep } from "@/modules/shared/helpers/sleep";
 import { handleAICardIntent } from "../../helpers/ai.actions.helpers";
 import { tickStatuses } from "../../helpers/effect.helpers";
-import type { BattleState } from "../battle.store";
+import type { StoreGet, StoreSet } from "../battle.store";
 import { calculateAllIntents } from "./calculateAllIntents.command";
-
-export type StoreGet = () => BattleState;
-export type StoreSet = (
-	fn: (state: BattleState) => Partial<BattleState>,
-) => void;
 
 export const resolveAIActions = async (get: StoreGet, set: StoreSet) => {
 	// ==========================================
@@ -20,7 +15,7 @@ export const resolveAIActions = async (get: StoreGet, set: StoreSet) => {
 		summons: tickStatuses(prev.summons),
 	}));
 
-	await sleep(500);
+	await sleep(200);
 
 	// ==========================================
 	// 2. EXECUTE ACTIONS
@@ -43,32 +38,21 @@ export const resolveAIActions = async (get: StoreGet, set: StoreSet) => {
 	].filter((f) => f.currentHp > 0);
 
 	for (const aiFigure of allAIFigures) {
-		const state = get();
+        const state = get();
 
-		const freshAIFigure = [...state.monsters, ...state.summons].find(
-			(m) => m.id === aiFigure.id,
-		);
-		if (!freshAIFigure || freshAIFigure.currentHp <= 0) continue;
+        const freshAIFigure = [...state.monsters, ...state.summons].find(
+            (m) => m.id === aiFigure.id,
+        );
+        if (!freshAIFigure || freshAIFigure.currentHp <= 0) continue;
 
-		const intent = state.aiIntents[freshAIFigure.id];
-		if (!intent) continue;
+        const intent = state.aiIntents[freshAIFigure.id];
+        if (!intent) continue;
 
-		const cardToPlay = cardLibrary[intent.cardId];
-		if (!cardToPlay) continue;
+        const cardToPlay = cardLibrary[intent.cardId];
+        if (!cardToPlay) continue;
 
-		const actionResult = handleAICardIntent(state, freshAIFigure, cardToPlay);
-
-		if (actionResult) {
-			set((prev) => ({
-				...prev,
-				monsters: actionResult.nextMonsters,
-				heroes: actionResult.nextHeroes,
-				summons: actionResult.nextSummons,
-				currentVfx: actionResult.nextVfx,
-			}));
-			await sleep(300);
-		}
-	}
+        await handleAICardIntent(get, set, freshAIFigure.id, cardToPlay);
+    }
 
 	// ==========================================
 	// 3. START OF PLAYER TURN (Tick Hero statuses)

@@ -80,6 +80,11 @@ export type BattleStoreServerAction = (
 	state: BattleState & BattleAction,
 ) => Partial<BattleState>;
 
+export type StoreGet = () => BattleState;
+export type StoreSet = (
+	fn: (state: BattleState) => Partial<BattleState>,
+) => void;
+
 export const useBattleStore = create<BattleState & BattleAction>()(
 	persist(
 		(set, get) => ({
@@ -94,10 +99,8 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 			resolveCard: (anchorTargetId) => set(resolveCard(anchorTargetId)),
 			endTurn: (heroId) => set(endTurn(heroId)),
 			setActiveMoveHeroId: (heroId) => set(selectActiveMoveHero(heroId)),
-			moveHero: (newPosition) => set(moveHero(newPosition)),
-			enemyAction: async () => {
-				await resolveAIActions(get, set);
-			},
+			moveHero: async (newPosition) => await moveHero(newPosition)(get, set),
+			enemyAction: async () => await resolveAIActions(get, set),
 			setHoveredCard: (hoveredCard) => set(() => ({ hoveredCard })),
 			setVfx: (cellId, vfx) =>
 				set(({ currentVfx: { [cellId]: cellVfx, ...otherVfx } }) => ({

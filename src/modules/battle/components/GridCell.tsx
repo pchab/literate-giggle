@@ -16,7 +16,7 @@ export type Targeting = "ally" | "enemy" | "cell" | "self" | "invalid" | "none";
 
 interface GridCellProps {
 	cell: { id: string } & GridPosition;
-	unitInCell?: BattleUnit;
+	unitsInCell: BattleUnit[];
 	isDanger: boolean;
 	inRange: boolean;
 	targeting: Targeting;
@@ -31,7 +31,7 @@ interface GridCellProps {
 
 export function GridCell({
 	cell,
-	unitInCell,
+	unitsInCell,
 	isDanger,
 	inRange,
 	targeting,
@@ -49,6 +49,10 @@ export function GridCell({
 			setVfx: state.setVfx,
 		})),
 	);
+
+	const hasUnitInCell = unitsInCell.length > 0;
+	// In theory multiple units in cell is transient state when moving.
+	const unitInCell = unitsInCell[0];
 	const unitIsHero = unitInCell && isHero(unitInCell);
 	const isHoveredHero = hoveredHeroId && unitInCell?.id === hoveredHeroId;
 	const isMoving = !!activeMoveHeroId;
@@ -87,15 +91,15 @@ export function GridCell({
 
 	// --- CLICK HANDLER ---
 	const handleClick = () => {
-		if (isMoving && targeting === "cell" && !unitInCell && inRange) {
+		if (isMoving && targeting === "cell" && !hasUnitInCell && inRange) {
 			onMoveHero(cell);
 			return;
 		}
 
 		if (hasActiveAction && !isMoving && inRange) {
-			if (!unitInCell && targeting === "cell") {
+			if (!hasUnitInCell && targeting === "cell") {
 				onResolveCard(cell);
-			} else if (unitInCell) {
+			} else if (hasUnitInCell) {
 				onResolveCard(unitInCell.id);
 			}
 			return;
@@ -113,16 +117,17 @@ export function GridCell({
 	return (
 		<button
 			type="button"
-			className={`${baseClasses} ${stateClasses} ${
-				targeting !== "invalid" ? "hover:brightness-110" : ""
-			}`}
+			className={`${baseClasses} ${stateClasses} ${targeting !== "invalid" ? "hover:brightness-110" : ""
+				}`}
 			onClick={handleClick}
 		>
 			<span className="text-[10px] text-zinc-500 font-bold select-none absolute top-1 left-1 pointer-events-none">
 				{cell.col},{cell.row}
 			</span>
 
-			{unitInCell && <UnitSprite unitInCell={unitInCell} />}
+			{unitsInCell.map((unit) => (
+				<UnitSprite key={unit.id} unitInCell={unit} />
+			))}
 
 			<VfxOverlay
 				type={currentVfx[cell.id]}

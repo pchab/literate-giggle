@@ -152,7 +152,7 @@ export function BattleGrid() {
 			className={`grid ${tailwindGridCols[GRID_BOUNDS.cols]} gap-1 p-1 bg-zinc-900/80 rounded-lg border border-zinc-800 relative`}
 		>
 			{cells.map((cell) => {
-				const unitInCell = [...monsters, ...heroes, ...summons].find(
+				const unitsInCell = [...monsters, ...heroes, ...summons].filter(
 					(m) =>
 						m.currentHp > 0 &&
 						m.gridPosition.col === cell.col &&
@@ -170,7 +170,7 @@ export function BattleGrid() {
 					<GridCell
 						key={cell.id}
 						cell={cell}
-						unitInCell={unitInCell}
+						unitsInCell={unitsInCell}
 						isDanger={isDanger}
 						inRange={inRange}
 						targeting={targeting}
@@ -185,8 +185,8 @@ export function BattleGrid() {
 						}
 						onSelectForMove={setActiveMoveHeroId}
 						hasMoved={
-							unitInCell && isHeroId(unitInCell.id)
-								? !!usedMovesThisTurn[unitInCell.id]
+							unitsInCell.length > 0 && isHeroId(unitsInCell[0].id)
+								? !!usedMovesThisTurn[unitsInCell[0].id]
 								: false
 						}
 					/>

@@ -73,8 +73,6 @@ export const calculateReachableCells = <T extends BattleUnit>(
 				const key = `${next.row},${next.col}`;
 				if (!visited.has(key)) {
 					visited.add(key);
-					// Typically you can't step ONTO occupied tile, but let's say movement range calculation shouldn't include occupied tiles.
-					// We'll mark it visited but only add to queue if it's NOT occupied.
 					if (!isTileOccupied(next, figures)) {
 						queue.push({ pos: next, dist: current.dist + 1 });
 					}
