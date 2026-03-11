@@ -387,11 +387,11 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 		steps: {
 			intro: {
 				speaker: "Panicked Barkeep",
-				text: "They broke through the cellar walls! There are wolves made of thorns tearing up the taproom! Please, my family is hiding upstairs!",
-				backgroundImage: "/scenes/rusty_boar_ruined.jpg",
+				text: "They broke through the walls! There are wolves made of thorns tearing up the taproom! Please, help us!",
+				backgroundImage: "/scenes/rusty_boar_assault.jpg",
 				choices: [
 					{
-						label: "Clear the taproom! (Start Battle)",
+						label: "Defend the tavern! (Start Battle)",
 						actions: [
 							{
 								type: "START_BATTLE",
@@ -412,7 +412,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 			intro: {
 				speaker: "Panicked Barkeep",
 				text: "Thank you! You saved us!",
-				backgroundImage: "/scenes/rusty_boar_ruined.jpg",
+				backgroundImage: "/scenes/rusty_boar_assault.jpg",
 				choices: [
 					{
 						label: "Leave the tavern.",
@@ -437,16 +437,16 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 		steps: {
 			intro: {
 				speaker: "Arch-Druid Sylas",
-				text: "Our wolves broke through their walls! Tear apart the tavern and let the wilds reclaim this land!",
+				text: "Our treants broke through their walls! Tear apart the tavern and let the wilds reclaim this land!",
 				backgroundImage: "/scenes/rusty_boar_ruined.jpg",
 				choices: [
 					{
-						label: "Clear the taproom! (Start Battle)",
+						label: "Assault the taproom! (Start Battle)",
 						actions: [
 							{
 								type: "START_BATTLE",
 								encounterId: encounterId("assault_tavern_ambush"),
-								background: "/battlegrounds/rusty_boar_ruined.jpg",
+								background: "/battlegrounds/rusty_boar_assault.jpg",
 							},
 						],
 					},
@@ -462,7 +462,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 			intro: {
 				speaker: "Arch-Druid Sylas",
 				text: "The tavern is ours! The wilds will not be contained!",
-				backgroundImage: "/scenes/rusty_boar_ruined.jpg",
+				backgroundImage: "/scenes/rusty_boar_assault.jpg",
 				choices: [
 					{
 						label: "Leave the tavern.",

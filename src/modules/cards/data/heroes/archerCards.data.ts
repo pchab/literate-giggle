@@ -25,7 +25,7 @@ export const archerCards: Record<Card["id"], Card> = {
 				status: {
 					type: "rooted",
 					amount: 0,
-					duration: 1,
+					duration: 2,
 				},
 				spriteBase: "/surfaces/bear-trap.png",
 				charges: 1,

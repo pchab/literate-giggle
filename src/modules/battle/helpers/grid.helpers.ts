@@ -22,7 +22,7 @@ export function isUnitInTile<T extends BattleUnit>(tile: GridPosition) {
 export const isTileEmpty =
 	<T extends BattleUnit>(figures: T[]) =>
 	({ col, row }: GridPosition) =>
-		figures.some(
+		figures.every(
 			({ gridPosition, currentHp }) =>
 				currentHp < 1 || gridPosition.row !== row || gridPosition.col !== col,
 		);

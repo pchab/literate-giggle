@@ -9,16 +9,16 @@ export const DWARVEN_PASSAGE_QUEST: Quest = {
 	id: QUEST_DWARVEN_HIGHWAY,
 	title: "The Sealed Passage",
 	loreDescription:
-		"A dwarven prospector in Ironhold needs someone to clear the ancient Stone Gates so trade can resume with Cromee Town.",
+		"A dwarven prospector in Connury needs someone to clear the ancient Stone Gates so trade can resume with the town.",
 	initialStepId: questStepId("visit_prospector"),
 	steps: {
 		[questStepId("visit_prospector")]: {
 			id: questStepId("visit_prospector"),
-			logDescription: "Speak to the Prospector in Ironhold City.",
+			logDescription: "Speak to the Prospector in Connury Town.",
 			targetNodeId: [
 				{
-					mapNodeId: mapNodeId("ironhold_city"),
-					locationId: townLocationId("ironhold_tavern"),
+					mapNodeId: mapNodeId("connury_town"),
+					locationId: townLocationId("connury_tavern"),
 				},
 			],
 			onEnterSceneId: sceneId("prospector_intro"),

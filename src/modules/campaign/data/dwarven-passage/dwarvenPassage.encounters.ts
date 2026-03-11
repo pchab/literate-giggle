@@ -13,14 +13,14 @@ export const DWARVEN_PASSAGE_ENCOUNTER_DB: Record<string, Encounter> = {
 			{
 				...stone_elemental,
 				id: monsterId("elem-1"),
-				currentHp: 1,
+				currentHp: stone_elemental.maxHp,
 				statuses: [],
 				gridPosition: { col: 3, row: 2 },
 			},
 			{
 				...stone_elemental,
 				id: monsterId("elem-2"),
-				currentHp: 1,
+				currentHp: stone_elemental.maxHp,
 				statuses: [],
 				gridPosition: { col: 3, row: 4 },
 			},
@@ -33,14 +33,14 @@ export const DWARVEN_PASSAGE_ENCOUNTER_DB: Record<string, Encounter> = {
 			{
 				...golem_overseer,
 				id: monsterId("boss-golem"),
-				currentHp: 1,
+				currentHp: golem_overseer.maxHp,
 				statuses: [],
 				gridPosition: { col: 4, row: 3 },
 			},
 			{
 				...stone_elemental,
 				id: monsterId("elem-minion"),
-				currentHp: 1,
+				currentHp: stone_elemental.maxHp,
 				statuses: [],
 				gridPosition: { col: 2, row: 3 },
 			},

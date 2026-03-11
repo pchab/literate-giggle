@@ -27,7 +27,7 @@ export const VERDANT_RECLAMATION_QUEST: Quest = {
 	title: "The Verdant Reclamation",
 	loreDescription:
 		"The lumberjacks of Ironhold have pushed too far into the Whisperwood. The forest is pushing back.",
-	initialStepId: VERDANT_RECLAMATION.steps.investigate_camp,
+	initialStepId: VERDANT_RECLAMATION.steps.war_rumors,
 	steps: {
 		[VERDANT_RECLAMATION.steps.war_rumors]: {
 			id: VERDANT_RECLAMATION.steps.war_rumors,

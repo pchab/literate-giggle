@@ -1,4 +1,4 @@
-import { QUEST_DWARVEN_HIGHWAY } from "@/modules/campaign/data/dwarven-passage/dwarvenPassage.quest";
+import { DWARVEN_PASSAGE_QUEST, QUEST_DWARVEN_HIGHWAY } from "@/modules/campaign/data/dwarven-passage/dwarvenPassage.quest";
 import { NECROMANCER_QUEST_ID } from "@/modules/campaign/data/necromancer/necromancer.quest";
 import { VERDANT_RECLAMATION } from "@/modules/campaign/data/verdant-reclamation/verdantReclamation.quest";
 import { cardId } from "@/modules/cards/helpers/cards.helper";
@@ -34,7 +34,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		id: "FIGHTER",
 		name: "Fighter",
 		spriteBase: "heroes/fighter",
-		utilityCardChoices: [cardId("shield-block"), cardId("battle-cry")],
+		utilityCardChoices: [cardId("shield-block"), cardId("bull-rush")],
 		xpThresholds: [10, 20, 30, 40, 50],
 		levelUpTriggers: [
 			[
@@ -48,7 +48,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				{ type: "unlockQuest", questId: QUEST_DWARVEN_HIGHWAY },
 			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "passiveUnlock", passiveId: "passive-toughness" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			[{ type: "classPromotion", classId: ["KNIGHT", "BARBARIAN"] }],
 		],
@@ -70,7 +70,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				{ type: "unlockQuest", questId: NECROMANCER_QUEST_ID },
 			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "passiveUnlock", passiveId: "passive-toughness" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			[{ type: "classPromotion", classId: ["PYROMANCER", "CRYOMANCER"] }],
 		],
@@ -91,7 +91,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				},
 			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "passiveUnlock", passiveId: "passive-toughness" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			// [{ type: "classPromotion", classId: [] }],
 		],
@@ -112,7 +112,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				},
 			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "passiveUnlock", passiveId: "passive-toughness" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			// [{ type: "classPromotion", classId: [] }],
 		],

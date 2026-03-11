@@ -5,7 +5,7 @@ export const rogueCards: Record<Card["id"], Card> = {
 	[cardId("dagger")]: {
 		id: cardId("dagger"),
 		name: "Dagger",
-		range: 2,
+		range: 1,
 		image: "/cards/dagger.png",
 		playRequirement: "requires_enemy",
 		effects: [{ type: "damage", amount: 4, target: "anchor" }],
@@ -13,7 +13,7 @@ export const rogueCards: Record<Card["id"], Card> = {
 	[cardId("thorn-dagger")]: {
 		id: cardId("thorn-dagger"),
 		name: "Thorn Dagger",
-		range: 2,
+		range: 1,
 		image: "/cards/thorn-dagger.png",
 		playRequirement: "requires_enemy",
 		effects: [
@@ -32,7 +32,7 @@ export const rogueCards: Record<Card["id"], Card> = {
 	[cardId("vampire-dagger")]: {
 		id: cardId("vampire-dagger"),
 		name: "Vampire Dagger",
-		range: 2,
+		range: 1,
 		image: "/cards/vampire-dagger.png",
 		playRequirement: "requires_enemy",
 		effects: [

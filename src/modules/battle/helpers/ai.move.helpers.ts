@@ -81,10 +81,8 @@ export const getIdealTarget = <C extends AIBattleUnit, T extends BattleUnit>(
 		moveDest: GridPosition;
 		canHit: boolean;
 	} | null = null;
-	console.log({ orderedTargets });
 	for (const target of orderedTargets) {
 		const moveDest = calculateAIMove(aiFigure, target, card, figures);
-		console.log({ moveDest });
 		if (moveDest) {
 			const minRange = targetsAllies ? 0 : 1;
 			const canHit = isTargetInRange(

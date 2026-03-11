@@ -7,12 +7,12 @@ export const elvenCards: Record<Card["id"], Card> = {
 	[cardId("elven_horn")]: {
 		id: cardId("elven_horn"),
 		name: "Call of the Briar",
-		range: 0,
+		range: 1,
 		iconType: "SUMMON",
 		playRequirement: "no_target",
-		aiTargetPreference: "self",
+		aiTargetPreference: "empty_adjacent",
 		effects: [
-			{ type: "summon", blueprintId: summonId("briar-wolf"), target: "self" },
+			{ type: "summon", blueprintId: summonId("briar-wolf"), target: "anchor" },
 		],
 	},
 	[cardId("commander_glaive")]: {

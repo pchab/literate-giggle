@@ -10,9 +10,9 @@ export const DWARVEN_PASSAGE_SCENE_DB: Record<Scene["id"], Scene> = {
 		initialStepId: "start",
 		steps: {
 			start: {
-				backgroundImage: "/scenes/ironhold_tavern.jpg",
+				backgroundImage: "/scenes/generic_tavern_2.jpg",
 				speaker: "Dwarven Prospector",
-				text: "Aye, the tunnel to Cromee is still there, but the old automated defenses woke up. Clear 'em out, and I'll forge you some proper steel.",
+				text: "Aye, the tunnel in the mountain is still there, but the old automated defenses woke up. Clear 'em out, and I'll forge you some proper steel.",
 				onNext: [
 					{
 						type: "ADVANCE_QUEST",

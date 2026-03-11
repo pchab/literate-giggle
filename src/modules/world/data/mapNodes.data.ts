@@ -2,6 +2,7 @@ import { VERDANT_RECLAMATION } from "@/modules/campaign/data/verdant-reclamation
 import { townId } from "@/modules/towns/domain/towns.type";
 import { encounterId } from "../../campaign/data/encounters.data";
 import { type MapData, mapNodeId } from "../../world/domain/map.types";
+import { QUEST_DWARVEN_HIGHWAY } from "@/modules/campaign/data/dwarven-passage/dwarvenPassage.quest";
 
 export const WorldMapNodes: MapData = {
 	// --- THE BASTION ---
@@ -104,14 +105,65 @@ export const WorldMapNodes: MapData = {
 		connectedNodeIds: [mapNodeId("northern_road"), mapNodeId("connury_town")],
 		encounterId: encounterId("bat_swarm"),
 		background: "/battlegrounds/forest.jpg",
+		variants: [
+			{
+				condition: {
+					type: "QUEST_ACTIVE",
+					questId: QUEST_DWARVEN_HIGHWAY,
+				},
+				override: {
+					connectedNodeIds: [mapNodeId("northern_road"), mapNodeId("connury_town"), mapNodeId("stone_gates")],
+				},
+			},
+			{
+				condition: {
+					type: "QUEST_COMPLETED",
+					questId: QUEST_DWARVEN_HIGHWAY,
+				},
+				override: {
+					connectedNodeIds: [mapNodeId("northern_road"), mapNodeId("connury_town"), mapNodeId("dwarven_passage")],
+				},
+			},
+		],
 	},
 	connury_town: {
 		id: mapNodeId("connury_town"),
 		name: "Connury Town",
 		type: "TOWN",
+		townId: townId("connury_town"),
 		position: { x: 75, y: 24 },
-		connectedNodeIds: [mapNodeId("northern_road")],
+		connectedNodeIds: [mapNodeId("northern_road"), mapNodeId("dark_forest")],
 		background: "/battlegrounds/city.jpg",
+	},
+	// --- DWARVEN PASSAGE QUEST NDOES ---
+	stone_gates: {
+		id: mapNodeId("stone_gates"),
+		name: "Stone Gate",
+		type: "BATTLE",
+		background: "/battlegrounds/cave.jpg",
+		position: { x: 56, y: 18 },
+		encounterId: encounterId("stone_gate_guards"),
+		connectedNodeIds: [mapNodeId("dark_forest")],
+		unlockCondition: [
+			{
+				type: "QUEST_ACTIVE",
+				questId: QUEST_DWARVEN_HIGHWAY,
+			},
+		],
+	},
+	dwarven_passage: {
+		id: mapNodeId("dwarven_passage"),
+		name: "Dwarven City",
+		type: "EVENT",
+		background: "/battlegrounds/mountain_city.jpg",
+		position: { x: 52, y: 16 },
+		connectedNodeIds: [mapNodeId("dark_forest")],
+		unlockCondition: [
+			{
+				type: "QUEST_COMPLETED",
+				questId: QUEST_DWARVEN_HIGHWAY,
+			},
+		],
 	},
 
 	// --- VERDANT RECLAMATION QUEST NODES ---
