@@ -22,10 +22,10 @@ export default function IntentDisplay({ intent }: { intent: AIIntent }) {
 		if (
 			effect.type === "apply_status" &&
 			["temp_block", "perma_shield"].includes(
-				(effect as ApplyStatusEffect).statusType,
+				(effect as ApplyStatusEffect).status.type,
 			)
 		) {
-			totalBlock += (effect as ApplyStatusEffect).amount;
+			totalBlock += (effect as ApplyStatusEffect).status.amount;
 		}
 		if (effect.type === "heal") totalHeal += (effect as HealEffect).amount;
 	});

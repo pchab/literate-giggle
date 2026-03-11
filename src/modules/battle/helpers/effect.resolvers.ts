@@ -154,10 +154,33 @@ export function resolvePushEffect<C extends BattleUnit, T extends BattleUnit>({
 	);
 	const { col: cX, row: cY } = caster.gridPosition;
 
-	const processPush = <T extends BattleUnit>(entity: T) => {
+	let anchorPos = caster.gridPosition;
+	if (anchorTargetId && anchorIsGridPosition(anchorTargetId)) {
+		anchorPos = anchorTargetId;
+	} else {
+		const anchorUnit = draftFigures.find((f) => f.id === anchorTargetId);
+		if (anchorUnit) anchorPos = anchorUnit.gridPosition;
+	}
+	const { col: aX, row: aY } = anchorPos;
+
+	const chargeDx = Math.sign(aX - cX);
+	const chargeDy = Math.sign(aY - cY);
+
+	const processPush = <U extends BattleUnit>(entity: U) => {
 		const { col: tX, row: tY } = entity.gridPosition;
-		const dx = Math.sign(tX - cX);
-		const dy = Math.sign(tY - cY);
+		let dx = 0;
+		let dy = 0;
+
+		if (effect.pushDirection === "sideways") {
+			dx = -chargeDy;
+			dy = chargeDx;
+		} else if (effect.pushDirection === "towards") {
+			dx = -Math.sign(tX - cX);
+			dy = -Math.sign(tY - cY);
+		} else {
+			dx = Math.sign(tX - cX);
+			dy = Math.sign(tY - cY);
+		}
 
 		if (dx === 0 && dy === 0) return entity;
 
@@ -165,7 +188,6 @@ export function resolvePushEffect<C extends BattleUnit, T extends BattleUnit>({
 		let currentY = tY;
 		let collided = false;
 
-		// Step-by-step raycast
 		for (let i = 0; i < effect.distance; i++) {
 			const nextX = currentX + dx;
 			const nextY = currentY + dy;
@@ -174,12 +196,38 @@ export function resolvePushEffect<C extends BattleUnit, T extends BattleUnit>({
 			const isOccupied = draftFigures.some(
 				(f) =>
 					f.gridPosition.col === nextPos.col &&
-					f.gridPosition.row === nextPos.row,
+					f.gridPosition.row === nextPos.row &&
+					f.id !== entity.id,
 			);
 
 			if (!isTileInBounds(nextPos) || isOccupied) {
-				collided = true;
-				break;
+				if (effect.pushDirection === "sideways") {
+					const altDx = -dx;
+					const altDy = -dy;
+					const altNextPos = { col: currentX + altDx, row: currentY + altDy };
+
+					const altOccupied = draftFigures.some(
+						(f) =>
+							f.gridPosition.col === altNextPos.col &&
+							f.gridPosition.row === altNextPos.row &&
+							f.id !== entity.id,
+					);
+
+					if (!isTileInBounds(altNextPos) || altOccupied) {
+						collided = true;
+						break; // Both sides blocked!
+					} else {
+						// The other side is clear, flip our push vector for the rest of the distance
+						dx = altDx;
+						dy = altDy;
+						currentX = altNextPos.col;
+						currentY = altNextPos.row;
+						continue;
+					}
+				} else {
+					collided = true;
+					break;
+				}
 			}
 
 			currentX = nextX;

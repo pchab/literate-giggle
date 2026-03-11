@@ -15,18 +15,18 @@ export function cloneCard(card: Card): Card {
 	return Object.assign({}, card);
 }
 
-export function formatStatusEffect(effect: ApplyStatusEffect): string {
-	switch (effect.statusType) {
+export function formatStatusEffect({ status }: ApplyStatusEffect): string {
+	switch (status.type) {
 		case "temp_block":
-			return `🛡️ Gain ${effect.amount} temporary block for ${effect.duration} turn(s).`;
+			return `🛡️ Gain ${status.amount} temporary block for ${status.duration} turn(s).`;
 		case "perma_shield":
-			return `🛡️ Gain ${effect.amount} permanent shield.`;
+			return `🛡️ Gain ${status.amount} permanent shield.`;
 		case "poison":
-			return `☠️ Apply ${effect.amount} poison for ${effect.duration} turn(s).`;
+			return `☠️ Apply ${status.amount} poison for ${status.duration} turn(s).`;
 		case "rooted":
-			return `🌱 Apply rooted for ${effect.duration} turn(s).`;
+			return `🌱 Apply rooted for ${status.duration} turn(s).`;
 		case "vulnerable":
-			return `⚡ Apply vulnerable for ${effect.duration} turn(s).`;
+			return `⚡ Apply vulnerable for ${status.duration} turn(s).`;
 		default:
 			return `Unknown status effect.`;
 	}
@@ -34,7 +34,11 @@ export function formatStatusEffect(effect: ApplyStatusEffect): string {
 
 export function formatCardEffect(effect: CardEffect): string {
 	const targetText =
-		effect.target === "anchor" ? "target" : effect.target.replace(/_/g, " ");
+		effect.type !== "create_surface"
+			? effect.target === "anchor"
+				? "target"
+				: effect.target.replace(/_/g, " ")
+			: "";
 
 	switch (effect.type) {
 		case "damage":
@@ -50,6 +54,8 @@ export function formatCardEffect(effect: CardEffect): string {
 		case "summon":
 			// Optional: look up the actual summon name from summonLibrary
 			return `🧱 Summon ${effect.blueprintId.replace(/_/g, " ")}.`;
+		case "create_surface":
+			return `📛 Create ${effect.surfaceType} on the target cell.`;
 		default:
 			return `Unknown effect.`;
 	}
@@ -94,14 +100,18 @@ export function getComputedCard(instance: HeroCard): Card {
 
 		if (effect.type === "apply_status") {
 			const addedAmount =
-				instance.powerRunes.bonusStatusAmount?.[effect.statusType] || 0;
+				instance.powerRunes.bonusStatusAmount?.[effect.status.type] || 0;
 			const addedDuration =
-				instance.powerRunes.bonusStatusDuration?.[effect.statusType] || 0;
+				instance.powerRunes.bonusStatusDuration?.[effect.status.type] || 0;
+			const { amount, duration, ...rest } = effect.status;
 
 			return {
 				...effect,
-				amount: effect.amount + addedAmount,
-				duration: effect.duration === -1 ? -1 : effect.duration + addedDuration,
+				status: {
+					...rest,
+					amount: amount + addedAmount,
+					duration: duration === -1 ? -1 : duration + addedDuration,
+				},
 			};
 		}
 
@@ -116,7 +126,7 @@ export function getComputedCard(instance: HeroCard): Card {
 	};
 }
 
-export function getStatusEffectText(effect: ApplyStatusEffect): {
+export function getStatusEffectText({ status }: ApplyStatusEffect): {
 	icon: string;
 	statusName: string;
 	durationText: string;
@@ -124,10 +134,10 @@ export function getStatusEffectText(effect: ApplyStatusEffect): {
 	let icon = "";
 	let statusName = "";
 	let durationText =
-		effect.duration !== -1 ? ` for ${effect.duration} turn(s)` : "";
+		status.duration !== -1 ? ` for ${status.duration} turn(s)` : "";
 
 	// Determine the visual flavor based on the specific status
-	switch (effect.statusType) {
+	switch (status.type) {
 		case "temp_block":
 			icon = "🛡️";
 			statusName = "Temporary Block";

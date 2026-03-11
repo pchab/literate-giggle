@@ -52,6 +52,7 @@ export type PlayRequirement =
 	| "requires_enemy"
 	| "requires_ally"
 	| "requires_empty_cell"
+	| "requires_empty_cell_or_enemy"
 	| "no_target";
 
 export type EffectTarget =
@@ -59,7 +60,8 @@ export type EffectTarget =
 	| "self"
 	| "all_enemies"
 	| "all_allies"
-	| "adjacent_to_anchor";
+	| "adjacent_to_anchor"
+	| "path";
 
 export type MoveEffect = {
 	type: "move";
@@ -89,6 +91,7 @@ export type PushEffect = {
 	distance: number;
 	collisionDamage: number;
 	target: EffectTarget;
+	pushDirection?: "away" | "sideways" | "towards";
 };
 
 export type SummonEffect = {

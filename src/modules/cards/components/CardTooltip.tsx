@@ -22,8 +22,8 @@ function renderEffectText(effect: CardEffect, index: number) {
 			return (
 				<span key={index} className="text-xs text-zinc-300 text-left">
 					{icon} {verbText}{" "}
-					{effect.amount > 0 && (
-						<strong className="text-zinc-200">{effect.amount} </strong>
+					{effect.status.amount > 0 && (
+						<strong className="text-zinc-200">{effect.status.amount} </strong>
 					)}
 					<span className="text-zinc-400">{statusName}</span>
 					{durationText}.
@@ -56,8 +56,8 @@ function renderRequirementText(req: string) {
 	switch (req) {
 		case "requires_enemy":
 			return "Target: Enemy";
-		case "requires_empty_cell_or_self":
-			return "Target: Empty Cell or Self";
+		case "requires_empty_cell_or_enemy":
+			return "Target: Empty Cell or Enemy";
 		case "requires_empty_cell":
 			return "Target: Empty Cell";
 		case "requires_ally_or_self":

@@ -11,6 +11,7 @@ import {
 	isSummon,
 } from "@/modules/figures/helpers/figures.helpers";
 import type { SurfaceData } from "../domain/grid.type";
+import { getCellId, getLineOfSightPath } from "./grid.helpers";
 
 type CasterFaction = "HERO" | "MONSTER";
 export function getCasterFaction<T extends BattleUnit>(
@@ -113,6 +114,16 @@ export function resolveTargets<T extends BattleUnit>(
 					.filter(filterSummonByFaction("MONSTER")),
 			].map(({ id }) => id);
 		}
+	}
+	if (
+		targetType === "path" &&
+		anchorTargetId &&
+		anchorIsGridPosition(anchorTargetId)
+	) {
+		const tilePath = getLineOfSightPath(caster.gridPosition, anchorTargetId).slice(1);
+		return [
+			...currentFigures.filter((f) => tilePath.map(getCellId).includes(getCellId(f.gridPosition))),
+		].map((f) => f.id);
 	}
 
 	return [];

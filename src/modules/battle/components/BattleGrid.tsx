@@ -125,6 +125,9 @@ export function BattleGrid() {
 		if (req === "requires_empty_cell") {
 			targeting = "cell";
 		}
+		if (req === "requires_empty_cell_or_enemy") {
+			targeting = "cell_or_enemy";
+		}
 
 		if (targeting === "cell") {
 			validTargetCells = calculateReachableCells(
@@ -132,6 +135,12 @@ export function BattleGrid() {
 				cardToPreview.range,
 				allObstacles.filter((o) => o.id !== previewCaster.id),
 			).filter((cell) => !isTileOccupied(cell, allObstacles));
+		} else if (targeting === "cell_or_enemy") {
+			validTargetCells = calculateReachableCells(
+				previewCaster.gridPosition,
+				cardToPreview.range,
+				[previewCaster],
+			);
 		} else {
 			const obstacles = targeting === "ally" ? allyFaction : enemyFaction;
 			validTargetCells = calculateAttackableCells(
@@ -171,7 +180,7 @@ export function BattleGrid() {
 				const remainingMoves =
 					unitsInCell.length > 0 && isHeroId(unitsInCell[0].id)
 						? unitsInCell[0].baseMove -
-							(usedMovesThisTurn[unitsInCell[0].id] ?? 0)
+						(usedMovesThisTurn[unitsInCell[0].id] ?? 0)
 						: 0;
 
 				return (

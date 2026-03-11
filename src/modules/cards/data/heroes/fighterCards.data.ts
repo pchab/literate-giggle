@@ -10,14 +10,28 @@ export const fighterCards: Record<Card["id"], Card> = {
 		playRequirement: "requires_enemy",
 		effects: [{ type: "damage", amount: 4, target: "anchor" }],
 	},
-	[cardId("battle-cry")]: {
-		id: cardId("battle-cry"),
-		name: "Battle Cry",
-		range: 1,
-		image: "/cards/battle-cry.png",
-		playRequirement: "requires_enemy",
+	[cardId("bull-rush")]: {
+		id: cardId("bull-rush"),
+		name: "Bull Rush",
+		range: 3,
+		playRequirement: "requires_empty_cell_or_enemy",
 		effects: [
-			{ type: "push", distance: 2, collisionDamage: 3, target: "anchor" },
+			{
+				type: "damage",
+				amount: 2,
+				target: "path",
+			},
+			{
+				type: "push",
+				distance: 1,
+				collisionDamage: 2,
+				target: "path",
+				pushDirection: "sideways",
+			},
+			{
+				type: "move",
+				target: "self",
+			},
 		],
 	},
 	[cardId("shield-block")]: {

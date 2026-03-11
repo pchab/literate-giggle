@@ -35,21 +35,22 @@ export function generateDynamicRuneChoices(
 					label: "+1 Heal",
 				});
 			} else if (effect.type === "apply_status") {
-				const formattedStatus = effect.statusType
+				const { type, duration } = effect.status;
+				const formattedStatus = type
 					.replace("_", " ")
 					.replace(/\b\w/g, (c) => c.toUpperCase());
 
-				possibleOptions.set(`amount_${effect.statusType}`, {
+				possibleOptions.set(`amount_${type}`, {
 					type: "bonusStatusAmount",
-					statusType: effect.statusType,
+					statusType: type,
 					amount: 1,
 					label: `+1 ${formattedStatus} Amount`,
 				});
 
-				if (effect.duration && effect.duration > 0) {
-					possibleOptions.set(`duration_${effect.statusType}`, {
+				if (duration && duration > 0) {
+					possibleOptions.set(`duration_${type}`, {
 						type: "bonusStatusDuration",
-						statusType: effect.statusType,
+						statusType: type,
 						amount: 1,
 						label: `+1 ${formattedStatus} Duration`,
 					});

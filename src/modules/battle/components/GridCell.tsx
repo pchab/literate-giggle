@@ -13,7 +13,14 @@ import type {
 import { isHero } from "@/modules/figures/helpers/figures.helpers";
 import { VfxOverlay } from "./VfxOverlay";
 
-export type Targeting = "ally" | "enemy" | "cell" | "self" | "invalid" | "none";
+export type Targeting =
+	| "ally"
+	| "enemy"
+	| "cell"
+	| "self"
+	| "invalid"
+	| "none"
+	| "cell_or_enemy";
 
 interface GridCellProps {
 	cell: { id: string } & GridPosition;
@@ -73,6 +80,7 @@ export function GridCell({
 	} else if (targeting !== "none" && inRange) {
 		switch (targeting) {
 			case "cell":
+			case "cell_or_enemy":
 				stateClasses =
 					"bg-blue-950/50 border border-blue-500/50 hover:bg-blue-900/60 z-10 cursor-pointer backdrop-blur-none";
 				break;
@@ -100,7 +108,7 @@ export function GridCell({
 		}
 
 		if (hasActiveAction && !isMoving && inRange) {
-			if (!hasUnitInCell && targeting === "cell") {
+			if (!hasUnitInCell && targeting === "cell" || targeting === "cell_or_enemy") {
 				onResolveCard(cell);
 			} else if (hasUnitInCell) {
 				onResolveCard(unitInCell.id);

@@ -98,7 +98,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 					selectedCards: [
 						createHeroCard(heroId(1))(initialDeck[0]),
 						createHeroCard(heroId(1))(initialDeck[1]),
-						null,
+						createHeroCard(heroId(1))(cardId("bull-rush")),
 					],
 				},
 				{
@@ -111,7 +111,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 					selectedCards: [
 						createHeroCard(heroId(2))(initialDeck[0]),
 						createHeroCard(heroId(2))(initialDeck[1]),
-						null,
+						createHeroCard(heroId(2))(cardId("bull-rush")),
 					],
 				},
 				{
@@ -124,7 +124,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 					selectedCards: [
 						createHeroCard(heroId(3))(initialDeck[0]),
 						createHeroCard(heroId(3))(initialDeck[1]),
-						null,
+						createHeroCard(heroId(3))(cardId("bull-rush")),
 					],
 				},
 			],
