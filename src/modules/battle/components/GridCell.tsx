@@ -31,7 +31,7 @@ interface GridCellProps {
 	hasActiveAction: boolean;
 	hoveredHeroId?: BattleHero["id"];
 	activeMoveHeroId?: BattleHero["id"] | null;
-	onResolveCard: (target: AnchorTarget | null) => void;
+	onResolveCard: (target: AnchorTarget) => void;
 	onMoveHero: (target: GridPosition) => void;
 	onSelectForMove: (heroId: BattleHero["id"] | null) => void;
 	remainingMoves: number;
@@ -108,11 +108,7 @@ export function GridCell({
 		}
 
 		if (hasActiveAction && !isMoving && inRange) {
-			if (!hasUnitInCell && targeting === "cell" || targeting === "cell_or_enemy") {
-				onResolveCard(cell);
-			} else if (hasUnitInCell) {
-				onResolveCard(unitInCell.id);
-			}
+			onResolveCard(cell);
 			return;
 		}
 
@@ -128,8 +124,9 @@ export function GridCell({
 	return (
 		<button
 			type="button"
-			className={`${baseClasses} ${stateClasses} ${targeting !== "invalid" ? "hover:brightness-110" : ""
-				}`}
+			className={`${baseClasses} ${stateClasses} ${
+				targeting !== "invalid" ? "hover:brightness-110" : ""
+			}`}
 			onClick={handleClick}
 		>
 			<span className="text-[10px] text-zinc-500 font-bold select-none absolute top-1 left-1 pointer-events-none">

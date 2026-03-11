@@ -4,7 +4,7 @@ import type { Quest } from "@/modules/campaign/domain/quests.type";
 import { initialDeck } from "@/modules/cards/data/cards.data";
 import type { EvolutionRuneId } from "@/modules/cards/data/evolutionRecipes.data";
 import type { Card } from "@/modules/cards/domain/cards.type";
-import { cardId, createHeroCard } from "@/modules/cards/helpers/cards.helper";
+import { createHeroCard } from "@/modules/cards/helpers/cards.helper";
 import { baseHeroStats } from "@/modules/figures/data/heroes/baseHeroStats";
 import type { Hero } from "@/modules/figures/domain/figures.type";
 import type {
@@ -98,7 +98,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 					selectedCards: [
 						createHeroCard(heroId(1))(initialDeck[0]),
 						createHeroCard(heroId(1))(initialDeck[1]),
-						createHeroCard(heroId(1))(cardId("bull-rush")),
+						null,
 					],
 				},
 				{
@@ -111,7 +111,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 					selectedCards: [
 						createHeroCard(heroId(2))(initialDeck[0]),
 						createHeroCard(heroId(2))(initialDeck[1]),
-						createHeroCard(heroId(2))(cardId("bull-rush")),
+						null,
 					],
 				},
 				{
@@ -124,7 +124,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 					selectedCards: [
 						createHeroCard(heroId(3))(initialDeck[0]),
 						createHeroCard(heroId(3))(initialDeck[1]),
-						createHeroCard(heroId(3))(cardId("bull-rush")),
+						null,
 					],
 				},
 			],

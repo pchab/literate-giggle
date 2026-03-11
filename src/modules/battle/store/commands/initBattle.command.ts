@@ -5,7 +5,7 @@ import {
 	ENCOUNTER_DB,
 	type Encounter,
 } from "../../../campaign/data/encounters.data";
-import { calculateAllIntents } from "./calculateAllIntents.command";
+import { calculateAIIntents } from "./calculateAIIntents.command";
 
 const startingGridPosition = [
 	{ col: 1, row: 0 },
@@ -42,13 +42,10 @@ export function initBattle(
 				hand: [card1, card2, card3],
 			};
 		});
-		const initialIntents = calculateAllIntents(
-			battleRoster,
-			freshMonsters,
-			[],
+		const initialIntents = calculateAIIntents(
+			[...battleRoster, ...freshMonsters],
 			{},
 		);
-
 		return {
 			encounterId,
 			heroes: battleRoster,

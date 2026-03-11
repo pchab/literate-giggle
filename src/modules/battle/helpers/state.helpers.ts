@@ -4,33 +4,24 @@ import {
 	isMonster,
 	isSummon,
 } from "@/modules/figures/helpers/figures.helpers";
-import type { BattleState } from "../store/battle.store";
+import type { StoreSet } from "../store/battle.store";
 
-export function updateAiBattleUnitState<T extends BattleUnit>(
-	unit: T,
-	newState: Partial<BattleState> = {},
-) {
-	return (state: BattleState) => {
-		let battleUnitState = {};
+export function updateBattleUnitState<T extends BattleUnit>(set: StoreSet) {
+	return (unit: T) => {
 		if (isSummon(unit)) {
-			battleUnitState = {
-				summons: state.summons.map((m) => (m.id === unit.id ? unit : m)),
-			};
+			set(({ summons }) => ({
+				summons: summons.map((m) => (m.id === unit.id ? unit : m)),
+			}));
 		}
 		if (isMonster(unit)) {
-			battleUnitState = {
-				monsters: state.monsters.map((m) => (m.id === unit.id ? unit : m)),
-			};
+			set(({ monsters }) => ({
+				monsters: monsters.map((m) => (m.id === unit.id ? unit : m)),
+			}));
 		}
 		if (isHero(unit)) {
-			battleUnitState = {
-				heroes: state.heroes.map((h) => (h.id === unit.id ? unit : h)),
-			};
+			set(({ heroes }) => ({
+				heroes: heroes.map((h) => (h.id === unit.id ? unit : h)),
+			}));
 		}
-		return {
-			...state,
-			...newState,
-			...battleUnitState,
-		};
 	};
 }

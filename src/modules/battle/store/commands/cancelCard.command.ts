@@ -1,5 +1,5 @@
 import type { BattleStoreServerAction } from "@/modules/battle/store/battle.store";
-import { calculateAllIntents } from "./calculateAllIntents.command";
+import { calculateAIIntents } from "./calculateAIIntents.command";
 
 export function cancelCard(): BattleStoreServerAction {
 	return ({
@@ -13,10 +13,8 @@ export function cancelCard(): BattleStoreServerAction {
 			console.warn("No card is currently selected.");
 			return {};
 		}
-		const newIntents = calculateAllIntents(
-			heroes,
-			monsters,
-			summons,
+		const newIntents = calculateAIIntents(
+			[...heroes, ...monsters, ...summons],
 			enemyIntents,
 		);
 		return {

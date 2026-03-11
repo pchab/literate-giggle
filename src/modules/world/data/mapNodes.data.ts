@@ -12,6 +12,7 @@ export const WorldMapNodes: MapData = {
 		townId: townId("ironhold_city"),
 		position: { x: 58, y: 45 },
 		connectedNodeIds: ["northern_road", "crossroads", "kiven_river_bridge"],
+		background: "/battlegrounds/ironhold_gates.jpg",
 		variants: [
 			{
 				condition: { type: "HAS_FLAG", flagId: "ironhold_fallen" },

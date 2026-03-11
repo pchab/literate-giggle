@@ -1,33 +1,23 @@
 import type { AIIntent } from "@/modules/battle/domain/intent.type";
 import { cardLibrary } from "@/modules/cards/data/cards.data";
-import type {
-	ApplyStatusEffect,
-	DamageEffect,
-	HealEffect,
-} from "@/modules/cards/domain/cards.type";
 
 export default function IntentDisplay({ intent }: { intent: AIIntent }) {
-	// 1. Look up the actual card the monster plans to play
 	const card = cardLibrary[intent.cardId];
 	if (!card) return null;
 
-	// 2. Tally up the stats by reading the unified effects array
 	let totalDamage = 0;
 	let totalBlock = 0;
 	let totalHeal = 0;
 
 	card.effects.forEach((effect) => {
-		if (effect.type === "damage")
-			totalDamage += (effect as DamageEffect).amount;
+		if (effect.type === "damage") totalDamage += effect.amount;
 		if (
 			effect.type === "apply_status" &&
-			["temp_block", "perma_shield"].includes(
-				(effect as ApplyStatusEffect).status.type,
-			)
+			["temp_block", "perma_shield"].includes(effect.status.type)
 		) {
-			totalBlock += (effect as ApplyStatusEffect).status.amount;
+			totalBlock += effect.status.amount;
 		}
-		if (effect.type === "heal") totalHeal += (effect as HealEffect).amount;
+		if (effect.type === "heal") totalHeal += effect.amount;
 	});
 
 	// 3. Map your new generic iconType to emojis (or swap these for your actual icon SVG components!)

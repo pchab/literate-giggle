@@ -1,19 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
-import { useShallow } from "zustand/shallow";
-import type { GridPosition } from "@/modules/battle/domain/grid.type";
-import {
-	calculateAttackableCells,
-	calculateReachableCells,
-	GRID_BOUNDS,
-	getCellId,
-	isTileOccupied,
-} from "@/modules/battle/helpers/grid.helpers";
-import { useBattleStore } from "@/modules/battle/store/battle.store";
-import type { BattleUnit } from "@/modules/figures/domain/figures.type";
+import { GRID_BOUNDS, getCellId } from "@/modules/battle/helpers/grid.helpers";
 import { isHeroId } from "@/modules/figures/helpers/figures.helpers";
-import { GridCell, type Targeting } from "./GridCell";
+import { useBattleGrid } from "../hooks/useBattleGrid.hook";
+import { GridCell } from "./GridCell";
 
 const cells = Array.from({ length: GRID_BOUNDS.rows }, (_, col) => {
 	return Array.from({ length: GRID_BOUNDS.cols }, (_, row) => {
@@ -31,139 +21,19 @@ const tailwindGridCols = [
 ];
 
 export function BattleGrid() {
-	const {
-		monsters,
-		heroes,
-		summons,
-		usedCardsThisTurn,
-		enemyAction,
-		aiIntents,
-		hoveredCard,
-		activeCard,
-		resolveCard,
-		activeMoveUnitId,
-		moveHero,
-		setActiveMoveHeroId,
-		usedMovesThisTurn,
-	} = useBattleStore(
-		useShallow((state) => ({
-			usedCardsThisTurn: state.usedCardsThisTurn,
-			enemyAction: state.enemyAction, // (Assuming this points to your new resolveAIActions!)
-			monsters: state.monsters,
-			heroes: state.heroes,
-			summons: state.summons,
-			aiIntents: state.aiIntents,
-			hoveredCard: state.hoveredCard,
-			activeCard: state.activeCard,
-			resolveCard: state.resolveCard,
-			activeMoveUnitId: state.activeMoveUnitId,
-			moveHero: state.moveHero,
-			setActiveMoveHeroId: state.setActiveMoveHeroId,
-			usedMovesThisTurn: state.usedMovesThisTurn,
-		})),
-	);
-
-	const allDangerTiles = Object.values(aiIntents || {}).flatMap(
-		(intent) => intent.dangerZone || [],
-	);
-
-	const aliveHeroesCount = heroes.filter((h) => h.currentHp > 0).length;
-
-	const isEnemyTurn =
-		!activeCard &&
-		aliveHeroesCount > 0 &&
-		Object.keys(usedCardsThisTurn).length === aliveHeroesCount;
-
-	// --- 1. RANGE CALCULATIONS ---
-	let validTargetCells: GridPosition[] = [];
-	let targeting: Targeting = "none";
-
-	const cardToPreview = activeCard
-		? activeCard.card
-		: hoveredCard
-			? hoveredCard.card
-			: null;
-
-	const previewCaster = activeCard
-		? heroes.find((h) => h.id === activeCard.unitId)
-		: heroes.find((h) => h.id === hoveredCard?.heroId);
-
-	const allObstacles = [...monsters, ...heroes, ...summons];
-	const allyFaction = [
-		...heroes,
-		...summons.filter(({ allegiance }) => allegiance === "PLAYER"),
-	];
-	const enemyFaction = [
-		...monsters,
-		...summons.filter(({ allegiance }) => allegiance === "ENEMY"),
-	];
-
-	// Handle Movement Range Calculation
-	if (activeMoveUnitId) {
-		const movingHero = heroes.find((h) => h.id === activeMoveUnitId);
-		if (movingHero) {
-			targeting = "cell";
-			const remainingMove =
-				movingHero.baseMove - (usedMovesThisTurn[movingHero.id] ?? 0);
-			validTargetCells = calculateReachableCells(
-				movingHero.gridPosition,
-				remainingMove,
-				enemyFaction,
-				false,
-			).filter((cell) => !isTileOccupied(cell, allyFaction));
-		}
-	}
-	// Handle Card Range Calculation
-	else if (cardToPreview && previewCaster) {
-		const req = cardToPreview.playRequirement;
-		if (req === "requires_enemy") {
-			targeting = "enemy";
-		}
-		if (req === "requires_ally") {
-			targeting = "ally";
-		}
-		if (req === "requires_empty_cell") {
-			targeting = "cell";
-		}
-		if (req === "requires_empty_cell_or_enemy") {
-			targeting = "cell_or_enemy";
-		}
-
-		if (targeting === "cell") {
-			validTargetCells = calculateReachableCells(
-				previewCaster.gridPosition,
-				cardToPreview.range,
-				allObstacles.filter((o) => o.id !== previewCaster.id),
-			).filter((cell) => !isTileOccupied(cell, allObstacles));
-		} else if (targeting === "cell_or_enemy") {
-			validTargetCells = calculateReachableCells(
-				previewCaster.gridPosition,
-				cardToPreview.range,
-				[previewCaster],
-			);
-		} else {
-			const obstacles = targeting === "ally" ? allyFaction : enemyFaction;
-			validTargetCells = calculateAttackableCells(
-				previewCaster.gridPosition,
-				cardToPreview.range,
-				targeting === "ally",
-			).filter((cell) => isTileOccupied<BattleUnit>(cell, obstacles));
-		}
-	}
-
-	useEffect(() => {
-		if (isEnemyTurn) {
-			const timeoutId = setTimeout(() => enemyAction(), 200);
-			return () => clearTimeout(timeoutId);
-		}
-	}, [isEnemyTurn, enemyAction]);
+	const { store, allDangerTiles, validTargetCells, targeting } =
+		useBattleGrid();
 
 	return (
 		<div
 			className={`grid ${tailwindGridCols[GRID_BOUNDS.cols]} gap-1 p-1 bg-zinc-900/80 rounded-lg border border-zinc-800 relative`}
 		>
 			{cells.map((cell) => {
-				const unitsInCell = [...monsters, ...heroes, ...summons].filter(
+				const unitsInCell = [
+					...store.monsters,
+					...store.heroes,
+					...store.summons,
+				].filter(
 					(m) =>
 						m.currentHp > 0 &&
 						m.gridPosition.col === cell.col &&
@@ -180,7 +50,7 @@ export function BattleGrid() {
 				const remainingMoves =
 					unitsInCell.length > 0 && isHeroId(unitsInCell[0].id)
 						? unitsInCell[0].baseMove -
-						(usedMovesThisTurn[unitsInCell[0].id] ?? 0)
+							(store.usedMovesThisTurn[unitsInCell[0].id] ?? 0)
 						: 0;
 
 				return (
@@ -191,16 +61,16 @@ export function BattleGrid() {
 						isDanger={isDanger}
 						inRange={inRange}
 						targeting={targeting}
-						hasActiveAction={!!activeCard}
-						hoveredHeroId={hoveredCard?.heroId}
-						onResolveCard={resolveCard}
-						onMoveHero={moveHero}
+						hasActiveAction={!!store.activeCard}
+						hoveredHeroId={store.hoveredCard?.heroId}
+						onResolveCard={store.resolveCard}
+						onMoveHero={store.moveHero}
 						activeMoveHeroId={
-							activeMoveUnitId && isHeroId(activeMoveUnitId)
-								? activeMoveUnitId
+							store.activeMoveUnitId && isHeroId(store.activeMoveUnitId)
+								? store.activeMoveUnitId
 								: null
 						}
-						onSelectForMove={setActiveMoveHeroId}
+						onSelectForMove={store.setActiveMoveHeroId}
 						remainingMoves={remainingMoves}
 					/>
 				);

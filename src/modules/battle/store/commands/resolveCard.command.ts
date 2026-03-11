@@ -1,165 +1,69 @@
-import {
-	type AnchorTarget,
-	anchorIsGridPosition,
-} from "@/modules/cards/domain/cards.type";
-import {
-	isHero,
-	isMonster,
-	isSummon,
-} from "@/modules/figures/helpers/figures.helpers";
-import type { GridPosition } from "../../domain/grid.type"; // Ensure you have this imported
-import type { VfxType } from "../../domain/vfx.type";
-import {
-	resolveMoveEffect,
-	resolvePushEffect,
-	resolveStandardEffect,
-	resolveSummonEffect,
-	resolveSurfaceEffect,
-} from "../../helpers/effect.resolvers";
+import type { AnchorTarget } from "@/modules/cards/domain/cards.type";
+import type { GridPosition } from "../../domain/grid.type";
+import { resolvers } from "../../helpers/effects/effect.resolvers";
 import { rotatePattern } from "../../helpers/grid.helpers";
-import type { BattleStoreServerAction } from "../battle.store";
-import { calculateAllIntents } from "./calculateAllIntents.command";
+import type { StoreGet, StoreSet } from "../battle.store";
+import { calculateAIIntents } from "./calculateAIIntents.command";
 
-export function resolveCard(
-	anchorTargetId: AnchorTarget | null,
-): BattleStoreServerAction {
-	return ({
-		activeCard,
-		heroes,
-		monsters,
-		summons,
-		usedCardsThisTurn,
-		usedMovesThisTurn,
-		xpEarned,
-		aiIntents: enemyIntents,
-		surfaces,
-		...state
-	}) => {
-		if (!activeCard) return {};
+export const resolveCard =
+	(get: StoreGet, set: StoreSet) => async (anchorTarget: AnchorTarget) => {
+		const { activeCard, heroes } = get();
+		if (!activeCard) return;
 
 		const { unitId, card } = activeCard;
 		const hero = heroes.find((h) => h.id === unitId);
-		if (!hero) return {};
-
-		let draftHeroes = [...heroes];
-		let draftMonsters = [...monsters];
-		let draftSummons = [...summons];
-		let draftSurfaces = { ...surfaces };
-		const vfx: Record<string, VfxType> = {};
-
-		// --- 1. DETERMINE THE EPICENTER OF THE AOE ---
-		let targetPos: GridPosition | null = null;
-		if (anchorTargetId) {
-			if (anchorIsGridPosition(anchorTargetId)) {
-				targetPos = anchorTargetId;
-			} else if (typeof anchorTargetId === "string") {
-				const allFigures = [...draftHeroes, ...draftMonsters, ...draftSummons];
-				const targetFigure = allFigures.find((f) => f.id === anchorTargetId);
-				if (targetFigure) {
-					targetPos = targetFigure.gridPosition;
-				}
-			}
-		}
+		if (!hero) return;
 
 		// --- 2. CALCULATE THE BLAST ZONE ---
 		let patternCells: GridPosition[] | undefined;
-		if (card.aoePattern && targetPos) {
+		if (card.aoePattern && anchorTarget) {
 			const rotatedPattern = rotatePattern(
 				card.aoePattern,
 				hero.gridPosition,
-				targetPos,
+				anchorTarget,
 			);
 
 			patternCells = rotatedPattern.map((p) => ({
-				col: targetPos.col + p.col,
-				row: targetPos.row + p.row,
+				col: anchorTarget.col + p.col,
+				row: anchorTarget.row + p.row,
 			}));
 		}
 
 		// --- 3. RESOLVE EFFECTS WITH PATTERN ---
-		card.effects.forEach((effect) => {
-			switch (effect.type) {
-				case "move":
-					draftHeroes = resolveMoveEffect({
-						effect,
-						anchorTargetId,
-						caster: hero,
-						figures: draftHeroes,
-						vfx,
-					}).figures;
-					break;
-				case "summon":
-					draftSummons =
-						resolveSummonEffect({
-							effect,
-							anchorTargetId,
-							caster: hero,
-							figures: draftSummons,
-							vfx,
-						}).figures || draftSummons;
-					break;
-				case "push": {
-					const pushResult = resolvePushEffect({
-						effect,
-						anchorTargetId,
-						caster: hero,
-						figures: [...draftHeroes, ...draftMonsters, ...draftSummons],
-						vfx,
-						patternCells,
-					});
-					draftHeroes = pushResult.figures.filter((f) => isHero(f));
-					draftMonsters = pushResult.figures.filter((f) => isMonster(f));
-					draftSummons = pushResult.figures.filter((f) => isSummon(f));
-					break;
-				}
-				case "create_surface":
-					draftSurfaces = resolveSurfaceEffect({
-						effect,
-						anchorTargetId,
-						surfaces: draftSurfaces,
-					});
-					break;
-				default: {
-					const stdResult = resolveStandardEffect({
-						effect,
-						anchorTargetId,
-						caster: hero,
-						figures: [...draftHeroes, ...draftMonsters, ...draftSummons],
-						vfx,
-						patternCells,
-					});
-					draftHeroes = stdResult.figures.filter((f) => isHero(f));
-					draftMonsters = stdResult.figures.filter((f) => isMonster(f));
-					draftSummons = stdResult.figures.filter((f) => isSummon(f));
-					break;
-				}
-			}
-		});
+		for (const effect of card.effects) {
+			await resolvers(effect)(get, set)({
+				anchorTarget,
+				caster: hero,
+				patternCells,
+			});
+		}
 
-		const deadMonsters = draftMonsters.filter((m) => m.currentHp <= 0);
+		const { heroes: newHeroes, monsters, summons } = get();
+		const deadMonsters = monsters.filter((m) => m.currentHp <= 0);
 		const xpEarnedThisTurn = deadMonsters.reduce(
 			(acc, m) => acc + m.xpReward,
 			0,
 		);
-		const remainingMonsters = draftMonsters.filter((m) => m.currentHp > 0);
+		const remainingMonsters = monsters.filter((m) => m.currentHp > 0);
 
-		return {
-			...state,
-			activeCard: null,
-			heroes: draftHeroes,
-			monsters: remainingMonsters,
-			summons: draftSummons,
-			surfaces: draftSurfaces,
-			aiIntents: calculateAllIntents(
-				draftHeroes,
-				remainingMonsters,
-				draftSummons,
-				enemyIntents,
-			),
-			usedCardsThisTurn: { ...usedCardsThisTurn, [hero.id]: card },
-			usedMovesThisTurn: { ...usedMovesThisTurn, [hero.id]: 99 },
-			currentVfx: vfx,
-			xpEarned: xpEarned + xpEarnedThisTurn,
-		};
+		set(
+			({
+				aiIntents,
+				usedCardsThisTurn,
+				usedMovesThisTurn,
+				xpEarned,
+				...prev
+			}) => ({
+				...prev,
+				activeCard: null,
+				monsters: remainingMonsters,
+				aiIntents: calculateAIIntents(
+					[...newHeroes, ...remainingMonsters, ...summons],
+					aiIntents,
+				),
+				usedCardsThisTurn: { ...usedCardsThisTurn, [hero.id]: card },
+				usedMovesThisTurn: { ...usedMovesThisTurn, [hero.id]: 99 },
+				xpEarned: xpEarned + xpEarnedThisTurn,
+			}),
+		);
 	};
-}

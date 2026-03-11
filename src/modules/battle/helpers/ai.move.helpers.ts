@@ -1,22 +1,16 @@
-import type { Card } from "@/modules/cards/domain/cards.type";
-import {
-	isHero,
-	isMonster,
-	isSummon,
-} from "@/modules/figures/helpers/figures.helpers";
+import type { AnchorTarget, Card } from "@/modules/cards/domain/cards.type";
 import type {
 	AIBattleUnit,
 	BattleUnit,
 } from "../../figures/domain/figures.type";
 import type { GridPosition } from "../domain/grid.type";
+import { areEnemies } from "./effects/effect.helpers";
 import {
-	GRID_BOUNDS,
 	getLineOfSightPath,
 	getManhattanDistance,
-	isTileInBounds,
-	isTileOccupied,
 	rotatePattern,
 } from "./grid.helpers";
+import { calculateExactPath } from "./move.helpers";
 
 const calculateAIMove = <C extends AIBattleUnit, T extends BattleUnit>(
 	monster: C,
@@ -40,111 +34,18 @@ const calculateAIMove = <C extends AIBattleUnit, T extends BattleUnit>(
 		return monster.gridPosition;
 	}
 
-	const fullPath = calculatePathToTarget(
+	const fullPath = calculateExactPath(
 		monster.gridPosition,
 		targetFigure.gridPosition,
-		card,
-		minRange,
 		figures,
+		minRange,
+		card.range,
 	);
 
 	if (fullPath.length === 0) return null;
 
 	const stepsToTake = Math.min(monster.baseMove, fullPath.length);
 	return fullPath[stepsToTake - 1];
-};
-
-const calculatePathToTarget = <T extends BattleUnit>(
-	startPos: GridPosition,
-	targetPos: GridPosition,
-	card: Card,
-	minRange: number,
-	figures: T[],
-): GridPosition[] => {
-	const queue: GridPosition[][] = [[startPos]];
-	const visited = new Set<string>();
-	visited.add(`${startPos.row},${startPos.col}`);
-
-	while (queue.length > 0) {
-		const currentPath = queue.shift();
-		if (!currentPath) return [];
-		const currentPos = currentPath[currentPath.length - 1];
-
-		const distToTarget = getManhattanDistance(currentPos, targetPos);
-		if (distToTarget >= minRange && distToTarget <= card.range) {
-			return currentPath.slice(1);
-		}
-
-		[
-			{ row: currentPos.row - 1, col: currentPos.col },
-			{ row: currentPos.row + 1, col: currentPos.col },
-			{ row: currentPos.row, col: currentPos.col - 1 },
-			{ row: currentPos.row, col: currentPos.col + 1 },
-		]
-			.filter(({ row, col }) => {
-				return (
-					row >= 0 &&
-					row < GRID_BOUNDS.rows &&
-					col >= 0 &&
-					col < GRID_BOUNDS.cols
-				);
-			})
-			.forEach((next) => {
-				const key = `${next.row},${next.col}`;
-				if (visited.has(key)) return;
-
-				const isTargetTile =
-					next.row === targetPos.row && next.col === targetPos.col;
-				if (!isTargetTile && isTileOccupied(next, figures)) {
-					return;
-				}
-				visited.add(key);
-				queue.push([...currentPath, next]);
-			});
-	}
-	return [];
-};
-
-export const calculateExactPath = <T extends BattleUnit>(
-	startPos: GridPosition,
-	targetPos: GridPosition,
-	figures: T[],
-): GridPosition[] => {
-	const queue: GridPosition[][] = [[startPos]];
-	const visited = new Set<string>();
-	visited.add(`${startPos.row},${startPos.col}`);
-
-	while (queue.length > 0) {
-		const currentPath = queue.shift();
-		if (!currentPath) return [];
-		const currentPos = currentPath[currentPath.length - 1];
-
-		if (currentPos.row === targetPos.row && currentPos.col === targetPos.col) {
-			return currentPath.slice(1);
-		}
-
-		[
-			{ row: currentPos.row - 1, col: currentPos.col },
-			{ row: currentPos.row + 1, col: currentPos.col },
-			{ row: currentPos.row, col: currentPos.col - 1 },
-			{ row: currentPos.row, col: currentPos.col + 1 },
-		]
-			.filter(isTileInBounds)
-			.forEach((next) => {
-				const key = `${next.row},${next.col}`;
-				if (visited.has(key)) return;
-
-				const isTargetTile =
-					next.row === targetPos.row && next.col === targetPos.col;
-				if (!isTargetTile && isTileOccupied(next, figures)) {
-					return;
-				}
-
-				visited.add(key);
-				queue.push([...currentPath, next]);
-			});
-	}
-	return [];
 };
 
 export const getIdealTarget = <C extends AIBattleUnit, T extends BattleUnit>(
@@ -154,33 +55,20 @@ export const getIdealTarget = <C extends AIBattleUnit, T extends BattleUnit>(
 ) => {
 	if (card.aiTargetPreference === "self") {
 		return {
-			reachableTarget: aiFigure,
+			reachableTarget: aiFigure as unknown as T,
 			moveDest: aiFigure.gridPosition,
 			canHit: true,
 		};
 	}
 
-	const isPlayerAligned =
-		isSummon(aiFigure) && aiFigure.allegiance === "PLAYER";
-	const heroes = figures.filter((f) => isHero(f));
-	const monsters = figures.filter((f) => isMonster(f));
-	const summons = figures.filter((f) => isSummon(f));
-	const heroAlignedSummons = summons.filter((s) => s.allegiance === "PLAYER");
-	const monsterAlignedSummons = summons.filter((s) => s.allegiance === "ENEMY");
-	const playerAlignedTargets = [...heroes, ...heroAlignedSummons];
-	const enemyAlignedObstacles = [...monsters, ...monsterAlignedSummons];
-	const enemyFaction = isPlayerAligned
-		? enemyAlignedObstacles
-		: playerAlignedTargets;
-
-	const allyFaction = isPlayerAligned
-		? playerAlignedTargets
-		: enemyAlignedObstacles;
-
 	const targetsAllies = card.playRequirement === "requires_ally";
+	const aliveOthers = figures.filter(
+		(f) => f.currentHp > 0 && f.id !== aiFigure.id,
+	);
 
-	const validTargetsToEvaluate = targetsAllies ? allyFaction : enemyFaction;
-	const obstaclesToAvoid = targetsAllies ? enemyFaction : allyFaction;
+	const validTargetsToEvaluate = aliveOthers.filter((f) =>
+		targetsAllies ? !areEnemies(aiFigure, f) : areEnemies(aiFigure, f),
+	);
 
 	const orderedTargets = getOrderedTargets<C, T>(
 		aiFigure,
@@ -188,36 +76,40 @@ export const getIdealTarget = <C extends AIBattleUnit, T extends BattleUnit>(
 		validTargetsToEvaluate,
 	);
 
-	return orderedTargets.reduce(
-		(acc, figure) => {
-			if (acc.moveDest && acc.canHit) return acc;
+	let fallbackMove: {
+		reachableTarget: T;
+		moveDest: GridPosition;
+		canHit: boolean;
+	} | null = null;
+	console.log({ orderedTargets });
+	for (const target of orderedTargets) {
+		const moveDest = calculateAIMove(aiFigure, target, card, figures);
+		console.log({ moveDest });
+		if (moveDest) {
+			const minRange = targetsAllies ? 0 : 1;
+			const canHit = isTargetInRange(
+				card,
+				minRange,
+				moveDest,
+				target.gridPosition,
+			);
 
-			const moveDest = calculateAIMove(aiFigure, figure, card, [
-				...validTargetsToEvaluate,
-				...obstaclesToAvoid,
-			]);
-
-			if (moveDest) {
-				const minRange = targetsAllies ? 0 : 1;
-				const canHit = isTargetInRange(
-					card,
-					minRange,
-					moveDest,
-					figure.gridPosition,
-				);
-				return canHit
-					? { reachableTarget: figure, moveDest, canHit }
-					: moveDest
-						? { reachableTarget: figure, moveDest, canHit }
-						: acc;
+			if (canHit) {
+				return { reachableTarget: target, moveDest, canHit: true };
 			}
-			return acc;
-		},
-		{
-			reachableTarget: null as T | null,
-			moveDest: null as GridPosition | null,
+
+			if (!fallbackMove) {
+				fallbackMove = { reachableTarget: target, moveDest, canHit: false };
+			}
+		}
+	}
+
+	return (
+		fallbackMove ?? {
+			reachableTarget: null,
+			moveDest: null,
 			canHit: false,
-		},
+		}
 	);
 };
 
@@ -278,10 +170,11 @@ export function getActualTarget<T extends BattleUnit>(
 
 export function filterGridByAttackPattern(
 	card: Card,
-	targetPos: GridPosition,
+	targetPos: AnchorTarget,
 	casterPos: GridPosition,
 ): GridPosition[] {
 	const pattern = card.aoePattern || [{ col: 0, row: 0 }];
+	if (!targetPos) return pattern;
 
 	const rotatedPattern = rotatePattern(pattern, casterPos, targetPos);
 

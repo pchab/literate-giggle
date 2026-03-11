@@ -1,8 +1,5 @@
 import type { BattleUnit } from "../../figures/domain/figures.type";
 import type { GridPosition } from "../domain/grid.type";
-import type { StoreGet, StoreSet } from "../store/battle.store";
-import { applySurfaceEffect } from "./effect.helpers";
-import { updateAiBattleUnitState } from "./state.helpers";
 
 export const GRID_BOUNDS = {
 	rows: 5,
@@ -13,15 +10,30 @@ export function getCellId(pos: GridPosition): string {
 	return `${pos.row}-${pos.col}`;
 }
 
-export const isTileOccupied = <T extends BattleUnit>(
-	{ col, row }: GridPosition,
-	figures: T[],
-) => {
-	return figures.some(
-		({ gridPosition, currentHp }) =>
-			gridPosition.row === row && gridPosition.col === col && currentHp > 0,
-	);
-};
+export function isUnitInTile<T extends BattleUnit>(tile: GridPosition) {
+	return (figure: T) => {
+		return (
+			figure.gridPosition.row === tile.row &&
+			figure.gridPosition.col === tile.col
+		);
+	};
+}
+
+export const isTileEmpty =
+	<T extends BattleUnit>(figures: T[]) =>
+	({ col, row }: GridPosition) =>
+		figures.some(
+			({ gridPosition, currentHp }) =>
+				currentHp < 1 || gridPosition.row !== row || gridPosition.col !== col,
+		);
+
+export const isTileOccupied =
+	<T extends BattleUnit>(figures: T[]) =>
+	({ col, row }: GridPosition) =>
+		figures.some(
+			({ gridPosition, currentHp }) =>
+				gridPosition.row === row && gridPosition.col === col && currentHp > 0,
+		);
 
 export const getManhattanDistance = (
 	pos1: GridPosition,
@@ -76,7 +88,7 @@ export const calculateReachableCells = <T extends BattleUnit>(
 				const key = `${next.row},${next.col}`;
 				if (!visited.has(key)) {
 					visited.add(key);
-					if (!isTileOccupied(next, figures)) {
+					if (isTileEmpty(figures)(next)) {
 						queue.push({ pos: next, dist: current.dist + 1 });
 					}
 				}
@@ -162,38 +174,4 @@ export function rotatePattern(
 			return pattern;
 		}
 	}
-}
-
-export function resolveSurfaceEffectAndReturnBreak<T extends BattleUnit>(
-	get: StoreGet,
-	set: StoreSet,
-) {
-	return (step: GridPosition, movingUnit: T) => {
-		const { surfaces: draftSurfaces } = get();
-		const stepCellId = getCellId(step);
-		const steppedOnSurface = draftSurfaces[stepCellId];
-		if (steppedOnSurface) {
-			const { surface: newSurface, unit } = applySurfaceEffect({
-				unit: movingUnit,
-				surface: draftSurfaces[stepCellId],
-			});
-			if (newSurface.charges === 0) {
-				delete draftSurfaces[stepCellId];
-			} else {
-				draftSurfaces[stepCellId] = newSurface;
-			}
-
-			set(
-				updateAiBattleUnitState(unit, {
-					surfaces: draftSurfaces,
-				}),
-			);
-
-			if (newSurface.status?.type === "rooted") {
-				return true;
-			}
-			return false;
-		}
-		return false;
-	};
 }

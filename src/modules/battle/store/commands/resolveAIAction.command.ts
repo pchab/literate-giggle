@@ -1,9 +1,9 @@
 import { cardLibrary } from "@/modules/cards/data/cards.data";
 import { sleep } from "@/modules/shared/helpers/sleep";
 import { handleAICardIntent } from "../../helpers/ai.actions.helpers";
-import { tickStatuses } from "../../helpers/effect.helpers";
+import { tickStatuses } from "../../helpers/effects/effect.helpers";
 import type { StoreGet, StoreSet } from "../battle.store";
-import { calculateAllIntents } from "./calculateAllIntents.command";
+import { calculateAIIntents } from "./calculateAIIntents.command";
 
 export const resolveAIActions = async (get: StoreGet, set: StoreSet) => {
 	// ==========================================
@@ -57,18 +57,16 @@ export const resolveAIActions = async (get: StoreGet, set: StoreSet) => {
 	// ==========================================
 	// 3. START OF PLAYER TURN (Tick Hero statuses)
 	// ==========================================
-	const finalState = get();
+	const { heroes, monsters, summons } = get();
 
-	const nextHeroes = tickStatuses(finalState.heroes);
-
-	const survivingMonsters = finalState.monsters.filter((m) => m.currentHp > 0);
-	const survivingSummons = finalState.summons.filter((s) => s.currentHp > 0);
-
-	const nextEnemyIntents = calculateAllIntents(
-		nextHeroes,
-		survivingMonsters,
-		survivingSummons,
-	);
+	const nextHeroes = tickStatuses(heroes);
+	const survivingMonsters = monsters.filter((m) => m.currentHp > 0);
+	const survivingSummons = summons.filter((s) => s.currentHp > 0);
+	const nextEnemyIntents = calculateAIIntents([
+		...nextHeroes,
+		...survivingMonsters,
+		...survivingSummons,
+	]);
 
 	set((prev) => ({
 		...prev,

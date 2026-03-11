@@ -1,32 +1,76 @@
 import {
 	getManhattanDistance,
+	isTileEmpty,
 	isTileInBounds,
-	resolveSurfaceEffectAndReturnBreak,
 } from "@/modules/battle/helpers/grid.helpers";
 import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
-import type { Card } from "@/modules/cards/domain/cards.type";
+import type { AnchorTarget, Card } from "@/modules/cards/domain/cards.type";
 import type {
 	AIBattleUnit,
 	BattleUnit,
 } from "@/modules/figures/domain/figures.type";
-import {
-	isHero,
-	isMonster,
-	isSummon,
-} from "@/modules/figures/helpers/figures.helpers";
+import { isSummon } from "@/modules/figures/helpers/figures.helpers";
 import { sleep } from "@/modules/shared/helpers/sleep";
 import {
-	calculateExactPath,
 	filterGridByAttackPattern,
 	getActualTarget,
 	getIdealTarget,
 } from "./ai.move.helpers";
-import {
-	resolvePushEffect,
-	resolveStandardEffect,
-	resolveSummonEffect,
-} from "./effect.resolvers";
-import { updateAiBattleUnitState } from "./state.helpers";
+import { resolvers } from "./effects/effect.resolvers";
+import { calculateExactPath, moveBattleUnit } from "./move.helpers";
+
+function getAnchorTarget<C extends BattleUnit, T extends BattleUnit>({
+	attacker,
+	card,
+	reachableTarget,
+	obstacles,
+}: {
+	attacker: C;
+	card: Card;
+	reachableTarget: T;
+	obstacles: BattleUnit[];
+}): AnchorTarget {
+	if (card.aiTargetPreference === "self") {
+		return attacker.gridPosition;
+	}
+
+	if (card.aiTargetPreference === "empty_adjacent") {
+		const possibleSpawns = [
+			{
+				col: attacker.gridPosition.col,
+				row: attacker.gridPosition.row - 1,
+			},
+			{
+				col: attacker.gridPosition.col - 1,
+				row: attacker.gridPosition.row,
+			},
+			{
+				col: attacker.gridPosition.col,
+				row: attacker.gridPosition.row + 1,
+			},
+			{
+				col: attacker.gridPosition.col + 1,
+				row: attacker.gridPosition.row,
+			},
+		]
+			.filter(isTileInBounds)
+			.filter(isTileEmpty(obstacles));
+
+		return possibleSpawns.length > 0 ? possibleSpawns[0] : null;
+	}
+
+	const collision = getActualTarget(
+		attacker.gridPosition,
+		reachableTarget.gridPosition,
+		obstacles,
+	);
+
+	const { gridPosition: anchorTarget } = collision
+		? collision
+		: reachableTarget;
+
+	return anchorTarget;
+}
 
 export async function handleAICardIntent(
 	get: StoreGet,
@@ -70,49 +114,27 @@ export async function handleAICardIntent(
 			];
 
 	const path = calculateExactPath<BattleUnit>(
-		initialAttacker.gridPosition,
-		moveDest,
-		enemies,
-	);
-
-	for (const step of path) {
-		const movingUnit = {
-			...initialAttacker,
-			gridPosition: step,
-		};
-		set(updateAiBattleUnitState(movingUnit));
-
-		await sleep(250);
-
-		const shouldBreak = resolveSurfaceEffectAndReturnBreak(get, set)(
-			step,
-			movingUnit,
-		);
-		if (shouldBreak) {
-			break;
-		}
-	}
+				initialAttacker.gridPosition,
+				moveDest,
+				enemies,
+			);		
+	const movedUnit = await moveBattleUnit(
+		get,
+		set,
+	)({
+		movingUnit: initialAttacker,
+		path,
+	});
 
 	// ==========================================
 	// 2. PREPARE THE ATTACK
 	// ==========================================
-	const postMoveState = get();
-	let draftHeroes = [...postMoveState.heroes];
-	let draftMonsters = [...postMoveState.monsters];
-	let draftSummons = [...postMoveState.summons];
-	let draftVfx = { ...postMoveState.currentVfx };
-
-	const freshAttacker = [...draftMonsters, ...draftSummons].find(
-		(m) => m.id === attackerId,
-	) as AIBattleUnit | undefined;
-	if (!freshAttacker) return;
-
-	if (freshAttacker.currentHp < 1) {
+	if (!movedUnit || movedUnit.currentHp < 1) {
 		return;
 	}
 
 	const distanceToTarget = getManhattanDistance(
-		freshAttacker.gridPosition,
+		movedUnit.gridPosition,
 		reachableTarget.gridPosition,
 	);
 
@@ -120,111 +142,29 @@ export async function handleAICardIntent(
 		return;
 	}
 
-	const collision = getActualTarget(
-		freshAttacker.gridPosition,
-		reachableTarget.gridPosition,
-		[...draftHeroes, ...draftMonsters, ...draftSummons],
-	);
-	const finalTargetPos = collision
-		? collision.gridPosition
-		: reachableTarget.gridPosition;
+	const anchorTarget = getAnchorTarget({
+		attacker: movedUnit,
+		card,
+		reachableTarget,
+		obstacles: allFigures,
+	});
 
 	const targetedCells = filterGridByAttackPattern(
 		card,
-		finalTargetPos,
-		freshAttacker.gridPosition,
+		anchorTarget,
+		movedUnit.gridPosition,
 	);
-	const anchorTargetId: BattleUnit["id"] = collision
-		? collision.id
-		: reachableTarget.id;
 
 	// ==========================================
 	// 3. RESOLVE EFFECTS
 	// ==========================================
 	for (const effect of card.effects) {
-		if (
-			effect.type === "damage" ||
-			effect.type === "heal" ||
-			effect.type === "apply_status"
-		) {
-			const result = resolveStandardEffect({
-				effect,
-				anchorTargetId,
-				caster: freshAttacker, // Use the new position!
-				figures: [...draftHeroes, ...draftMonsters, ...draftSummons],
-				vfx: draftVfx,
-				patternCells: targetedCells,
-			});
-			draftHeroes = result.figures.filter(isHero);
-			draftMonsters = result.figures.filter(isMonster);
-			draftSummons = result.figures.filter(isSummon);
-			draftVfx = result.vfx;
-		}
-
-		if (effect.type === "summon") {
-			const possibleSpawns = [
-				{
-					col: freshAttacker.gridPosition.col,
-					row: freshAttacker.gridPosition.row - 1,
-				},
-				{
-					col: freshAttacker.gridPosition.col - 1,
-					row: freshAttacker.gridPosition.row,
-				},
-				{
-					col: freshAttacker.gridPosition.col,
-					row: freshAttacker.gridPosition.row + 1,
-				},
-				{
-					col: freshAttacker.gridPosition.col + 1,
-					row: freshAttacker.gridPosition.row,
-				},
-			]
-				.filter(isTileInBounds)
-				.filter(
-					(pos) =>
-						![...draftHeroes, ...draftMonsters, ...draftSummons].some(
-							({ gridPosition }) =>
-								gridPosition.col === pos.col && gridPosition.row === pos.row,
-						),
-				);
-			const spawnPos = possibleSpawns.length > 0 ? possibleSpawns[0] : null;
-			if (spawnPos) {
-				draftSummons = resolveSummonEffect({
-					effect,
-					anchorTargetId: spawnPos,
-					caster: freshAttacker,
-					figures: draftSummons,
-					vfx: draftVfx,
-				}).figures;
-			}
-		}
-
-		if (effect.type === "push") {
-			const result = resolvePushEffect({
-				effect,
-				anchorTargetId,
-				caster: freshAttacker,
-				figures: [...draftHeroes, ...draftMonsters, ...draftSummons],
-				vfx: draftVfx,
-			});
-			draftHeroes = result.figures.filter(isHero);
-			draftMonsters = result.figures.filter(isMonster);
-			draftSummons = result.figures.filter(isSummon);
-			draftVfx = result.vfx;
-		}
+		await resolvers(effect)(get, set)({
+			anchorTarget,
+			caster: movedUnit,
+			patternCells: targetedCells,
+		});
 	}
-
-	// ==========================================
-	// 4. COMMIT ATTACK
-	// ==========================================
-	set((prev) => ({
-		...prev,
-		heroes: draftHeroes,
-		monsters: draftMonsters,
-		summons: draftSummons,
-		currentVfx: draftVfx,
-	}));
 
 	await sleep(300);
 }

@@ -1,13 +1,9 @@
 import type { GridPosition } from "@/modules/battle/domain/grid.type";
-import {
-	getManhattanDistance,
-	resolveSurfaceEffectAndReturnBreak,
-} from "@/modules/battle/helpers/grid.helpers";
+import { getManhattanDistance } from "@/modules/battle/helpers/grid.helpers";
 import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
 import { isHeroId } from "@/modules/figures/helpers/figures.helpers";
-import { sleep } from "@/modules/shared/helpers/sleep";
-import { calculateExactPath } from "../../helpers/ai.move.helpers";
-import { calculateAllIntents } from "./calculateAllIntents.command";
+import { calculateExactPath, moveBattleUnit } from "../../helpers/move.helpers";
+import { calculateAIIntents } from "./calculateAIIntents.command";
 
 export function moveHero(newPosition: GridPosition) {
 	return async (get: StoreGet, set: StoreSet) => {
@@ -34,11 +30,6 @@ export function moveHero(newPosition: GridPosition) {
 			activeMoveUnitId: null,
 		}));
 
-		const allBlockingFigures = [
-			...monsters,
-			...summons.filter(({ allegiance }) => allegiance === "ENEMY"),
-		];
-
 		const distance = getManhattanDistance(newPosition, hero.gridPosition);
 		if (distance > remainingMove) {
 			console.warn(
@@ -47,35 +38,24 @@ export function moveHero(newPosition: GridPosition) {
 			return {};
 		}
 
+		const allBlockingFigures = [
+			...monsters,
+			...summons.filter(({ allegiance }) => allegiance === "ENEMY"),
+		];
+
 		const path = calculateExactPath(
 			hero.gridPosition,
 			newPosition,
 			allBlockingFigures,
 		);
-
-		for (const step of path) {
-			const heroIndex = heroes.findIndex((h) => h.id === heroId);
-			if (heroIndex === -1) return { heroes };
-			const movingHero = { ...heroes[heroIndex], gridPosition: step };
-			set(({ heroes }) => {
-				return { heroes: heroes.with(heroIndex, movingHero) };
-			});
-			await sleep(200);
-
-			const shouldBreak = resolveSurfaceEffectAndReturnBreak(get, set)(
-				step,
-				movingHero,
-			);
-			if (shouldBreak) {
-				break;
-			}
-		}
+		await moveBattleUnit(
+			get,
+			set,
+		)({ movingUnit: hero, path });
 
 		return set(({ heroes, aiIntents, usedMovesThisTurn }) => {
-			const newIntents = calculateAllIntents(
-				heroes,
-				monsters,
-				summons,
+			const newIntents = calculateAIIntents(
+				[...heroes, ...monsters, ...summons],
 				aiIntents,
 			);
 			return {

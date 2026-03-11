@@ -3,35 +3,8 @@ import type {
 	SurfaceType,
 } from "@/modules/battle/domain/grid.type";
 import type { Status, StatusType } from "@/modules/figures/domain/status.type";
-import {
-	isHeroId,
-	isMonsterId,
-} from "@/modules/figures/helpers/figures.helpers";
-import type {
-	BattleUnit,
-	Hero,
-	Monster,
-} from "../../figures/domain/figures.type";
 
-export type AnchorTarget = BattleUnit["id"] | GridPosition;
-
-export function anchorIsGridPosition(
-	anchorTarget: AnchorTarget,
-): anchorTarget is GridPosition {
-	return typeof anchorTarget === "object" && "col" in anchorTarget;
-}
-
-export function anchorIsHeroId(
-	anchorTarget: AnchorTarget,
-): anchorTarget is Hero["id"] {
-	return !anchorIsGridPosition(anchorTarget) && isHeroId(anchorTarget);
-}
-
-export function anchorIsMonsterId(
-	anchorTarget: AnchorTarget,
-): anchorTarget is Monster["id"] {
-	return !anchorIsGridPosition(anchorTarget) && isMonsterId(anchorTarget);
-}
+export type AnchorTarget = GridPosition | null;
 
 export type IntentIcon =
 	| "MELEE"
@@ -46,7 +19,8 @@ export type AITargetPreference =
 	| "random"
 	| "lowestDef"
 	| "closest"
-	| "self";
+	| "self"
+	| "empty_adjacent";
 
 export type PlayRequirement =
 	| "requires_enemy"
