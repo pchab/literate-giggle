@@ -1,18 +1,24 @@
 import { cardId } from "@/modules/cards/helpers/cards.helper";
 import { type Monster, UnitStance } from "../../domain/figures.type";
 
-export const treant_bruiser: Omit<
+export const goblin: Omit<
 	Monster,
 	"id" | "currentHp" | "gridPosition" | "statuses"
 > = {
-	spriteBase: "treant",
+	spriteBase: "monsters/goblin",
 	stance: UnitStance.IDLE,
-	maxHp: 45,
-	baseDef: 2,
-	baseMove: 1,
-	xpReward: 50,
+	maxHp: 10,
+	baseMove: 2,
+	baseDef: 0,
+	xpReward: 6,
 	intentPool: [
-		// 100% chance to use the devastating AoE sweep!
-		{ cardId: cardId("treant_sweep"), weight: 100 },
+		{
+			cardId: cardId("monster_melee_attack"),
+			weight: 1,
+		},
+		{
+			cardId: cardId("bandage"),
+			weight: 1,
+		},
 	],
 };

@@ -1,6 +1,5 @@
 import { cardId } from "@/modules/cards/helpers/cards.helper";
 import { rat } from "@/modules/figures/data/monsters/rat.data";
-import { UnitStance } from "@/modules/figures/domain/figures.type";
 import { monsterId } from "@/modules/figures/helpers/figures.helpers";
 import type { Encounter } from "../../domain/encounters.type";
 import { RAT_IN_THE_CELLAR } from "./ratsInTheCellar.definitions";
@@ -14,7 +13,6 @@ export const RATS_IN_THE_CELLAR_ENCOUNTERS: Record<string, Encounter> = {
 				...rat,
 				id: monsterId("rat-1"),
 				currentHp: rat.maxHp,
-				stance: UnitStance.IDLE,
 				statuses: [],
 				gridPosition: { col: 3, row: 3 },
 			},
@@ -22,7 +20,6 @@ export const RATS_IN_THE_CELLAR_ENCOUNTERS: Record<string, Encounter> = {
 				...rat,
 				id: monsterId("rat-2"),
 				currentHp: rat.maxHp,
-				stance: UnitStance.IDLE,
 				statuses: [],
 				gridPosition: { col: 3, row: 4 },
 			},
@@ -30,7 +27,6 @@ export const RATS_IN_THE_CELLAR_ENCOUNTERS: Record<string, Encounter> = {
 				...rat,
 				id: monsterId("rat-3"),
 				currentHp: rat.maxHp,
-				stance: UnitStance.IDLE,
 				statuses: [],
 				gridPosition: { col: 4, row: 3 },
 			},
@@ -38,7 +34,6 @@ export const RATS_IN_THE_CELLAR_ENCOUNTERS: Record<string, Encounter> = {
 				...rat,
 				id: monsterId("rat-4"),
 				currentHp: rat.maxHp,
-				stance: UnitStance.IDLE,
 				statuses: [],
 				gridPosition: { col: 4, row: 4 },
 			},
@@ -56,7 +51,6 @@ export const RATS_IN_THE_CELLAR_ENCOUNTERS: Record<string, Encounter> = {
 				currentHp: rat.maxHp * 3,
 				maxHp: rat.maxHp * 3,
 				xpReward: rat.xpReward * 3,
-				stance: UnitStance.IDLE,
 				statuses: [],
 				gridPosition: { col: 3, row: 3 },
 				intentPool: [
@@ -74,7 +68,6 @@ export const RATS_IN_THE_CELLAR_ENCOUNTERS: Record<string, Encounter> = {
 				...rat,
 				id: monsterId("rat-1"),
 				currentHp: rat.maxHp,
-				stance: UnitStance.IDLE,
 				statuses: [],
 				gridPosition: { col: 3, row: 4 },
 			},
@@ -82,7 +75,6 @@ export const RATS_IN_THE_CELLAR_ENCOUNTERS: Record<string, Encounter> = {
 				...rat,
 				id: monsterId("rat-2"),
 				currentHp: rat.maxHp,
-				stance: UnitStance.IDLE,
 				statuses: [],
 				gridPosition: { col: 4, row: 3 },
 			},

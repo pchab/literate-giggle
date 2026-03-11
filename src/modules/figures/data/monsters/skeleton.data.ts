@@ -1,11 +1,12 @@
 import { cardId } from "@/modules/cards/helpers/cards.helper";
-import type { Monster } from "../../domain/figures.type";
+import { type Monster, UnitStance } from "../../domain/figures.type";
 
 export const skeleton: Omit<
 	Monster,
 	"id" | "currentHp" | "gridPosition" | "statuses"
 > = {
 	spriteBase: "monsters/skeleton",
+	stance: UnitStance.IDLE,
 	maxHp: 10,
 	baseMove: 2,
 	baseDef: 0,

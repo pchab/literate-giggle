@@ -1,11 +1,12 @@
 import { cardId } from "@/modules/cards/helpers/cards.helper";
-import type { Monster } from "../../domain/figures.type";
+import { type Monster, UnitStance } from "../../domain/figures.type";
 
 export const elvenCommander: Omit<
 	Monster,
 	"id" | "currentHp" | "gridPosition" | "statuses"
 > = {
 	spriteBase: "monsters/elven_commander",
+	stance: UnitStance.IDLE,
 	maxHp: 24,
 	baseDef: 1,
 	baseMove: 2,
