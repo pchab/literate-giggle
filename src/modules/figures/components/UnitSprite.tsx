@@ -6,20 +6,17 @@ import HealthBar from "@/modules/battle/components/HealthBar";
 import IntentDisplay from "@/modules/battle/components/IntentDisplay";
 import { useCombatText } from "@/modules/battle/hooks/useCombatText.hook";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
-import {
-	type BattleUnit,
-	UnitStance,
-} from "@/modules/figures/domain/figures.type";
+import type { BattleUnit } from "@/modules/figures/domain/figures.type";
 import { getBlockFromStatuses } from "../helpers/figures.helpers";
 
 export function UnitSprite({
-	unitInCell: { id, statuses, currentHp, maxHp, spriteBase },
+	unitInCell: { id, statuses, currentHp, maxHp, spriteBase, stance },
 }: {
 	unitInCell: BattleUnit;
 }) {
 	const currentBlock = getBlockFromStatuses(statuses);
 	const { texts, isHit } = useCombatText(currentHp, currentBlock);
-	const { activeCard, activeMoveUnitId, aiIntents } = useBattleStore(
+	const { aiIntents } = useBattleStore(
 		useShallow((state) => ({
 			activeCard: state.activeCard,
 			activeMoveUnitId: state.activeMoveUnitId,
@@ -27,13 +24,6 @@ export function UnitSprite({
 		})),
 	);
 
-	let stance = UnitStance.IDLE;
-	if (activeMoveUnitId === id) {
-		stance = UnitStance.MOVING;
-	}
-	if (activeCard?.unitId === id) {
-		stance = UnitStance.ATTACKING;
-	}
 	const src = `/sprites/${spriteBase}_${stance}.png`;
 	const intent = aiIntents?.[id];
 

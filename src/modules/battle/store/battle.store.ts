@@ -6,7 +6,7 @@ import type {
 } from "@/modules/battle/domain/grid.type";
 import type { AIIntent } from "@/modules/battle/domain/intent.type";
 import type { VfxType } from "@/modules/battle/domain/vfx.type";
-import type { Encounter } from "@/modules/campaign/data/encounters.data";
+import type { Encounter } from "@/modules/campaign/domain/encounters.type";
 import type { AnchorTarget, Card } from "@/modules/cards/domain/cards.type";
 import type {
 	BattleHero,

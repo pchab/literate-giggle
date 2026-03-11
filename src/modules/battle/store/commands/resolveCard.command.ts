@@ -1,7 +1,10 @@
 import type { AnchorTarget } from "@/modules/cards/domain/cards.type";
+import { UnitStance } from "@/modules/figures/domain/figures.type";
+import { sleep } from "@/modules/shared/helpers/sleep";
 import type { GridPosition } from "../../domain/grid.type";
 import { resolvers } from "../../helpers/effects/effect.resolvers";
 import { rotatePattern } from "../../helpers/grid.helpers";
+import { updateBattleUnitState } from "../../helpers/state.helpers";
 import type { StoreGet, StoreSet } from "../battle.store";
 import { calculateAIIntents } from "./calculateAIIntents.command";
 
@@ -30,6 +33,9 @@ export const resolveCard =
 		}
 
 		// --- 3. RESOLVE EFFECTS WITH PATTERN ---
+		const attackingUnit = { ...hero, stance: UnitStance.ATTACKING };
+		updateBattleUnitState(set)(attackingUnit);
+		await sleep(300);
 		for (const effect of card.effects) {
 			await resolvers(effect)(get, set)({
 				anchorTarget,
@@ -37,7 +43,10 @@ export const resolveCard =
 				patternCells,
 			});
 		}
+		const stillUnit = { ...hero, stance: UnitStance.IDLE };
+		updateBattleUnitState(set)(stillUnit);
 
+		// --- 4. CLEAN UP ---
 		const { heroes: newHeroes, monsters, summons } = get();
 		const deadMonsters = monsters.filter((m) => m.currentHp <= 0);
 		const xpEarnedThisTurn = deadMonsters.reduce(

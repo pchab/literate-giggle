@@ -1,4 +1,5 @@
 import { skeleton } from "@/modules/figures/data/monsters/skeleton.data";
+import { UnitStance } from "@/modules/figures/domain/figures.type";
 import { monsterId } from "@/modules/figures/helpers/figures.helpers";
 import { type Encounter, encounterId } from "../domain/encounters.type";
 import { DWARVEN_PASSAGE_ENCOUNTER_DB } from "./dwarven-passage/dwarvenPassage.encounters";
@@ -14,6 +15,7 @@ export const ENCOUNTER_DB: Record<string, Encounter> = {
 			{
 				...skeleton,
 				id: monsterId("skel-1"),
+				stance: UnitStance.IDLE,
 				currentHp: skeleton.maxHp,
 				statuses: [],
 				gridPosition: { col: 3, row: 3 },

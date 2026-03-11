@@ -21,6 +21,7 @@ export interface BattleUnit extends Figure {
 	currentHp: number;
 	gridPosition: GridPosition;
 	statuses: Status[];
+	stance: UnitStance;
 }
 
 export interface AIBattleUnit extends BattleUnit {

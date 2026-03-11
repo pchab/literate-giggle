@@ -5,9 +5,10 @@ import {
 } from "@/modules/battle/helpers/grid.helpers";
 import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
 import type { AnchorTarget, Card } from "@/modules/cards/domain/cards.type";
-import type {
-	AIBattleUnit,
-	BattleUnit,
+import {
+	type AIBattleUnit,
+	type BattleUnit,
+	UnitStance,
 } from "@/modules/figures/domain/figures.type";
 import { isSummon } from "@/modules/figures/helpers/figures.helpers";
 import { sleep } from "@/modules/shared/helpers/sleep";
@@ -18,6 +19,7 @@ import {
 } from "./ai.move.helpers";
 import { resolvers } from "./effects/effect.resolvers";
 import { calculateExactPath, moveBattleUnit } from "./move.helpers";
+import { updateBattleUnitState } from "./state.helpers";
 
 function getAnchorTarget<C extends BattleUnit, T extends BattleUnit>({
 	attacker,
@@ -118,11 +120,14 @@ export async function handleAICardIntent(
 		moveDest,
 		enemies,
 	);
+
+	const movingUnit = { ...initialAttacker, stance: UnitStance.MOVING };
+	updateBattleUnitState(set)(movingUnit);
 	const movedUnit = await moveBattleUnit(
 		get,
 		set,
 	)({
-		movingUnit: initialAttacker,
+		movingUnit,
 		path,
 	});
 
@@ -158,13 +163,18 @@ export async function handleAICardIntent(
 	// ==========================================
 	// 3. RESOLVE EFFECTS
 	// ==========================================
+	const attackingUnit = { ...movedUnit, stance: UnitStance.ATTACKING };
+	updateBattleUnitState(set)(attackingUnit);
+	await sleep(300);
 	for (const effect of card.effects) {
 		await resolvers(effect)(get, set)({
 			anchorTarget,
-			caster: movedUnit,
+			caster: attackingUnit,
 			patternCells: targetedCells,
 		});
 	}
+	const stillUnit = { ...attackingUnit, stance: UnitStance.IDLE };
+	updateBattleUnitState(set)(stillUnit);
 
 	await sleep(300);
 }

@@ -1,10 +1,12 @@
 import type { BattleStoreServerAction } from "@/modules/battle/store/battle.store";
+import type { Encounter } from "@/modules/campaign/domain/encounters.type";
 import { getComputedCard } from "@/modules/cards/helpers/cards.helper";
-import type { BattleHero, Hero } from "@/modules/figures/domain/figures.type";
 import {
-	ENCOUNTER_DB,
-	type Encounter,
-} from "../../../campaign/data/encounters.data";
+	type BattleHero,
+	type Hero,
+	UnitStance,
+} from "@/modules/figures/domain/figures.type";
+import { ENCOUNTER_DB } from "../../../campaign/data/encounters.data";
 import { calculateAIIntents } from "./calculateAIIntents.command";
 
 const startingGridPosition = [
@@ -37,6 +39,7 @@ export function initBattle(
 			}
 			return {
 				...hero,
+				stance: UnitStance.IDLE,
 				gridPosition: startingGridPosition[index],
 				statuses: [],
 				hand: [card1, card2, card3],

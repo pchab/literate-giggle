@@ -1,4 +1,7 @@
-import type { BattleUnit } from "@/modules/figures/domain/figures.type";
+import {
+	type BattleUnit,
+	UnitStance,
+} from "@/modules/figures/domain/figures.type";
 import { sleep } from "@/modules/shared/helpers/sleep";
 import type { GridPosition } from "../domain/grid.type";
 import type { StoreGet, StoreSet } from "../store/battle.store";
@@ -21,7 +24,8 @@ export function moveBattleUnit(get: StoreGet, set: StoreSet) {
 		path: GridPosition[];
 		stepDelayMs?: number;
 	}): Promise<T> => {
-		let currentUnit = { ...movingUnit };
+		let currentUnit = { ...movingUnit, stance: UnitStance.MOVING };
+		updateBattleUnitState(set)(currentUnit);
 
 		for (const step of path) {
 			currentUnit = { ...currentUnit, gridPosition: step };
@@ -59,6 +63,8 @@ export function moveBattleUnit(get: StoreGet, set: StoreSet) {
 			}
 		}
 
+		currentUnit = { ...currentUnit, stance: UnitStance.IDLE };
+		updateBattleUnitState(set)(currentUnit);
 		return currentUnit;
 	};
 }

@@ -2,6 +2,7 @@ import {
 	golem_overseer,
 	stone_elemental,
 } from "@/modules/figures/data/monsters/golem.data";
+import { UnitStance } from "@/modules/figures/domain/figures.type";
 import { monsterId } from "@/modules/figures/helpers/figures.helpers";
 import { type Encounter, encounterId } from "../../domain/encounters.type";
 
@@ -14,6 +15,7 @@ export const DWARVEN_PASSAGE_ENCOUNTER_DB: Record<string, Encounter> = {
 				...stone_elemental,
 				id: monsterId("elem-1"),
 				currentHp: stone_elemental.maxHp,
+				stance: UnitStance.IDLE,
 				statuses: [],
 				gridPosition: { col: 3, row: 2 },
 			},
@@ -21,6 +23,7 @@ export const DWARVEN_PASSAGE_ENCOUNTER_DB: Record<string, Encounter> = {
 				...stone_elemental,
 				id: monsterId("elem-2"),
 				currentHp: stone_elemental.maxHp,
+				stance: UnitStance.IDLE,
 				statuses: [],
 				gridPosition: { col: 3, row: 4 },
 			},
@@ -34,6 +37,7 @@ export const DWARVEN_PASSAGE_ENCOUNTER_DB: Record<string, Encounter> = {
 				...golem_overseer,
 				id: monsterId("boss-golem"),
 				currentHp: golem_overseer.maxHp,
+				stance: UnitStance.IDLE,
 				statuses: [],
 				gridPosition: { col: 4, row: 3 },
 			},
@@ -41,6 +45,7 @@ export const DWARVEN_PASSAGE_ENCOUNTER_DB: Record<string, Encounter> = {
 				...stone_elemental,
 				id: monsterId("elem-minion"),
 				currentHp: stone_elemental.maxHp,
+				stance: UnitStance.IDLE,
 				statuses: [],
 				gridPosition: { col: 2, row: 3 },
 			},
