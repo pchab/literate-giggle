@@ -3,7 +3,7 @@ import {
 	stone_elemental,
 } from "@/modules/figures/data/monsters/golem.data";
 import { monsterId } from "@/modules/figures/helpers/figures.helpers";
-import { type Encounter, encounterId } from "../encounters.data";
+import { type Encounter, encounterId } from "../../domain/encounters.type";
 
 export const DWARVEN_PASSAGE_ENCOUNTER_DB: Record<string, Encounter> = {
 	[encounterId("stone_gate_guards")]: {

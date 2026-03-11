@@ -1,6 +1,6 @@
+import { encounterId } from "@/modules/campaign/domain/encounters.type";
 import { mapNodeId } from "@/modules/world/domain/map.types";
 import { type Scene, sceneId } from "../../domain/scenes.type";
-import { encounterId } from "../encounters.data";
 import { VERDANT_RECLAMATION } from "./verdantReclamation.quest";
 
 export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {

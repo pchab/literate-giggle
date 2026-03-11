@@ -6,9 +6,10 @@ import type {
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
 import { isHeroId, isSummon } from "@/modules/figures/helpers/figures.helpers";
 import type { SurfaceData } from "../../domain/grid.type";
+import type { StoreSet } from "../../store/battle.store";
 import { getCellId, getLineOfSightPath } from "../grid.helpers";
+import { updateBattleUnitState } from "../state.helpers";
 
-// --- 1. CLEAN FACTION HELPER ---
 export function areEnemies(u1: BattleUnit, u2: BattleUnit): boolean {
 	const u1IsPlayer =
 		isHeroId(u1.id) || (isSummon(u1) && u1.allegiance === "PLAYER");
@@ -17,7 +18,6 @@ export function areEnemies(u1: BattleUnit, u2: BattleUnit): boolean {
 	return u1IsPlayer !== u2IsPlayer;
 }
 
-// --- 2. STREAMLINED TARGETING ---
 export function resolveTargets<T extends BattleUnit>(
 	targetType: EffectTarget,
 	anchorTarget: AnchorTarget,
@@ -72,7 +72,6 @@ export function resolveTargets<T extends BattleUnit>(
 	return [];
 }
 
-// --- 3. IMMUTABLE DAMAGE/EFFECT HELPERS ---
 export function applyDamageToEntity<T extends BattleUnit>(
 	entity: T,
 	baseDamage: number,
@@ -153,34 +152,43 @@ export function applyEffectToEntity<T extends BattleUnit>(
 	return entity;
 }
 
-export function tickStatuses<T extends BattleUnit>(figures: T[]): T[] {
-	return figures.map((figure) => {
-		if (figure.currentHp <= 0) return figure;
+export const tickStatuses =
+	(set: StoreSet) =>
+	<T extends BattleUnit>(figures: T[]): void =>
+		figures.forEach((figure) => {
+			if (figure.currentHp <= 0) return;
 
-		const poison =
-			figure.statuses.find(({ type }) => type === "poison")?.amount ?? 0;
-		const regen =
-			figure.statuses.find(({ type }) => type === "regen")?.amount ?? 0;
+			const poison =
+				figure.statuses.find(({ type }) => type === "poison")?.amount ?? 0;
+			const regen =
+				figure.statuses.find(({ type }) => type === "regen")?.amount ?? 0;
 
-		const newHp = Math.min(
-			figure.maxHp,
-			Math.max(0, figure.currentHp - poison + regen),
-		);
+			const newHp = Math.min(
+				figure.maxHp,
+				Math.max(0, figure.currentHp - poison + regen),
+			);
 
-		const newStatuses = figure.statuses
-			.map((status) => ({
-				...status,
-				duration: status.duration === -1 ? -1 : status.duration - 1,
-			}))
-			.filter((status) => status.duration > 0 || status.duration === -1);
+			const newStatuses = figure.statuses
+				.map((status) => ({
+					...status,
+					duration: status.duration === -1 ? -1 : status.duration - 1,
+				}))
+				.filter((status) => status.duration > 0 || status.duration === -1);
 
-		return {
-			...figure,
-			currentHp: newHp,
-			statuses: newStatuses,
-		};
-	});
-}
+			const cellId = getCellId(figure.gridPosition);
+			updateBattleUnitState(set)({
+				...figure,
+				currentHp: newHp,
+				statuses: newStatuses,
+			});
+			set(({ currentVfx }) => ({
+				currentVfx: {
+					...currentVfx,
+					...(poison > 0 ? { [cellId]: "POISON" } : {}),
+					...(regen > 0 ? { [cellId]: "HEAL" } : {}),
+				},
+			}));
+		});
 
 // --- 4. FIXED SURFACE HELPER ---
 export function applySurfaceEffect<T extends BattleUnit>({

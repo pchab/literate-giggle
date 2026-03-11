@@ -1,4 +1,4 @@
-import { encounterId } from "@/modules/campaign/data/encounters.data";
+import { encounterId } from "@/modules/campaign/domain/encounters.type";
 import { questStepId } from "../../domain/quests.type";
 import { type Scene, sceneId } from "../../domain/scenes.type";
 import { NECROMANCER_QUEST_ID } from "./necromancer.quest";

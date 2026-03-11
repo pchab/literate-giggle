@@ -1,4 +1,4 @@
-import { encounterId } from "@/modules/campaign/data/encounters.data";
+import { encounterId } from "@/modules/campaign/domain/encounters.type";
 import { mapNodeId } from "@/modules/world/domain/map.types";
 import { questStepId } from "../../domain/quests.type";
 import { type Scene, sceneId } from "../../domain/scenes.type";

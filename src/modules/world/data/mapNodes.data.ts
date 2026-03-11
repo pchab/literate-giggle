@@ -1,8 +1,8 @@
-import { VERDANT_RECLAMATION } from "@/modules/campaign/data/verdant-reclamation/verdantReclamation.quest";
-import { townId } from "@/modules/towns/domain/towns.type";
-import { encounterId } from "../../campaign/data/encounters.data";
-import { type MapData, mapNodeId } from "../../world/domain/map.types";
 import { QUEST_DWARVEN_HIGHWAY } from "@/modules/campaign/data/dwarven-passage/dwarvenPassage.quest";
+import { VERDANT_RECLAMATION } from "@/modules/campaign/data/verdant-reclamation/verdantReclamation.quest";
+import { encounterId } from "@/modules/campaign/domain/encounters.type";
+import { townId } from "@/modules/towns/domain/towns.type";
+import { type MapData, mapNodeId } from "../../world/domain/map.types";
 
 export const WorldMapNodes: MapData = {
 	// --- THE BASTION ---
@@ -112,7 +112,11 @@ export const WorldMapNodes: MapData = {
 					questId: QUEST_DWARVEN_HIGHWAY,
 				},
 				override: {
-					connectedNodeIds: [mapNodeId("northern_road"), mapNodeId("connury_town"), mapNodeId("stone_gates")],
+					connectedNodeIds: [
+						mapNodeId("northern_road"),
+						mapNodeId("connury_town"),
+						mapNodeId("stone_gates"),
+					],
 				},
 			},
 			{
@@ -121,7 +125,11 @@ export const WorldMapNodes: MapData = {
 					questId: QUEST_DWARVEN_HIGHWAY,
 				},
 				override: {
-					connectedNodeIds: [mapNodeId("northern_road"), mapNodeId("connury_town"), mapNodeId("dwarven_passage")],
+					connectedNodeIds: [
+						mapNodeId("northern_road"),
+						mapNodeId("connury_town"),
+						mapNodeId("dwarven_passage"),
+					],
 				},
 			},
 		],

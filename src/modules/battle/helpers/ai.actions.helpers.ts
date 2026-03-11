@@ -114,10 +114,10 @@ export async function handleAICardIntent(
 			];
 
 	const path = calculateExactPath<BattleUnit>(
-				initialAttacker.gridPosition,
-				moveDest,
-				enemies,
-			);		
+		initialAttacker.gridPosition,
+		moveDest,
+		enemies,
+	);
 	const movedUnit = await moveBattleUnit(
 		get,
 		set,

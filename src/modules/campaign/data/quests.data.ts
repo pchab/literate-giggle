@@ -7,12 +7,15 @@ import {
 	NECROMANCER_QUEST,
 	NECROMANCER_QUEST_ID,
 } from "./necromancer/necromancer.quest";
+import { RAT_IN_THE_CELLAR } from "./rats-in-the-cellar/ratsInTheCellar.definitions";
+import { RAT_IN_THE_CELLAR_QUEST } from "./rats-in-the-cellar/ratsInTheCellar.quest";
 import {
 	VERDANT_RECLAMATION,
 	VERDANT_RECLAMATION_QUEST,
 } from "./verdant-reclamation/verdantReclamation.quest";
 
 export const QUEST_DB: Record<Quest["id"], Quest> = {
+	[RAT_IN_THE_CELLAR.id]: RAT_IN_THE_CELLAR_QUEST,
 	[VERDANT_RECLAMATION.id]: VERDANT_RECLAMATION_QUEST,
 	[NECROMANCER_QUEST_ID]: NECROMANCER_QUEST,
 	[QUEST_DWARVEN_HIGHWAY]: DWARVEN_PASSAGE_QUEST,

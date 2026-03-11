@@ -48,10 +48,7 @@ export function moveHero(newPosition: GridPosition) {
 			newPosition,
 			allBlockingFigures,
 		);
-		await moveBattleUnit(
-			get,
-			set,
-		)({ movingUnit: hero, path });
+		await moveBattleUnit(get, set)({ movingUnit: hero, path });
 
 		return set(({ heroes, aiIntents, usedMovesThisTurn }) => {
 			const newIntents = calculateAIIntents(

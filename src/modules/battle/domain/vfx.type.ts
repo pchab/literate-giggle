@@ -1,1 +1,1 @@
-export type VfxType = "SLASH" | "HEAL" | "BLOCK" | null;
+export type VfxType = "SLASH" | "HEAL" | "BLOCK" | "POISON" | null;

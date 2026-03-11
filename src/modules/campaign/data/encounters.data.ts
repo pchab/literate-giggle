@@ -1,22 +1,10 @@
 import { skeleton } from "@/modules/figures/data/monsters/skeleton.data";
-import type { Monster } from "@/modules/figures/domain/figures.type";
 import { monsterId } from "@/modules/figures/helpers/figures.helpers";
-import type { Scene } from "../domain/scenes.type";
+import { type Encounter, encounterId } from "../domain/encounters.type";
 import { DWARVEN_PASSAGE_ENCOUNTER_DB } from "./dwarven-passage/dwarvenPassage.encounters";
 import { NECROMANCER_ENCOUNTER_DB } from "./necromancer/necromancer.encounters";
+import { RATS_IN_THE_CELLAR_ENCOUNTERS } from "./rats-in-the-cellar/ratsInTheCellar.encounters";
 import { VERDANT_RECLAMATION_ENCOUNTER_DB } from "./verdant-reclamation/verdantReclamation.encounters";
-
-export interface Encounter {
-	id: string & { __brand: "EncounterId" };
-	name: string;
-	generateMonsters: () => Monster[];
-	onWinSceneId?: Scene["id"];
-	onLoseSceneId?: Scene["id"];
-}
-
-export function encounterId(id: string): Encounter["id"] {
-	return `encounter-${id}` as Encounter["id"];
-}
 
 export const ENCOUNTER_DB: Record<string, Encounter> = {
 	[encounterId("tutorial_fight")]: {
@@ -33,6 +21,7 @@ export const ENCOUNTER_DB: Record<string, Encounter> = {
 		],
 	},
 
+	...RATS_IN_THE_CELLAR_ENCOUNTERS,
 	...VERDANT_RECLAMATION_ENCOUNTER_DB,
 	...NECROMANCER_ENCOUNTER_DB,
 	...DWARVEN_PASSAGE_ENCOUNTER_DB,

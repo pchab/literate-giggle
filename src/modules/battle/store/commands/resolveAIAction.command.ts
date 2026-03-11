@@ -9,11 +9,8 @@ export const resolveAIActions = async (get: StoreGet, set: StoreSet) => {
 	// ==========================================
 	// 1. START OF AI TURN (Tick AI statuses)
 	// ==========================================
-	set((prev) => ({
-		...prev,
-		monsters: tickStatuses(prev.monsters),
-		summons: tickStatuses(prev.summons),
-	}));
+	const { monsters: draftMonsters, summons: draftSummons } = get();
+	tickStatuses(set)([...draftMonsters, ...draftSummons]);
 
 	await sleep(200);
 
@@ -54,23 +51,23 @@ export const resolveAIActions = async (get: StoreGet, set: StoreSet) => {
 		await handleAICardIntent(get, set, freshAIFigure.id, cardToPlay);
 	}
 
-	// ==========================================
+	// ============================================
 	// 3. START OF PLAYER TURN (Tick Hero statuses)
-	// ==========================================
-	const { heroes, monsters, summons } = get();
+	// ============================================
+	tickStatuses(set)(get().heroes);
 
-	const nextHeroes = tickStatuses(heroes);
-	const survivingMonsters = monsters.filter((m) => m.currentHp > 0);
-	const survivingSummons = summons.filter((s) => s.currentHp > 0);
+	const survivingHeroes = get().heroes.filter((h) => h.currentHp > 0);
+	const survivingMonsters = get().monsters.filter((m) => m.currentHp > 0);
+	const survivingSummons = get().summons.filter((s) => s.currentHp > 0);
 	const nextEnemyIntents = calculateAIIntents([
-		...nextHeroes,
+		...survivingHeroes,
 		...survivingMonsters,
 		...survivingSummons,
 	]);
 
 	set((prev) => ({
 		...prev,
-		heroes: nextHeroes,
+		heroes: survivingHeroes,
 		monsters: survivingMonsters,
 		summons: survivingSummons,
 		usedMovesThisTurn: {},

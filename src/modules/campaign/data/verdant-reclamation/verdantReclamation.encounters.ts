@@ -4,8 +4,8 @@ import { elvenWeaver } from "@/modules/figures/data/monsters/elven-weaver";
 import { treant_bruiser } from "@/modules/figures/data/monsters/treant.data";
 import type { Monster } from "@/modules/figures/domain/figures.type";
 import { monsterId } from "@/modules/figures/helpers/figures.helpers";
+import { type Encounter, encounterId } from "../../domain/encounters.type";
 import { sceneId } from "../../domain/scenes.type";
-import { type Encounter, encounterId } from "../encounters.data";
 
 export const VERDANT_RECLAMATION_ENCOUNTER_DB: Record<string, Encounter> = {
 	// --- FIRST ENCOUNTER: KIVEN BRIDGE ---

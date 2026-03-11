@@ -2,6 +2,7 @@ import type { Card } from "../domain/cards.type";
 import { cardId } from "../helpers/cards.helper";
 
 export type EvolutionRuneId =
+	| "rune_rat"
 	| "rune_iron"
 	| "rune_nature"
 	| "rune_arcane"

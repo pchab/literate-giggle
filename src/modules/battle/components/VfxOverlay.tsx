@@ -62,6 +62,23 @@ export function VfxOverlay({ type, onComplete }: VfxOverlayProps) {
 					transition={{ duration: 0.4, ease: "circOut" }}
 				/>
 			)}
+
+			{type === "POISON" && (
+				<motion.div
+					className="w-16 h-16 rounded-full bg-purple-500/60 mix-blend-screen filter blur-md"
+					initial={{ scale: 0.4, opacity: 0, y: 5 }}
+					animate={{
+						scale: [0.4, 1.3, 1.6],
+						opacity: [0, 0.8, 0],
+						y: [5, -15, -30],
+					}}
+					transition={{ duration: 0.5, ease: "easeOut" }}
+				>
+					<div className="absolute inset-0 flex items-center justify-center text-purple-200 text-2xl drop-shadow-md">
+						☠️
+					</div>
+				</motion.div>
+			)}
 		</div>
 	);
 }

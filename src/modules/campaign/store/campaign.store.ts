@@ -4,19 +4,14 @@ import { QUEST_DB } from "@/modules/campaign/data/quests.data";
 import type { Quest, QuestStep } from "@/modules/campaign/domain/quests.type";
 import type { Scene } from "@/modules/campaign/domain/scenes.type";
 import type { MapNode } from "@/modules/world/domain/map.types";
+import { RAT_IN_THE_CELLAR } from "../data/rats-in-the-cellar/ratsInTheCellar.definitions";
 import advanceQuest from "./commands/advanceQuest.command";
 import completeQuest from "./commands/completeQuest.command";
 import unlockQuest from "./commands/unlockQuest.command";
 
-export type NodeOverrides = {
-	onEnter?: Scene["id"];
-	onWin?: Scene["id"];
-};
-
 interface CampaignState {
 	activeQuests: Record<Quest["id"], QuestStep["id"]>;
 	completedQuests: Quest["id"][];
-	nodeOverrides: Record<MapNode["id"], NodeOverrides>;
 	activeSceneId: Scene["id"] | null;
 	flags: string[];
 }
@@ -34,9 +29,10 @@ interface CampaignActions {
 }
 
 const initialState: CampaignState = {
-	activeQuests: {},
+	activeQuests: {
+		[RAT_IN_THE_CELLAR.id]: RAT_IN_THE_CELLAR.steps.tavern_meeting,
+	},
 	completedQuests: [],
-	nodeOverrides: {},
 	activeSceneId: null,
 	flags: [],
 };

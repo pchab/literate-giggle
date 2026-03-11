@@ -1,4 +1,4 @@
-import type { Encounter } from "@/modules/campaign/data/encounters.data";
+import type { Encounter } from "@/modules/campaign/domain/encounters.type";
 import type { EvolutionRuneId } from "@/modules/cards/data/evolutionRecipes.data";
 import type { HeroClass } from "@/modules/figures/domain/heroClass.types";
 import type { MapNode } from "@/modules/world/domain/map.types";

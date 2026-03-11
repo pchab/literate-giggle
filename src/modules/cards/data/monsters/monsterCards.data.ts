@@ -23,6 +23,43 @@ export const monsterCardLibrary: Record<Card["id"], Card> = {
 		aiTargetPreference: "lowestHp",
 		effects: [{ type: "damage", amount: 2, target: "anchor" }],
 	},
+	// --- RAT CARD ---
+	[cardId("rat-bite")]: {
+		id: cardId("rat-bite"),
+		name: "Rat Bite",
+		range: 1,
+		iconType: "MELEE",
+		playRequirement: "requires_enemy",
+		aiTargetPreference: "lowestHp",
+		effects: [{ type: "damage", amount: 2, target: "anchor" }],
+	},
+	[cardId("nasty-bite")]: {
+		id: cardId("nasty-bite"),
+		name: "Nasty Bite",
+		range: 1,
+		iconType: "MELEE",
+		playRequirement: "requires_enemy",
+		aiTargetPreference: "lowestHp",
+		effects: [
+			{ type: "damage", amount: 2, target: "anchor" },
+			{
+				type: "apply_status",
+				status: { type: "poison", amount: 1, duration: 2 },
+				target: "anchor",
+			},
+		],
+	},
+	[cardId("call_more_rats")]: {
+		id: cardId("call_more_rats"),
+		name: "Call more rats",
+		range: 1,
+		iconType: "SUMMON",
+		playRequirement: "no_target",
+		aiTargetPreference: "empty_adjacent",
+		effects: [
+			{ type: "summon", blueprintId: summonId("rat"), target: "anchor" },
+		],
+	},
 
 	// --- SKELETON CARDS ---
 	[cardId("skel_slash")]: {
@@ -67,12 +104,12 @@ export const monsterCardLibrary: Record<Card["id"], Card> = {
 	[cardId("necromancer_summon")]: {
 		id: cardId("necromancer_summon"),
 		name: "Summon Minion",
-		range: 0,
+		range: 1,
 		iconType: "SUMMON",
 		playRequirement: "no_target",
-		aiTargetPreference: "self",
+		aiTargetPreference: "empty_adjacent",
 		effects: [
-			{ type: "summon", blueprintId: summonId("skeleton"), target: "self" },
+			{ type: "summon", blueprintId: summonId("skeleton"), target: "anchor" },
 		],
 	},
 

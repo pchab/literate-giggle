@@ -2,6 +2,7 @@ import type {
 	GridPosition,
 	SurfaceType,
 } from "@/modules/battle/domain/grid.type";
+import type { Summon } from "@/modules/figures/domain/figures.type";
 import type { Status, StatusType } from "@/modules/figures/domain/status.type";
 
 export type AnchorTarget = GridPosition | null;
@@ -70,7 +71,7 @@ export type PushEffect = {
 
 export type SummonEffect = {
 	type: "summon";
-	blueprintId: string;
+	blueprintId: Summon["id"];
 	target: EffectTarget;
 };
 

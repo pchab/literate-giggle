@@ -3,7 +3,7 @@ import { bat } from "@/modules/figures/data/monsters/bat.data";
 import { necromancer } from "@/modules/figures/data/monsters/necromancer.data";
 import { skeleton } from "@/modules/figures/data/monsters/skeleton.data";
 import { monsterId } from "@/modules/figures/helpers/figures.helpers";
-import { type Encounter, encounterId } from "../encounters.data";
+import { type Encounter, encounterId } from "../../domain/encounters.type";
 
 export const NECROMANCER_ENCOUNTER_DB: Record<string, Encounter> = {
 	[encounterId("bat_swarm")]: {

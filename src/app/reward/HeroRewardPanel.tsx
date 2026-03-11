@@ -248,7 +248,7 @@ export default function HeroRewardPanel({
 							</button>
 						</div>
 						{/* Scrollable grid of deck */}
-						<div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-zinc-700">
+						<div className="flex gap-2 pb-2 scrollbar-thin scrollbar-thumb-zinc-700">
 							{hero.deck
 								.map(getComputedCard)
 								// Filter logic remains exactly the same...
