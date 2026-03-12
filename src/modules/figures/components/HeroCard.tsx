@@ -37,8 +37,8 @@ export function HeroCard({
 		useShallow((state) => ({
 			endTurn: state.endTurn,
 			setActiveMoveHeroId: state.setActiveMoveHeroId,
-			activeMoveUnitId: state.activeMoveUnitId,
-			activeCard: state.activeCard,
+			activeMoveUnitId: state.activeMoveHeroId,
+			activeCard: state.activeHeroCard,
 			usedMovesThisTurn: state.usedMovesThisTurn,
 			usedCardsThisTurn: state.usedCardsThisTurn,
 		})),

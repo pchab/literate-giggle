@@ -1,25 +1,22 @@
 import type { BattleStoreServerAction } from "@/modules/battle/store/battle.store";
-import { calculateAIIntents } from "./calculateAIIntents.command";
+import { UnitStance } from "@/modules/figures/domain/figures.type";
 
 export function cancelCard(): BattleStoreServerAction {
-	return ({
-		aiIntents: enemyIntents,
-		heroes,
-		monsters,
-		summons,
-		activeCard,
-	}) => {
-		if (!activeCard) {
+	return ({ heroes, activeHeroCard }) => {
+		if (!activeHeroCard) {
 			console.warn("No card is currently selected.");
 			return {};
 		}
-		const newIntents = calculateAIIntents(
-			[...heroes, ...monsters, ...summons],
-			enemyIntents,
-		);
+
+		const { unitId: heroId } = activeHeroCard;
+		const heroIndex = heroes.findIndex(({ id }) => id === heroId);
+
 		return {
-			aiIntents: newIntents,
-			activeCard: null,
+			heroes: heroes.with(heroIndex, {
+				...heroes[heroIndex],
+				stance: UnitStance.IDLE,
+			}),
+			activeHeroCard: null,
 		};
 	};
 }

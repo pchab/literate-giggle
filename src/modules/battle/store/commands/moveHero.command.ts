@@ -8,8 +8,13 @@ import { calculateAIIntents } from "./calculateAIIntents.command";
 
 export function moveHero(newPosition: GridPosition) {
 	return async (get: StoreGet, set: StoreSet) => {
-		const { activeMoveUnitId, usedMovesThisTurn, heroes, monsters, summons } =
-			get();
+		const {
+			activeMoveHeroId: activeMoveUnitId,
+			usedMovesThisTurn,
+			heroes,
+			monsters,
+			summons,
+		} = get();
 
 		if (!activeMoveUnitId || !isHeroId(activeMoveUnitId)) {
 			return {};
@@ -28,7 +33,7 @@ export function moveHero(newPosition: GridPosition) {
 		}
 
 		set(() => ({
-			activeMoveUnitId: null,
+			activeMoveHeroId: null,
 		}));
 
 		const distance = getManhattanDistance(newPosition, hero.gridPosition);

@@ -1,9 +1,11 @@
 export default function RootBattleLayout({
 	children,
 	party,
+	enemyIntent,
 }: Readonly<{
 	children: React.ReactNode;
 	party: React.ReactNode;
+	enemyIntent: React.ReactNode;
 }>) {
 	return (
 		<>
@@ -16,6 +18,8 @@ export default function RootBattleLayout({
 				<div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_20px_rgba(0,0,0,0.8)] z-0" />
 
 				{party}
+				<div className="w-98 h-px bg-linear-to-b from-transparent via-zinc-700 to-transparent m-auto" />
+				{enemyIntent}
 			</aside>
 
 			<main className="flex-1 relative">{children}</main>

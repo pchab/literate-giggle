@@ -25,7 +25,7 @@ import { selectActiveMoveHero } from "./commands/selectActiveMoveHero.command";
 import { selectCard } from "./commands/selectCard.command";
 
 export type ActiveCardContext = {
-	unitId: BattleUnit["id"];
+	unitId: BattleHero["id"];
 	card: Card;
 };
 
@@ -34,12 +34,13 @@ export type BattleState = {
 	heroes: BattleHero[];
 	monsters: Monster[];
 	summons: Summon[];
-	activeMoveUnitId: BattleUnit["id"] | null;
-	usedMovesThisTurn: Record<Hero["id"], number>;
-	activeCard: ActiveCardContext | null;
-	usedCardsThisTurn: Record<Hero["id"], Card["id"]>;
+	activeMoveHeroId: BattleHero["id"] | null;
+	usedMovesThisTurn: Record<BattleHero["id"], number>;
+	activeHeroCard: ActiveCardContext | null;
+	hoveredHeroCard: ActiveCardContext | null;
+	hoveredUnitId: BattleUnit["id"] | null;
+	usedCardsThisTurn: Record<BattleHero["id"], Card["id"]>;
 	aiIntents: Record<BattleUnit["id"], AIIntent>;
-	hoveredCard: { heroId: Hero["id"]; card: Card } | null;
 	currentVfx: Record<string, VfxType>; // key is cell id
 	xpEarned: number;
 	background: string;
@@ -59,7 +60,8 @@ type BattleAction = {
 	endTurn: (heroId: Hero["id"]) => void;
 	resolveCard: (anchorTarget: AnchorTarget) => void;
 	enemyAction: () => Promise<void>;
-	setHoveredCard: (hovered: { heroId: Hero["id"]; card: Card } | null) => void;
+	setHoveredCard: (cardContext: ActiveCardContext | null) => void;
+	setHoveredUnit: (unit: BattleUnit["id"] | null) => void;
 	setVfx: (cellId: string, vfx: VfxType | null) => void;
 	resetXpEarned: () => void;
 };
@@ -69,11 +71,12 @@ const initialState: BattleState = {
 	heroes: [],
 	monsters: [],
 	aiIntents: {},
-	activeCard: null,
-	activeMoveUnitId: null,
+	activeHeroCard: null,
+	activeMoveHeroId: null,
+	hoveredHeroCard: null,
+	hoveredUnitId: null,
 	usedMovesThisTurn: {},
 	usedCardsThisTurn: {},
-	hoveredCard: null,
 	summons: [],
 	currentVfx: {},
 	xpEarned: 0,
@@ -99,14 +102,16 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 				encounterId: Encounter["id"],
 				background: string,
 			) => set(initBattle(heroRoster, encounterId, background)),
-			selectCard: (heroId, card) => set(selectCard(heroId, card)),
+			selectCard: async (heroId, card) =>
+				await selectCard(get, set)(heroId, card),
 			cancelCard: () => set(cancelCard()),
 			resolveCard: (anchorTarget) => resolveCard(get, set)(anchorTarget),
 			endTurn: (heroId) => set(endTurn(heroId)),
 			setActiveMoveHeroId: (heroId) => set(selectActiveMoveHero(heroId)),
 			moveHero: async (newPosition) => await moveHero(newPosition)(get, set),
 			enemyAction: async () => await resolveAIActions(get, set),
-			setHoveredCard: (hoveredCard) => set(() => ({ hoveredCard })),
+			setHoveredUnit: (hoveredUnitId) => set(() => ({ hoveredUnitId })),
+			setHoveredCard: (hoveredHeroCard) => set(() => ({ hoveredHeroCard })),
 			setVfx: (cellId, vfx) =>
 				set(({ currentVfx: { [cellId]: cellVfx, ...otherVfx } }) => ({
 					currentVfx: vfx ? { ...otherVfx, [cellId]: vfx } : otherVfx,

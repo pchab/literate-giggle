@@ -5,7 +5,7 @@ export function selectActiveMoveHero(
 	heroId: Hero["id"] | null,
 ): BattleStoreServerAction {
 	return () => ({
-		activeMoveUnitId: heroId,
-		activeCard: null,
+		activeMoveHeroId: heroId,
+		activeHeroCard: null,
 	});
 }

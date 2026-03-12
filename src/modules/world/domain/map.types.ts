@@ -1,6 +1,6 @@
 import type { Quest, QuestStep } from "@/modules/campaign/domain/quests.type";
 import type { TownData } from "@/modules/towns/domain/towns.type";
-import type { Encounter } from "../../campaign/data/encounters.data";
+import type { Encounter } from "../../campaign/domain/encounters.type";
 
 export type NodeType = "TOWN" | "BATTLE" | "CAMP" | "EVENT";
 

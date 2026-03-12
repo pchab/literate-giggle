@@ -18,8 +18,8 @@ export function UnitSprite({
 	const { texts, isHit } = useCombatText(currentHp, currentBlock);
 	const { aiIntents } = useBattleStore(
 		useShallow((state) => ({
-			activeCard: state.activeCard,
-			activeMoveUnitId: state.activeMoveUnitId,
+			activeCard: state.activeHeroCard,
+			activeMoveUnitId: state.activeMoveHeroId,
 			aiIntents: state.aiIntents,
 		})),
 	);

@@ -11,17 +11,17 @@ export function Hand({ id: heroId, hand }: Pick<BattleHero, "id" | "hand">) {
 	const {
 		usedCardsThisTurn,
 		activeCard,
+		hoveredHeroCard,
 		cancelCard,
 		selectCard,
-		hoveredCard,
 		setHoveredCard,
 	} = useBattleStore(
 		useShallow((state) => ({
 			usedCardsThisTurn: state.usedCardsThisTurn,
-			activeCard: state.activeCard,
+			activeCard: state.activeHeroCard,
+			hoveredHeroCard: state.hoveredHeroCard,
 			cancelCard: state.cancelCard,
 			selectCard: state.selectCard,
-			hoveredCard: state.hoveredCard,
 			setHoveredCard: state.setHoveredCard,
 		})),
 	);
@@ -45,24 +45,23 @@ export function Hand({ id: heroId, hand }: Pick<BattleHero, "id" | "hand">) {
 				const isSelected =
 					activeCard?.unitId === heroId && activeCard?.card.id === card.id;
 				const hasUsedCard = !!usedCardsThisTurn[heroId];
-				const isPlayable = !hasUsedCard && (!activeCard || isSelected);
-
 				const isHovered =
-					hoveredCard?.heroId === heroId && hoveredCard?.card.id === card.id;
+					hoveredHeroCard?.unitId === heroId &&
+					hoveredHeroCard?.card.id === card.id;
 
 				return (
 					<button
 						key={card.id}
 						type="button"
 						className="relative origin-bottom focus:outline-none"
-						style={{ cursor: isPlayable ? "pointer" : "not-allowed" }}
-						disabled={!isPlayable && !isSelected}
+						style={{ cursor: hasUsedCard ? "not-allowed" : "pointer" }}
+						disabled={hasUsedCard}
 						onClick={() => {
 							if (hasUsedCard) return;
 							if (isSelected) cancelCard();
-							else if (!activeCard) selectCard(heroId, card);
+							else selectCard(heroId, card);
 						}}
-						onMouseEnter={() => setHoveredCard({ heroId, card })}
+						onMouseEnter={() => setHoveredCard({ unitId: heroId, card })}
 						onMouseLeave={() => setHoveredCard(null)}
 					>
 						<AnimatePresence>
@@ -72,7 +71,7 @@ export function Hand({ id: heroId, hand }: Pick<BattleHero, "id" | "hand">) {
 						<BattleCard
 							card={card}
 							isSelected={isSelected}
-							isPlayable={isPlayable}
+							isPlayable={!hasUsedCard}
 						/>
 					</button>
 				);

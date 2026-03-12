@@ -1,40 +1,34 @@
-import type { BattleStoreServerAction } from "@/modules/battle/store/battle.store";
+import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
 import type { Card } from "@/modules/cards/domain/cards.type";
-import type { Hero } from "@/modules/figures/domain/figures.type";
+import { type Hero, UnitStance } from "@/modules/figures/domain/figures.type";
 import { resolveCard } from "./resolveCard.command";
 
-export function selectCard(
-	heroId: Hero["id"],
-	card: Card,
-): BattleStoreServerAction {
-	return (state) => {
-		const { activeCard, usedCardsThisTurn } = state;
-		if (activeCard) {
-			console.warn("Another card is already selected.");
-			return {};
-		}
+export const selectCard =
+	(get: StoreGet, set: StoreSet) => async (heroId: Hero["id"], card: Card) => {
+		const { heroes, activeHeroCard, usedCardsThisTurn } = get();
+		if (activeHeroCard) return;
 		if (usedCardsThisTurn[heroId]) {
 			console.warn("This hero has already played a card this turn!");
-			return {};
+			return;
 		}
 
 		if (card.playRequirement === "no_target") {
-			const executeEngine = resolveCard(null);
+			await resolveCard(get, set)(null);
 
-			const nextState = executeEngine({
-				...state,
-				activeCard: { unitId: heroId, card },
-			});
-
-			return {
-				...state,
-				...nextState,
-				activeCard: null,
-			};
+			set((prev) => ({
+				...prev,
+				activeHeroCard: null,
+			}));
 		}
 
-		return {
-			activeCard: { unitId: heroId, card },
-		};
+		const heroIndex = heroes.findIndex(({ id }) => id === heroId);
+
+		set(({ heroes, ...prev }) => ({
+			...prev,
+			heroes: heroes.with(heroIndex, {
+				...heroes[heroIndex],
+				stance: UnitStance.ATTACKING,
+			}),
+			activeHeroCard: { unitId: heroId, card },
+		}));
 	};
-}

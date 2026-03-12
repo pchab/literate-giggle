@@ -1,6 +1,9 @@
 import type { SummonEffect } from "@/modules/cards/domain/cards.type";
 import { summonLibrary } from "@/modules/figures/data/summons/summons.data";
-import type { BattleUnit } from "@/modules/figures/domain/figures.type";
+import {
+	type BattleUnit,
+	UnitStance,
+} from "@/modules/figures/domain/figures.type";
 import {
 	isHeroId,
 	isMonsterId,
@@ -39,6 +42,7 @@ export const resolveSummonEffect =
 					{
 						id: summonId(Date.now()),
 						...blueprint,
+						stance: UnitStance.IDLE,
 						currentHp: blueprint.maxHp,
 						statuses: [],
 						gridPosition: anchorTarget,

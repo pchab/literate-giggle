@@ -1,6 +1,5 @@
 import type { AnchorTarget } from "@/modules/cards/domain/cards.type";
 import { UnitStance } from "@/modules/figures/domain/figures.type";
-import { sleep } from "@/modules/shared/helpers/sleep";
 import type { GridPosition } from "../../domain/grid.type";
 import { resolvers } from "../../helpers/effects/effect.resolvers";
 import { rotatePattern } from "../../helpers/grid.helpers";
@@ -10,7 +9,7 @@ import { calculateAIIntents } from "./calculateAIIntents.command";
 
 export const resolveCard =
 	(get: StoreGet, set: StoreSet) => async (anchorTarget: AnchorTarget) => {
-		const { activeCard, heroes } = get();
+		const { activeHeroCard: activeCard, heroes } = get();
 		if (!activeCard) return;
 
 		const { unitId, card } = activeCard;
@@ -33,9 +32,6 @@ export const resolveCard =
 		}
 
 		// --- 3. RESOLVE EFFECTS WITH PATTERN ---
-		const attackingUnit = { ...hero, stance: UnitStance.ATTACKING };
-		updateBattleUnitState(set)(attackingUnit);
-		await sleep(300);
 		for (const effect of card.effects) {
 			await resolvers(effect)(get, set)({
 				anchorTarget,
@@ -64,7 +60,7 @@ export const resolveCard =
 				...prev
 			}) => ({
 				...prev,
-				activeCard: null,
+				activeHeroCard: null,
 				monsters: remainingMonsters,
 				aiIntents: calculateAIIntents(
 					[...newHeroes, ...remainingMonsters, ...summons],

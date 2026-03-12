@@ -4,130 +4,73 @@ import Image from "next/image";
 import { useShallow } from "zustand/shallow";
 import type { GridPosition } from "@/modules/battle/domain/grid.type";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
-import type { AnchorTarget } from "@/modules/cards/domain/cards.type";
 import { UnitSprite } from "@/modules/figures/components/UnitSprite";
-import type {
-	BattleHero,
-	BattleUnit,
-} from "@/modules/figures/domain/figures.type";
-import { isHero } from "@/modules/figures/helpers/figures.helpers";
+import type { BattleUnit } from "@/modules/figures/domain/figures.type";
 import { VfxOverlay } from "./VfxOverlay";
 
-export type Targeting =
-	| "ally"
-	| "enemy"
-	| "cell"
-	| "self"
-	| "invalid"
-	| "none"
-	| "cell_or_enemy";
+export type Highlight =
+	| "default"
+	| "active"
+	| "move"
+	| "target_cell"
+	| "target_ally"
+	| "target_enemy"
+	| "invalid";
 
 interface GridCellProps {
 	cell: { id: string } & GridPosition;
 	unitsInCell: BattleUnit[];
-	isDanger: boolean;
-	inRange: boolean;
-	targeting: Targeting;
-	hasActiveAction: boolean;
-	hoveredHeroId?: BattleHero["id"];
-	activeMoveHeroId?: BattleHero["id"] | null;
-	onResolveCard: (target: AnchorTarget) => void;
-	onMoveHero: (target: GridPosition) => void;
-	onSelectForMove: (heroId: BattleHero["id"] | null) => void;
-	remainingMoves: number;
+	highlight?: Highlight;
+	onClick: () => void;
 }
+
+const highlightClassMapping: Record<Highlight, string> = {
+	default:
+		"bg-zinc-950/40 border border-zinc-800/60 z-0 backdrop-blur-[2px] hover:brightness-110",
+	active:
+		"bg-blue-900/40 border-2 border-blue-400 z-10 shadow-[inset_0_0_15px_rgba(59,130,246,0.5)] backdrop-blur-none hover:brightness-110",
+	move: "bg-blue-950/50 border border-blue-500/50 hover:bg-blue-900/60 z-10 cursor-pointer backdrop-blur-none hover:brightness-110",
+	target_cell:
+		"bg-orange-900/50 border border-orange-500/50 hover:bg-orange-800/60 z-10 shadow-[inset_0_0_15px_rgba(249,115,22,0.2)] cursor-crosshair backdrop-blur-none hover:brightness-110",
+	target_ally:
+		"bg-green-900/50 border border-green-500/50 hover:bg-green-800/60 z-10 shadow-[inset_0_0_15px_rgba(34,197,94,0.2)] cursor-pointer backdrop-blur-none hover:brightness-110",
+	target_enemy:
+		"bg-red-950/50 border border-red-600/70 shadow-[inset_0_0_15px_rgba(220,38,38,0.3)] z-10 backdrop-blur-none hover:brightness-110",
+	invalid:
+		"bg-zinc-950/40 border border-zinc-800/60 z-0 backdrop-blur-[2px] cursor-not-allowed opacity-50",
+};
 
 export function GridCell({
 	cell,
 	unitsInCell,
-	isDanger,
-	inRange,
-	targeting,
-	hasActiveAction,
-	hoveredHeroId,
-	onResolveCard,
-	onMoveHero,
-	onSelectForMove,
-	activeMoveHeroId,
-	remainingMoves,
+	highlight = "default",
+	onClick,
 }: GridCellProps) {
-	const { currentVfx, setVfx, surfaces } = useBattleStore(
+	const { setHoveredUnit, currentVfx, setVfx, surfaces } = useBattleStore(
 		useShallow((state) => ({
+			setHoveredUnit: state.setHoveredUnit,
 			currentVfx: state.currentVfx,
 			setVfx: state.setVfx,
 			surfaces: state.surfaces,
 		})),
 	);
 
-	const hasUnitInCell = unitsInCell.length > 0;
-	// In theory multiple units in cell is transient state when moving.
-	const unitInCell = unitsInCell[0];
-	const unitIsHero = unitInCell && isHero(unitInCell);
-	const isHoveredHero = hoveredHeroId && unitInCell?.id === hoveredHeroId;
-	const isMoving = !!activeMoveHeroId;
-
-	const surface = surfaces[cell.id];
-
 	// --- DYNAMIC CELL STYLING ---
 	const baseClasses =
 		"w-24 h-24 relative flex items-center justify-center transition-colors duration-300";
-	let stateClasses =
-		"bg-zinc-950/40 border border-zinc-800/60 z-0 backdrop-blur-[2px]";
+	const stateClasses = highlightClassMapping[highlight];
 
-	if (isHoveredHero) {
-		stateClasses =
-			"bg-blue-900/40 border-2 border-blue-400 z-10 shadow-[inset_0_0_15px_rgba(59,130,246,0.5)] backdrop-blur-none";
-	} else if (targeting !== "none" && inRange) {
-		switch (targeting) {
-			case "cell":
-			case "cell_or_enemy":
-				stateClasses =
-					"bg-blue-950/50 border border-blue-500/50 hover:bg-blue-900/60 z-10 cursor-pointer backdrop-blur-none";
-				break;
-			case "enemy":
-				stateClasses =
-					"bg-orange-900/50 border border-orange-500/50 hover:bg-orange-800/60 z-10 shadow-[inset_0_0_15px_rgba(249,115,22,0.2)] cursor-crosshair backdrop-blur-none";
-				break;
-			case "ally":
-				stateClasses =
-					"bg-green-900/50 border border-green-500/50 hover:bg-green-800/60 z-10 shadow-[inset_0_0_15px_rgba(34,197,94,0.2)] cursor-pointer backdrop-blur-none";
-				break;
-		}
-	} else if (isDanger) {
-		stateClasses =
-			"bg-red-950/50 border border-red-600/70 shadow-[inset_0_0_15px_rgba(220,38,38,0.3)] z-10 backdrop-blur-none";
-	}
-	if (targeting === "invalid") {
-		stateClasses += " cursor-not-allowed opacity-50";
-	}
-
-	const handleClick = () => {
-		if (isMoving && targeting === "cell" && !hasUnitInCell && inRange) {
-			onMoveHero(cell);
-			return;
-		}
-
-		if (hasActiveAction && !isMoving && inRange) {
-			onResolveCard(cell);
-			return;
-		}
-
-		if (!hasActiveAction && unitIsHero && remainingMoves > 0) {
-			if (activeMoveHeroId === unitInCell.id) {
-				onSelectForMove(null);
-			} else {
-				onSelectForMove(unitInCell.id);
-			}
-		}
-	};
+	const surface = surfaces[cell.id];
+	// In theory multiple units in cell is transient state when moving.
+	const unitInCell = unitsInCell[0];
 
 	return (
 		<button
 			type="button"
-			className={`${baseClasses} ${stateClasses} ${
-				targeting !== "invalid" ? "hover:brightness-110" : ""
-			}`}
-			onClick={handleClick}
+			className={`${baseClasses} ${stateClasses}`}
+			onClick={onClick}
+			onMouseEnter={() => setHoveredUnit(unitInCell?.id)}
+			onMouseLeave={() => setHoveredUnit(null)}
 		>
 			<span className="text-[10px] text-zinc-500 font-bold select-none absolute top-1 left-1 pointer-events-none">
 				{cell.col},{cell.row}

@@ -1,4 +1,5 @@
 import type { AnchorTarget, Card } from "@/modules/cards/domain/cards.type";
+import { isSummon } from "@/modules/figures/helpers/figures.helpers";
 import type {
 	AIBattleUnit,
 	BattleUnit,
@@ -66,9 +67,11 @@ export const getIdealTarget = <C extends AIBattleUnit, T extends BattleUnit>(
 		(f) => f.currentHp > 0 && f.id !== aiFigure.id,
 	);
 
-	const validTargetsToEvaluate = aliveOthers.filter((f) =>
-		targetsAllies ? !areEnemies(aiFigure)(f) : areEnemies(aiFigure)(f),
-	);
+	const validTargetsToEvaluate = aliveOthers
+		.filter((f) => !isSummon(f) || f.allegiance !== "NEUTRAL")
+		.filter((f) =>
+			targetsAllies ? !areEnemies(aiFigure)(f) : areEnemies(aiFigure)(f),
+		);
 
 	const orderedTargets = getOrderedTargets<C, T>(
 		aiFigure,

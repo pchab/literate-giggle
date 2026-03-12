@@ -24,7 +24,6 @@ import { setPhase } from "./commands/setPhase.command";
 import { stageBattleRewards } from "./commands/stageBattleRewards.command";
 import { travelToNode } from "./commands/travelToNode.command";
 import { updateSelectedCards } from "./commands/updateSelectedCards.command";
-import { upgradeClassCards } from "./commands/upgradeClassCards.command";
 
 export type GamePhase = "TOWN" | "CAMP" | "MAP" | "BATTLE" | "REWARD" | "SCENE";
 const startingIds = [
@@ -73,7 +72,6 @@ export interface WorldAction {
 		heroId: Hero["id"],
 		cards: Hero["selectedCards"],
 	) => void;
-	upgradeClassCards: (cardUpgrades: Record<Card["id"], Card["id"]>) => void;
 	clearUnlockedQuestsQueue: () => void;
 	healParty: (healAmount: number) => void;
 	rewardEvoRune: (runeId: EvolutionRuneId) => void;
@@ -156,8 +154,6 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 				),
 			updateSelectedCards: (heroId, selectedCards) =>
 				set(updateSelectedCards(heroId, selectedCards)),
-			upgradeClassCards: (cardUpgrades: Record<Card["id"], Card["id"]>) =>
-				set(upgradeClassCards(cardUpgrades)),
 			clearUnlockedQuestsQueue: () => set({ unlockedQuestsQueue: [] }),
 			healParty: (healAmount: number) => set(healParty(healAmount)),
 			rewardEvoRune: (runeId: EvolutionRuneId) =>

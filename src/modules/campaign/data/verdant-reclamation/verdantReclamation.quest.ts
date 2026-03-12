@@ -38,7 +38,7 @@ export const VERDANT_RECLAMATION_QUEST: Quest = {
 					locationId: townLocationId("ironhold_tavern"),
 				},
 			],
-			onEnterSceneId: sceneId("invasion_start"),
+			onEnterSceneId: sceneId("war_rumors"),
 		},
 		[VERDANT_RECLAMATION.steps.investigate_camp]: {
 			id: VERDANT_RECLAMATION.steps.investigate_camp,
