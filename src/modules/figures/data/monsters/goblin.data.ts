@@ -10,7 +10,7 @@ export const goblin: UnitBlueprint = {
 	intentPool: [
 		{
 			cardId: cardId("monster_melee_attack"),
-			weight: 1,
+			weight: 2,
 		},
 		{
 			cardId: cardId("bandage"),

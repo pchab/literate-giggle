@@ -6,6 +6,8 @@ import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { cardLibrary } from "@/modules/cards/data/cards.data";
 import { formatCardEffect } from "@/modules/cards/helpers/cards.helper";
 import { getBlockFromStatuses } from "@/modules/figures/helpers/figures.helpers";
+import { BattleCard } from "@/modules/cards/components/BattleCard";
+import { CardTooltip } from "@/modules/cards/components/CardTooltip";
 
 export default function EnemyIntentSidebar() {
 	const { monsters, summons, hoveredUnitId, aiIntents } = useBattleStore(
@@ -23,7 +25,7 @@ export default function EnemyIntentSidebar() {
 
 	return (
 		// Fixed height wrapper so the layout doesn't constantly jump when hovering
-		<div className="h-64 mt-auto relative">
+		<div className="h-64 relative">
 			<AnimatePresence mode="wait">
 				{aiUnit ? (
 					<motion.div
@@ -43,6 +45,9 @@ export default function EnemyIntentSidebar() {
 								<h3 className="text-sm font-bold text-red-300 uppercase tracking-widest drop-shadow-md">
 									Enemy Info
 								</h3>
+								<span className="text-[11px] font-mono text-zinc-300">
+									Move {aiUnit.baseMove}
+								</span>
 								<span className="text-[11px] font-mono text-zinc-300">
 									{aiUnit.currentHp} / {aiUnit.maxHp} HP
 								</span>
@@ -101,25 +106,9 @@ export default function EnemyIntentSidebar() {
 									if (!intentCard) return null;
 
 									return (
-										<div className="flex flex-col gap-1.5 bg-zinc-900/50 p-2 rounded border border-zinc-800/50">
-											<div className="flex items-center justify-between">
-												<span className="text-sm font-bold text-zinc-200">
-													{intentCard.name}
-												</span>
-												<span className="text-[10px] text-zinc-500 bg-zinc-950 px-1.5 py-0.5 rounded">
-													Range {intentCard.range}
-												</span>
-											</div>
-											<div className="flex flex-col gap-1 mt-1">
-												{intentCard.effects.map((eff, i) => (
-													<span
-														key={i}
-														className="text-xs text-zinc-400 leading-snug"
-													>
-														{formatCardEffect(eff)}
-													</span>
-												))}
-											</div>
+										<div className="flex flex-row justify-between items-start">
+											<BattleCard card={intentCard} />
+											<CardTooltip card={intentCard} />
 										</div>
 									);
 								})()}

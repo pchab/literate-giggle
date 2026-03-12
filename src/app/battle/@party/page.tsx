@@ -7,7 +7,7 @@ export default function PartySidebar() {
 	const heroes = useBattleStore((state) => state.heroes);
 
 	return (
-		<section className="h-full w-full flex-1 flex flex-col justify-center no-scrollbar gap-8">
+		<section className="flex flex-col justify-center no-scrollbar gap-4">
 			{heroes.map((hero) => (
 				<HeroCard {...hero} key={hero.id} />
 			))}

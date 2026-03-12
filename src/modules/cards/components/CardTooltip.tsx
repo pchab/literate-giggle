@@ -1,4 +1,3 @@
-import { motion } from "motion/react";
 import type { Card, CardEffect } from "@/modules/cards/domain/cards.type";
 import { getStatusEffectText } from "../helpers/cards.helper";
 
@@ -75,13 +74,7 @@ export function CardTooltip({ card }: CardTooltipProps) {
 	}
 
 	return (
-		<motion.div
-			initial={{ opacity: 0, y: 10, scale: 0.95 }}
-			animate={{ opacity: 1, y: 0, scale: 1 }}
-			exit={{ opacity: 0, scale: 0.95 }}
-			transition={{ duration: 0.15, ease: "easeOut" }}
-			className="absolute bottom-[110%] left-1/2 -translate-x-1/2 w-48 bg-zinc-950 border border-zinc-700 rounded-lg shadow-2xl p-3 z-50 pointer-events-none"
-		>
+		<div className="w-48 bg-zinc-950 border border-zinc-700 rounded-lg shadow-2xl p-3 z-50 pointer-events-none">
 			<div className="flex justify-between items-start border-b border-zinc-800 pb-2 mb-2 gap-2">
 				<h3 className="text-sm font-bold text-zinc-100 leading-tight">
 					{card.name}
@@ -100,6 +93,6 @@ export function CardTooltip({ card }: CardTooltipProps) {
 					{renderRequirementText(card.playRequirement)}
 				</span>
 			</div>
-		</motion.div>
+		</div>
 	);
 }

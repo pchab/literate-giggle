@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "motion/react";
 import { AnimatePresence } from "motion/react";
 import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
@@ -65,7 +66,17 @@ export function Hand({ id: heroId, hand }: Pick<BattleHero, "id" | "hand">) {
 						onMouseLeave={() => setHoveredCard(null)}
 					>
 						<AnimatePresence>
-							{isHovered && <CardTooltip card={card} />}
+							{isHovered && (
+								<motion.div
+									initial={{ opacity: 0, y: 10, scale: 0.95 }}
+									animate={{ opacity: 1, y: 0, scale: 1 }}
+									exit={{ opacity: 0, scale: 0.95 }}
+									transition={{ duration: 0.15, ease: "easeOut" }}
+									className="absolute bottom-[110%] left-1/2 -translate-x-1/2"
+								>
+									<CardTooltip card={card} />
+								</motion.div>
+							)}
 						</AnimatePresence>
 
 						<BattleCard

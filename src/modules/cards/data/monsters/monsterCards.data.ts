@@ -8,6 +8,7 @@ export const monsterCardLibrary: Record<Card["id"], Card> = {
 	[cardId("monster_melee_attack")]: {
 		id: cardId("monster_melee_attack"),
 		name: "Basic Attack",
+		image: "/cards/club.webp",
 		range: 1,
 		iconType: "MELEE",
 		playRequirement: "requires_enemy",
