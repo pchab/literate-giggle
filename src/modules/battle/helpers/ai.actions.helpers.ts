@@ -74,6 +74,19 @@ function getAnchorTarget<C extends BattleUnit, T extends BattleUnit>({
 	return anchorTarget;
 }
 
+const updateAIUnitStance =
+	(get: StoreGet, set: StoreSet) =>
+	(unitId: BattleUnit["id"]) =>
+	async (stance: UnitStance) => {
+		const freshAIUnit = [...get().monsters, ...get().summons].find(
+			({ id }) => id === unitId,
+		);
+		if (!freshAIUnit) return;
+		updateBattleUnitState(set)({ ...freshAIUnit, stance });
+		await sleep(300);
+		return freshAIUnit;
+	};
+
 export async function handleAICardIntent(
 	get: StoreGet,
 	set: StoreSet,
@@ -121,13 +134,11 @@ export async function handleAICardIntent(
 		enemies,
 	);
 
-	const movingUnit = { ...initialAttacker, stance: UnitStance.MOVING };
-	updateBattleUnitState(set)(movingUnit);
 	const movedUnit = await moveBattleUnit(
 		get,
 		set,
 	)({
-		movingUnit,
+		movingUnit: initialAttacker,
 		path,
 	});
 
@@ -163,9 +174,9 @@ export async function handleAICardIntent(
 	// ==========================================
 	// 3. RESOLVE EFFECTS
 	// ==========================================
-	const attackingUnit = { ...movedUnit, stance: UnitStance.ATTACKING };
-	updateBattleUnitState(set)(attackingUnit);
-	await sleep(300);
+	const changeStance = await updateAIUnitStance(get, set)(attackerId);
+	const attackingUnit = await changeStance(UnitStance.ATTACKING);
+	if (!attackingUnit) return;
 	for (const effect of card.effects) {
 		await resolvers(effect)(get, set)({
 			anchorTarget,
@@ -173,8 +184,5 @@ export async function handleAICardIntent(
 			patternCells: targetedCells,
 		});
 	}
-	const stillUnit = { ...attackingUnit, stance: UnitStance.IDLE };
-	updateBattleUnitState(set)(stillUnit);
-
-	await sleep(300);
+	await changeStance(UnitStance.IDLE);
 }

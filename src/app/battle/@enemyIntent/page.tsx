@@ -3,11 +3,10 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
-import { cardLibrary } from "@/modules/cards/data/cards.data";
-import { formatCardEffect } from "@/modules/cards/helpers/cards.helper";
-import { getBlockFromStatuses } from "@/modules/figures/helpers/figures.helpers";
 import { BattleCard } from "@/modules/cards/components/BattleCard";
 import { CardTooltip } from "@/modules/cards/components/CardTooltip";
+import { cardLibrary } from "@/modules/cards/data/cards.data";
+import { getBlockFromStatuses } from "@/modules/figures/helpers/figures.helpers";
 
 export default function EnemyIntentSidebar() {
 	const { monsters, summons, hoveredUnitId, aiIntents } = useBattleStore(

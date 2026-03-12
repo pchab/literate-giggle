@@ -1,7 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
-import { AnimatePresence } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import type { BattleHero } from "@/modules/figures/domain/figures.type";

@@ -63,9 +63,7 @@ export const getIdealTarget = <C extends AIBattleUnit, T extends BattleUnit>(
 	}
 
 	const targetsAllies = card.playRequirement === "requires_ally";
-	const aliveOthers = figures.filter(
-		(f) => f.currentHp > 0 && f.id !== aiFigure.id,
-	);
+	const aliveOthers = figures.filter((f) => f.currentHp > 0);
 
 	const validTargetsToEvaluate = aliveOthers
 		.filter((f) => !isSummon(f) || f.allegiance !== "NEUTRAL")
