@@ -90,7 +90,7 @@ export function HandMenu() {
 								: "bg-transparent text-zinc-500 hover:text-zinc-300 border border-transparent hover:border-zinc-700"
 						}`}
 					>
-						{hero.id}
+						{hero.name}
 					</button>
 				))}
 			</div>

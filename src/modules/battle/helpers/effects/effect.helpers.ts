@@ -10,13 +10,13 @@ import type { StoreSet } from "../../store/battle.store";
 import { getCellId, getLineOfSightPath } from "../grid.helpers";
 import { updateBattleUnitState } from "../state.helpers";
 
-export function areEnemies(u1: BattleUnit, u2: BattleUnit): boolean {
+export const areEnemies = (u1: BattleUnit) => (u2: BattleUnit) => {
 	const u1IsPlayer =
 		isHeroId(u1.id) || (isSummon(u1) && u1.allegiance === "PLAYER");
 	const u2IsPlayer =
 		isHeroId(u2.id) || (isSummon(u2) && u2.allegiance === "PLAYER");
 	return u1IsPlayer !== u2IsPlayer;
-}
+};
 
 export function resolveTargets<T extends BattleUnit>(
 	targetType: EffectTarget,
@@ -50,11 +50,11 @@ export function resolveTargets<T extends BattleUnit>(
 	}
 
 	if (targetType === "all_enemies") {
-		return aliveFigures.filter((f) => areEnemies(caster, f)).map((f) => f.id);
+		return aliveFigures.filter(areEnemies(caster)).map((f) => f.id);
 	}
 
 	if (targetType === "all_allies") {
-		return aliveFigures.filter((f) => !areEnemies(caster, f)).map((f) => f.id);
+		return aliveFigures.filter((f) => !areEnemies(caster)(f)).map((f) => f.id);
 	}
 
 	if (targetType === "path" && anchorTarget) {

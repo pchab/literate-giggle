@@ -67,7 +67,7 @@ export const getIdealTarget = <C extends AIBattleUnit, T extends BattleUnit>(
 	);
 
 	const validTargetsToEvaluate = aliveOthers.filter((f) =>
-		targetsAllies ? !areEnemies(aiFigure, f) : areEnemies(aiFigure, f),
+		targetsAllies ? !areEnemies(aiFigure)(f) : areEnemies(aiFigure)(f),
 	);
 
 	const orderedTargets = getOrderedTargets<C, T>(

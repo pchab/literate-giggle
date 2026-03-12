@@ -10,7 +10,7 @@ export const DWARVEN_PASSAGE_SCENE_DB: Record<Scene["id"], Scene> = {
 		initialStepId: "start",
 		steps: {
 			start: {
-				backgroundImage: "/scenes/generic_tavern_2.jpg",
+				backgroundImage: "/scenes/generic_tavern_2.webp",
 				speaker: "Dwarven Prospector",
 				text: "Aye, the tunnel in the mountain is still there, but the old automated defenses woke up. Clear 'em out, and I'll forge you some proper steel.",
 				onNext: [
@@ -30,7 +30,7 @@ export const DWARVEN_PASSAGE_SCENE_DB: Record<Scene["id"], Scene> = {
 		initialStepId: "start",
 		steps: {
 			start: {
-				backgroundImage: "/scenes/stone_gates.jpg",
+				backgroundImage: "/scenes/stone_gates.webp",
 				text: "The elementals crumble into gravel. The massive stone doors grind open, echoing into the darkness. Heavy, mechanical footsteps approach from within.",
 				choices: [
 					{
@@ -44,7 +44,7 @@ export const DWARVEN_PASSAGE_SCENE_DB: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: encounterId("golem_boss"),
-								background: "/battlegrounds/mountain_city.jpg",
+								background: "/battlegrounds/mountain_city.webp",
 							},
 						],
 					},
@@ -69,7 +69,7 @@ export const DWARVEN_PASSAGE_SCENE_DB: Record<Scene["id"], Scene> = {
 		initialStepId: "start",
 		steps: {
 			start: {
-				backgroundImage: "/scenes/stone_gates.jpg",
+				backgroundImage: "/scenes/stone_gates.webp",
 				text: "The massive stone doors are still open. Heavy, mechanical footsteps approach from within.",
 				choices: [
 					{
@@ -83,7 +83,7 @@ export const DWARVEN_PASSAGE_SCENE_DB: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: encounterId("golem_boss"),
-								background: "/battlegrounds/mountain_city.jpg",
+								background: "/battlegrounds/mountain_city.webp",
 							},
 						],
 					},
@@ -108,7 +108,7 @@ export const DWARVEN_PASSAGE_SCENE_DB: Record<Scene["id"], Scene> = {
 		initialStepId: "start",
 		steps: {
 			start: {
-				backgroundImage: "/scenes/open_stone_gates.jpg",
+				backgroundImage: "/scenes/open_stone_gates.webp",
 				speaker: "Dwarven Prospector",
 				text: "By the Ancestors, you actually did it! The passage is secure. Here, take this heavy armor plating as promised.",
 				onNext: [

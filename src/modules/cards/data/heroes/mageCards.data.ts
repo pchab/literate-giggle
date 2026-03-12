@@ -7,7 +7,7 @@ export const mageCards: Record<Card["id"], Card> = {
 		id: cardId("apprentice-staff"),
 		name: "Apprentice Staff",
 		range: 2,
-		image: "/cards/apprentice-staff.png",
+		image: "/cards/apprentice_staff.webp",
 		playRequirement: "requires_enemy",
 		effects: [{ type: "damage", amount: 3, target: "anchor" }],
 	},
@@ -15,7 +15,7 @@ export const mageCards: Record<Card["id"], Card> = {
 		id: cardId("arcane-shield"),
 		name: "Arcane Shield",
 		range: 2,
-		image: "/cards/arcane-shield.png",
+		image: "/cards/arcane_shield.webp",
 		playRequirement: "requires_ally",
 		effects: [
 			{
@@ -33,7 +33,7 @@ export const mageCards: Record<Card["id"], Card> = {
 		id: cardId("summon-arcane-wisp"),
 		name: "Summon Arcane Wisp",
 		range: 1,
-		image: "/cards/arcane-wisp.png",
+		image: "/cards/arcane_wisp.webp",
 		playRequirement: "requires_empty_cell",
 		effects: [
 			{
@@ -47,7 +47,7 @@ export const mageCards: Record<Card["id"], Card> = {
 		id: cardId("summon-briar-wolf"),
 		name: "Summon Briar Wolf",
 		range: 1,
-		image: "/cards/briar-wolf.png",
+		image: "/cards/briar_wolf.webp",
 		playRequirement: "requires_empty_cell",
 		aiTargetPreference: "self",
 		effects: [

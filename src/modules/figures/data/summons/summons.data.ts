@@ -1,15 +1,14 @@
-import type { Summon } from "../../domain/figures.type";
+import type { UnitBlueprint } from "../../domain/figures.type";
 import { summonId } from "../../helpers/figures.helpers";
 import { briarWolf } from "../monsters/briar-wolf";
 import { rat } from "../monsters/rat.data";
 import { skeleton } from "../monsters/skeleton.data";
 import { arcaneWisp } from "./arcaneWisp";
+import { barrel } from "./barrel";
 import { iceWall } from "./iceWall";
 
-export const summonLibrary: Record<
-	string,
-	Omit<Summon, "id" | "gridPosition" | "allegiance" | "currentHp" | "statuses">
-> = {
+export const summonLibrary: Record<string, UnitBlueprint> = {
+	[summonId("barrel")]: barrel,
 	[summonId("ice-wall")]: iceWall,
 	[summonId("rat")]: rat,
 	[summonId("skeleton")]: skeleton,

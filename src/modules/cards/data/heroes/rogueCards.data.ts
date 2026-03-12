@@ -6,7 +6,7 @@ export const rogueCards: Record<Card["id"], Card> = {
 		id: cardId("dagger"),
 		name: "Dagger",
 		range: 1,
-		image: "/cards/dagger.png",
+		image: "/cards/dagger.webp",
 		playRequirement: "requires_enemy",
 		effects: [{ type: "damage", amount: 4, target: "anchor" }],
 	},
@@ -14,7 +14,7 @@ export const rogueCards: Record<Card["id"], Card> = {
 		id: cardId("thorn-dagger"),
 		name: "Thorn Dagger",
 		range: 1,
-		image: "/cards/thorn-dagger.png",
+		image: "/cards/thorn_dagger.webp",
 		playRequirement: "requires_enemy",
 		effects: [
 			{ type: "damage", amount: 4, target: "anchor" },
@@ -33,7 +33,7 @@ export const rogueCards: Record<Card["id"], Card> = {
 		id: cardId("vampire-dagger"),
 		name: "Vampire Dagger",
 		range: 1,
-		image: "/cards/vampire-dagger.png",
+		image: "/cards/vampire_dagger.webp",
 		playRequirement: "requires_enemy",
 		effects: [
 			{ type: "damage", amount: 4, target: "anchor" },
@@ -44,7 +44,7 @@ export const rogueCards: Record<Card["id"], Card> = {
 		id: cardId("toxic-shiv"),
 		name: "Toxic Shiv",
 		range: 1,
-		image: "/cards/toxic-shiv.png",
+		image: "/cards/toxic_shiv.webp",
 		playRequirement: "requires_enemy",
 		effects: [
 			{

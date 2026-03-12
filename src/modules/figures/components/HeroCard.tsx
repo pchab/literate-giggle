@@ -57,7 +57,7 @@ export function HeroCard({
 		<div className="relative flex items-center w-full max-w-2xl h-32 rounded-lg border border-zinc-800 shadow-xl bg-zinc-950 mb-2">
 			<div className="absolute inset-0 z-0 overflow-hidden rounded-lg pointer-events-none">
 				<Image
-					src="/hero_card.png"
+					src="/hero_card.webp"
 					alt="Hero"
 					fill
 					className="object-cover opacity-60"

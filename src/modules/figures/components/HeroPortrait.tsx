@@ -6,16 +6,16 @@ interface HeroPortraitProps {
 }
 
 const PORTRAITS = (HeroClass: HeroClass) => {
-	return `/portraits/${HeroClass.toLowerCase()}.png`;
+	return `/portraits/${HeroClass.toLowerCase()}.webp`;
 };
 
 export function HeroPortrait({ classType }: HeroPortraitProps) {
-	const imageSrc = PORTRAITS(classType) || "/portraits/squire.png";
+	const imageSrc = PORTRAITS(classType) || "/portraits/squire.webp";
 
 	return (
 		<div className="relative w-48 h-36 m-4">
 			<Image
-				src="/hero_runes.png"
+				src="/hero_runes.webp"
 				alt="Hero Runes"
 				width={120}
 				height={120}

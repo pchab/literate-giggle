@@ -19,9 +19,12 @@ export function calculateAIIntents(
 
 	let simulatedFigures: BattleUnit[] = [...figures];
 
-	const aiFigures = simulatedFigures.filter(
-		(f): f is AIBattleUnit => (isMonster(f) || isSummon(f)) && f.currentHp > 0,
-	);
+	const aiFigures = simulatedFigures
+		.filter(
+			(f): f is AIBattleUnit =>
+				(isMonster(f) || isSummon(f)) && f.currentHp > 0,
+		)
+		.filter(({ intentPool }) => intentPool.length > 0);
 
 	for (const aiFigure of aiFigures) {
 		let selectedCardId = existingIntents[aiFigure.id]?.cardId;

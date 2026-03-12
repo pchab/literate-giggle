@@ -2,8 +2,6 @@ import { beastMaster } from "@/modules/figures/data/monsters/beast-master";
 import { elvenCommander } from "@/modules/figures/data/monsters/elven-commander.data";
 import { elvenWeaver } from "@/modules/figures/data/monsters/elven-weaver";
 import { treant_bruiser } from "@/modules/figures/data/monsters/treant.data";
-import type { Monster } from "@/modules/figures/domain/figures.type";
-import { monsterId } from "@/modules/figures/helpers/figures.helpers";
 import { type Encounter, encounterId } from "../../domain/encounters.type";
 import { sceneId } from "../../domain/scenes.type";
 
@@ -12,26 +10,17 @@ export const VERDANT_RECLAMATION_ENCOUNTER_DB: Record<string, Encounter> = {
 	[encounterId("elven_commander")]: {
 		id: encounterId("elven_commander"),
 		name: "Kiven River Bridge - Elven Commander",
-		generateMonsters: (): Monster[] => [
+		generateMonsters: () => [
 			{
-				id: monsterId("elven_commander"),
 				...elvenCommander,
-				currentHp: elvenCommander.maxHp,
-				statuses: [],
 				gridPosition: { col: 3, row: 3 },
 			},
 			{
-				id: monsterId("elven_soldier_1"),
 				...elvenWeaver,
-				currentHp: elvenWeaver.maxHp,
-				statuses: [],
 				gridPosition: { col: 4, row: 2 },
-			}, // Back left
+			},
 			{
-				id: monsterId("elven_soldier_2"),
 				...elvenWeaver,
-				currentHp: elvenWeaver.maxHp,
-				statuses: [],
 				gridPosition: { col: 2, row: 4 },
 			},
 		],
@@ -41,19 +30,13 @@ export const VERDANT_RECLAMATION_ENCOUNTER_DB: Record<string, Encounter> = {
 	[encounterId("treant_bruisers")]: {
 		id: encounterId("treant_bruisers"),
 		name: "Northern Plain - Elven Treant Bruisers",
-		generateMonsters: (): Monster[] => [
+		generateMonsters: () => [
 			{
-				id: monsterId("treant_1"),
 				...treant_bruiser,
-				currentHp: treant_bruiser.maxHp,
-				statuses: [],
 				gridPosition: { col: 3, row: 3 },
 			},
 			{
-				id: monsterId("treant__2"),
 				...treant_bruiser,
-				currentHp: treant_bruiser.maxHp,
-				statuses: [],
 				gridPosition: { col: 4, row: 4 },
 			},
 		],
@@ -64,12 +47,9 @@ export const VERDANT_RECLAMATION_ENCOUNTER_DB: Record<string, Encounter> = {
 	[encounterId("elven_weavers")]: {
 		id: encounterId("elven_weavers"),
 		name: "Kiven River - Elven Weavers",
-		generateMonsters: (): Monster[] => [
+		generateMonsters: () => [
 			{
-				id: monsterId("weaver_1"),
 				...elvenWeaver,
-				currentHp: elvenWeaver.maxHp,
-				statuses: [],
 				gridPosition: { col: 3, row: 3 },
 			},
 		],
@@ -80,26 +60,17 @@ export const VERDANT_RECLAMATION_ENCOUNTER_DB: Record<string, Encounter> = {
 	[encounterId("beastmasters")]: {
 		id: encounterId("beastmasters"),
 		name: "Southern Plain - Elven Beastmasters",
-		generateMonsters: (): Monster[] => [
+		generateMonsters: () => [
 			{
-				id: monsterId("beastmaster_1"),
 				...beastMaster,
-				currentHp: beastMaster.maxHp,
-				statuses: [],
 				gridPosition: { col: 3, row: 3 },
 			},
 			{
-				id: monsterId("beastmaster_2"),
 				...beastMaster,
-				currentHp: beastMaster.maxHp,
-				statuses: [],
 				gridPosition: { col: 4, row: 3 },
 			},
 			{
-				id: monsterId("beastmaster_3"),
 				...beastMaster,
-				currentHp: beastMaster.maxHp,
-				statuses: [],
 				gridPosition: { col: 3, row: 4 },
 			},
 		],
@@ -110,19 +81,13 @@ export const VERDANT_RECLAMATION_ENCOUNTER_DB: Record<string, Encounter> = {
 	[encounterId("defend_tavern_ambush")]: {
 		id: encounterId("defend_tavern_ambush"),
 		name: "Tavern Ambush - Elven Assassins",
-		generateMonsters: (): Monster[] => [
+		generateMonsters: () => [
 			{
-				id: monsterId("assassin_1"),
 				...elvenWeaver,
-				currentHp: elvenWeaver.maxHp,
-				statuses: [],
 				gridPosition: { col: 2, row: 2 },
 			},
 			{
-				id: monsterId("assassin_2"),
 				...elvenWeaver,
-				currentHp: elvenWeaver.maxHp,
-				statuses: [],
 				gridPosition: { col: 4, row: 2 },
 			},
 		],
@@ -132,19 +97,13 @@ export const VERDANT_RECLAMATION_ENCOUNTER_DB: Record<string, Encounter> = {
 	[encounterId("assault_tavern_ambush")]: {
 		id: encounterId("assault_tavern_ambush"),
 		name: "Tavern Ambush - Frightened Citizens",
-		generateMonsters: (): Monster[] => [
+		generateMonsters: () => [
 			{
-				id: monsterId("assassin_1"),
 				...elvenWeaver,
-				currentHp: elvenWeaver.maxHp,
-				statuses: [],
 				gridPosition: { col: 2, row: 2 },
 			},
 			{
-				id: monsterId("assassin_2"),
 				...elvenWeaver,
-				currentHp: elvenWeaver.maxHp,
-				statuses: [],
 				gridPosition: { col: 4, row: 2 },
 			},
 		],
@@ -155,19 +114,13 @@ export const VERDANT_RECLAMATION_ENCOUNTER_DB: Record<string, Encounter> = {
 	[encounterId("defend_siege_gates")]: {
 		id: encounterId("defend_siege_gates"),
 		name: "Siege Gates - Elven Warriors",
-		generateMonsters: (): Monster[] => [
+		generateMonsters: () => [
 			{
-				id: monsterId("assassin_1"),
 				...elvenWeaver,
-				currentHp: elvenWeaver.maxHp,
-				statuses: [],
 				gridPosition: { col: 2, row: 2 },
 			},
 			{
-				id: monsterId("assassin_2"),
 				...elvenWeaver,
-				currentHp: elvenWeaver.maxHp,
-				statuses: [],
 				gridPosition: { col: 4, row: 2 },
 			},
 		],
@@ -177,19 +130,13 @@ export const VERDANT_RECLAMATION_ENCOUNTER_DB: Record<string, Encounter> = {
 	[encounterId("assault_siege_gates")]: {
 		id: encounterId("assault_siege_gates"),
 		name: "Siege Gates - Iron Soldiers",
-		generateMonsters: (): Monster[] => [
+		generateMonsters: () => [
 			{
-				id: monsterId("assassin_1"),
 				...elvenWeaver,
-				currentHp: elvenWeaver.maxHp,
-				statuses: [],
 				gridPosition: { col: 2, row: 2 },
 			},
 			{
-				id: monsterId("assassin_2"),
 				...elvenWeaver,
-				currentHp: elvenWeaver.maxHp,
-				statuses: [],
 				gridPosition: { col: 4, row: 2 },
 			},
 		],
@@ -200,12 +147,9 @@ export const VERDANT_RECLAMATION_ENCOUNTER_DB: Record<string, Encounter> = {
 	[encounterId("ironhold_arch_druid_boss")]: {
 		id: encounterId("ironhold_arch_druid_boss"),
 		name: "Final Battle - Defend Ironhold",
-		generateMonsters: (): Monster[] => [
+		generateMonsters: () => [
 			{
-				id: monsterId("arch_druid_sylas"),
 				...elvenWeaver,
-				currentHp: elvenWeaver.maxHp,
-				statuses: [],
 				gridPosition: { col: 3, row: 3 },
 			},
 		],
@@ -214,12 +158,9 @@ export const VERDANT_RECLAMATION_ENCOUNTER_DB: Record<string, Encounter> = {
 	[encounterId("ironhold_king_boss")]: {
 		id: encounterId("ironhold_king_boss"),
 		name: "Final Battle - Defend Ironhold",
-		generateMonsters: (): Monster[] => [
+		generateMonsters: () => [
 			{
-				id: monsterId("king_tanotalos_II"),
 				...elvenWeaver,
-				currentHp: elvenWeaver.maxHp,
-				statuses: [],
 				gridPosition: { col: 3, row: 3 },
 			},
 		],

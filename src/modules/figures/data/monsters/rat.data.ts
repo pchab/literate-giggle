@@ -1,13 +1,8 @@
 import { cardId } from "@/modules/cards/helpers/cards.helper";
-import { type Monster, UnitStance } from "../../domain/figures.type";
+import type { UnitBlueprint } from "../../domain/figures.type";
 
-export const rat: Omit<
-	Monster,
-	"id" | "currentHp" | "gridPosition" | "statuses"
-> = {
+export const rat: UnitBlueprint = {
 	spriteBase: "monsters/rat",
-
-	stance: UnitStance.IDLE,
 	maxHp: 3,
 	baseMove: 2,
 	baseDef: 0,
@@ -15,6 +10,24 @@ export const rat: Omit<
 	intentPool: [
 		{
 			cardId: cardId("rat-bite"),
+			weight: 1,
+		},
+	],
+};
+
+export const ratBoss: UnitBlueprint = {
+	spriteBase: "monsters/rat_boss",
+	maxHp: 9,
+	baseMove: 2,
+	baseDef: 0,
+	xpReward: 9,
+	intentPool: [
+		{
+			cardId: cardId("nasty-bite"),
+			weight: 2,
+		},
+		{
+			cardId: cardId("call_more_rats"),
 			weight: 1,
 		},
 	],

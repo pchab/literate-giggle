@@ -84,7 +84,7 @@ export function BattleCard({
 		>
 			{/* 1. Base Frame */}
 			<Image
-				src="/card.png"
+				src="/card.webp"
 				alt={name}
 				fill
 				className="object-cover z-20 pointer-events-none"

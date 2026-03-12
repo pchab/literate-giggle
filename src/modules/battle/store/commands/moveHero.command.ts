@@ -2,6 +2,7 @@ import type { GridPosition } from "@/modules/battle/domain/grid.type";
 import { getManhattanDistance } from "@/modules/battle/helpers/grid.helpers";
 import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
 import { isHeroId } from "@/modules/figures/helpers/figures.helpers";
+import { areEnemies } from "../../helpers/effects/effect.helpers";
 import { calculateExactPath, moveBattleUnit } from "../../helpers/move.helpers";
 import { calculateAIIntents } from "./calculateAIIntents.command";
 
@@ -40,7 +41,7 @@ export function moveHero(newPosition: GridPosition) {
 
 		const allBlockingFigures = [
 			...monsters,
-			...summons.filter(({ allegiance }) => allegiance === "ENEMY"),
+			...summons.filter(areEnemies(hero)),
 		];
 
 		const path = calculateExactPath(

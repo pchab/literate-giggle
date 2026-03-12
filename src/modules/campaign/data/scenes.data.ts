@@ -9,12 +9,12 @@ export const SCENE_DB: Record<Scene["id"], Scene> = {
 	// Taverns
 	...generateTavernGenericScene(
 		"ironhold_tavern",
-		"/scenes/rusty_boar_tavern.jpg",
+		"/scenes/rusty_boar_tavern.webp",
 	),
-	...generateTavernGenericScene("cromee_tavern", "/scenes/generic_tavern.jpg"),
+	...generateTavernGenericScene("cromee_tavern", "/scenes/generic_tavern.webp"),
 	...generateTavernGenericScene(
 		"connury_tavern",
-		"/scenes/generic_tavern_2.jpg",
+		"/scenes/generic_tavern_2.webp",
 	),
 
 	...RATS_IN_THE_CELLAR_SCENES,

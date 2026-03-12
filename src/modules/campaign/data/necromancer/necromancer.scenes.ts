@@ -9,7 +9,7 @@ export const NECROMANCER_SCENE_DB: Record<Scene["id"], Scene> = {
 		initialStepId: "start",
 		steps: {
 			start: {
-				backgroundImage: "/scenes/wizard_tower.jpg",
+				backgroundImage: "/scenes/wizard_tower.webp",
 				speaker: "The Archmage",
 				text: "I sense a spark of true power within you... but a spark is easily extinguished. If you wish for my tutelage, you must bring me the Ancient Spellbook lost in the shifting sands.",
 				onNext: [
@@ -30,7 +30,7 @@ export const NECROMANCER_SCENE_DB: Record<Scene["id"], Scene> = {
 		initialStepId: "start",
 		steps: {
 			start: {
-				backgroundImage: "/scenes/crypt_entrance.jpg",
+				backgroundImage: "/scenes/crypt_entrance.webp",
 				text: "As the dust from the battle settles, the ground begins to tremble. A massive stone slab slides away, revealing a dark, unnatural staircase leading deep into the earth. The air reeks of death.",
 				choices: [
 					{
@@ -44,7 +44,7 @@ export const NECROMANCER_SCENE_DB: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: encounterId("necromancer_boss"),
-								background: "/scenes/desert_crypt.jpg",
+								background: "/scenes/desert_crypt.webp",
 							},
 						],
 					},
@@ -69,7 +69,7 @@ export const NECROMANCER_SCENE_DB: Record<Scene["id"], Scene> = {
 		initialStepId: "start",
 		steps: {
 			start: {
-				backgroundImage: "/scenes/crypt_entrance.jpg",
+				backgroundImage: "/scenes/crypt_entrance.webp",
 				text: "The dark staircase leading into the crypt still looms before you. The stench of death is stronger now.",
 				choices: [
 					{
@@ -78,7 +78,7 @@ export const NECROMANCER_SCENE_DB: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: encounterId("necromancer_boss"),
-								background: "/scenes/desert_crypt.jpg",
+								background: "/scenes/desert_crypt.webp",
 							},
 						],
 					},
@@ -97,7 +97,7 @@ export const NECROMANCER_SCENE_DB: Record<Scene["id"], Scene> = {
 		initialStepId: "start",
 		steps: {
 			start: {
-				backgroundImage: "/scenes/desert_crypt.jpg",
+				backgroundImage: "/scenes/desert_crypt.webp",
 				text: "The Necromancer crumbles to dust. On the altar behind him lies a heavy tome bound in strange leather. It pulses with a faint, violet light. You have the Ancient Spellbook.",
 				onNext: [
 					{
@@ -117,7 +117,7 @@ export const NECROMANCER_SCENE_DB: Record<Scene["id"], Scene> = {
 		initialStepId: "start",
 		steps: {
 			start: {
-				backgroundImage: "/scenes/wizard_tower.jpg",
+				backgroundImage: "/scenes/wizard_tower.webp",
 				speaker: "The Archmage",
 				text: "You survived... I am impressed. Hand over the tome. In exchange, I shall unlock the true potential of your incantations.",
 				onNext: [

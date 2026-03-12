@@ -3,7 +3,13 @@ import type { Hero } from "../../domain/figures.type";
 
 export const baseHeroStats: Omit<
 	Hero,
-	"id" | "gridPosition" | "selectedCards" | "deck" | "currentHp" | "statuses"
+	| "id"
+	| "name"
+	| "gridPosition"
+	| "selectedCards"
+	| "deck"
+	| "currentHp"
+	| "statuses"
 > = {
 	heroClass: CLASS_REGISTRY.HOBO.id,
 	spriteBase: CLASS_REGISTRY.HOBO.spriteBase,

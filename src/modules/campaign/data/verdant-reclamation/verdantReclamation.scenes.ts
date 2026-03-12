@@ -12,7 +12,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 			intro: {
 				speaker: "Off-Duty Soldier",
 				text: "Grab a stool, friend. It's tense in the city today. We lost contact with the Dragon's Tooth Logging Camp three days ago, and the scouts we sent never came back. The Captain is paying good coin for anyone brave enough to go check it out.",
-				backgroundImage: "/scenes/generic_tavern.jpg",
+				backgroundImage: "/scenes/generic_tavern.webp",
 				choices: [
 					{
 						label: "I'll head to the camp and investigate.",
@@ -40,7 +40,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 			intro: {
 				speaker: "Wounded Lumberjack",
 				text: "You're too late... The trees, they just ripped themselves out of the earth. The Elves of the Briar Host are marching on Ironhold!",
-				backgroundImage: "/scenes/road_fleeing_lumberjack.jpg",
+				backgroundImage: "/scenes/road_fleeing_lumberjack.webp",
 				choices: [
 					{
 						label: "Return to the city. We must prepare the defenses.",
@@ -65,13 +65,13 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 			report: {
 				speaker: "King Tanotalos II",
 				text: "The leaf eaters have attacked our logging camp ? How dare they... We need to send a message that Ironhold will not fall so easily.",
-				backgroundImage: "/scenes/ironhold_throne_room.jpg",
+				backgroundImage: "/scenes/ironhold_throne_room.webp",
 				onNext: [{ type: "CHANGE_STEP", stepId: "getOrders" }],
 			},
 			getOrders: {
 				speaker: "King Tanotalos II",
 				text: "Ride out to the Kiven River Bridge and crush their forces before they can regroup!",
-				backgroundImage: "/scenes/ironhold_throne_room.jpg",
+				backgroundImage: "/scenes/ironhold_throne_room.webp",
 				onNext: [
 					{
 						type: "ADVANCE_QUEST",
@@ -92,7 +92,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 			confrontation: {
 				speaker: "Elven Commander",
 				text: "The stone-dwellers are a disease on this land. Their greed devours the Whisperwood. Lay down your iron, and help us return this valley to the earth.",
-				backgroundImage: "/scenes/river_bridge_hostile.jpg",
+				backgroundImage: "/scenes/river_bridge_hostile.webp",
 				choices: [
 					{
 						label: "[Defend the City] Ironhold is our home. Draw your blades!",
@@ -106,7 +106,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: encounterId("elven_commander"),
-								background: "/battlegrounds/river_bridge_hostile.jpg",
+								background: "/battlegrounds/river_bridge_hostile.webp",
 							},
 						],
 					},
@@ -135,7 +135,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 		steps: {
 			intro: {
 				text: "The giant Treants splinter and fall, their glowing sap dimming into the soil. The northern front is secure... for now.",
-				backgroundImage: "/scenes/plain_victory.jpg",
+				backgroundImage: "/scenes/plain_victory.webp",
 				choices: [
 					{
 						label: "Assess the remaining fronts.",
@@ -179,7 +179,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 		steps: {
 			intro: {
 				text: "The elven weavers fall, their magic fading into the wind. The western front is secure... for now.",
-				backgroundImage: "/scenes/plain_victory.jpg",
+				backgroundImage: "/scenes/plain_victory.webp",
 				choices: [
 					{
 						label: "Assess the remaining fronts.",
@@ -223,7 +223,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 		steps: {
 			intro: {
 				text: "The elven beastmasters fall, their howls echoing into the air. The southern front is secure... for now.",
-				backgroundImage: "/scenes/plain_victory.jpg",
+				backgroundImage: "/scenes/plain_victory.webp",
 				choices: [
 					{
 						label: "Assess the remaining fronts.",
@@ -268,7 +268,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 			intro: {
 				speaker: "Arch-Druid Sylas",
 				text: "Your stone walls will crumble to dust, and roots will feast on your bones!",
-				backgroundImage: "/scenes/ironhold_assault.jpg",
+				backgroundImage: "/scenes/ironhold_assault.webp",
 				choices: [
 					{
 						label: "Defend the city!",
@@ -287,7 +287,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 			intro: {
 				speaker: "Captain of the Guard",
 				text: "The iron-oak doors didn't stand a chance against those bark-skinned behemoths! They are pouring into the lower courtyard. Hold the breach!",
-				backgroundImage: "/scenes/ironhold_gates.jpg",
+				backgroundImage: "/scenes/ironhold_gates.webp",
 				choices: [
 					{
 						label: "Push them back! (Start Battle)",
@@ -295,7 +295,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: encounterId("defend_siege_gates"),
-								background: "/battlegrounds/ironhold_gates.jpg",
+								background: "/battlegrounds/ironhold_gates.webp",
 							},
 						],
 					},
@@ -311,7 +311,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 			intro: {
 				speaker: "Captain of the Guard",
 				text: "The breach is secure! But more are coming... We need to clear the rest of the city!",
-				backgroundImage: "/scenes/ironhold_gates_humans.jpg",
+				backgroundImage: "/scenes/ironhold_gates_humans.webp",
 				choices: [
 					{
 						label: "Go deeper into the city.",
@@ -337,7 +337,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 			intro: {
 				speaker: "Arch-Druid Sylas",
 				text: "The gates won't stand a chance against our treant brothers! Push through the breach and let the wilds reclaim this land!",
-				backgroundImage: "/scenes/ironhold_gates.jpg",
+				backgroundImage: "/scenes/ironhold_gates.webp",
 				choices: [
 					{
 						label: "Charge! (Start Battle)",
@@ -345,7 +345,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: encounterId("assault_siege_gates"),
-								background: "/battlegrounds/ironhold_gates.jpg",
+								background: "/battlegrounds/ironhold_gates.webp",
 							},
 						],
 					},
@@ -361,7 +361,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 			intro: {
 				speaker: "Arch-Druid Sylas",
 				text: "The breach is secure! But more are coming... We need to clear the rest of the city!",
-				backgroundImage: "/scenes/ironhold_gates_elves.jpg",
+				backgroundImage: "/scenes/ironhold_gates_elves.webp",
 				choices: [
 					{
 						label: "Go deeper into the city.",
@@ -388,7 +388,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 			intro: {
 				speaker: "Panicked Barkeep",
 				text: "They broke through the walls! There are wolves made of thorns tearing up the taproom! Please, help us!",
-				backgroundImage: "/scenes/rusty_boar_assault.jpg",
+				backgroundImage: "/scenes/rusty_boar_assault.webp",
 				choices: [
 					{
 						label: "Defend the tavern! (Start Battle)",
@@ -396,7 +396,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: encounterId("defend_tavern_ambush"),
-								background: "/battlegrounds/rusty_boar_ruined.jpg",
+								background: "/battlegrounds/rusty_boar_ruined.webp",
 							},
 						],
 					},
@@ -412,7 +412,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 			intro: {
 				speaker: "Panicked Barkeep",
 				text: "Thank you! You saved us!",
-				backgroundImage: "/scenes/rusty_boar_assault.jpg",
+				backgroundImage: "/scenes/rusty_boar_assault.webp",
 				choices: [
 					{
 						label: "Leave the tavern.",
@@ -438,7 +438,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 			intro: {
 				speaker: "Arch-Druid Sylas",
 				text: "Our treants broke through their walls! Tear apart the tavern and let the wilds reclaim this land!",
-				backgroundImage: "/scenes/rusty_boar_ruined.jpg",
+				backgroundImage: "/scenes/rusty_boar_ruined.webp",
 				choices: [
 					{
 						label: "Assault the taproom! (Start Battle)",
@@ -446,7 +446,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: encounterId("assault_tavern_ambush"),
-								background: "/battlegrounds/rusty_boar_assault.jpg",
+								background: "/battlegrounds/rusty_boar_assault.webp",
 							},
 						],
 					},
@@ -462,7 +462,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 			intro: {
 				speaker: "Arch-Druid Sylas",
 				text: "The tavern is ours! The wilds will not be contained!",
-				backgroundImage: "/scenes/rusty_boar_assault.jpg",
+				backgroundImage: "/scenes/rusty_boar_assault.webp",
 				choices: [
 					{
 						label: "Leave the tavern.",
@@ -489,7 +489,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 			intro: {
 				speaker: "Arch-Druid Sylas",
 				text: "Nature Defilers! We will crush your puny resistance and tear down your stone walls!",
-				backgroundImage: "/scenes/ironhold_throne_room.jpg",
+				backgroundImage: "/scenes/ironhold_throne_room.webp",
 				choices: [
 					{
 						label: "Defend the king.",
@@ -497,7 +497,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: encounterId("ironhold_arch_druid_boss"),
-								background: "/battlegrounds/ironhold_throne_room.jpg",
+								background: "/battlegrounds/ironhold_throne_room.webp",
 							},
 						],
 					},
@@ -512,7 +512,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 			intro: {
 				speaker: "King Tanotalos II",
 				text: "Traitors! You dare march with the beasts against your own kind? I will crush you myself!",
-				backgroundImage: "/scenes/ironhold_throne_room.jpg",
+				backgroundImage: "/scenes/ironhold_throne_room.webp",
 				choices: [
 					{
 						label: "Your reign ends today.",
@@ -520,7 +520,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: encounterId("ironhold_king_boss"),
-								background: "/battlegrounds/ironhold_throne_room.jpg",
+								background: "/battlegrounds/ironhold_throne_room.webp",
 							},
 						],
 					},
@@ -537,7 +537,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 			intro: {
 				speaker: "King Tanotalos II",
 				text: "You saved us from the savage tide. The armory is yours. Take what you need to ensure they never return.",
-				backgroundImage: "/scenes/ironhold_throne_room.jpg",
+				backgroundImage: "/scenes/ironhold_throne_room.webp",
 				choices: [
 					{
 						label: "Take the Iron rune.",
@@ -562,7 +562,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 			intro: {
 				speaker: "Arch-Druid Sylas",
 				text: "The iron is broken. The earth breathes again. Drink from the Heart-Tree's sap, champions, and let the wilds empower you.",
-				backgroundImage: "/scenes/ironhold_throne_room_destroyed.jpg",
+				backgroundImage: "/scenes/ironhold_throne_room_destroyed.webp",
 				choices: [
 					{
 						label: "Take the Nature rune.",

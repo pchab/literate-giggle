@@ -6,7 +6,7 @@ export const fighterCards: Record<Card["id"], Card> = {
 		id: cardId("short-sword"),
 		name: "Short Sword",
 		range: 1,
-		image: "/cards/short-sword.png",
+		image: "/cards/short_sword.webp",
 		playRequirement: "requires_enemy",
 		effects: [{ type: "damage", amount: 4, target: "anchor" }],
 	},
@@ -38,7 +38,7 @@ export const fighterCards: Record<Card["id"], Card> = {
 		id: cardId("shield-block"),
 		name: "Shield Block",
 		range: 0,
-		image: "/cards/shield-block.png",
+		image: "/cards/shield_block.webp",
 		playRequirement: "no_target",
 		effects: [
 			{

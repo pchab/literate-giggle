@@ -123,7 +123,7 @@ export default function HeroRewardPanel({
 			transition={{ duration: 0.4, delay: index * 0.1 }}
 			className="flex-1 min-w-75"
 		>
-			<RetroPanel title={hero.id} className="h-full relative min-h-60">
+			<RetroPanel title={hero.name} className="h-full relative min-h-60">
 				{/* STEP 1: Default XP Bar */}
 				{step === "xp" && (
 					// ... (Keep your exact existing "xp" step UI here) ...

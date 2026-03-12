@@ -7,7 +7,7 @@ export const TOWN_DB: Record<TownData["id"], TownData> = {
 	[townId("ironhold_city")]: {
 		id: townId("ironhold_city"),
 		name: "Ironhold City",
-		backgroundImage: "/towns/ironhold.jpg",
+		backgroundImage: "/towns/ironhold.webp",
 		locations: [
 			{
 				id: townLocationId("ironhold_tavern"),
@@ -41,7 +41,7 @@ export const TOWN_DB: Record<TownData["id"], TownData> = {
 	[townId("ironhold_elven")]: {
 		id: townId("ironhold_elven"),
 		name: "Verdantreach (Former Ironhold)",
-		backgroundImage: "/towns/ironhold_elven.jpg",
+		backgroundImage: "/towns/ironhold_elven.webp",
 		locations: [
 			{
 				id: townLocationId("ironhold_inn"),
@@ -62,7 +62,7 @@ export const TOWN_DB: Record<TownData["id"], TownData> = {
 	[townId("ironhold_defense")]: {
 		id: townId("ironhold_defense"),
 		name: "Ironhold (Under Siege)",
-		backgroundImage: "/towns/ironhold_siege.jpg",
+		backgroundImage: "/towns/ironhold_siege.webp",
 		locations: [
 			{
 				id: townLocationId("siege_gates"),
@@ -98,7 +98,7 @@ export const TOWN_DB: Record<TownData["id"], TownData> = {
 	[townId("ironhold_assault")]: {
 		id: townId("ironhold_assault"),
 		name: "Ironhold (Under Siege)",
-		backgroundImage: "/towns/ironhold_siege.jpg",
+		backgroundImage: "/towns/ironhold_siege.webp",
 		locations: [
 			{
 				id: townLocationId("siege_gates"),
@@ -134,7 +134,7 @@ export const TOWN_DB: Record<TownData["id"], TownData> = {
 	[townId("heart_tree_sanctuary")]: {
 		id: townId("heart_tree_sanctuary"),
 		name: "The Heart-Tree Sanctuary",
-		backgroundImage: "/towns/heart_tree_sanctuary.jpg",
+		backgroundImage: "/towns/heart_tree_sanctuary.webp",
 		locations: [
 			{
 				id: townLocationId("heart_tree_council"),
@@ -155,7 +155,7 @@ export const TOWN_DB: Record<TownData["id"], TownData> = {
 	[townId("cromee_town")]: {
 		id: townId("cromee_town"),
 		name: "Cromee Town",
-		backgroundImage: "/towns/cromee_town.jpg",
+		backgroundImage: "/towns/cromee_town.webp",
 		locations: [
 			{
 				id: townLocationId("cromee_tavern"),
@@ -175,7 +175,7 @@ export const TOWN_DB: Record<TownData["id"], TownData> = {
 	[townId("connury_town")]: {
 		id: townId("connury_town"),
 		name: "Cromee Town",
-		backgroundImage: "/towns/connury_town.jpg",
+		backgroundImage: "/towns/connury_town.webp",
 		locations: [
 			{
 				id: townLocationId("connury_tavern"),

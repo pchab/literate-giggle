@@ -108,11 +108,15 @@ export async function handleAICardIntent(
 	const enemies = isAlly
 		? [
 				...initialState.monsters,
-				...initialState.summons.filter((s) => s.allegiance === "ENEMY"),
+				...initialState.summons.filter((s) =>
+					["ENEMY", "NEUTRAL"].includes(s.allegiance),
+				),
 			]
 		: [
 				...initialState.heroes,
-				...initialState.summons.filter((s) => s.allegiance === "PLAYER"),
+				...initialState.summons.filter((s) =>
+					["PLAYER", "NEUTRAL"].includes(s.allegiance),
+				),
 			];
 
 	const path = calculateExactPath<BattleUnit>(

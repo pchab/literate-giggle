@@ -6,7 +6,7 @@ export const archerCards: Record<Card["id"], Card> = {
 		id: cardId("short-bow"),
 		name: "Short Bow",
 		range: 2,
-		image: "/cards/short-bow.png",
+		image: "/cards/short_bow.webp",
 		playRequirement: "requires_enemy",
 		effects: [{ type: "damage", amount: 4, target: "anchor" }],
 	},
@@ -14,7 +14,7 @@ export const archerCards: Record<Card["id"], Card> = {
 		id: cardId("bear-trap"),
 		name: "Bear Trap",
 		range: 1,
-		image: "/cards/bear-trap.png",
+		image: "/cards/bear_trap.webp",
 		playRequirement: "requires_empty_cell",
 		effects: [
 			{
@@ -27,7 +27,7 @@ export const archerCards: Record<Card["id"], Card> = {
 					amount: 0,
 					duration: 2,
 				},
-				spriteBase: "/surfaces/bear-trap.png",
+				spriteBase: "/surfaces/bear_trap.webp",
 				charges: 1,
 			},
 		],

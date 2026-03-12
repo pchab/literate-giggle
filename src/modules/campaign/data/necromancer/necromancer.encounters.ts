@@ -2,7 +2,6 @@ import { archer } from "@/modules/figures/data/monsters/archer.data";
 import { bat } from "@/modules/figures/data/monsters/bat.data";
 import { necromancer } from "@/modules/figures/data/monsters/necromancer.data";
 import { skeleton } from "@/modules/figures/data/monsters/skeleton.data";
-import { monsterId } from "@/modules/figures/helpers/figures.helpers";
 import { type Encounter, encounterId } from "../../domain/encounters.type";
 
 export const NECROMANCER_ENCOUNTER_DB: Record<string, Encounter> = {
@@ -12,44 +11,26 @@ export const NECROMANCER_ENCOUNTER_DB: Record<string, Encounter> = {
 		generateMonsters: () => [
 			{
 				...bat,
-				id: monsterId("bat-1"),
-				currentHp: bat.maxHp,
-				statuses: [],
 				gridPosition: { col: 2, row: 4 },
 			},
 			{
 				...bat,
-				id: monsterId("bat-2"),
-				currentHp: bat.maxHp,
-				statuses: [],
 				gridPosition: { col: 4, row: 2 },
 			},
 			{
 				...bat,
-				id: monsterId("bat-3"),
-				currentHp: bat.maxHp,
-				statuses: [],
 				gridPosition: { col: 3, row: 3 },
 			},
 			{
 				...bat,
-				id: monsterId("bat-4"),
-				currentHp: bat.maxHp,
-				statuses: [],
 				gridPosition: { col: 4, row: 3 },
 			},
 			{
 				...bat,
-				id: monsterId("bat-5"),
-				currentHp: bat.maxHp,
-				statuses: [],
 				gridPosition: { col: 3, row: 4 },
 			},
 			{
 				...bat,
-				id: monsterId("bat-6"),
-				currentHp: bat.maxHp,
-				statuses: [],
 				gridPosition: { col: 4, row: 4 },
 			},
 		],
@@ -60,30 +41,18 @@ export const NECROMANCER_ENCOUNTER_DB: Record<string, Encounter> = {
 		generateMonsters: () => [
 			{
 				...skeleton,
-				id: monsterId("skel-1"),
-				currentHp: skeleton.maxHp,
-				statuses: [],
 				gridPosition: { col: 3, row: 3 },
 			},
 			{
 				...skeleton,
-				id: monsterId("skel-2"),
-				currentHp: skeleton.maxHp,
-				statuses: [],
 				gridPosition: { col: 4, row: 3 },
 			},
 			{
 				...skeleton,
-				id: monsterId("skel-3"),
-				currentHp: skeleton.maxHp,
-				statuses: [],
 				gridPosition: { col: 3, row: 4 },
 			},
 			{
 				...skeleton,
-				id: monsterId("skel-4"),
-				currentHp: skeleton.maxHp,
-				statuses: [],
 				gridPosition: { col: 4, row: 4 },
 			},
 		],
@@ -94,23 +63,14 @@ export const NECROMANCER_ENCOUNTER_DB: Record<string, Encounter> = {
 		generateMonsters: () => [
 			{
 				...skeleton,
-				id: monsterId("skel-1"),
-				currentHp: skeleton.maxHp,
-				statuses: [],
 				gridPosition: { col: 3, row: 3 },
 			},
 			{
 				...archer,
-				id: monsterId("cult-1"),
-				currentHp: archer.maxHp,
-				statuses: [],
 				gridPosition: { col: 4, row: 3 },
 			},
 			{
 				...archer,
-				id: monsterId("cult-2"),
-				currentHp: archer.maxHp,
-				statuses: [],
 				gridPosition: { col: 3, row: 4 },
 			},
 		],
@@ -121,23 +81,14 @@ export const NECROMANCER_ENCOUNTER_DB: Record<string, Encounter> = {
 		generateMonsters: () => [
 			{
 				...necromancer,
-				id: monsterId("boss-necro-1"),
-				currentHp: necromancer.maxHp,
-				statuses: [],
 				gridPosition: { col: 4, row: 4 },
 			},
 			{
 				...skeleton,
-				id: monsterId("skel-minion-1"),
-				currentHp: skeleton.maxHp,
-				statuses: [],
 				gridPosition: { col: 4, row: 3 },
 			},
 			{
 				...skeleton,
-				id: monsterId("skel-minion-2"),
-				currentHp: skeleton.maxHp,
-				statuses: [],
 				gridPosition: { col: 3, row: 4 },
 			},
 		],

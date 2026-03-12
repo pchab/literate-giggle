@@ -71,7 +71,7 @@ export function ForgeScreen({ onClose }: { onClose: () => void }) {
 			<div className="w-full h-screen relative overflow-hidden flex flex-col items-center justify-center p-8">
 				<div className="absolute inset-0 w-full h-full z-0">
 					<Image
-						src="/towns/ironhold_forge.jpg"
+						src="/towns/ironhold_forge.webp"
 						alt="Ancient Forge of the Deep"
 						fill
 						className="object-cover opacity-90"
@@ -144,7 +144,7 @@ export function ForgeScreen({ onClose }: { onClose: () => void }) {
 											}`}
 										>
 											<span className="font-bold uppercase tracking-wider">
-												{hero.id}
+												{hero.name}
 											</span>
 											<span className="text-xs">
 												{CLASS_REGISTRY[hero.heroClass].name}

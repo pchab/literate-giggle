@@ -27,7 +27,11 @@ import { updateSelectedCards } from "./commands/updateSelectedCards.command";
 import { upgradeClassCards } from "./commands/upgradeClassCards.command";
 
 export type GamePhase = "TOWN" | "CAMP" | "MAP" | "BATTLE" | "REWARD" | "SCENE";
-
+const startingIds = [
+	heroId(crypto.randomUUID()),
+	heroId(crypto.randomUUID()),
+	heroId(crypto.randomUUID()),
+];
 export interface WorldState {
 	phase: GamePhase;
 	currentNodeId: MapNode["id"];
@@ -89,41 +93,38 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 			currentNodeId: mapNodeId("ironhold_city"),
 			roster: [
 				{
-					id: heroId(1),
+					id: startingIds[0],
+					name: "Anselus",
 					...baseHeroStats,
 					currentHp: baseHeroStats.maxHp,
-					statuses: [],
-					gridPosition: { row: 1, col: 1 },
-					deck: [...initialDeck].map(createHeroCard(heroId(1))),
+					deck: [...initialDeck].map(createHeroCard(startingIds[0])),
 					selectedCards: [
-						createHeroCard(heroId(1))(initialDeck[0]),
-						createHeroCard(heroId(1))(initialDeck[1]),
+						createHeroCard(startingIds[0])(initialDeck[0]),
+						createHeroCard(startingIds[0])(initialDeck[1]),
 						null,
 					],
 				},
 				{
-					id: heroId(2),
+					id: startingIds[1],
+					name: "Willet",
 					...baseHeroStats,
 					currentHp: baseHeroStats.maxHp,
-					statuses: [],
-					gridPosition: { row: 0, col: 1 },
-					deck: [...initialDeck].map(createHeroCard(heroId(2))),
+					deck: [...initialDeck].map(createHeroCard(startingIds[1])),
 					selectedCards: [
-						createHeroCard(heroId(2))(initialDeck[0]),
-						createHeroCard(heroId(2))(initialDeck[1]),
+						createHeroCard(startingIds[1])(initialDeck[0]),
+						createHeroCard(startingIds[1])(initialDeck[1]),
 						null,
 					],
 				},
 				{
-					id: heroId(3),
+					id: startingIds[2],
+					name: "Gabrien",
 					...baseHeroStats,
 					currentHp: baseHeroStats.maxHp,
-					statuses: [],
-					gridPosition: { row: 1, col: 0 },
-					deck: [...initialDeck].map(createHeroCard(heroId(3))),
+					deck: [...initialDeck].map(createHeroCard(startingIds[2])),
 					selectedCards: [
-						createHeroCard(heroId(3))(initialDeck[0]),
-						createHeroCard(heroId(3))(initialDeck[1]),
+						createHeroCard(startingIds[2])(initialDeck[0]),
+						createHeroCard(startingIds[2])(initialDeck[1]),
 						null,
 					],
 				},

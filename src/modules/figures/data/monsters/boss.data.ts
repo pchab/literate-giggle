@@ -1,12 +1,8 @@
 import { cardId } from "@/modules/cards/helpers/cards.helper";
-import { type Monster, UnitStance } from "../../domain/figures.type";
+import type { UnitBlueprint } from "../../domain/figures.type";
 
-export const testBoss: Omit<
-	Monster,
-	"id" | "currentHp" | "gridPosition" | "statuses"
-> = {
+export const testBoss: UnitBlueprint = {
 	spriteBase: "monsters/boss",
-	stance: UnitStance.IDLE,
 	maxHp: 20,
 	baseMove: 2,
 	baseDef: 1,

@@ -38,7 +38,14 @@ export const elvenCards: Record<Card["id"], Card> = {
 		iconType: "MAGIC",
 		playRequirement: "requires_ally",
 		aiTargetPreference: "lowestHp",
-		effects: [{ type: "heal", amount: 8, target: "anchor" }],
+		effects: [
+			{ type: "heal", amount: 3, target: "anchor" },
+			{
+				type: "apply_status",
+				status: { type: "regen", amount: 3, duration: 2 },
+				target: "anchor",
+			},
+		],
 	},
 	[cardId("weaver_thorn")]: {
 		id: cardId("weaver_thorn"),
@@ -47,7 +54,14 @@ export const elvenCards: Record<Card["id"], Card> = {
 		iconType: "RANGED",
 		playRequirement: "requires_enemy",
 		aiTargetPreference: "lowestHp",
-		effects: [{ type: "damage", amount: 4, target: "anchor" }],
+		effects: [
+			{ type: "damage", amount: 5, target: "anchor" },
+			{
+				type: "apply_status",
+				status: { type: "rooted", amount: 0, duration: 2 },
+				target: "anchor",
+			},
+		],
 	},
 
 	// --- TREANT CARDS ---

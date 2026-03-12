@@ -13,7 +13,7 @@ export const WorldMapNodes: MapData = {
 		townId: townId("ironhold_city"),
 		position: { x: 58, y: 45 },
 		connectedNodeIds: ["northern_road", "crossroads", "kiven_river_bridge"],
-		background: "/battlegrounds/ironhold_gates.jpg",
+		background: "/battlegrounds/ironhold_gates.webp",
 		variants: [
 			{
 				condition: { type: "HAS_FLAG", flagId: "ironhold_fallen" },
@@ -48,7 +48,7 @@ export const WorldMapNodes: MapData = {
 			mapNodeId("desert_ruins"),
 		],
 		encounterId: encounterId("tutorial_fight"),
-		background: "/battlegrounds/plain_crossroad.jpg",
+		background: "/battlegrounds/plain_crossroad.webp",
 	},
 	wizard_tower: {
 		id: mapNodeId("wizard_tower"),
@@ -56,7 +56,7 @@ export const WorldMapNodes: MapData = {
 		type: "EVENT",
 		position: { x: 70, y: 64 },
 		connectedNodeIds: [mapNodeId("crossroads"), mapNodeId("port_city")],
-		background: "/battlegrounds/dungeon.jpg",
+		background: "/battlegrounds/dungeon.webp",
 	},
 	port_city: {
 		id: mapNodeId("port_city"),
@@ -64,7 +64,7 @@ export const WorldMapNodes: MapData = {
 		type: "TOWN",
 		position: { x: 80, y: 70 },
 		connectedNodeIds: [mapNodeId("wizard_tower")],
-		background: "/battlegrounds/city.jpg",
+		background: "/battlegrounds/city.webp",
 	},
 	desert_ruins: {
 		id: mapNodeId("desert_ruins"),
@@ -73,7 +73,7 @@ export const WorldMapNodes: MapData = {
 		position: { x: 52, y: 80 },
 		connectedNodeIds: [mapNodeId("crossroads"), mapNodeId("cromee_town")],
 		encounterId: encounterId("skeleton_horde"),
-		background: "/battlegrounds/desert_ruins.jpg",
+		background: "/battlegrounds/desert_ruins.webp",
 	},
 	cromee_town: {
 		id: mapNodeId("cromee_town"),
@@ -82,7 +82,7 @@ export const WorldMapNodes: MapData = {
 		townId: townId("cromee_town"),
 		position: { x: 49, y: 67 },
 		connectedNodeIds: [mapNodeId("desert_ruins")],
-		background: "/battlegrounds/city.jpg",
+		background: "/battlegrounds/city.webp",
 	},
 	northern_road: {
 		id: mapNodeId("northern_road"),
@@ -95,7 +95,7 @@ export const WorldMapNodes: MapData = {
 			mapNodeId("dark_forest"),
 		],
 		encounterId: encounterId("cultists_ambush"),
-		background: "/battlegrounds/plain_crossroad.jpg",
+		background: "/battlegrounds/plain_crossroad.webp",
 	},
 	dark_forest: {
 		id: mapNodeId("dark_forest"),
@@ -104,7 +104,7 @@ export const WorldMapNodes: MapData = {
 		position: { x: 67, y: 22 },
 		connectedNodeIds: [mapNodeId("northern_road"), mapNodeId("connury_town")],
 		encounterId: encounterId("bat_swarm"),
-		background: "/battlegrounds/forest.jpg",
+		background: "/battlegrounds/forest.webp",
 		variants: [
 			{
 				condition: {
@@ -141,14 +141,14 @@ export const WorldMapNodes: MapData = {
 		townId: townId("connury_town"),
 		position: { x: 75, y: 24 },
 		connectedNodeIds: [mapNodeId("northern_road"), mapNodeId("dark_forest")],
-		background: "/battlegrounds/city.jpg",
+		background: "/battlegrounds/city.webp",
 	},
 	// --- DWARVEN PASSAGE QUEST NDOES ---
 	stone_gates: {
 		id: mapNodeId("stone_gates"),
 		name: "Stone Gate",
 		type: "BATTLE",
-		background: "/battlegrounds/cave.jpg",
+		background: "/battlegrounds/cave.webp",
 		position: { x: 56, y: 18 },
 		encounterId: encounterId("stone_gate_guards"),
 		connectedNodeIds: [mapNodeId("dark_forest")],
@@ -163,7 +163,7 @@ export const WorldMapNodes: MapData = {
 		id: mapNodeId("dwarven_passage"),
 		name: "Dwarven City",
 		type: "EVENT",
-		background: "/battlegrounds/mountain_city.jpg",
+		background: "/battlegrounds/mountain_city.webp",
 		position: { x: 52, y: 16 },
 		connectedNodeIds: [mapNodeId("dark_forest")],
 		unlockCondition: [
@@ -181,7 +181,7 @@ export const WorldMapNodes: MapData = {
 		type: "EVENT",
 		position: { x: 40, y: 49 },
 		connectedNodeIds: ["kiven_river_bridge"],
-		background: "/battlegrounds/logging_camp_ruins.jpg",
+		background: "/battlegrounds/logging_camp_ruins.webp",
 		unlockCondition: [
 			{
 				type: "QUEST_ACTIVE",
@@ -204,7 +204,7 @@ export const WorldMapNodes: MapData = {
 			"western_weavers_army",
 			"southern_beastmaster_army",
 		],
-		background: "/battlegrounds/kiven_dam_hostile.jpg",
+		background: "/battlegrounds/kiven_dam_hostile.webp",
 		unlockCondition: [
 			{
 				type: "QUEST_ACTIVE",
@@ -228,7 +228,7 @@ export const WorldMapNodes: MapData = {
 					name: "Allied Weaver Camp",
 					type: "CAMP",
 					encounterId: undefined,
-					background: "/camps/river_bridge_safe.jpg",
+					background: "/camps/river_bridge_safe.webp",
 				},
 			},
 			// Last battle against the remaining army.
@@ -242,7 +242,7 @@ export const WorldMapNodes: MapData = {
 					name: "Contested River Bridge",
 					type: "BATTLE",
 					encounterId: encounterId("treant_bruisers"),
-					background: "/camps/kiven_bridge_hostile.jpg",
+					background: "/camps/kiven_bridge_hostile.webp",
 				},
 			},
 			{
@@ -255,7 +255,7 @@ export const WorldMapNodes: MapData = {
 					name: "Contested River Bridge",
 					type: "BATTLE",
 					encounterId: encounterId("elven_weavers"),
-					background: "/camps/kiven_bridge_hostile.jpg",
+					background: "/camps/kiven_bridge_hostile.webp",
 				},
 			},
 			{
@@ -268,7 +268,7 @@ export const WorldMapNodes: MapData = {
 					name: "Contested River Bridge",
 					type: "BATTLE",
 					encounterId: encounterId("beastmasters"),
-					background: "/camps/kiven_bridge_hostile.jpg",
+					background: "/camps/kiven_bridge_hostile.webp",
 				},
 			},
 		],
@@ -282,7 +282,7 @@ export const WorldMapNodes: MapData = {
 		townId: townId("heart_tree_sanctuary"),
 		position: { x: 15, y: 20 },
 		connectedNodeIds: ["kiven_river_bridge"],
-		background: "/battlegrounds/heart_tree.jpg",
+		background: "/battlegrounds/heart_tree.webp",
 		unlockCondition: [{ type: "HAS_FLAG", flagId: "aligned_with_forest" }],
 	},
 
@@ -294,7 +294,7 @@ export const WorldMapNodes: MapData = {
 		encounterId: encounterId("treant_bruisers"),
 		position: { x: 34, y: 28 },
 		connectedNodeIds: ["kiven_river_bridge"],
-		background: "/battlegrounds/plain.jpg",
+		background: "/battlegrounds/plain.webp",
 		unlockCondition: [
 			{
 				type: "QUEST_ACTIVE",
@@ -343,7 +343,7 @@ export const WorldMapNodes: MapData = {
 		encounterId: encounterId("elven_weavers"),
 		position: { x: 32, y: 38 },
 		connectedNodeIds: ["ironhold_city"],
-		background: "/battlegrounds/plain_river.jpg",
+		background: "/battlegrounds/plain_river.webp",
 		unlockCondition: [
 			{
 				type: "QUEST_ACTIVE",
@@ -392,7 +392,7 @@ export const WorldMapNodes: MapData = {
 		encounterId: encounterId("beastmasters"),
 		position: { x: 30, y: 50 },
 		connectedNodeIds: ["ironhold_city", "heart_tree"],
-		background: "/battlegrounds/trade_road_ambush.jpg",
+		background: "/battlegrounds/trade_road_ambush.webp",
 		unlockCondition: [
 			{
 				type: "QUEST_ACTIVE",

@@ -1,12 +1,8 @@
 import { cardId } from "@/modules/cards/helpers/cards.helper";
-import { type Monster, UnitStance } from "../../domain/figures.type";
+import type { UnitBlueprint } from "../../domain/figures.type";
 
-export const stone_elemental: Omit<
-	Monster,
-	"id" | "currentHp" | "gridPosition" | "statuses"
-> = {
+export const stone_elemental: UnitBlueprint = {
 	spriteBase: "monsters/stone_elemental",
-	stance: UnitStance.IDLE,
 	maxHp: 20,
 	baseMove: 1, // Very slow!
 	baseDef: 2, // Hard to crack
@@ -19,12 +15,8 @@ export const stone_elemental: Omit<
 	],
 };
 
-export const golem_overseer: Omit<
-	Monster,
-	"id" | "currentHp" | "gridPosition" | "statuses"
-> = {
+export const golem_overseer: UnitBlueprint = {
 	spriteBase: "monsters/golem_overseer",
-	stance: UnitStance.IDLE,
 	maxHp: 60,
 	baseMove: 1,
 	baseDef: 3,

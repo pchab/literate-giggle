@@ -2,11 +2,17 @@ import type { BattleStoreServerAction } from "@/modules/battle/store/battle.stor
 import type { Encounter } from "@/modules/campaign/domain/encounters.type";
 import { getComputedCard } from "@/modules/cards/helpers/cards.helper";
 import {
+	type Allegiance,
 	type BattleHero,
 	type Hero,
+	type Monster,
+	type Summon,
+	type UnitBlueprint,
 	UnitStance,
 } from "@/modules/figures/domain/figures.type";
+import { monsterId, summonId } from "@/modules/figures/helpers/figures.helpers";
 import { ENCOUNTER_DB } from "../../../campaign/data/encounters.data";
+import type { GridPosition } from "../../domain/grid.type";
 import { calculateAIIntents } from "./calculateAIIntents.command";
 
 const startingGridPosition = [
@@ -14,6 +20,28 @@ const startingGridPosition = [
 	{ col: 0, row: 1 },
 	{ col: 1, row: 1 },
 ];
+
+const bluePrintToMonster = (
+	blueprint: UnitBlueprint & { gridPosition: GridPosition },
+): Monster => ({
+	...blueprint,
+	id: monsterId(crypto.randomUUID()),
+	currentHp: blueprint.maxHp,
+	statuses: [],
+	stance: UnitStance.IDLE,
+});
+const bluePrintToSummon = (
+	blueprint: UnitBlueprint & {
+		gridPosition: GridPosition;
+		allegiance: Allegiance;
+	},
+): Summon => ({
+	...blueprint,
+	id: summonId(crypto.randomUUID()),
+	currentHp: blueprint.maxHp,
+	statuses: [],
+	stance: UnitStance.IDLE,
+});
 
 export function initBattle(
 	roster: Hero[],
@@ -27,8 +55,14 @@ export function initBattle(
 			console.error(`Encounter ${encounterId} not found!`);
 			return {};
 		}
+		const {
+			generateMonsters,
+			generateSummons = () => [],
+			surfaces = {},
+		} = encounter;
 
-		const freshMonsters = encounter.generateMonsters();
+		const freshMonsters = generateMonsters().map(bluePrintToMonster);
+		const freshSummons = generateSummons().map(bluePrintToSummon);
 
 		const battleRoster: BattleHero[] = roster.map((hero, index) => {
 			const [card1, card2, card3] = hero.selectedCards
@@ -53,8 +87,8 @@ export function initBattle(
 			encounterId,
 			heroes: battleRoster,
 			monsters: freshMonsters,
-			summons: [],
-			surfaces: {},
+			summons: freshSummons,
+			surfaces,
 			aiIntents: initialIntents,
 			activeCard: null,
 			activeMoveUnitId: null,

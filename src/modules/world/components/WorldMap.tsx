@@ -62,7 +62,7 @@ export default function WorldMap() {
 		<div className="relative w-full aspect-video bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl overflow-hidden group/map">
 			{/* 1. The New Fantasy Map Background */}
 			<Image
-				src="/world_map.jpg"
+				src="/world_map.webp"
 				alt="Fantasy World Map"
 				fill
 				className="object-cover object-center pointer-events-none z-0 opacity-80"

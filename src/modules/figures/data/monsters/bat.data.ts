@@ -1,12 +1,8 @@
 import { cardId } from "@/modules/cards/helpers/cards.helper";
-import { type Monster, UnitStance } from "../../domain/figures.type";
+import type { UnitBlueprint } from "../../domain/figures.type";
 
-export const bat: Omit<
-	Monster,
-	"id" | "currentHp" | "gridPosition" | "statuses"
-> = {
+export const bat: UnitBlueprint = {
 	spriteBase: "monsters/bat",
-	stance: UnitStance.IDLE,
 	maxHp: 6,
 	baseMove: 4,
 	baseDef: 0,

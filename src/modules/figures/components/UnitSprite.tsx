@@ -24,7 +24,7 @@ export function UnitSprite({
 		})),
 	);
 
-	const src = `/sprites/${spriteBase}_${stance}.png`;
+	const src = `/sprites/${spriteBase}_${stance}.webp`;
 	const intent = aiIntents?.[id];
 
 	return (

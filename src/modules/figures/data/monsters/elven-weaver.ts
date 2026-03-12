@@ -1,12 +1,8 @@
 import { cardId } from "@/modules/cards/helpers/cards.helper";
-import { type Monster, UnitStance } from "../../domain/figures.type";
+import type { UnitBlueprint } from "../../domain/figures.type";
 
-export const elvenWeaver: Omit<
-	Monster,
-	"id" | "currentHp" | "gridPosition" | "statuses"
-> = {
+export const elvenWeaver: UnitBlueprint = {
 	spriteBase: "monsters/elven_weaver",
-	stance: UnitStance.IDLE,
 	maxHp: 18,
 	baseDef: 0,
 	baseMove: 2,

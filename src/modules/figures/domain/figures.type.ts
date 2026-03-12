@@ -9,6 +9,16 @@ export enum UnitStance {
 	ATTACKING = 2,
 }
 
+type IntentOption = {
+	cardId: Card["id"];
+	weight: number;
+};
+
+export interface UnitBlueprint extends Omit<Figure, "id"> {
+	xpReward: number;
+	intentPool: IntentOption[];
+}
+
 export interface Figure {
 	id: string;
 	spriteBase: string;
@@ -25,14 +35,12 @@ export interface BattleUnit extends Figure {
 }
 
 export interface AIBattleUnit extends BattleUnit {
-	intentPool: {
-		cardId: Card["id"];
-		weight: number;
-	}[];
+	intentPool: IntentOption[];
 }
 
 export interface Hero extends Figure {
 	id: string & { readonly __brand: "HeroId" };
+	name: string;
 	heroClass: HeroClass;
 	deck: HeroCard[];
 	selectedCards: [HeroCard, HeroCard | null, HeroCard | null];
