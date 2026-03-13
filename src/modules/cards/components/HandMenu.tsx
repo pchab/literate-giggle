@@ -106,7 +106,7 @@ export function HandMenu() {
 					<div className="flex gap-6">
 						{/* MAIN WEAPON SLOT */}
 						<div className="relative">
-							<div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 z-30 bg-zinc-900 text-amber-500 px-3 py-1 font-pixel text-xs border border-zinc-700 tracking-widest uppercase whitespace-nowrap shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
+							<div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 z-50 bg-zinc-900 text-amber-500 px-3 py-1 font-pixel text-xs border border-zinc-700 tracking-widest uppercase whitespace-nowrap shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
 								Main Weapon
 							</div>
 							{draftCards[0] && (
@@ -123,7 +123,7 @@ export function HandMenu() {
 									layoutId={card.instanceId}
 									className="relative z-20 group"
 								>
-									<div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-30 bg-red-950 text-red-400 px-3 py-1 font-pixel text-xs border border-red-900 tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">
+									<div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-50 bg-red-950 text-red-400 px-3 py-1 font-pixel text-xs border border-red-900 tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">
 										Unequip
 									</div>
 									<BattleCard
