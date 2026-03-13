@@ -23,7 +23,7 @@ export function BattleCard({
 		return null;
 	}
 
-	const { name, image, effects, iconType } = card;
+	const { name, image, effects } = card;
 	const primaryEffect = effects[0];
 
 	let icon = "✨";
@@ -92,7 +92,7 @@ export function BattleCard({
 
 			{/* 2. Top Half: Illustration Placeholder (Behind the frame's visual space, overlaying the dark grey) */}
 			<div
-				className="absolute top-0 left-0 right-0 bottom-[50%] z-30 overflow-hidden rounded-t-sm flex items-center justify-center mix-blend-screen"
+				className="absolute -top-[10%] left-[6%] right-[6%] z-10 overflow-hidden rounded-t-sm flex items-center justify-center mix-blend-screen"
 				style={{
 					background: `linear-gradient(to bottom, ${glowColor}, transparent)`,
 				}}
@@ -104,10 +104,9 @@ export function BattleCard({
 						alt={name}
 						width={180}
 						height={150}
-						className={isLg ? "p-5" : "p-2"}
+						// className={isLg ? "p-5" : "p-2"}
 					/>
 				)}
-				{iconType && <span className="text-4xl">{iconType}</span>}
 			</div>
 
 			{/* 4. Center Ring: The Primary Effect Value */}
@@ -119,9 +118,14 @@ export function BattleCard({
 			</div>
 
 			{/* 5. Bottom Half: Text Box */}
-			<div className="absolute top-[58%] bottom-[6%] left-[5%] right-[5%] z-30 flex flex-col justify-center items-center text-center pointer-events-none">
+			<div
+				className="absolute top-[58%] bottom-0 left-0 right-0 z-30 flex flex-col justify-center items-center text-center pointer-events-none"
+				style={{
+					background: `linear-gradient(to bottom, transparent, ${glowColor})`,
+				}}
+			>
 				<h3
-					className={`${isLg ? "text-xl" : "text-[10px]"} font-bold leading-tight drop-shadow-[0_2px_2px_rgba(0,0,0,1)] ${accentColor}`}
+					className={`${isLg ? "text-xl" : "text-[10px]"} p-2 font-bold leading-tight drop-shadow-[0_2px_2px_rgba(0,0,0,1)] ${accentColor}`}
 				>
 					{name}
 				</h3>

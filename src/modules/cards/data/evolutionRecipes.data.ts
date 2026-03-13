@@ -14,17 +14,18 @@ export const EVOLUTION_RECIPES: Record<
 	Partial<Record<EvolutionRuneId, Card["id"]>>
 > = {
 	[cardId("club")]: {
-		rune_nature: cardId("thorn-club"),
+		rune_nature: cardId("thorn_club"),
+		rune_iron: cardId("iron_club"),
 	},
 	[cardId("bandage")]: {
-		rune_nature: cardId("sylvan-balm"),
-		rune_iron: cardId("fortifying-salve"),
+		rune_nature: cardId("sylvan_balm"),
+		rune_iron: cardId("fortifying_salve"),
 	},
-	[cardId("summon-arcane-wisp")]: {
-		rune_nature: cardId("summon-briar-wolf"),
+	[cardId("summon_arcane_wisp")]: {
+		rune_nature: cardId("summon_briar_wolf"),
 	},
 	[cardId("dagger")]: {
-		rune_nature: cardId("thorn-dagger"),
-		rune_blood: cardId("vampire-dagger"),
+		rune_nature: cardId("thorn_dagger"),
+		rune_blood: cardId("vampire_dagger"),
 	},
 };

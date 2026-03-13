@@ -2,6 +2,12 @@ import type { GridPosition } from "@/modules/battle/domain/grid.type";
 
 export const singleTargetPattern: GridPosition[] = [{ col: 0, row: 0 }];
 
+export const cleavePattern: GridPosition[] = [
+	{ col: 0, row: 0 },
+	{ col: -1, row: 0 },
+	{ col: 1, row: 0 },
+];
+
 export const crossPattern: GridPosition[] = [
 	{ col: 0, row: -1 },
 	{ col: -1, row: 0 },

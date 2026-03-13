@@ -2,17 +2,18 @@ import type { Card } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
 
 export const fighterCards: Record<Card["id"], Card> = {
-	[cardId("short-sword")]: {
-		id: cardId("short-sword"),
+	[cardId("short_sword")]: {
+		id: cardId("short_sword"),
 		name: "Short Sword",
 		range: 1,
 		image: "/cards/short_sword.webp",
 		playRequirement: "requires_enemy",
 		effects: [{ type: "damage", amount: 4, target: "anchor" }],
 	},
-	[cardId("bull-rush")]: {
-		id: cardId("bull-rush"),
+	[cardId("bull_rush")]: {
+		id: cardId("bull_rush"),
 		name: "Bull Rush",
+		image: "/cards/bull_rush.webp",
 		range: 3,
 		playRequirement: "requires_empty_cell_or_enemy",
 		effects: [
@@ -34,8 +35,8 @@ export const fighterCards: Record<Card["id"], Card> = {
 			},
 		],
 	},
-	[cardId("shield-block")]: {
-		id: cardId("shield-block"),
+	[cardId("shield_block")]: {
+		id: cardId("shield_block"),
 		name: "Shield Block",
 		range: 0,
 		image: "/cards/shield_block.webp",

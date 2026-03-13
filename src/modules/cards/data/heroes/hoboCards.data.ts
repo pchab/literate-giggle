@@ -10,11 +10,22 @@ export const hoboCards: Record<Card["id"], Card> = {
 		playRequirement: "requires_enemy",
 		effects: [{ type: "damage", amount: 2, target: "anchor" }],
 	},
+	[cardId("iron_club")]: {
+		id: cardId("i_ronclub"),
+		name: "Club",
+		range: 1,
+		image: "/cards/iron_club.webp",
+		playRequirement: "requires_enemy",
+		effects: [
+			{ type: "damage", amount: 2, target: "anchor" },
+			{ type: "push", distance: 1, collisionDamage: 2, target: "anchor" },
+		],
+	},
 	[cardId("thorn-club")]: {
 		id: cardId("thorn-club"),
 		name: "Thorn Club",
 		range: 1,
-		image: "/cards/club.webp",
+		image: "/cards/thorn_club.webp",
 		playRequirement: "requires_enemy",
 		effects: [
 			{ type: "damage", amount: 2, target: "anchor" },
@@ -37,11 +48,11 @@ export const hoboCards: Record<Card["id"], Card> = {
 		playRequirement: "requires_ally",
 		effects: [{ type: "heal", amount: 1, target: "anchor" }],
 	},
-	[cardId("sylvan-balm")]: {
-		id: cardId("sylvan-balm"),
+	[cardId("sylvan_balm")]: {
+		id: cardId("sylvan_balm"),
 		name: "Sylvan Balm",
 		range: 1,
-		image: "/cards/bandage.webp",
+		image: "/cards/sylvan_balm.webp",
 		playRequirement: "requires_ally",
 		effects: [
 			{ type: "heal", amount: 1, target: "anchor" },
@@ -56,11 +67,11 @@ export const hoboCards: Record<Card["id"], Card> = {
 			},
 		],
 	},
-	[cardId("fortifying-salve")]: {
-		id: cardId("fortifying-salve"),
+	[cardId("fortifying_salve")]: {
+		id: cardId("fortifying_salve"),
 		name: "Fortifying Salve",
 		range: 1,
-		image: "/cards/bandage.webp",
+		image: "/cards/fortifying_salve.webp",
 		playRequirement: "requires_ally",
 		effects: [
 			{ type: "heal", amount: 1, target: "anchor" },

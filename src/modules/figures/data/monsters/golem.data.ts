@@ -4,12 +4,16 @@ import type { UnitBlueprint } from "../../domain/figures.type";
 export const stone_elemental: UnitBlueprint = {
 	spriteBase: "monsters/stone_elemental",
 	maxHp: 20,
-	baseMove: 1, // Very slow!
-	baseDef: 2, // Hard to crack
+	baseMove: 1,
+	baseDef: 2,
 	xpReward: 15,
 	intentPool: [
 		{
-			cardId: cardId("monster_ranged_attack"),
+			cardId: cardId("fist_slam"),
+			weight: 2,
+		},
+		{
+			cardId: cardId("hurl_boulder"),
 			weight: 1,
 		},
 	],
@@ -23,7 +27,11 @@ export const golem_overseer: UnitBlueprint = {
 	xpReward: 150,
 	intentPool: [
 		{
-			cardId: cardId("monster_ranged_attack"),
+			cardId: cardId("fist_slam"),
+			weight: 2,
+		},
+		{
+			cardId: cardId("hardened_stone"),
 			weight: 1,
 		},
 	],

@@ -2,16 +2,16 @@ import type { Card } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
 
 export const archerCards: Record<Card["id"], Card> = {
-	[cardId("short-bow")]: {
-		id: cardId("short-bow"),
+	[cardId("short_bow")]: {
+		id: cardId("short_bow"),
 		name: "Short Bow",
 		range: 2,
 		image: "/cards/short_bow.webp",
 		playRequirement: "requires_enemy",
 		effects: [{ type: "damage", amount: 4, target: "anchor" }],
 	},
-	[cardId("bear-trap")]: {
-		id: cardId("bear-trap"),
+	[cardId("bear_trap")]: {
+		id: cardId("bear_trap"),
 		name: "Bear Trap",
 		range: 1,
 		image: "/cards/bear_trap.webp",

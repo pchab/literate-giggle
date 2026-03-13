@@ -7,14 +7,6 @@ import type { Status, StatusType } from "@/modules/figures/domain/status.type";
 
 export type AnchorTarget = GridPosition | null;
 
-export type IntentIcon =
-	| "MELEE"
-	| "RANGED"
-	| "MAGIC"
-	| "DEFEND"
-	| "DEBUFF"
-	| "SUMMON";
-
 export type AITargetPreference =
 	| "lowestHp"
 	| "random"
@@ -105,8 +97,7 @@ export type Card = {
 	name: string;
 	range: number;
 
-	image?: string;
-	iconType?: IntentIcon;
+	image: string;
 
 	playRequirement: PlayRequirement;
 	effects: CardEffect[];

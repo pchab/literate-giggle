@@ -12,7 +12,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 			intro: {
 				speaker: "Off-Duty Soldier",
 				text: "Grab a stool, friend. It's tense in the city today. We lost contact with the Dragon's Tooth Logging Camp three days ago, and the scouts we sent never came back. The Captain is paying good coin for anyone brave enough to go check it out.",
-				backgroundImage: "/scenes/generic_tavern.webp",
+				backgroundImage: "/scenes/rusty_boar_tavern.webp",
 				choices: [
 					{
 						label: "I'll head to the camp and investigate.",

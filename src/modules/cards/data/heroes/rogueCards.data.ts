@@ -10,8 +10,8 @@ export const rogueCards: Record<Card["id"], Card> = {
 		playRequirement: "requires_enemy",
 		effects: [{ type: "damage", amount: 4, target: "anchor" }],
 	},
-	[cardId("thorn-dagger")]: {
-		id: cardId("thorn-dagger"),
+	[cardId("thorn_dagger")]: {
+		id: cardId("thorn_dagger"),
 		name: "Thorn Dagger",
 		range: 1,
 		image: "/cards/thorn_dagger.webp",
@@ -29,8 +29,8 @@ export const rogueCards: Record<Card["id"], Card> = {
 			},
 		],
 	},
-	[cardId("vampire-dagger")]: {
-		id: cardId("vampire-dagger"),
+	[cardId("vampire_dagger")]: {
+		id: cardId("vampire_dagger"),
 		name: "Vampire Dagger",
 		range: 1,
 		image: "/cards/vampire_dagger.webp",
@@ -40,11 +40,11 @@ export const rogueCards: Record<Card["id"], Card> = {
 			{ type: "heal", amount: 1, target: "self" },
 		],
 	},
-	[cardId("toxic-shiv")]: {
-		id: cardId("toxic-shiv"),
-		name: "Toxic Shiv",
+	[cardId("poison_shiv")]: {
+		id: cardId("poison_shiv"),
+		name: "Poison Shiv",
 		range: 1,
-		image: "/cards/toxic_shiv.webp",
+		image: "/cards/poison_shiv.webp",
 		playRequirement: "requires_enemy",
 		effects: [
 			{
@@ -62,7 +62,7 @@ export const rogueCards: Record<Card["id"], Card> = {
 		id: cardId("hamstring"),
 		name: "Hamstring",
 		range: 1,
-		iconType: "DEBUFF",
+		image: "/cards/hamstring.webp",
 		playRequirement: "requires_enemy",
 		effects: [
 			{

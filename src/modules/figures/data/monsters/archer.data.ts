@@ -9,7 +9,7 @@ export const archer: UnitBlueprint = {
 	xpReward: 10,
 	intentPool: [
 		{
-			cardId: cardId("monster_ranged_attack"),
+			cardId: cardId("short_bow"),
 			weight: 1,
 		},
 	],

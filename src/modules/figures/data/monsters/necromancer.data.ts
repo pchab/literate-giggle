@@ -9,12 +9,12 @@ export const necromancer: UnitBlueprint = {
 	xpReward: 100,
 	intentPool: [
 		{
-			cardId: cardId("necromancer_bolt"),
+			cardId: cardId("necrobolt"),
 			weight: 1,
 		},
 		{
-			cardId: cardId("necromancer_summon"),
-			weight: 1,
+			cardId: cardId("skeleton_summon"),
+			weight: 2,
 		},
 	],
 };

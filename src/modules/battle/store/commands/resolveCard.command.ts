@@ -1,11 +1,24 @@
 import type { AnchorTarget } from "@/modules/cards/domain/cards.type";
-import { UnitStance } from "@/modules/figures/domain/figures.type";
+import {
+	type BattleHero,
+	UnitStance,
+} from "@/modules/figures/domain/figures.type";
 import type { GridPosition } from "../../domain/grid.type";
 import { resolvers } from "../../helpers/effects/effect.resolvers";
 import { rotatePattern } from "../../helpers/grid.helpers";
 import { updateBattleUnitState } from "../../helpers/state.helpers";
 import type { StoreGet, StoreSet } from "../battle.store";
 import { calculateAIIntents } from "./calculateAIIntents.command";
+
+const updateHeroStance =
+	(get: StoreGet, set: StoreSet) =>
+		(heroId: BattleHero["id"]) =>
+			(stance: UnitStance) => {
+				const freshHero = [...get().heroes].find(({ id }) => id === heroId);
+				if (!freshHero) return;
+				updateBattleUnitState(set)({ ...freshHero, stance });
+				return freshHero;
+			};
 
 export const resolveCard =
 	(get: StoreGet, set: StoreSet) => async (anchorTarget: AnchorTarget) => {
@@ -39,8 +52,7 @@ export const resolveCard =
 				patternCells,
 			});
 		}
-		const stillUnit = { ...hero, stance: UnitStance.IDLE };
-		updateBattleUnitState(set)(stillUnit);
+		updateHeroStance(get, set)(unitId)(UnitStance.IDLE);
 
 		// --- 4. CLEAN UP ---
 		const { heroes: newHeroes, monsters, summons } = get();
@@ -50,6 +62,7 @@ export const resolveCard =
 			0,
 		);
 		const remainingMonsters = monsters.filter((m) => m.currentHp > 0);
+		const remainingSummons = summons.filter((m) => m.currentHp > 0);
 
 		set(
 			({
@@ -62,6 +75,7 @@ export const resolveCard =
 				...prev,
 				activeHeroCard: null,
 				monsters: remainingMonsters,
+				summons: remainingSummons,
 				aiIntents: calculateAIIntents(
 					[...newHeroes, ...remainingMonsters, ...summons],
 					aiIntents,

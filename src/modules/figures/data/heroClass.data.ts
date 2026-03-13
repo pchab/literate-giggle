@@ -9,7 +9,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		id: "HOBO",
 		name: "Hobo",
 		spriteBase: "heroes/hobo",
-		utilityCardChoices: [cardId("bandage-1")],
+		utilityCardChoices: [cardId("bandage")],
 		xpThresholds: [0, 5, 10, 15, 20, 25],
 		levelUpTriggers: [
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
@@ -34,7 +34,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		id: "FIGHTER",
 		name: "Fighter",
 		spriteBase: "heroes/fighter",
-		utilityCardChoices: [cardId("shield-block"), cardId("bull-rush")],
+		utilityCardChoices: [cardId("shield_block"), cardId("bull_rush")],
 		xpThresholds: [10, 20, 30, 40, 50],
 		levelUpTriggers: [
 			[
@@ -43,7 +43,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				{
 					type: "cardUpgrade",
 					oldCardId: cardId("club"),
-					newCardId: cardId("short-sword"),
+					newCardId: cardId("short_sword"),
 				},
 				{ type: "unlockQuest", questId: QUEST_DWARVEN_HIGHWAY },
 			],
@@ -57,7 +57,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		id: "MAGE",
 		name: "Mage",
 		spriteBase: "heroes/mage",
-		utilityCardChoices: [cardId("arcane-shield"), cardId("summon-arcane-wisp")],
+		utilityCardChoices: [cardId("arcane_shield"), cardId("summon_arcane_wisp")],
 		xpThresholds: [10, 20, 30, 40, 50],
 		levelUpTriggers: [
 			[
@@ -65,7 +65,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				{
 					type: "cardUpgrade",
 					oldCardId: cardId("club"),
-					newCardId: cardId("apprentice-staff"),
+					newCardId: cardId("arcane_shot"),
 				},
 				{ type: "unlockQuest", questId: NECROMANCER_QUEST_ID },
 			],
@@ -79,7 +79,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		id: "ROGUE",
 		name: "Rogue",
 		spriteBase: "heroes/rogue",
-		utilityCardChoices: [cardId("toxic-shiv"), cardId("hamstring")],
+		utilityCardChoices: [cardId("poison_shiv"), cardId("hamstring")],
 		xpThresholds: [10, 20, 30, 40, 50],
 		levelUpTriggers: [
 			[
@@ -100,7 +100,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		id: "ARCHER",
 		name: "Archer",
 		spriteBase: "heroes/archer",
-		utilityCardChoices: [cardId("bear-trap")],
+		utilityCardChoices: [cardId("bear_trap")],
 		xpThresholds: [10, 20, 30, 40, 50],
 		levelUpTriggers: [
 			[
@@ -108,7 +108,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				{
 					type: "cardUpgrade",
 					oldCardId: cardId("club"),
-					newCardId: cardId("short-bow"),
+					newCardId: cardId("short_bow"),
 				},
 			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
@@ -121,7 +121,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		id: "KNIGHT",
 		name: "Knight",
 		spriteBase: "heroes/knight",
-		utilityCardChoices: [cardId("knight-placeholder")],
+		utilityCardChoices: [cardId("knight_placeholder")],
 		xpThresholds: [10, 20, 30, 40, 50],
 		levelUpTriggers: [
 			[
@@ -129,8 +129,8 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				{ type: "statsIncrease", stat: "def", amount: 1 },
 				{
 					type: "cardUpgrade",
-					oldCardId: cardId("short-sword"),
-					newCardId: cardId("knight-weapon"),
+					oldCardId: cardId("short_sword"),
+					newCardId: cardId("iron_sword"),
 				},
 			],
 		],
@@ -139,15 +139,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		id: "BARBARIAN",
 		name: "Barbarian",
 		spriteBase: "heroes/barbarian",
-		utilityCardChoices: [cardId("barbarian-placeholder")],
-		xpThresholds: [10, 20, 30, 40, 50],
-		levelUpTriggers: [[]],
-	},
-	PYROMANCER: {
-		id: "PYROMANCER",
-		name: "Pyromancer",
-		spriteBase: "heroes/pyromancer",
-		utilityCardChoices: [cardId("pyromancer-placeholder")],
+		utilityCardChoices: [cardId("barbarian_placeholder")],
 		xpThresholds: [10, 20, 30, 40, 50],
 		levelUpTriggers: [
 			[
@@ -155,8 +147,25 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				{ type: "statsIncrease", stat: "def", amount: 1 },
 				{
 					type: "cardUpgrade",
-					oldCardId: cardId("apprentice-staff"),
-					newCardId: cardId("pyromancer-weapon"),
+					oldCardId: cardId("short_sword"),
+					newCardId: cardId("great_axe"),
+				},
+			],
+		],
+	},
+	PYROMANCER: {
+		id: "PYROMANCER",
+		name: "Pyromancer",
+		spriteBase: "heroes/pyromancer",
+		utilityCardChoices: [cardId("pyromancer_placeholder")],
+		xpThresholds: [10, 20, 30, 40, 50],
+		levelUpTriggers: [
+			[
+				{ type: "statsIncrease", stat: "hp", amount: 2 },
+				{
+					type: "cardUpgrade",
+					oldCardId: cardId("arcane_shot"),
+					newCardId: cardId("fireball"),
 				},
 			],
 		],
@@ -165,7 +174,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		id: "CRYOMANCER",
 		name: " Cryomancer",
 		spriteBase: "heroes/cryomancer",
-		utilityCardChoices: [cardId("ice-wall"), cardId("cryomancer-placeholder")],
+		utilityCardChoices: [cardId("ice_wall"), cardId("cryomancer_placeholder")],
 		xpThresholds: [10, 20, 30, 40, 50],
 		levelUpTriggers: [
 			[
@@ -173,8 +182,8 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				{ type: "statsIncrease", stat: "def", amount: 1 },
 				{
 					type: "cardUpgrade",
-					oldCardId: cardId("apprentice-staff"),
-					newCardId: cardId("cryomancer-weapon"),
+					oldCardId: cardId("arcane_shot"),
+					newCardId: cardId("frost_shards"),
 				},
 			],
 		],
@@ -185,6 +194,16 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		spriteBase: "heroes/cleric",
 		utilityCardChoices: [],
 		xpThresholds: [10, 20, 30, 40, 50],
-		levelUpTriggers: [[]],
+		levelUpTriggers: [
+			[
+				{ type: "statsIncrease", stat: "hp", amount: 2 },
+				{ type: "statsIncrease", stat: "def", amount: 1 },
+				{
+					type: "cardUpgrade",
+					oldCardId: cardId("club"),
+					newCardId: cardId("iron_mace"),
+				},
+			],
+		],
 	},
 };

@@ -2,15 +2,15 @@ import { summonId } from "@/modules/figures/helpers/figures.helpers";
 import type { Card } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
 import { elvenCards } from "./elvenCards.data";
+import { ironholdCards } from "./ironholdCards.data";
 
 export const monsterCardLibrary: Record<Card["id"], Card> = {
 	// BASIC MONSTER CARDS (Shared)
 	[cardId("monster_melee_attack")]: {
 		id: cardId("monster_melee_attack"),
 		name: "Basic Attack",
-		image: "/cards/club.webp",
 		range: 1,
-		iconType: "MELEE",
+		image: "",
 		playRequirement: "requires_enemy",
 		aiTargetPreference: "lowestHp",
 		effects: [{ type: "damage", amount: 3, target: "anchor" }],
@@ -19,26 +19,26 @@ export const monsterCardLibrary: Record<Card["id"], Card> = {
 		id: cardId("monster_ranged_attack"),
 		name: "Basic Ranged Attack",
 		range: 2,
-		iconType: "RANGED",
+		image: "",
 		playRequirement: "requires_enemy",
 		aiTargetPreference: "lowestHp",
 		effects: [{ type: "damage", amount: 2, target: "anchor" }],
 	},
 	// --- RAT CARD ---
-	[cardId("rat-bite")]: {
-		id: cardId("rat-bite"),
+	[cardId("rat_bite")]: {
+		id: cardId("rat_bite"),
 		name: "Rat Bite",
 		range: 1,
-		iconType: "MELEE",
+		image: "/cards/rat_bite.webp",
 		playRequirement: "requires_enemy",
 		aiTargetPreference: "lowestHp",
 		effects: [{ type: "damage", amount: 2, target: "anchor" }],
 	},
-	[cardId("nasty-bite")]: {
-		id: cardId("nasty-bite"),
+	[cardId("nasty_bite")]: {
+		id: cardId("nasty_bite"),
 		name: "Nasty Bite",
 		range: 1,
-		iconType: "MELEE",
+		image: "/cards/nasty_bite.webp",
 		playRequirement: "requires_enemy",
 		aiTargetPreference: "lowestHp",
 		effects: [
@@ -54,7 +54,7 @@ export const monsterCardLibrary: Record<Card["id"], Card> = {
 		id: cardId("call_more_rats"),
 		name: "Call more rats",
 		range: 1,
-		iconType: "SUMMON",
+		image: "/cards/call_rat.webp",
 		playRequirement: "no_target",
 		aiTargetPreference: "empty_adjacent",
 		effects: [
@@ -63,20 +63,20 @@ export const monsterCardLibrary: Record<Card["id"], Card> = {
 	},
 
 	// --- SKELETON CARDS ---
-	[cardId("skel_slash")]: {
-		id: cardId("skel_slash"),
+	[cardId("skeleton_slash")]: {
+		id: cardId("skeleton_slash"),
 		name: "Rusty Blade",
 		range: 1,
-		iconType: "MELEE",
+		image: "/cards/skeleton_slash.webp",
 		playRequirement: "requires_enemy",
 		aiTargetPreference: "lowestHp",
 		effects: [{ type: "damage", amount: 4, target: "anchor" }],
 	},
-	[cardId("skel_guard")]: {
-		id: cardId("skel_guard"),
-		name: "Bone Shield",
+	[cardId("bone_guard")]: {
+		id: cardId("bone_guard"),
+		name: "Bone Guard",
 		range: 0,
-		iconType: "DEFEND",
+		image: "/cards/bone_guard.webp",
 		playRequirement: "no_target",
 		aiTargetPreference: "self",
 		effects: [
@@ -93,20 +93,20 @@ export const monsterCardLibrary: Record<Card["id"], Card> = {
 	},
 
 	// --- NECROMANCER CARDS ---
-	[cardId("necromancer_bolt")]: {
-		id: cardId("necromancer_bolt"),
-		name: "Dark Bolt",
+	[cardId("necrobolt")]: {
+		id: cardId("necrobolt"),
+		name: "Necrobolt",
 		range: 2,
-		iconType: "RANGED",
+		image: "/cards/necrobolt.webp",
 		playRequirement: "requires_enemy",
 		aiTargetPreference: "lowestHp",
 		effects: [{ type: "damage", amount: 6, target: "anchor" }],
 	},
-	[cardId("necromancer_summon")]: {
-		id: cardId("necromancer_summon"),
-		name: "Summon Minion",
+	[cardId("skeleton_summon")]: {
+		id: cardId("skeleton_summon"),
+		name: "Raise the dead",
 		range: 1,
-		iconType: "SUMMON",
+		image: "/cards/raise_skeleton.webp",
 		playRequirement: "no_target",
 		aiTargetPreference: "empty_adjacent",
 		effects: [
@@ -119,7 +119,7 @@ export const monsterCardLibrary: Record<Card["id"], Card> = {
 		id: cardId("wisp_zap"),
 		name: "Wisp Zap",
 		range: 2,
-		iconType: "RANGED",
+		image: "/cards/wisp_zap.webp",
 		playRequirement: "requires_enemy",
 		aiTargetPreference: "closest",
 		effects: [{ type: "damage", amount: 2, target: "anchor" }],
@@ -128,7 +128,7 @@ export const monsterCardLibrary: Record<Card["id"], Card> = {
 		id: cardId("briar_bite"),
 		name: "Briar Bite",
 		range: 1,
-		iconType: "MELEE",
+		image: "/cards/briar_bite.webp",
 		playRequirement: "requires_enemy",
 		aiTargetPreference: "closest",
 		effects: [
@@ -145,4 +145,5 @@ export const monsterCardLibrary: Record<Card["id"], Card> = {
 	},
 
 	...elvenCards,
+	...ironholdCards,
 };

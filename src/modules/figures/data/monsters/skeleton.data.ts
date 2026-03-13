@@ -9,11 +9,11 @@ export const skeleton: UnitBlueprint = {
 	xpReward: 5,
 	intentPool: [
 		{
-			cardId: cardId("skel_slash"),
+			cardId: cardId("skeleton_slash"),
 			weight: 2,
 		},
 		{
-			cardId: cardId("skel_guard"),
+			cardId: cardId("bone_guard"),
 			weight: 1,
 		},
 	],

@@ -12,15 +12,6 @@ export const selectCard =
 			return;
 		}
 
-		if (card.playRequirement === "no_target") {
-			await resolveCard(get, set)(null);
-
-			set((prev) => ({
-				...prev,
-				activeHeroCard: null,
-			}));
-		}
-
 		const heroIndex = heroes.findIndex(({ id }) => id === heroId);
 
 		set(({ heroes, ...prev }) => ({
@@ -31,4 +22,13 @@ export const selectCard =
 			}),
 			activeHeroCard: { unitId: heroId, card },
 		}));
+
+		if (card.playRequirement === "no_target") {
+			await resolveCard(get, set)(null);
+
+			set((prev) => ({
+				...prev,
+				activeHeroCard: null,
+			}));
+		}
 	};

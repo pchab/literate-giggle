@@ -3,16 +3,16 @@ import type { Card } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
 
 export const mageCards: Record<Card["id"], Card> = {
-	[cardId("apprentice-staff")]: {
-		id: cardId("apprentice-staff"),
-		name: "Apprentice Staff",
+	[cardId("arcane_shot")]: {
+		id: cardId("arcane_shot"),
+		name: "Arcane Shot",
 		range: 2,
-		image: "/cards/apprentice_staff.webp",
+		image: "/cards/arcane_shot.webp",
 		playRequirement: "requires_enemy",
 		effects: [{ type: "damage", amount: 3, target: "anchor" }],
 	},
-	[cardId("arcane-shield")]: {
-		id: cardId("arcane-shield"),
+	[cardId("arcane_shield")]: {
+		id: cardId("arcane_shield"),
 		name: "Arcane Shield",
 		range: 2,
 		image: "/cards/arcane_shield.webp",
@@ -29,8 +29,8 @@ export const mageCards: Record<Card["id"], Card> = {
 			},
 		],
 	},
-	[cardId("summon-arcane-wisp")]: {
-		id: cardId("summon-arcane-wisp"),
+	[cardId("summon_arcane_wisp")]: {
+		id: cardId("summon_arcane_wisp"),
 		name: "Summon Arcane Wisp",
 		range: 1,
 		image: "/cards/arcane_wisp.webp",
@@ -43,8 +43,8 @@ export const mageCards: Record<Card["id"], Card> = {
 			},
 		],
 	},
-	[cardId("summon-briar-wolf")]: {
-		id: cardId("summon-briar-wolf"),
+	[cardId("summon_briar_wolf")]: {
+		id: cardId("summon_briar_wolf"),
 		name: "Summon Briar Wolf",
 		range: 1,
 		image: "/cards/briar_wolf.webp",

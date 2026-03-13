@@ -2,7 +2,7 @@ import { cardId } from "@/modules/cards/helpers/cards.helper";
 import type { UnitBlueprint } from "../../domain/figures.type";
 
 export const treant_bruiser: UnitBlueprint = {
-	spriteBase: "treant",
+	spriteBase: "monsters/treant",
 	maxHp: 45,
 	baseDef: 2,
 	baseMove: 1,

@@ -24,13 +24,9 @@ export default function IntentDisplay({ intent }: { intent: AIIntent }) {
 	const iconMap: Record<string, string> = {
 		MELEE: "⚔️",
 		RANGED: "🏹",
-		MAGIC: "✨",
-		DEFEND: "🛡️",
-		DEBUFF: "💢",
-		SUMMON: "💀",
 	};
 
-	const displayIcon = card.iconType ? iconMap[card.iconType] : "❓";
+	const displayIcon = card.range > 1 ? iconMap.RANGED : iconMap.MELEE;
 
 	return (
 		<div className="absolute -top-8 bg-zinc-950/90 border border-zinc-700 rounded px-2 py-1 flex items-center gap-1.5 shadow-lg pointer-events-none z-20">

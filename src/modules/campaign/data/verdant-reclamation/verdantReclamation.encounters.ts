@@ -1,6 +1,10 @@
+import { archdruid } from "@/modules/figures/data/monsters/archdruid";
 import { beastMaster } from "@/modules/figures/data/monsters/beast-master";
+import { briarWolf } from "@/modules/figures/data/monsters/briar-wolf";
 import { elvenCommander } from "@/modules/figures/data/monsters/elven-commander.data";
 import { elvenWeaver } from "@/modules/figures/data/monsters/elven-weaver";
+import { humanKing } from "@/modules/figures/data/monsters/human-king";
+import { humanSoldier } from "@/modules/figures/data/monsters/human-soldier";
 import { treant_bruiser } from "@/modules/figures/data/monsters/treant.data";
 import { type Encounter, encounterId } from "../../domain/encounters.type";
 import { sceneId } from "../../domain/scenes.type";
@@ -52,6 +56,18 @@ export const VERDANT_RECLAMATION_ENCOUNTER_DB: Record<string, Encounter> = {
 				...elvenWeaver,
 				gridPosition: { col: 3, row: 3 },
 			},
+			{
+				...elvenWeaver,
+				gridPosition: { col: 4, row: 3 },
+			},
+			{
+				...elvenWeaver,
+				gridPosition: { col: 3, row: 4 },
+			},
+			{
+				...elvenWeaver,
+				gridPosition: { col: 4, row: 4 },
+			},
 		],
 		onWinSceneId: sceneId("victory_west_front"),
 	},
@@ -84,10 +100,18 @@ export const VERDANT_RECLAMATION_ENCOUNTER_DB: Record<string, Encounter> = {
 		generateMonsters: () => [
 			{
 				...elvenWeaver,
-				gridPosition: { col: 2, row: 2 },
+				gridPosition: { col: 3, row: 3 },
 			},
 			{
 				...elvenWeaver,
+				gridPosition: { col: 4, row: 3 },
+			},
+			{
+				...briarWolf,
+				gridPosition: { col: 2, row: 4 },
+			},
+			{
+				...briarWolf,
 				gridPosition: { col: 4, row: 2 },
 			},
 		],
@@ -99,12 +123,16 @@ export const VERDANT_RECLAMATION_ENCOUNTER_DB: Record<string, Encounter> = {
 		name: "Tavern Ambush - Frightened Citizens",
 		generateMonsters: () => [
 			{
-				...elvenWeaver,
+				...humanSoldier,
 				gridPosition: { col: 2, row: 2 },
 			},
 			{
-				...elvenWeaver,
+				...humanSoldier,
 				gridPosition: { col: 4, row: 2 },
+			},
+			{
+				...humanSoldier,
+				gridPosition: { col: 3, row: 3 },
 			},
 		],
 		onWinSceneId: sceneId("victory_assault_tavern_ambush"),
@@ -123,6 +151,10 @@ export const VERDANT_RECLAMATION_ENCOUNTER_DB: Record<string, Encounter> = {
 				...elvenWeaver,
 				gridPosition: { col: 4, row: 2 },
 			},
+			{
+				...elvenWeaver,
+				gridPosition: { col: 3, row: 3 },
+			},
 		],
 		onWinSceneId: sceneId("victory_defend_siege_gates"),
 	},
@@ -132,12 +164,16 @@ export const VERDANT_RECLAMATION_ENCOUNTER_DB: Record<string, Encounter> = {
 		name: "Siege Gates - Iron Soldiers",
 		generateMonsters: () => [
 			{
-				...elvenWeaver,
+				...humanSoldier,
 				gridPosition: { col: 2, row: 2 },
 			},
 			{
-				...elvenWeaver,
+				...humanSoldier,
 				gridPosition: { col: 4, row: 2 },
+			},
+			{
+				...humanSoldier,
+				gridPosition: { col: 3, row: 3 },
 			},
 		],
 		onWinSceneId: sceneId("victory_assault_siege_gates"),
@@ -149,8 +185,24 @@ export const VERDANT_RECLAMATION_ENCOUNTER_DB: Record<string, Encounter> = {
 		name: "Final Battle - Defend Ironhold",
 		generateMonsters: () => [
 			{
-				...elvenWeaver,
+				...archdruid,
 				gridPosition: { col: 3, row: 3 },
+			},
+			{
+				...elvenWeaver,
+				gridPosition: { col: 4, row: 3 },
+			},
+			{
+				...elvenWeaver,
+				gridPosition: { col: 3, row: 4 },
+			},
+			{
+				...treant_bruiser,
+				gridPosition: { col: 2, row: 4 },
+			},
+			{
+				...elvenCommander,
+				gridPosition: { col: 4, row: 2 },
 			},
 		],
 		onWinSceneId: sceneId("ironhold_siege_victory"),
@@ -160,8 +212,24 @@ export const VERDANT_RECLAMATION_ENCOUNTER_DB: Record<string, Encounter> = {
 		name: "Final Battle - Defend Ironhold",
 		generateMonsters: () => [
 			{
-				...elvenWeaver,
+				...humanKing,
 				gridPosition: { col: 3, row: 3 },
+			},
+			{
+				...humanSoldier,
+				gridPosition: { col: 4, row: 3 },
+			},
+			{
+				...humanSoldier,
+				gridPosition: { col: 3, row: 4 },
+			},
+			{
+				...humanSoldier,
+				gridPosition: { col: 2, row: 4 },
+			},
+			{
+				...humanSoldier,
+				gridPosition: { col: 4, row: 2 },
 			},
 		],
 		onWinSceneId: sceneId("ironhold_assault_victory"),
