@@ -21,7 +21,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				{ type: "statsIncrease", amount: 1, stat: "hp" },
 				{
 					type: "classPromotion",
-					classId: ["MAGE", "FIGHTER", "ROGUE", "ARCHER"],
+					classId: ["MAGE", "FIGHTER", "ROGUE", "ARCHER", "CLERIC"],
 				},
 				{
 					type: "unlockQuest",
@@ -40,6 +40,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 			[
 				{ type: "statsIncrease", stat: "hp", amount: 2 },
 				{ type: "statsIncrease", stat: "def", amount: 1 },
+				{ type: "powerRune" },
 				{
 					type: "cardUpgrade",
 					oldCardId: cardId("club"),
@@ -62,6 +63,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		levelUpTriggers: [
 			[
 				{ type: "statsIncrease", stat: "hp", amount: 1 },
+				{ type: "powerRune" },
 				{
 					type: "cardUpgrade",
 					oldCardId: cardId("club"),
@@ -83,7 +85,9 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		xpThresholds: [10, 20, 30, 40, 50],
 		levelUpTriggers: [
 			[
+				{ type: "statsIncrease", stat: "hp", amount: 1 },
 				{ type: "statsIncrease", stat: "move", amount: 1 },
+				{ type: "powerRune" },
 				{
 					type: "cardUpgrade",
 					oldCardId: cardId("club"),
@@ -105,6 +109,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		levelUpTriggers: [
 			[
 				{ type: "statsIncrease", stat: "hp", amount: 1 },
+				{ type: "powerRune" },
 				{
 					type: "cardUpgrade",
 					oldCardId: cardId("club"),
@@ -115,6 +120,27 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			// [{ type: "classPromotion", classId: [] }],
+		],
+	},
+	CLERIC: {
+		id: "CLERIC",
+		name: "Cleric",
+		spriteBase: "heroes/cleric",
+		utilityCardChoices: [cardId("divine_aegis"), cardId("blinding_sigil")],
+		xpThresholds: [10, 20, 30, 40, 50],
+		levelUpTriggers: [
+			[
+				{ type: "statsIncrease", stat: "hp", amount: 2 },
+				{ type: "statsIncrease", stat: "def", amount: 1 },
+				{
+					type: "cardUpgrade",
+					oldCardId: cardId("club"),
+					newCardId: cardId("iron_mace"),
+				},
+			],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 		],
 	},
 	KNIGHT: {
@@ -133,6 +159,9 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 					newCardId: cardId("iron_sword"),
 				},
 			],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 		],
 	},
 	BARBARIAN: {
@@ -151,6 +180,9 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 					newCardId: cardId("great_axe"),
 				},
 			],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 		],
 	},
 	PYROMANCER: {
@@ -168,6 +200,9 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 					newCardId: cardId("fireball"),
 				},
 			],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 		],
 	},
 	CRYOMANCER: {
@@ -179,31 +214,15 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		levelUpTriggers: [
 			[
 				{ type: "statsIncrease", stat: "hp", amount: 2 },
-				{ type: "statsIncrease", stat: "def", amount: 1 },
 				{
 					type: "cardUpgrade",
 					oldCardId: cardId("arcane_shot"),
 					newCardId: cardId("frost_shards"),
 				},
 			],
-		],
-	},
-	CLERIC: {
-		id: "CLERIC",
-		name: "Cleric",
-		spriteBase: "heroes/cleric",
-		utilityCardChoices: [],
-		xpThresholds: [10, 20, 30, 40, 50],
-		levelUpTriggers: [
-			[
-				{ type: "statsIncrease", stat: "hp", amount: 2 },
-				{ type: "statsIncrease", stat: "def", amount: 1 },
-				{
-					type: "cardUpgrade",
-					oldCardId: cardId("club"),
-					newCardId: cardId("iron_mace"),
-				},
-			],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 		],
 	},
 };
