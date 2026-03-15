@@ -61,17 +61,13 @@ function getAnchorTarget<C extends BattleUnit, T extends BattleUnit>({
 		return possibleSpawns.length > 0 ? possibleSpawns[0] : null;
 	}
 
-	const collision = getActualTarget(
-		attacker.gridPosition,
-		reachableTarget.gridPosition,
-		obstacles,
-	);
-
-	const { gridPosition: anchorTarget } = collision
-		? collision
-		: reachableTarget;
-
-	return anchorTarget;
+	const actualTarget =
+		getActualTarget(
+			attacker.gridPosition,
+			reachableTarget.gridPosition,
+			obstacles,
+		) ?? reachableTarget;
+	return actualTarget.gridPosition;
 }
 
 const updateAIUnitStance =

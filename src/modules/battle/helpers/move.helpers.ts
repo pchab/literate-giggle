@@ -76,35 +76,62 @@ export const calculateExactPath = <T extends BattleUnit>(
 	minRange = 0,
 	maxRange = 0,
 ): GridPosition[] => {
-	const queue: GridPosition[][] = [[startPos]];
-	const visited = new Set<string>();
-	visited.add(getCellId(startPos));
+	const initialDist = getManhattanDistance(startPos, targetPos);
+	if (initialDist >= minRange && initialDist <= maxRange) {
+		return [];
+	}
+
+	const queue: GridPosition[] = [startPos];
+
+	const cameFrom = new Map<string, GridPosition | null>();
+	cameFrom.set(getCellId(startPos), null);
+
+	let validDestination: GridPosition | null = null;
 
 	while (queue.length > 0) {
-		const currentPath = queue.shift();
-		if (!currentPath) return [];
-		const currentPos = currentPath[currentPath.length - 1];
+		// biome-ignore lint/style/noNonNullAssertion: <We just checked the length>
+		const currentPos = queue.shift()!;
 
 		const distToTarget = getManhattanDistance(currentPos, targetPos);
 		if (distToTarget >= minRange && distToTarget <= maxRange) {
-			return currentPath.slice(1);
+			validDestination = currentPos;
+			break;
 		}
 
-		[
+		const neighbors = [
 			{ row: currentPos.row - 1, col: currentPos.col },
 			{ row: currentPos.row + 1, col: currentPos.col },
 			{ row: currentPos.row, col: currentPos.col - 1 },
 			{ row: currentPos.row, col: currentPos.col + 1 },
-		]
-			.filter(isTileInBounds)
-			.filter(isTileEmpty(figures))
-			.forEach((next) => {
-				const key = getCellId(next);
-				if (visited.has(key)) return;
+		];
 
-				visited.add(key);
-				queue.push([...currentPath, next]);
-			});
+		for (const next of neighbors) {
+			if (!isTileInBounds(next)) continue;
+
+			const isOccupied = !isTileEmpty(figures)(next);
+			const isTargetTile = next.row === targetPos.row && next.col === targetPos.col;
+
+			if (isOccupied && !(isTargetTile && minRange === 0)) {
+				continue;
+			}
+
+			const key = getCellId(next);
+			if (!cameFrom.has(key)) {
+				cameFrom.set(key, currentPos);
+				queue.push(next);
+			}
+		}
 	}
-	return [];
+
+	if (!validDestination) return [];
+
+	const path: GridPosition[] = [];
+	let current: GridPosition | null = validDestination;
+
+	while (current && getCellId(current) !== getCellId(startPos)) {
+		path.push(current);
+		current = cameFrom.get(getCellId(current)) || null;
+	}
+
+	return path.reverse();
 };

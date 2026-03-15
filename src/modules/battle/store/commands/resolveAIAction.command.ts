@@ -56,22 +56,22 @@ export const resolveAIActions = async (get: StoreGet, set: StoreSet) => {
 	// ============================================
 	tickStatuses(set)(get().heroes);
 
-	const survivingHeroes = get().heroes.filter((h) => h.currentHp > 0);
-	const survivingMonsters = get().monsters.filter((m) => m.currentHp > 0);
-	const survivingSummons = get().summons.filter((s) => s.currentHp > 0);
-	const nextEnemyIntents = calculateAIIntents([
-		...survivingHeroes,
-		...survivingMonsters,
-		...survivingSummons,
-	]);
-
-	set((prev) => ({
-		...prev,
-		heroes: survivingHeroes,
-		monsters: survivingMonsters,
-		summons: survivingSummons,
-		usedMovesThisTurn: {},
-		usedCardsThisTurn: {},
-		aiIntents: nextEnemyIntents,
-	}));
+	set(({ heroes, monsters, summons, ...prev }) => {
+		const survivingHeroes = heroes.filter((h) => h.currentHp > 0);
+		const survivingMonsters = monsters.filter((m) => m.currentHp > 0);
+		const survivingSummons = summons.filter((s) => s.currentHp > 0);
+		return {
+			...prev,
+			heroes: survivingHeroes,
+			monsters: survivingMonsters,
+			summons: survivingSummons,
+			usedMovesThisTurn: {},
+			usedCardsThisTurn: {},
+			aiIntents: calculateAIIntents([
+				...survivingHeroes,
+				...survivingMonsters,
+				...survivingSummons,
+			]),
+		};
+	});
 };

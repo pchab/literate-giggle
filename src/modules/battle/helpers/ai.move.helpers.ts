@@ -56,7 +56,7 @@ export const getIdealTarget = <C extends AIBattleUnit, T extends BattleUnit>(
 ) => {
 	if (card.aiTargetPreference === "self") {
 		return {
-			reachableTarget: aiFigure as unknown as T,
+			reachableTarget: aiFigure as C,
 			moveDest: aiFigure.gridPosition,
 			canHit: true,
 		};

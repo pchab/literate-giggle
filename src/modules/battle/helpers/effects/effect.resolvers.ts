@@ -19,7 +19,7 @@ export interface EffectResolverParams<C extends BattleUnit> {
 export type EffectResolver = <C extends BattleUnit, E extends CardEffect>(
 	get: StoreGet,
 	set: StoreSet,
-) => (effect: E) => (params: EffectResolverParams<C>) => void;
+) => (effect: E) => (params: EffectResolverParams<C>) => Promise<void>;
 
 export const resolvers =
 	(effect: CardEffect) => (get: StoreGet, set: StoreSet) => {

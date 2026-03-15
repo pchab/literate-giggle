@@ -1,7 +1,9 @@
 import type {
 	AnchorTarget,
-	CardEffect,
+	ApplyStatusEffect,
+	DamageEffect,
 	EffectTarget,
+	HealEffect,
 } from "@/modules/cards/domain/cards.type";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
 import { isHeroId, isSummon } from "@/modules/figures/helpers/figures.helpers";
@@ -78,30 +80,34 @@ export function applyDamageToEntity<T extends BattleUnit>(
 ): T {
 	const vulnerableBonusDamage =
 		entity.statuses.find((s) => s.type === "vulnerable")?.amount ?? 0;
-	const incomingDamage = baseDamage + vulnerableBonusDamage;
 
-	let effectiveDmg = Math.max(0, incomingDamage - entity.baseDef);
+	let effectiveDmg = Math.max(0, baseDamage + vulnerableBonusDamage - entity.baseDef);
 
-	const updatedStatuses = entity.statuses.map((status) => {
-		if (status.type !== "temp_block" && status.type !== "perma_shield")
-			return status;
-		if (effectiveDmg <= 0) return status;
+	if (effectiveDmg === 0) return entity;
 
-		if (status.amount >= effectiveDmg) {
-			status.amount -= effectiveDmg;
+	const updatedStatuses = entity.statuses.map((s) => ({ ...s }));
+
+	const drainShield = (shieldType: string) => {
+		if (effectiveDmg <= 0) return;
+
+		const shieldIndex = updatedStatuses.findIndex((s) => s.type === shieldType);
+		if (shieldIndex === -1) return;
+
+		const shield = updatedStatuses[shieldIndex];
+		if (shield.amount >= effectiveDmg) {
+			shield.amount -= effectiveDmg;
 			effectiveDmg = 0;
 		} else {
-			effectiveDmg -= status.amount;
-			status.amount = 0;
+			effectiveDmg -= shield.amount;
+			shield.amount = 0;
 		}
-		return status;
-	});
+	};
+
+	drainShield("temp_block");
+	drainShield("perma_shield");
 
 	const finalStatuses = updatedStatuses.filter((s) => {
-		return !(
-			(s.type === "temp_block" || s.type === "perma_shield") &&
-			s.amount <= 0
-		);
+		return !((s.type === "temp_block" || s.type === "perma_shield") && s.amount <= 0);
 	});
 
 	return {
@@ -113,9 +119,9 @@ export function applyDamageToEntity<T extends BattleUnit>(
 
 export function applyEffectToEntity<T extends BattleUnit>(
 	entity: T,
-	effect: CardEffect,
+	effect: HealEffect | ApplyStatusEffect | DamageEffect,
 ): T {
-	if (effect.type === "heal") {
+	if (effect.type === "heal" && entity.currentHp > 0) {
 		return {
 			...entity,
 			currentHp: Math.min(entity.maxHp, entity.currentHp + effect.amount),
@@ -154,41 +160,41 @@ export function applyEffectToEntity<T extends BattleUnit>(
 
 export const tickStatuses =
 	(set: StoreSet) =>
-	<T extends BattleUnit>(figures: T[]): void =>
-		figures.forEach((figure) => {
-			if (figure.currentHp <= 0) return;
+		<T extends BattleUnit>(figures: T[]): void =>
+			figures.forEach((figure) => {
+				if (figure.currentHp <= 0) return;
 
-			const poison =
-				figure.statuses.find(({ type }) => type === "poison")?.amount ?? 0;
-			const regen =
-				figure.statuses.find(({ type }) => type === "regen")?.amount ?? 0;
+				const poison =
+					figure.statuses.find(({ type }) => type === "poison")?.amount ?? 0;
+				const regen =
+					figure.statuses.find(({ type }) => type === "regen")?.amount ?? 0;
 
-			const newHp = Math.min(
-				figure.maxHp,
-				Math.max(0, figure.currentHp - poison + regen),
-			);
+				const newHp = Math.min(
+					figure.maxHp,
+					Math.max(0, figure.currentHp - poison + regen),
+				);
 
-			const newStatuses = figure.statuses
-				.map((status) => ({
-					...status,
-					duration: status.duration === -1 ? -1 : status.duration - 1,
-				}))
-				.filter((status) => status.duration > 0 || status.duration === -1);
+				const newStatuses = figure.statuses
+					.map((status) => ({
+						...status,
+						duration: status.duration === -1 ? -1 : status.duration - 1,
+					}))
+					.filter((status) => status.duration > 0 || status.duration === -1);
 
-			const cellId = getCellId(figure.gridPosition);
-			updateBattleUnitState(set)({
-				...figure,
-				currentHp: newHp,
-				statuses: newStatuses,
+				const cellId = getCellId(figure.gridPosition);
+				updateBattleUnitState(set)({
+					...figure,
+					currentHp: newHp,
+					statuses: newStatuses,
+				});
+				set(({ currentVfx }) => ({
+					currentVfx: {
+						...currentVfx,
+						...(poison > 0 ? { [cellId]: "POISON" } : {}),
+						...(regen > 0 ? { [cellId]: "HEAL" } : {}),
+					},
+				}));
 			});
-			set(({ currentVfx }) => ({
-				currentVfx: {
-					...currentVfx,
-					...(poison > 0 ? { [cellId]: "POISON" } : {}),
-					...(regen > 0 ? { [cellId]: "HEAL" } : {}),
-				},
-			}));
-		});
 
 // --- 4. FIXED SURFACE HELPER ---
 export function applySurfaceEffect<T extends BattleUnit>({

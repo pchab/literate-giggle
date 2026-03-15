@@ -55,34 +55,39 @@ export const resolveCard =
 		updateHeroStance(get, set)(unitId)(UnitStance.IDLE);
 
 		// --- 4. CLEAN UP ---
-		const { heroes: newHeroes, monsters, summons } = get();
-		const deadMonsters = monsters.filter((m) => m.currentHp <= 0);
-		const xpEarnedThisTurn = deadMonsters.reduce(
-			(acc, m) => acc + m.xpReward,
-			0,
-		);
-		const remainingMonsters = monsters.filter((m) => m.currentHp > 0);
-		const remainingSummons = summons.filter((m) => m.currentHp > 0);
 
 		set(
 			({
+				heroes,
+				monsters,
+				summons,
 				aiIntents,
 				usedCardsThisTurn,
 				usedMovesThisTurn,
 				xpEarned,
 				...prev
-			}) => ({
-				...prev,
-				activeHeroCard: null,
-				monsters: remainingMonsters,
-				summons: remainingSummons,
-				aiIntents: calculateAIIntents(
-					[...newHeroes, ...remainingMonsters, ...summons],
-					aiIntents,
-				),
-				usedCardsThisTurn: { ...usedCardsThisTurn, [hero.id]: card },
-				usedMovesThisTurn: { ...usedMovesThisTurn, [hero.id]: 99 },
-				xpEarned: xpEarned + xpEarnedThisTurn,
-			}),
+			}) => {
+				const deadMonsters = monsters.filter((m) => m.currentHp <= 0);
+				const xpEarnedThisTurn = deadMonsters.reduce(
+					(acc, m) => acc + m.xpReward,
+					0,
+				);
+				const remainingHeroes = heroes.filter((h) => h.currentHp > 0);
+				const remainingMonsters = monsters.filter((m) => m.currentHp > 0);
+				const remainingSummons = summons.filter((m) => m.currentHp > 0);
+				return {
+					...prev,
+					activeHeroCard: null,
+					monsters: remainingMonsters,
+					summons: remainingSummons,
+					aiIntents: calculateAIIntents(
+						[...remainingHeroes, ...remainingMonsters, ...summons],
+						aiIntents,
+					),
+					usedCardsThisTurn: { ...usedCardsThisTurn, [hero.id]: card },
+					usedMovesThisTurn: { ...usedMovesThisTurn, [hero.id]: 99 },
+					xpEarned: xpEarned + xpEarnedThisTurn,
+				};
+			},
 		);
 	};
