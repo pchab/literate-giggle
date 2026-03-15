@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useShallow } from "zustand/shallow";
+import { isUnitInTile } from "@/modules/battle/helpers/grid.helpers";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { BattleCard } from "@/modules/cards/components/BattleCard";
 import { CardTooltip } from "@/modules/cards/components/CardTooltip";
@@ -9,112 +10,22 @@ import { cardLibrary } from "@/modules/cards/data/cards.data";
 import { getBlockFromStatuses } from "@/modules/figures/helpers/figures.helpers";
 
 export default function EnemyIntentSidebar() {
-	const { monsters, summons, hoveredUnitId, aiIntents } = useBattleStore(
+	const { monsters, summons, hoveredCell, aiIntents } = useBattleStore(
 		useShallow((state) => ({
 			monsters: state.monsters,
 			summons: state.summons,
-			hoveredUnitId: state.hoveredUnitId,
+			hoveredCell: state.hoveredCell,
 			aiIntents: state.aiIntents,
 		})),
 	);
 
-	const aiUnit = [...monsters, ...summons].find(
-		({ id }) => hoveredUnitId === id,
-	);
+	const aiUnit =
+		hoveredCell && [...monsters, ...summons].find(isUnitInTile(hoveredCell));
 
-	return (
-		// Fixed height wrapper so the layout doesn't constantly jump when hovering
-		<div className="h-64 relative">
-			<AnimatePresence mode="wait">
-				{aiUnit ? (
-					<motion.div
-						key={aiUnit.id}
-						initial={{ opacity: 0, y: 10 }}
-						animate={{ opacity: 1, y: 0 }}
-						exit={{ opacity: 0, y: 10 }}
-						transition={{ duration: 0.2 }}
-						className="flex flex-col gap-3 p-4 bg-zinc-950/80 border border-red-900/40 rounded-lg shadow-[0_0_20px_rgba(153,27,27,0.15)] relative overflow-hidden h-full"
-					>
-						{/* Subtle red danger glow in the background */}
-						<div className="absolute inset-0 bg-linear-to-b from-red-950/20 to-transparent pointer-events-none" />
-
-						{/* --- HEADER & HP --- */}
-						<div className="relative z-10 flex flex-col gap-1.5">
-							<div className="flex justify-between items-end mb-1">
-								<h3 className="text-sm font-bold text-red-300 uppercase tracking-widest drop-shadow-md">
-									Enemy Info
-								</h3>
-								<span className="text-[11px] font-mono text-zinc-300">
-									Move {aiUnit.baseMove}
-								</span>
-								<span className="text-[11px] font-mono text-zinc-300">
-									{aiUnit.currentHp} / {aiUnit.maxHp} HP
-								</span>
-							</div>
-
-							<div className="w-full h-1.5 bg-zinc-900 rounded-sm overflow-hidden border border-zinc-800 shadow-inner">
-								<motion.div
-									className="h-full bg-red-600 origin-left"
-									initial={{
-										width: `${(aiUnit.currentHp / aiUnit.maxHp) * 100}%`,
-									}}
-									animate={{
-										width: `${(aiUnit.currentHp / aiUnit.maxHp) * 100}%`,
-									}}
-									transition={{ type: "spring", bounce: 0, duration: 0.5 }}
-								/>
-							</div>
-						</div>
-
-						{/* --- STATUS TRACKERS --- */}
-						{aiUnit.statuses && aiUnit.statuses.length > 0 && (
-							<div className="relative z-10 flex flex-wrap gap-2 mt-1">
-								{getBlockFromStatuses(aiUnit.statuses) > 0 && (
-									<span className="text-xs bg-blue-900/50 text-blue-200 px-2 py-0.5 rounded border border-blue-800/50">
-										🛡️ {getBlockFromStatuses(aiUnit.statuses)}
-									</span>
-								)}
-								{aiUnit.statuses
-									.filter(
-										(s) => s.type !== "temp_block" && s.type !== "perma_shield",
-									)
-									.map((status, idx) => (
-										<span
-											key={idx}
-											className="text-xs bg-zinc-900 text-zinc-300 px-2 py-0.5 rounded border border-zinc-700 capitalize flex items-center gap-1"
-										>
-											{status.type === "poison"
-												? "☠️"
-												: status.type === "vulnerable"
-													? "⚡"
-													: "✨"}
-											{status.type} {status.amount > 0 && status.amount}
-										</span>
-									))}
-							</div>
-						)}
-
-						{/* --- INTENT/NEXT ACTION --- */}
-						{aiIntents[aiUnit.id] && (
-							<div className="relative z-10 mt-auto pt-3 border-t border-red-900/30">
-								<h4 className="text-[10px] text-zinc-500 uppercase tracking-widest mb-2 font-semibold">
-									Intended Action
-								</h4>
-								{(() => {
-									const intentCard = cardLibrary[aiIntents[aiUnit.id].cardId];
-									if (!intentCard) return null;
-
-									return (
-										<div className="flex flex-row justify-between items-start">
-											<BattleCard card={intentCard} />
-											<CardTooltip card={intentCard} />
-										</div>
-									);
-								})()}
-							</div>
-						)}
-					</motion.div>
-				) : (
+	if (!hoveredCell || !aiUnit) {
+		return (
+			<div className="h-64 relative">
+				<AnimatePresence mode="wait">
 					<motion.div
 						key="empty"
 						initial={{ opacity: 0 }}
@@ -124,7 +35,102 @@ export default function EnemyIntentSidebar() {
 					>
 						Hover a target
 					</motion.div>
-				)}
+				</AnimatePresence>
+			</div>
+		);
+	}
+
+	return (
+		// Fixed height wrapper so the layout doesn't constantly jump when hovering
+		<div className="h-64 relative">
+			<AnimatePresence mode="wait">
+				<motion.div
+					key={aiUnit.id}
+					initial={{ opacity: 0, y: 10 }}
+					animate={{ opacity: 1, y: 0 }}
+					exit={{ opacity: 0, y: 10 }}
+					transition={{ duration: 0.2 }}
+					className="flex flex-col gap-3 p-4 bg-zinc-950/80 border border-red-900/40 rounded-lg shadow-[0_0_20px_rgba(153,27,27,0.15)] relative overflow-hidden h-full"
+				>
+					{/* Subtle red danger glow in the background */}
+					<div className="absolute inset-0 bg-linear-to-b from-red-950/20 to-transparent pointer-events-none" />
+
+					{/* --- HEADER & HP --- */}
+					<div className="relative z-10 flex flex-col gap-1.5">
+						<div className="flex justify-between items-end mb-1">
+							<h3 className="text-sm font-bold text-red-300 uppercase tracking-widest drop-shadow-md">
+								Enemy Info
+							</h3>
+							<span className="text-[11px] font-mono text-zinc-300">
+								Move {aiUnit.baseMove}
+							</span>
+							<span className="text-[11px] font-mono text-zinc-300">
+								{aiUnit.currentHp} / {aiUnit.maxHp} HP
+							</span>
+						</div>
+
+						<div className="w-full h-1.5 bg-zinc-900 rounded-sm overflow-hidden border border-zinc-800 shadow-inner">
+							<motion.div
+								className="h-full bg-red-600 origin-left"
+								initial={{
+									width: `${(aiUnit.currentHp / aiUnit.maxHp) * 100}%`,
+								}}
+								animate={{
+									width: `${(aiUnit.currentHp / aiUnit.maxHp) * 100}%`,
+								}}
+								transition={{ type: "spring", bounce: 0, duration: 0.5 }}
+							/>
+						</div>
+					</div>
+
+					{/* --- STATUS TRACKERS --- */}
+					{aiUnit.statuses && aiUnit.statuses.length > 0 && (
+						<div className="relative z-10 flex flex-wrap gap-2 mt-1">
+							{getBlockFromStatuses(aiUnit.statuses) > 0 && (
+								<span className="text-xs bg-blue-900/50 text-blue-200 px-2 py-0.5 rounded border border-blue-800/50">
+									🛡️ {getBlockFromStatuses(aiUnit.statuses)}
+								</span>
+							)}
+							{aiUnit.statuses
+								.filter(
+									(s) => s.type !== "temp_block" && s.type !== "perma_shield",
+								)
+								.map((status, idx) => (
+									<span
+										key={idx}
+										className="text-xs bg-zinc-900 text-zinc-300 px-2 py-0.5 rounded border border-zinc-700 capitalize flex items-center gap-1"
+									>
+										{status.type === "poison"
+											? "☠️"
+											: status.type === "vulnerable"
+												? "⚡"
+												: "✨"}
+										{status.type} {status.amount > 0 && status.amount}
+									</span>
+								))}
+						</div>
+					)}
+
+					{/* --- INTENT/NEXT ACTION --- */}
+					{aiIntents[aiUnit.id] && (
+						<div className="relative z-10 mt-auto pt-3 border-t border-red-900/30">
+							<h4 className="text-[10px] text-zinc-500 uppercase tracking-widest mb-2 font-semibold">
+								Intended Action
+							</h4>
+							{(() => {
+								const intentCard = cardLibrary[aiIntents[aiUnit.id].cardId];
+								if (!intentCard) return null;
+
+								return (
+									<div className="flex flex-row justify-between items-start">
+										<BattleCard card={intentCard} />
+										<CardTooltip card={intentCard} />
+									</div>
+								);
+							})()}
+						</div>
+					)}
+				</motion.div>
 			</AnimatePresence>
 		</div>
 	);

@@ -94,7 +94,7 @@ export function initBattle(
 			activeMoveHeroId: null,
 			usedCardsThisTurn: {},
 			usedMovesThisTurn: {},
-			hoveredUnitId: null,
+			hoveredCell: null,
 			xpEarned: 0,
 			background,
 		};

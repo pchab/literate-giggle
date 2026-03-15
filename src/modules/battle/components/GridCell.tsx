@@ -46,9 +46,9 @@ export function GridCell({
 	highlight = "default",
 	onClick,
 }: GridCellProps) {
-	const { setHoveredUnit, currentVfx, setVfx, surfaces } = useBattleStore(
+	const { setHoveredCell, currentVfx, setVfx, surfaces } = useBattleStore(
 		useShallow((state) => ({
-			setHoveredUnit: state.setHoveredUnit,
+			setHoveredCell: state.setHoveredCell,
 			currentVfx: state.currentVfx,
 			setVfx: state.setVfx,
 			surfaces: state.surfaces,
@@ -61,16 +61,14 @@ export function GridCell({
 	const stateClasses = highlightClassMapping[highlight];
 
 	const surface = surfaces[cell.id];
-	// In theory multiple units in cell is transient state when moving.
-	const unitInCell = unitsInCell[0];
 
 	return (
 		<button
 			type="button"
 			className={`${baseClasses} ${stateClasses}`}
 			onClick={onClick}
-			onMouseEnter={() => setHoveredUnit(unitInCell?.id)}
-			onMouseLeave={() => setHoveredUnit(null)}
+			onMouseEnter={() => setHoveredCell(cell)}
+			onMouseLeave={() => setHoveredCell(null)}
 		>
 			<span className="text-[10px] text-zinc-500 font-bold select-none absolute top-1 left-1 pointer-events-none">
 				{cell.col},{cell.row}

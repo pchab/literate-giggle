@@ -15,7 +15,7 @@ export const fighterCards: Record<Card["id"], Card> = {
 		name: "Bull Rush",
 		image: "/cards/bull_rush.webp",
 		range: 3,
-		playRequirement: "requires_empty_cell_or_enemy",
+		playRequirement: "requires_enemy",
 		effects: [
 			{
 				type: "damage",

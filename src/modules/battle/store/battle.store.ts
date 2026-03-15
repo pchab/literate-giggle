@@ -38,7 +38,7 @@ export type BattleState = {
 	usedMovesThisTurn: Record<BattleHero["id"], number>;
 	activeHeroCard: ActiveCardContext | null;
 	hoveredHeroCard: ActiveCardContext | null;
-	hoveredUnitId: BattleUnit["id"] | null;
+	hoveredCell: GridPosition | null; // getGridId(GridPosition)
 	usedCardsThisTurn: Record<BattleHero["id"], Card["id"]>;
 	aiIntents: Record<BattleUnit["id"], AIIntent>;
 	currentVfx: Record<string, VfxType>; // key is cell id
@@ -61,7 +61,7 @@ type BattleAction = {
 	resolveCard: (anchorTarget: AnchorTarget) => void;
 	enemyAction: () => Promise<void>;
 	setHoveredCard: (cardContext: ActiveCardContext | null) => void;
-	setHoveredUnit: (unit: BattleUnit["id"] | null) => void;
+	setHoveredCell: (cell: GridPosition | null) => void;
 	setVfx: (cellId: string, vfx: VfxType | null) => void;
 	resetXpEarned: () => void;
 };
@@ -74,7 +74,7 @@ const initialState: BattleState = {
 	activeHeroCard: null,
 	activeMoveHeroId: null,
 	hoveredHeroCard: null,
-	hoveredUnitId: null,
+	hoveredCell: null,
 	usedMovesThisTurn: {},
 	usedCardsThisTurn: {},
 	summons: [],
@@ -110,7 +110,7 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 			setActiveMoveHeroId: (heroId) => set(selectActiveMoveHero(heroId)),
 			moveHero: async (newPosition) => await moveHero(newPosition)(get, set),
 			enemyAction: async () => await resolveAIActions(get, set),
-			setHoveredUnit: (hoveredUnitId) => set(() => ({ hoveredUnitId })),
+			setHoveredCell: (hoveredCell) => set(() => ({ hoveredCell })),
 			setHoveredCard: (hoveredHeroCard) => set(() => ({ hoveredHeroCard })),
 			setVfx: (cellId, vfx) =>
 				set(({ currentVfx: { [cellId]: cellVfx, ...otherVfx } }) => ({

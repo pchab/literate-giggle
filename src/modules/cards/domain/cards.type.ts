@@ -19,7 +19,6 @@ export type PlayRequirement =
 	| "requires_enemy"
 	| "requires_ally"
 	| "requires_empty_cell"
-	| "requires_empty_cell_or_enemy"
 	| "no_target";
 
 export type EffectTarget =

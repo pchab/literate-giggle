@@ -1,4 +1,8 @@
-import type { Card, CardEffect } from "@/modules/cards/domain/cards.type";
+import type {
+	Card,
+	CardEffect,
+	PlayRequirement,
+} from "@/modules/cards/domain/cards.type";
 import { getStatusEffectText } from "../helpers/cards.helper";
 
 interface CardTooltipProps {
@@ -51,16 +55,14 @@ function renderEffectText(effect: CardEffect, index: number) {
 	}
 }
 
-function renderRequirementText(req: string) {
+function renderRequirementText(req: PlayRequirement) {
 	switch (req) {
 		case "requires_enemy":
 			return "Target: Enemy";
-		case "requires_empty_cell_or_enemy":
-			return "Target: Empty Cell or Enemy";
 		case "requires_empty_cell":
 			return "Target: Empty Cell";
-		case "requires_ally_or_self":
-			return "Target: Ally or Self";
+		case "requires_ally":
+			return "Target: Ally";
 		case "no_target":
 			return "Instant Cast";
 		default:

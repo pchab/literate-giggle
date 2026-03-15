@@ -1,4 +1,4 @@
-import { crossPattern } from '@/modules/battle/data/attackPattern.data';
+import { crossPattern } from "@/modules/battle/data/attackPattern.data";
 import type { Card } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
 
@@ -13,7 +13,7 @@ export const clericCards: Record<Card["id"], Card> = {
 			{
 				type: "damage",
 				amount: 4,
-				target: "anchor"
+				target: "anchor",
 			},
 		],
 	},
@@ -24,7 +24,11 @@ export const clericCards: Record<Card["id"], Card> = {
 		image: "/cards/divine_aegis.webp",
 		playRequirement: "requires_ally",
 		effects: [
-			{ type: "apply_status", status: { type: "perma_shield", amount: 4, duration: 999 }, target: "anchor" }
+			{
+				type: "apply_status",
+				status: { type: "perma_shield", amount: 4, duration: 999 },
+				target: "anchor",
+			},
 		],
 	},
 	[cardId("blinding_sigil")]: {
@@ -35,7 +39,11 @@ export const clericCards: Record<Card["id"], Card> = {
 		playRequirement: "requires_enemy",
 		aoePattern: crossPattern,
 		effects: [
-			{ type: "apply_status", status: { type: "vulnerable", amount: 4, duration: 2 }, target: "anchor" }
+			{
+				type: "apply_status",
+				status: { type: "vulnerable", amount: 4, duration: 2 },
+				target: "anchor",
+			},
 		],
 	},
 };
