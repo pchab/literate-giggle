@@ -5,20 +5,20 @@ import {
 } from "@/modules/figures/domain/figures.type";
 import type { GridPosition } from "../../domain/grid.type";
 import { resolvers } from "../../helpers/effects/effect.resolvers";
-import { rotatePattern } from "../../helpers/grid.helpers";
+import { getManhattanDistance, rotatePattern } from "../../helpers/grid.helpers";
 import { updateBattleUnitState } from "../../helpers/state.helpers";
 import type { StoreGet, StoreSet } from "../battle.store";
 import { calculateAIIntents } from "./calculateAIIntents.command";
 
 const updateHeroStance =
 	(get: StoreGet, set: StoreSet) =>
-	(heroId: BattleHero["id"]) =>
-	(stance: UnitStance) => {
-		const freshHero = [...get().heroes].find(({ id }) => id === heroId);
-		if (!freshHero) return;
-		updateBattleUnitState(set)({ ...freshHero, stance });
-		return freshHero;
-	};
+		(heroId: BattleHero["id"]) =>
+			(stance: UnitStance) => {
+				const freshHero = [...get().heroes].find(({ id }) => id === heroId);
+				if (!freshHero) return;
+				updateBattleUnitState(set)({ ...freshHero, stance });
+				return freshHero;
+			};
 
 export const resolveCard =
 	(get: StoreGet, set: StoreSet) => async (anchorTarget: AnchorTarget) => {
@@ -28,6 +28,14 @@ export const resolveCard =
 		const { unitId, card } = activeCard;
 		const hero = heroes.find((h) => h.id === unitId);
 		if (!hero) return;
+
+		// --- 1. CHECK RANGE ---
+		if (anchorTarget) {
+			const distance = getManhattanDistance(anchorTarget, hero.gridPosition);
+			if (distance > card.range) {
+				return;
+			}
+		}
 
 		// --- 2. CALCULATE THE BLAST ZONE ---
 		let patternCells: GridPosition[] | undefined;

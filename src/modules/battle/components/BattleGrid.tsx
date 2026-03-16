@@ -99,12 +99,6 @@ export function BattleGrid() {
 						: 0;
 
 				const handleClick = () => {
-					console.log({
-						highlight,
-						isMoving,
-						hasUnitInCell,
-						remainingMoves,
-					});
 					if (isMoving && highlight === "move" && !hasUnitInCell) {
 						moveHero(cell);
 						return;
