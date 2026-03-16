@@ -35,6 +35,24 @@ export const SCENE_DB: Record<Scene["id"], Scene> = {
 		},
 	},
 
+	[sceneId("port_city_ship")]: {
+		id: sceneId("port_city_ship"),
+		initialStepId: "greet",
+		steps: {
+			greet: {
+				speaker: "Captain Vane",
+				text: "The waters are quiet. Too quiet.",
+				backgroundImage: "/scenes/port_city_ship.webp",
+				choices: [
+					{
+						label: "Ok.",
+						actions: [{ type: "END_SCENE" }],
+					},
+				],
+			},
+		},
+	},
+
 	...RATS_IN_THE_CELLAR_SCENES,
 	...VERDANT_RECLAMATION_SCENE_DB,
 	...NECROMANCER_SCENE_DB,

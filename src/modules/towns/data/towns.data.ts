@@ -196,6 +196,14 @@ export const TOWN_DB: Record<TownData["id"], TownData> = {
 		id: townId("port_city"),
 		name: "Port City",
 		backgroundImage: "/towns/port_city.webp",
-		locations: [],
+		locations: [
+			{
+				id: townLocationId("port_city_ship"),
+				name: "The Hollow Keel",
+				type: "SCENE",
+				defaultSceneId: sceneId("port_city_ship"),
+				position: { x: 84, y: 70 },
+			},
+		],
 	},
 };
