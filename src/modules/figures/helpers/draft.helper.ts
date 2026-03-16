@@ -47,7 +47,7 @@ export function generateDynamicRuneChoices(
 					label: `+1 ${formattedStatus} Amount`,
 				});
 
-				if (duration && duration > 0) {
+				if (duration && duration > 0 && type !== "perma_shield") {
 					possibleOptions.set(`duration_${type}`, {
 						type: "bonusStatusDuration",
 						statusType: type,

@@ -166,13 +166,19 @@ export function useCellHighlight(): CellHighlight {
 					false,
 				).filter(isTileOccupied(enemyFaction));
 			}
-
 			if (playRequirement === "requires_ally") {
 				cellHighlight.allyTargets = calculateAttackableCells(
 					hero.gridPosition,
 					card.range,
 					true,
 				).filter(isTileOccupied(allyFaction));
+			}
+			if (playRequirement === "requires_empty_cell") {
+				cellHighlight.cellTargets = calculateAttackableCells(
+					hero.gridPosition,
+					card.range,
+					false,
+				);
 			}
 		}
 
