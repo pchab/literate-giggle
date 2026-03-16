@@ -191,7 +191,7 @@ export function useCellHighlight(): CellHighlight {
 		if (hoveredHeroUnit) {
 			return {
 				activeUnit: hoveredHeroUnit.id,
-			}
+			};
 		}
 
 		const hoveredAiUnit = [...monsters, ...summons].find(

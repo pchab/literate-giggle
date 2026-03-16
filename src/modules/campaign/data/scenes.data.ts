@@ -2,6 +2,8 @@ import { type Scene, sceneId } from "../domain/scenes.type";
 import { DWARVEN_PASSAGE_SCENE_DB } from "./dwarven-passage/dwarvenPassage.scenes";
 import { NECROMANCER_SCENE_DB } from "./necromancer/necromancer.scenes";
 import { RATS_IN_THE_CELLAR_SCENES } from "./rats-in-the-cellar/ratsInTheCellar.scenes";
+import { SHADOWS_DEBT } from "./shadows-debt/shadowsDebt.definitions";
+import { SHADOWS_DEBT_SCENES } from "./shadows-debt/shadowsDebt.scenes";
 import { generateTavernGenericScene } from "./tavern.data";
 import { VERDANT_RECLAMATION_SCENE_DB } from "./verdant-reclamation/verdantReclamation.scenes";
 
@@ -46,7 +48,14 @@ export const SCENE_DB: Record<Scene["id"], Scene> = {
 				choices: [
 					{
 						label: "Ok.",
-						actions: [{ type: "END_SCENE" }],
+						actions: [
+							{
+								type: "ADVANCE_QUEST",
+								questId: SHADOWS_DEBT.id,
+								newStepId: SHADOWS_DEBT.steps.speak_to_vane,
+							},
+							{ type: "END_SCENE" },
+						],
 					},
 				],
 			},
@@ -57,4 +66,5 @@ export const SCENE_DB: Record<Scene["id"], Scene> = {
 	...VERDANT_RECLAMATION_SCENE_DB,
 	...NECROMANCER_SCENE_DB,
 	...DWARVEN_PASSAGE_SCENE_DB,
+	...SHADOWS_DEBT_SCENES,
 };

@@ -7,7 +7,8 @@ export type EvolutionRuneId =
 	| "rune_nature"
 	| "rune_arcane"
 	| "rune_blood"
-	| "rune_mountain";
+	| "rune_mountain"
+	| "rune_tides";
 
 export const EVOLUTION_RECIPES: Record<
 	Card["id"],

@@ -2,10 +2,12 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
+import { useShallow } from "zustand/shallow";
 import type { Scene } from "@/modules/campaign/domain/scenes.type";
 import { useSceneEngine } from "@/modules/campaign/hooks/useSceneEngine.hook";
 import { RetroButton } from "@/modules/shared/components/RetroButton";
 import { getBackgroundImage } from "@/modules/shared/helpers/backgroundImage.helpers";
+import { useWorldStore } from "@/modules/world/store/world.store";
 
 export default function SceneComponent({ scene }: { scene: Scene }) {
 	const [currentStepId, setCurrentStepId] = useState<string>(
@@ -14,6 +16,7 @@ export default function SceneComponent({ scene }: { scene: Scene }) {
 	const { processActions } = useSceneEngine((newStepId) =>
 		setCurrentStepId(newStepId),
 	);
+	const roster = useWorldStore(useShallow((state) => state.roster));
 
 	if (!currentStepId) return null;
 
@@ -56,16 +59,22 @@ export default function SceneComponent({ scene }: { scene: Scene }) {
 							transition={{ delay: 0.5 }}
 							className="flex flex-col gap-4 items-center"
 						>
-							{currentStep.choices.map((choice, idx) => (
-								<RetroButton
-									key={idx}
-									variant="default"
-									className="w-full max-w-md text-sm md:text-base py-3 border-zinc-500 hover:border-amber-400 hover:text-amber-400 bg-zinc-900/90 backdrop-blur-sm shadow-[0_4px_15px_rgba(0,0,0,0.8)]"
-									onClick={() => processActions(choice.actions)}
-								>
-									{choice.label}
-								</RetroButton>
-							))}
+							{currentStep.choices
+								.filter(
+									({ reqClass }) =>
+										!reqClass ||
+										roster.map(({ heroClass }) => heroClass).includes(reqClass),
+								)
+								.map((choice, idx) => (
+									<RetroButton
+										key={idx}
+										variant="default"
+										className="w-full max-w-md text-sm md:text-base py-3 border-zinc-500 hover:border-amber-400 hover:text-amber-400 bg-zinc-900/90 backdrop-blur-sm shadow-[0_4px_15px_rgba(0,0,0,0.8)]"
+										onClick={() => processActions(choice.actions)}
+									>
+										{choice.label}
+									</RetroButton>
+								))}
 						</motion.div>
 					)}
 				</AnimatePresence>

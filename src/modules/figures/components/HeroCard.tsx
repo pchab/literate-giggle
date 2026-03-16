@@ -2,13 +2,13 @@
 
 import Image from "next/image";
 import { useShallow } from "zustand/shallow";
+import { getCellId } from "@/modules/battle/helpers/grid.helpers";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { Hand } from "@/modules/cards/components/Hand";
 import type { BattleHero } from "@/modules/figures/domain/figures.type";
 import { RetroButton } from "@/modules/shared/components/RetroButton";
 import { getBlockFromStatuses } from "../helpers/figures.helpers";
 import { HeroPortrait } from "./HeroPortrait";
-import { getCellId } from "@/modules/battle/helpers/grid.helpers";
 
 function hpPercentToColor(percent: number): string {
 	if (percent < 0.2) return "text-red-950";

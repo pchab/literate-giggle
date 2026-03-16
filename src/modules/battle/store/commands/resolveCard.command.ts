@@ -5,20 +5,23 @@ import {
 } from "@/modules/figures/domain/figures.type";
 import type { GridPosition } from "../../domain/grid.type";
 import { resolvers } from "../../helpers/effects/effect.resolvers";
-import { getManhattanDistance, rotatePattern } from "../../helpers/grid.helpers";
+import {
+	getManhattanDistance,
+	rotatePattern,
+} from "../../helpers/grid.helpers";
 import { updateBattleUnitState } from "../../helpers/state.helpers";
 import type { StoreGet, StoreSet } from "../battle.store";
 import { calculateAIIntents } from "./calculateAIIntents.command";
 
 const updateHeroStance =
 	(get: StoreGet, set: StoreSet) =>
-		(heroId: BattleHero["id"]) =>
-			(stance: UnitStance) => {
-				const freshHero = [...get().heroes].find(({ id }) => id === heroId);
-				if (!freshHero) return;
-				updateBattleUnitState(set)({ ...freshHero, stance });
-				return freshHero;
-			};
+	(heroId: BattleHero["id"]) =>
+	(stance: UnitStance) => {
+		const freshHero = [...get().heroes].find(({ id }) => id === heroId);
+		if (!freshHero) return;
+		updateBattleUnitState(set)({ ...freshHero, stance });
+		return freshHero;
+	};
 
 export const resolveCard =
 	(get: StoreGet, set: StoreSet) => async (anchorTarget: AnchorTarget) => {
