@@ -181,6 +181,13 @@ export function useCellHighlight(): CellHighlight {
 
 	// --- HIGHLIGHT CELLS FOR ENEMY ACTION ---
 	if (hoveredCell) {
+		const hoveredHeroUnit = heroes.find(isUnitInTile(hoveredCell));
+		if (hoveredHeroUnit) {
+			return {
+				activeUnit: hoveredHeroUnit.id,
+			}
+		}
+
 		const hoveredAiUnit = [...monsters, ...summons].find(
 			isUnitInTile(hoveredCell),
 		);

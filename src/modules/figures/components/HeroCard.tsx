@@ -8,6 +8,7 @@ import type { BattleHero } from "@/modules/figures/domain/figures.type";
 import { RetroButton } from "@/modules/shared/components/RetroButton";
 import { getBlockFromStatuses } from "../helpers/figures.helpers";
 import { HeroPortrait } from "./HeroPortrait";
+import { getCellId } from "@/modules/battle/helpers/grid.helpers";
 
 function hpPercentToColor(percent: number): string {
 	if (percent < 0.2) return "text-red-950";
@@ -25,19 +26,24 @@ export function HeroCard({
 	currentHp,
 	maxHp,
 	statuses,
+	gridPosition,
 }: BattleHero) {
 	const {
 		endTurn,
-		setActiveMoveHeroId,
+		hoveredCell,
+		setHoveredCell,
 		activeMoveUnitId,
+		setActiveMoveHeroId,
 		activeCard,
 		usedMovesThisTurn,
 		usedCardsThisTurn,
 	} = useBattleStore(
 		useShallow((state) => ({
 			endTurn: state.endTurn,
-			setActiveMoveHeroId: state.setActiveMoveHeroId,
+			hoveredCell: state.hoveredCell,
+			setHoveredCell: state.setHoveredCell,
 			activeMoveUnitId: state.activeMoveHeroId,
+			setActiveMoveHeroId: state.setActiveMoveHeroId,
 			activeCard: state.activeHeroCard,
 			usedMovesThisTurn: state.usedMovesThisTurn,
 			usedCardsThisTurn: state.usedCardsThisTurn,
@@ -53,8 +59,16 @@ export function HeroCard({
 
 	const currentBlock = getBlockFromStatuses(statuses);
 
+	const isHoveredHero =
+		hoveredCell && getCellId(gridPosition) === getCellId(hoveredCell);
+
 	return (
-		<div className="relative flex items-center w-full max-w-2xl h-32 rounded-lg border border-zinc-800 shadow-xl bg-zinc-950 mb-2">
+		<div
+			className={`relative flex items-center w-full max-w-2xl h-32 rounded-lg border ${isHoveredHero ? "border-blue-700 border-2" : "border-zinc-800"} shadow-xl bg-zinc-950 mb-2`}
+			role="toolbar"
+			onMouseEnter={() => setHoveredCell(gridPosition)}
+			onMouseLeave={() => setHoveredCell(null)}
+		>
 			<div className="absolute inset-0 z-0 overflow-hidden rounded-lg pointer-events-none">
 				<Image
 					src="/hero_card.webp"
