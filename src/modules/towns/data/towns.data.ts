@@ -192,4 +192,10 @@ export const TOWN_DB: Record<TownData["id"], TownData> = {
 			},
 		],
 	},
+	[townId("port_city")]: {
+		id: townId("port_city"),
+		name: "Port City",
+		backgroundImage: "/towns/port_city.webp",
+		locations: [],
+	},
 };

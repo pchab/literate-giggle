@@ -62,6 +62,7 @@ export const WorldMapNodes: MapData = {
 		id: mapNodeId("port_city"),
 		name: "Port City",
 		type: "TOWN",
+		townId: townId("port_city"),
 		position: { x: 80, y: 70 },
 		connectedNodeIds: [mapNodeId("wizard_tower")],
 		background: "/battlegrounds/city.webp",
