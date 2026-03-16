@@ -112,7 +112,7 @@ export function BattleCard({
 			{/* 4. Center Ring: The Primary Effect Value */}
 			{/* 50% / 50% with negative translation guarantees it sits dead-center in the ring */}
 			<div
-				className={`absolute top-1/2 left-1/2 -translate-x-1/2 z-30 flex items-center justify-center pointer-events-none ${isLg ? "text-4xl" : "text-xs"}`}
+				className={`absolute top-1/2 left-1/2 -translate-x-1/2 z-30 flex items-center justify-center pointer-events-none ${isLg ? "text-2xl" : "text-xs"}`}
 			>
 				{icon}
 			</div>

@@ -50,20 +50,7 @@ export function Hand({ id: heroId, hand }: Pick<BattleHero, "id" | "hand">) {
 					hoveredHeroCard?.card.id === card.id;
 
 				return (
-					<button
-						key={card.id}
-						type="button"
-						className="relative origin-bottom focus:outline-none"
-						style={{ cursor: hasUsedCard ? "not-allowed" : "pointer" }}
-						disabled={hasUsedCard}
-						onClick={() => {
-							if (hasUsedCard) return;
-							if (isSelected) cancelCard();
-							else selectCard(heroId, card);
-						}}
-						onMouseEnter={() => setHoveredCard({ unitId: heroId, card })}
-						onMouseLeave={() => setHoveredCard(null)}
-					>
+					<div className="relative origin-bottom focus:outline-none">
 						<AnimatePresence>
 							{isHovered && (
 								<motion.div
@@ -77,13 +64,26 @@ export function Hand({ id: heroId, hand }: Pick<BattleHero, "id" | "hand">) {
 								</motion.div>
 							)}
 						</AnimatePresence>
-
-						<BattleCard
-							card={card}
-							isSelected={isSelected}
-							isPlayable={!hasUsedCard}
-						/>
-					</button>
+						<button
+							key={card.id}
+							type="button"
+							style={{ cursor: hasUsedCard ? "not-allowed" : "pointer" }}
+							disabled={hasUsedCard}
+							onClick={() => {
+								if (hasUsedCard) return;
+								if (isSelected) cancelCard();
+								else selectCard(heroId, card);
+							}}
+							onMouseEnter={() => setHoveredCard({ unitId: heroId, card })}
+							onMouseLeave={() => setHoveredCard(null)}
+						>
+							<BattleCard
+								card={card}
+								isSelected={isSelected}
+								isPlayable={!hasUsedCard}
+							/>
+						</button>
+					</div>
 				);
 			})}
 		</div>
