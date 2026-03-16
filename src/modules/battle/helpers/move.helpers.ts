@@ -45,14 +45,17 @@ export function moveBattleUnit(get: StoreGet, set: StoreSet) {
 					});
 
 				currentUnit = surfaceUpdatedUnit;
-				if (newSurface.charges === 0) {
-					delete draftSurfaces[stepCellId];
-				} else {
-					draftSurfaces[stepCellId] = newSurface;
-				}
+				set((prev) => {
+					const nextSurfaces = { ...prev.surfaces };
+					if (newSurface.charges === 0) {
+						delete nextSurfaces[stepCellId];
+					} else {
+						nextSurfaces[stepCellId] = newSurface;
+					}
+					return { ...prev, surfaces: nextSurfaces };
+				});
 
 				updateBattleUnitState(set)(currentUnit);
-				set(() => ({ surfaces: draftSurfaces }));
 
 				if (
 					currentUnit.currentHp <= 0 ||
@@ -109,7 +112,8 @@ export const calculateExactPath = <T extends BattleUnit>(
 			if (!isTileInBounds(next)) continue;
 
 			const isOccupied = !isTileEmpty(figures)(next);
-			const isTargetTile = next.row === targetPos.row && next.col === targetPos.col;
+			const isTargetTile =
+				next.row === targetPos.row && next.col === targetPos.col;
 
 			if (isOccupied && !(isTargetTile && minRange === 0)) {
 				continue;

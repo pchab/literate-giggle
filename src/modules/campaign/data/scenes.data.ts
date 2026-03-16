@@ -1,4 +1,4 @@
-import { sceneId, type Scene } from "../domain/scenes.type";
+import { type Scene, sceneId } from "../domain/scenes.type";
 import { DWARVEN_PASSAGE_SCENE_DB } from "./dwarven-passage/dwarvenPassage.scenes";
 import { NECROMANCER_SCENE_DB } from "./necromancer/necromancer.scenes";
 import { RATS_IN_THE_CELLAR_SCENES } from "./rats-in-the-cellar/ratsInTheCellar.scenes";
