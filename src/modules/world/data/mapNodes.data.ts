@@ -34,6 +34,17 @@ export const WorldMapNodes: MapData = {
 					townId: townId("ironhold_defense"),
 				},
 			},
+			{
+				condition: {
+					type: "QUEST_ACTIVE",
+					questId: VERDANT_RECLAMATION.id,
+					stepId: [VERDANT_RECLAMATION.steps.assault_ironhold],
+				},
+				override: {
+					name: "Ironhold (Under Siege)",
+					townId: townId("ironhold_assault"),
+				},
+			},
 		],
 	},
 

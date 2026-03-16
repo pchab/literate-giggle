@@ -23,7 +23,7 @@ export const VERDANT_RECLAMATION_MAP_NODES: MapData = {
 	kiven_river_bridge: {
 		id: mapNodeId("kiven_river_bridge"),
 		name: "Kiven River Bridge",
-		type: "EVENT",
+		type: "ROAD",
 		encounterId: encounterId("elven_commander"),
 		position: { x: 47, y: 46 },
 		connectedNodeIds: [
@@ -32,6 +32,7 @@ export const VERDANT_RECLAMATION_MAP_NODES: MapData = {
 			"northern_treant_army",
 			"western_weavers_army",
 			"southern_beastmaster_army",
+			"heart_tree",
 		],
 		background: "/battlegrounds/kiven_dam_hostile.webp",
 		unlockCondition: [
@@ -39,6 +40,10 @@ export const VERDANT_RECLAMATION_MAP_NODES: MapData = {
 				type: "QUEST_ACTIVE",
 				questId: VERDANT_RECLAMATION.id,
 			},
+			{
+				type: "QUEST_COMPLETED",
+				questId: VERDANT_RECLAMATION.id,
+			}
 		],
 		variants: [
 			{
@@ -55,7 +60,7 @@ export const VERDANT_RECLAMATION_MAP_NODES: MapData = {
 				condition: { type: "HAS_FLAG", flagId: "aligned_with_forest" },
 				override: {
 					name: "Allied Weaver Camp",
-					type: "CAMP",
+					type: "EVENT",
 					encounterId: undefined,
 					background: "/camps/river_bridge_safe.webp",
 				},

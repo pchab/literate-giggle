@@ -438,7 +438,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 			intro: {
 				speaker: "Arch-Druid Sylas",
 				text: "Our treants broke through their walls! Tear apart the tavern and let the wilds reclaim this land!",
-				backgroundImage: "/scenes/rusty_boar_ruined.webp",
+				backgroundImage: "/scenes/rusty_boar_assault.webp",
 				choices: [
 					{
 						label: "Assault the taproom! (Start Battle)",

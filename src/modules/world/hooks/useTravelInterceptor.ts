@@ -57,9 +57,6 @@ export function useTravelInterceptor() {
 				case "TOWN":
 					setPhase("TOWN");
 					break;
-				case "CAMP":
-					setPhase("CAMP");
-					break;
 				case "EVENT":
 					console.warn(
 						`Arrived at EVENT node ${nodeId}, but no scene was provided.`,

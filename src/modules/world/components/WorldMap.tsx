@@ -16,7 +16,7 @@ import { useTravelInterceptor } from "../hooks/useTravelInterceptor";
 const NODE_ICONS = {
 	TOWN: "🏰",
 	BATTLE: "⚔️",
-	CAMP: "⛺",
+	ROAD: "",
 	EVENT: "❓",
 };
 
@@ -24,7 +24,7 @@ const NODE_STYLES = {
 	TOWN: "bg-gradient-to-br from-blue-600 to-blue-800 border-blue-400 text-blue-100",
 	BATTLE:
 		"bg-gradient-to-br from-red-600 to-red-800 border-red-400 text-red-100",
-	CAMP: "bg-gradient-to-br from-green-600 to-green-800 border-green-400 text-green-100",
+	ROAD: "bg-gradient-to-br from-green-600 to-green-800 border-green-400 text-green-100",
 	EVENT:
 		"bg-gradient-to-br from-purple-600 to-purple-800 border-purple-400 text-purple-100",
 };
