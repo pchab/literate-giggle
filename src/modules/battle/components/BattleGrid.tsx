@@ -111,7 +111,9 @@ export function BattleGrid() {
 
 					if (isActive) {
 						if (
-							["target_enemy", "target_ally", "target_cell"].includes(highlight)
+							["active", "target_enemy", "target_ally", "target_cell"].includes(
+								highlight,
+							)
 						) {
 							resolveCard(cell, activeHeroCard);
 						} else {

@@ -82,12 +82,12 @@ export function GridCell({
 			)}
 
 			{surface && (
-				<div className="absolute inset-4 z-0 opacity-80 pointer-events-none flex items-center justify-center">
+				<div className="absolute inset-4 z-0 pointer-events-none flex items-center justify-center">
 					<Image
 						src={surface.spriteBase}
 						alt={surface.type}
 						fill
-						className="rounded opacity-60 mix-blend-screen"
+						className="rounded mix-blend-screen"
 					/>
 				</div>
 			)}

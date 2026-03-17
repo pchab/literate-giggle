@@ -56,9 +56,14 @@ export const monsterCardLibrary: Record<Card["id"], Card> = {
 		range: 1,
 		image: "/cards/call_rat.webp",
 		playRequirement: "no_target",
-		aiTargetPreference: "empty_adjacent",
+		aiTargetPreference: "self",
 		effects: [
-			{ type: "summon", blueprintId: summonId("rat"), target: "anchor" },
+			{
+				type: "custom_script",
+				scriptId: "trapdoor_spawn",
+				target: "self",
+				payload: { spawnCount: 2, blueprintId: summonId("rat") },
+			},
 		],
 	},
 
