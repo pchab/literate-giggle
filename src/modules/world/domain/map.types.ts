@@ -7,10 +7,10 @@ export type NodeType = "TOWN" | "BATTLE" | "ROAD" | "EVENT";
 export type CampaignCondition =
 	| { type: "QUEST_COMPLETED"; questId: Quest["id"] }
 	| {
-		type: "QUEST_ACTIVE";
-		questId: Quest["id"];
-		stepId?: QuestStep["id"][];
-	}
+			type: "QUEST_ACTIVE";
+			questId: Quest["id"];
+			stepId?: QuestStep["id"][];
+	  }
 	| { type: "HAS_FLAG"; flagId: string };
 
 export interface MapNode {

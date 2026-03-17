@@ -1,7 +1,7 @@
-import type { AIIntent } from "@/modules/battle/domain/intent.type";
+import type { Intent } from "@/modules/battle/domain/intent.type";
 import { cardLibrary } from "@/modules/cards/data/cards.data";
 
-export default function IntentDisplay({ intent }: { intent: AIIntent }) {
+export default function IntentDisplay({ intent }: { intent: Intent }) {
 	const card = cardLibrary[intent.cardId];
 	if (!card) return null;
 

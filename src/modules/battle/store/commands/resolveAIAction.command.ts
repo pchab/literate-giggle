@@ -2,17 +2,22 @@ import { cardLibrary } from "@/modules/cards/data/cards.data";
 import { sleep } from "@/modules/shared/helpers/sleep";
 import { handleAICardIntent } from "../../helpers/ai.actions.helpers";
 import { tickStatuses } from "../../helpers/effects/effect.helpers";
+import { calculateStateDiff } from "../../helpers/state.helpers";
 import type { StoreGet, StoreSet } from "../battle.store";
 import { calculateAIIntents } from "./calculateAIIntents.command";
 
-export const resolveAIActions = async (get: StoreGet, set: StoreSet) => {
+export const resolveAIActions = async (
+	get: StoreGet,
+	set: StoreSet,
+	isSimulation = false,
+) => {
 	// ==========================================
 	// 1. START OF AI TURN (Tick AI statuses)
 	// ==========================================
 	const { monsters: draftMonsters, summons: draftSummons } = get();
 	tickStatuses(set)([...draftMonsters, ...draftSummons]);
 
-	await sleep(200);
+	await sleep(isSimulation ? 0 : 200);
 
 	// ==========================================
 	// 2. EXECUTE ACTIONS
@@ -35,20 +40,56 @@ export const resolveAIActions = async (get: StoreGet, set: StoreSet) => {
 	].filter((f) => f.currentHp > 0);
 
 	for (const aiFigure of allAIFigures) {
-		const state = get();
+		const { heroes, monsters, summons, aiIntents } = get();
 
-		const freshAIFigure = [...state.monsters, ...state.summons].find(
+		const freshAIFigure = [...monsters, ...summons].find(
 			(m) => m.id === aiFigure.id,
 		);
 		if (!freshAIFigure || freshAIFigure.currentHp <= 0) continue;
 
-		const intent = state.aiIntents[freshAIFigure.id];
+		const intent = aiIntents[freshAIFigure.id];
 		if (!intent) continue;
 
 		const cardToPlay = cardLibrary[intent.cardId];
 		if (!cardToPlay) continue;
 
-		await handleAICardIntent(get, set, freshAIFigure.id, cardToPlay);
+		await handleAICardIntent(
+			get,
+			set,
+			isSimulation,
+		)(freshAIFigure.id, cardToPlay);
+
+		if (isSimulation) {
+			const previousFigures = [...heroes, ...monsters, ...summons];
+			const {
+				heroes: simulatedHeroes,
+				monsters: simulatedMonsters,
+				summons: simulatedSummons,
+				aiIntents,
+			} = get();
+			const simulatedFigures = [
+				...simulatedHeroes,
+				...simulatedMonsters,
+				...simulatedSummons,
+			];
+			const { projectedMoves, projectedCasualties } = calculateStateDiff(
+				simulatedFigures,
+				previousFigures,
+			);
+			const unitIntent = aiIntents[aiFigure.id];
+
+			set((state) => ({
+				...state,
+				aiIntents: {
+					...aiIntents,
+					[aiFigure.id]: {
+						...unitIntent,
+						projectedMoves,
+						projectedCasualties,
+					},
+				},
+			}));
+		}
 	}
 
 	// ============================================
@@ -67,11 +108,10 @@ export const resolveAIActions = async (get: StoreGet, set: StoreSet) => {
 			summons: survivingSummons,
 			usedMovesThisTurn: {},
 			usedCardsThisTurn: {},
-			aiIntents: calculateAIIntents([
-				...survivingHeroes,
-				...survivingMonsters,
-				...survivingSummons,
-			]),
 		};
 	});
+
+	if (!isSimulation) {
+		await calculateAIIntents(get, set)({});
+	}
 };

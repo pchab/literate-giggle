@@ -21,6 +21,8 @@ interface GridCellProps {
 	cell: { id: string } & GridPosition;
 	unitsInCell: BattleUnit[];
 	highlight?: Highlight;
+	isProjectedLanding?: boolean;
+	projectedCasualtyIds?: Set<BattleUnit["id"]>;
 	onClick: () => void;
 }
 
@@ -44,6 +46,8 @@ export function GridCell({
 	cell,
 	unitsInCell,
 	highlight = "default",
+	isProjectedLanding,
+	projectedCasualtyIds,
 	onClick,
 }: GridCellProps) {
 	const { setHoveredCell, currentVfx, setVfx, surfaces } = useBattleStore(
@@ -55,11 +59,9 @@ export function GridCell({
 		})),
 	);
 
-	// --- DYNAMIC CELL STYLING ---
 	const baseClasses =
 		"w-24 h-24 relative flex items-center justify-center transition-colors duration-300";
 	const stateClasses = highlightClassMapping[highlight];
-
 	const surface = surfaces[cell.id];
 
 	return (
@@ -74,6 +76,11 @@ export function GridCell({
 				{cell.col},{cell.row}
 			</span>
 
+			{/* --- PROJECTED LANDING HIGHLIGHT --- */}
+			{isProjectedLanding && (
+				<div className="absolute inset-0 border-2 border-dashed border-yellow-400 bg-yellow-400/20 z-20 pointer-events-none" />
+			)}
+
 			{surface && (
 				<div className="absolute inset-4 z-0 opacity-80 pointer-events-none flex items-center justify-center">
 					<Image
@@ -85,9 +92,22 @@ export function GridCell({
 				</div>
 			)}
 
-			{unitsInCell.map((unit) => (
-				<UnitSprite key={unit.id} unitInCell={unit} />
-			))}
+			{unitsInCell.map((unit) => {
+				const isDying = projectedCasualtyIds?.has(unit.id);
+
+				return (
+					<div key={unit.id} className="relative z-10 h-full">
+						<UnitSprite unitInCell={unit} />
+
+						{/* --- PROJECTED CASUALTY INDICATOR --- */}
+						{isDying && (
+							<div className="absolute -top-2 -right-2 text-red-500 font-bold drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] text-xl pointer-events-none">
+								☠
+							</div>
+						)}
+					</div>
+				);
+			})}
 
 			<VfxOverlay
 				type={currentVfx[cell.id]}

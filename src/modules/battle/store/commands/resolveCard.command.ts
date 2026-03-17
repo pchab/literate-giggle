@@ -4,13 +4,15 @@ import {
 	UnitStance,
 } from "@/modules/figures/domain/figures.type";
 import type { GridPosition } from "../../domain/grid.type";
+import { getActualTarget } from "../../helpers/ai.move.helpers";
 import { resolvers } from "../../helpers/effects/effect.resolvers";
 import {
+	getLineOfSightPath,
 	getManhattanDistance,
 	rotatePattern,
 } from "../../helpers/grid.helpers";
 import { updateBattleUnitState } from "../../helpers/state.helpers";
-import type { StoreGet, StoreSet } from "../battle.store";
+import type { ActiveCardContext, StoreGet, StoreSet } from "../battle.store";
 import { calculateAIIntents } from "./calculateAIIntents.command";
 
 const updateHeroStance =
@@ -24,13 +26,16 @@ const updateHeroStance =
 	};
 
 export const resolveCard =
-	(get: StoreGet, set: StoreSet) => async (anchorTarget: AnchorTarget) => {
-		const { activeHeroCard: activeCard, heroes } = get();
-		if (!activeCard) return;
+	(get: StoreGet, set: StoreSet, isSimulation = false) =>
+	async (anchorTarget: AnchorTarget, cardContext: ActiveCardContext) => {
+		const { heroes, monsters, summons } = get();
 
-		const { unitId, card } = activeCard;
+		const { unitId, card } = cardContext;
 		const hero = heroes.find((h) => h.id === unitId);
 		if (!hero) return;
+
+		const allUnits = [...heroes, ...monsters, ...summons];
+		let actualTarget = anchorTarget;
 
 		// --- 1. CHECK RANGE ---
 		if (anchorTarget) {
@@ -38,27 +43,44 @@ export const resolveCard =
 			if (distance > card.range) {
 				return;
 			}
+			actualTarget =
+				getActualTarget(hero.gridPosition, anchorTarget, allUnits)
+					?.gridPosition ?? actualTarget;
 		}
 
 		// --- 2. CALCULATE THE BLAST ZONE ---
 		let patternCells: GridPosition[] | undefined;
-		if (card.aoePattern && anchorTarget) {
+		if (card.aoePattern && actualTarget) {
 			const rotatedPattern = rotatePattern(
 				card.aoePattern,
 				hero.gridPosition,
-				anchorTarget,
+				actualTarget,
 			);
 
 			patternCells = rotatedPattern.map((p) => ({
-				col: anchorTarget.col + p.col,
-				row: anchorTarget.row + p.row,
+				col: actualTarget.col + p.col,
+				row: actualTarget.row + p.row,
 			}));
 		}
 
+		const firePath = anchorTarget
+			? getLineOfSightPath(hero.gridPosition, anchorTarget)
+			: [];
+		set((state) => ({
+			...state,
+			playerIntent: {
+				figureId: hero.id,
+				cardId: cardContext.card.id,
+				intendedMove: firePath,
+				target: actualTarget,
+				dangerZone: patternCells,
+			},
+		}));
+
 		// --- 3. RESOLVE EFFECTS WITH PATTERN ---
 		for (const effect of card.effects) {
-			await resolvers(effect)(get, set)({
-				anchorTarget,
+			await resolvers(effect)(get, set, isSimulation)({
+				anchorTarget: actualTarget,
 				caster: hero,
 				patternCells,
 			});
@@ -66,13 +88,11 @@ export const resolveCard =
 		updateHeroStance(get, set)(unitId)(UnitStance.IDLE);
 
 		// --- 4. CLEAN UP ---
-
 		set(
 			({
 				heroes,
 				monsters,
 				summons,
-				aiIntents,
 				usedCardsThisTurn,
 				usedMovesThisTurn,
 				xpEarned,
@@ -83,7 +103,6 @@ export const resolveCard =
 					(acc, m) => acc + m.xpReward,
 					0,
 				);
-				const remainingHeroes = heroes.filter((h) => h.currentHp > 0);
 				const remainingMonsters = monsters.filter((m) => m.currentHp > 0);
 				const remainingSummons = summons.filter((m) => m.currentHp > 0);
 				return {
@@ -91,14 +110,14 @@ export const resolveCard =
 					activeHeroCard: null,
 					monsters: remainingMonsters,
 					summons: remainingSummons,
-					aiIntents: calculateAIIntents(
-						[...remainingHeroes, ...remainingMonsters, ...summons],
-						aiIntents,
-					),
 					usedCardsThisTurn: { ...usedCardsThisTurn, [hero.id]: card },
 					usedMovesThisTurn: { ...usedMovesThisTurn, [hero.id]: 99 },
 					xpEarned: xpEarned + xpEarnedThisTurn,
 				};
 			},
 		);
+
+		if (!isSimulation) {
+			await calculateAIIntents(get, set)({});
+		}
 	};

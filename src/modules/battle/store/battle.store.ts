@@ -4,7 +4,7 @@ import type {
 	GridPosition,
 	SurfaceData,
 } from "@/modules/battle/domain/grid.type";
-import type { AIIntent } from "@/modules/battle/domain/intent.type";
+import type { Intent } from "@/modules/battle/domain/intent.type";
 import type { VfxType } from "@/modules/battle/domain/vfx.type";
 import type { Encounter } from "@/modules/campaign/domain/encounters.type";
 import type { AnchorTarget, Card } from "@/modules/cards/domain/cards.type";
@@ -23,6 +23,7 @@ import { resolveAIActions } from "./commands/resolveAIAction.command";
 import { resolveCard } from "./commands/resolveCard.command";
 import { selectActiveMoveHero } from "./commands/selectActiveMoveHero.command";
 import { selectCard } from "./commands/selectCard.command";
+import { setHoveredCell } from "./commands/setHoveredCell.command";
 
 export type ActiveCardContext = {
 	unitId: BattleHero["id"];
@@ -31,20 +32,26 @@ export type ActiveCardContext = {
 
 export type BattleState = {
 	encounterId: Encounter["id"] | null;
+	background: string;
+
 	heroes: BattleHero[];
 	monsters: Monster[];
 	summons: Summon[];
+	surfaces: Record<string, SurfaceData>;
+
 	activeMoveHeroId: BattleHero["id"] | null;
 	usedMovesThisTurn: Record<BattleHero["id"], number>;
 	activeHeroCard: ActiveCardContext | null;
 	hoveredHeroCard: ActiveCardContext | null;
-	hoveredCell: GridPosition | null; // getGridId(GridPosition)
 	usedCardsThisTurn: Record<BattleHero["id"], Card["id"]>;
-	aiIntents: Record<BattleUnit["id"], AIIntent>;
+	hoveredCell: GridPosition | null; // getGridId(GridPosition)
+
 	currentVfx: Record<string, VfxType>; // key is cell id
+
+	aiIntents: Record<BattleUnit["id"], Intent>;
+	playerIntent: Intent | null;
+
 	xpEarned: number;
-	background: string;
-	surfaces: Record<string, SurfaceData>;
 };
 
 type BattleAction = {
@@ -52,16 +59,19 @@ type BattleAction = {
 		heroRoster: Hero[],
 		encounterId: Encounter["id"],
 		background: string,
-	) => void;
+	) => Promise<void>;
 	setActiveMoveHeroId: (heroId: Hero["id"] | null) => void;
 	moveHero: (newPosition: GridPosition) => void;
 	selectCard: (heroId: Hero["id"], card: Card) => void;
 	cancelCard: () => void;
 	endTurn: (heroId: Hero["id"]) => void;
-	resolveCard: (anchorTarget: AnchorTarget) => void;
+	resolveCard: (
+		anchorTarget: AnchorTarget,
+		cardContext: ActiveCardContext,
+	) => void;
 	enemyAction: () => Promise<void>;
+	setHoveredCell: (cell: GridPosition | null) => Promise<void>;
 	setHoveredCard: (cardContext: ActiveCardContext | null) => void;
-	setHoveredCell: (cell: GridPosition | null) => void;
 	setVfx: (cellId: string, vfx: VfxType | null) => void;
 	resetXpEarned: () => void;
 };
@@ -82,6 +92,7 @@ const initialState: BattleState = {
 	xpEarned: 0,
 	background: "",
 	surfaces: {},
+	playerIntent: null,
 };
 
 export type BattleStoreServerAction = (
@@ -101,16 +112,17 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 				heroRoster: Hero[],
 				encounterId: Encounter["id"],
 				background: string,
-			) => set(initBattle(heroRoster, encounterId, background)),
+			) => initBattle(get, set)(heroRoster, encounterId, background),
 			selectCard: async (heroId, card) =>
 				await selectCard(get, set)(heroId, card),
 			cancelCard: () => set(cancelCard()),
-			resolveCard: (anchorTarget) => resolveCard(get, set)(anchorTarget),
+			resolveCard: (anchorTarget, cardContext) =>
+				resolveCard(get, set)(anchorTarget, cardContext),
 			endTurn: (heroId) => set(endTurn(heroId)),
 			setActiveMoveHeroId: (heroId) => set(selectActiveMoveHero(heroId)),
 			moveHero: async (newPosition) => await moveHero(newPosition)(get, set),
 			enemyAction: async () => await resolveAIActions(get, set),
-			setHoveredCell: (hoveredCell) => set(() => ({ hoveredCell })),
+			setHoveredCell: (hoveredCell) => setHoveredCell(get, set)(hoveredCell),
 			setHoveredCard: (hoveredHeroCard) => set(() => ({ hoveredHeroCard })),
 			setVfx: (cellId, vfx) =>
 				set(({ currentVfx: { [cellId]: cellVfx, ...otherVfx } }) => ({
@@ -121,6 +133,18 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 		{
 			name: "alpha-battle-state",
 			storage: createJSONStorage(() => sessionStorage),
+			partialize: (state) => ({
+				encounterId: state.encounterId,
+				heroes: state.heroes,
+				monsters: state.monsters,
+				summons: state.summons,
+				aiIntents: state.aiIntents,
+				usedMovesThisTurn: state.usedMovesThisTurn,
+				usedCardsThisTurn: state.usedCardsThisTurn,
+				xpEarned: state.xpEarned,
+				background: state.background,
+				surfaces: state.surfaces,
+			}),
 		},
 	),
 );

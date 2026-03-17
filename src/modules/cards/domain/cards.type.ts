@@ -18,6 +18,7 @@ export type AITargetPreference =
 export type PlayRequirement =
 	| "requires_enemy"
 	| "requires_ally"
+	| "requires_entity"
 	| "requires_empty_cell"
 	| "no_target";
 
@@ -82,6 +83,13 @@ export type CreateSurfaceEffect = {
 	charges?: number;
 };
 
+export type CustomScriptEffect = {
+	type: "custom_script";
+	scriptId: string;
+	target: EffectTarget;
+	payload?: Record<string, unknown>; // Flexible config for the script
+};
+
 export type CardEffect =
 	| MoveEffect
 	| DamageEffect
@@ -89,7 +97,8 @@ export type CardEffect =
 	| PushEffect
 	| SummonEffect
 	| ApplyStatusEffect
-	| CreateSurfaceEffect;
+	| CreateSurfaceEffect
+	| CustomScriptEffect;
 
 export type Card = {
 	id: string & { readonly __brand: "CardId" };

@@ -1,2 +1,2 @@
 export const sleep = (ms: number) =>
-	new Promise((resolve) => setTimeout(resolve, ms));
+	ms > 0 && new Promise((resolve) => setTimeout(resolve, ms));

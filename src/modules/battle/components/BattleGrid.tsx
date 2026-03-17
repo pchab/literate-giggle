@@ -8,11 +8,7 @@ import {
 } from "@/modules/battle/helpers/grid.helpers";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
 import { isHero, isHeroId } from "@/modules/figures/helpers/figures.helpers";
-import type { GridPosition } from "../domain/grid.type";
-import {
-	type CellHighlight,
-	useCellHighlight,
-} from "../hooks/useCellHighlight";
+import { useCellHighlight } from "../hooks/useCellHighlight";
 import { useBattleStore } from "../store/battle.store";
 import { GridCell, type Highlight } from "./GridCell";
 
@@ -31,22 +27,6 @@ const tailwindGridCols = [
 	"grid-cols-5",
 ];
 
-const getHighlightForCell =
-	(cellHighlight: CellHighlight) =>
-	(cell: GridPosition, unitInCellId?: BattleUnit["id"]): Highlight => {
-		if (cellHighlight.activeUnit && unitInCellId === cellHighlight.activeUnit)
-			return "active";
-		const cellId = getCellId(cell);
-		if (cellHighlight.enemyTargets?.map(getCellId).includes(cellId))
-			return "target_enemy";
-		if (cellHighlight.allyTargets?.map(getCellId).includes(cellId))
-			return "target_ally";
-		if (cellHighlight.cellTargets?.map(getCellId).includes(cellId))
-			return "target_cell";
-		if (cellHighlight.moveCells?.map(getCellId).includes(cellId)) return "move";
-		return cellHighlight.activeUnit ? "invalid" : "default";
-	};
-
 export function BattleGrid() {
 	const cellHighlight = useCellHighlight();
 	const {
@@ -59,6 +39,7 @@ export function BattleGrid() {
 		moveHero,
 		setActiveMoveHeroId,
 		resolveCard,
+		cancelCard,
 	} = useBattleStore(
 		useShallow((state) => ({
 			heroes: state.heroes,
@@ -70,13 +51,38 @@ export function BattleGrid() {
 			moveHero: state.moveHero,
 			setActiveMoveHeroId: state.setActiveMoveHeroId,
 			resolveCard: state.resolveCard,
+			cancelCard: state.cancelCard,
 		})),
 	);
 
 	const allUnits = [...heroes, ...monsters, ...summons];
-	const processHighlight = getHighlightForCell(cellHighlight);
 	const isMoving = !!activeMoveHeroId;
 	const isActive = !!activeHeroCard;
+
+	const enemyTargetIds = new Set(cellHighlight.enemyTargets?.map(getCellId));
+	const allyTargetIds = new Set(cellHighlight.allyTargets?.map(getCellId));
+	const cellTargetIds = new Set(cellHighlight.cellTargets?.map(getCellId));
+	const moveCellIds = new Set(cellHighlight.moveCells?.map(getCellId));
+
+	const projectedLandingIds = new Set(
+		Object.values(cellHighlight.projectedMoves ?? {}).map((cell) =>
+			getCellId(cell),
+		),
+	);
+	const projectedCasualtyIds = new Set(cellHighlight.projectedCasualties || []);
+
+	const getHighlightForCell = (
+		cellId: string,
+		unitInCellId?: BattleUnit["id"],
+	): Highlight => {
+		if (cellHighlight.activeUnit && unitInCellId === cellHighlight.activeUnit)
+			return "active";
+		if (enemyTargetIds.has(cellId)) return "target_enemy";
+		if (allyTargetIds.has(cellId)) return "target_ally";
+		if (cellTargetIds.has(cellId)) return "target_cell";
+		if (moveCellIds.has(cellId)) return "move";
+		return cellHighlight.activeUnit ? "invalid" : "default";
+	};
 
 	return (
 		<div
@@ -84,16 +90,15 @@ export function BattleGrid() {
 		>
 			{cells.map((cell) => {
 				const unitsInCell = allUnits.filter(isUnitInTile(cell));
-				// --- CLICK ON CELL CHECKS ---
 				const hasUnitInCell = unitsInCell.length > 0;
-				// In theory multiple units in cell is transient state when moving.
 				const unitInCell = unitsInCell[0];
 
-				const highlight = processHighlight(cell, unitInCell?.id);
+				const highlight = getHighlightForCell(cell.id, unitInCell?.id);
 				const unitIsHero = unitInCell && isHero(unitInCell);
+				const isProjectedLanding = projectedLandingIds.has(cell.id);
 
 				const remainingMoves =
-					unitsInCell.length > 0 && isHeroId(unitsInCell[0].id)
+					hasUnitInCell && isHeroId(unitsInCell[0].id)
 						? unitsInCell[0].baseMove -
 							(usedMovesThisTurn[unitsInCell[0].id] ?? 0)
 						: 0;
@@ -105,16 +110,20 @@ export function BattleGrid() {
 					}
 
 					if (isActive) {
-						resolveCard(cell);
+						if (
+							["target_enemy", "target_ally", "target_cell"].includes(highlight)
+						) {
+							resolveCard(cell, activeHeroCard);
+						} else {
+							cancelCard();
+						}
 						return;
 					}
 
 					if (!isActive && unitIsHero && remainingMoves > 0) {
-						if (activeMoveHeroId === unitInCell.id) {
-							setActiveMoveHeroId(null);
-						} else {
-							setActiveMoveHeroId(unitInCell.id);
-						}
+						setActiveMoveHeroId(
+							activeMoveHeroId === unitInCell.id ? null : unitInCell.id,
+						);
 					}
 				};
 
@@ -124,6 +133,8 @@ export function BattleGrid() {
 						cell={cell}
 						unitsInCell={unitsInCell}
 						highlight={highlight}
+						isProjectedLanding={isProjectedLanding}
+						projectedCasualtyIds={projectedCasualtyIds}
 						onClick={handleClick}
 					/>
 				);

@@ -1,3 +1,4 @@
+import { customScriptRegistry } from "@/modules/cards/data/customScripts.data";
 import type {
 	AnchorTarget,
 	CardEffect,
@@ -19,10 +20,12 @@ export interface EffectResolverParams<C extends BattleUnit> {
 export type EffectResolver = <C extends BattleUnit, E extends CardEffect>(
 	get: StoreGet,
 	set: StoreSet,
+	isSimulation: boolean,
 ) => (effect: E) => (params: EffectResolverParams<C>) => Promise<void>;
 
 export const resolvers =
-	(effect: CardEffect) => (get: StoreGet, set: StoreSet) => {
+	(effect: CardEffect) =>
+	(get: StoreGet, set: StoreSet, isSimulation = false) => {
 		switch (effect.type) {
 			case "move":
 				return resolveMoveEffect(get, set)(effect);
@@ -37,7 +40,16 @@ export const resolvers =
 			case "summon":
 				return resolveSummonEffect(get, set)(effect);
 			case "push":
-				return resolvePushEffect(get, set)(effect);
+				return resolvePushEffect(get, set, isSimulation)(effect);
+			case "custom_script":
+				return async (params: EffectResolverParams<BattleUnit>) => {
+					const script = customScriptRegistry[effect.scriptId];
+					if (!script) {
+						console.error(`[Engine] Missing custom script: ${effect.scriptId}`);
+						return;
+					}
+					await script(get, set)(params, effect.payload);
+				};
 			default:
 				return resolveStandardEffect(get, set)(effect);
 		}

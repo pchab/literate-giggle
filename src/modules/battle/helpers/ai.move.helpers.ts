@@ -1,5 +1,4 @@
 import type { AnchorTarget, Card } from "@/modules/cards/domain/cards.type";
-import { isSummon } from "@/modules/figures/helpers/figures.helpers";
 import type {
 	AIBattleUnit,
 	BattleUnit,
@@ -28,7 +27,9 @@ const calculateAIMove = <C extends AIBattleUnit, T extends BattleUnit>(
 		targetFigure.gridPosition,
 	);
 
-	const canTargetSelf = card.playRequirement === "requires_ally";
+	const canTargetSelf = ["requires_entity", "requires_ally"].includes(
+		card.playRequirement,
+	);
 	const minRange = canTargetSelf ? 0 : 1;
 
 	if (distance >= minRange && distance <= card.range) {
@@ -63,13 +64,13 @@ export const getIdealTarget = <C extends AIBattleUnit, T extends BattleUnit>(
 	}
 
 	const targetsAllies = card.playRequirement === "requires_ally";
+	const targetsAny = card.playRequirement === "requires_entity";
 	const aliveOthers = figures.filter((f) => f.currentHp > 0);
 
-	const validTargetsToEvaluate = aliveOthers
-		.filter((f) => !isSummon(f) || f.allegiance !== "NEUTRAL")
-		.filter((f) =>
-			targetsAllies ? !areEnemies(aiFigure)(f) : areEnemies(aiFigure)(f),
-		);
+	const validTargetsToEvaluate = aliveOthers.filter((f) => {
+		if (targetsAny) return true;
+		return targetsAllies ? !areEnemies(aiFigure)(f) : areEnemies(aiFigure)(f);
+	});
 
 	const orderedTargets = getOrderedTargets<C, T>(
 		aiFigure,
@@ -85,7 +86,7 @@ export const getIdealTarget = <C extends AIBattleUnit, T extends BattleUnit>(
 	for (const target of orderedTargets) {
 		const moveDest = calculateAIMove(aiFigure, target, card, figures);
 		if (moveDest) {
-			const minRange = targetsAllies ? 0 : 1;
+			const minRange = targetsAllies || targetsAny ? 0 : 1;
 			const canHit = isTargetInRange(
 				card,
 				minRange,

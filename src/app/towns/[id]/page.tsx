@@ -90,7 +90,6 @@ export default function TownPage() {
 
 	const handleLocationClick = (location: TownLocation) => {
 		const activeQuestStep = getQuestForLocation(location.id);
-		console.log({ activeQuestStep });
 		if (activeQuestStep?.onEnterSceneId) {
 			return loadScene(activeQuestStep.onEnterSceneId);
 		}

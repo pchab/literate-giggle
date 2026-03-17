@@ -55,7 +55,8 @@ export default function Home() {
 			if (currentNode.encounterId) {
 				initBattle(roster, currentNode.encounterId, currentNode.background);
 			}
-			return redirectToPhase("/battle");
+			redirectToPhase("/battle");
+			break;
 		}
 		case "TOWN":
 			return redirectToPhase(`/towns/${currentNode.townId}`);

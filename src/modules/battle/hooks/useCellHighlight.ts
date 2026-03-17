@@ -2,28 +2,25 @@ import { useEffect } from "react";
 import { useShallow } from "zustand/shallow";
 import type { GridPosition } from "@/modules/battle/domain/grid.type";
 import {
-	calculateAttackableCells,
 	calculateReachableCells,
-	getLineOfSightPath,
-	getManhattanDistance,
 	isTileEmpty,
-	isTileOccupied,
 	isUnitInTile,
-	rotatePattern,
 } from "@/modules/battle/helpers/grid.helpers";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { cardLibrary } from "@/modules/cards/data/cards.data";
+import type { Card } from "@/modules/cards/domain/cards.type";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
-import { getActualTarget } from "../helpers/ai.move.helpers";
+import type { Intent } from "../domain/intent.type";
 import { areEnemies } from "../helpers/effects/effect.helpers";
-import { calculateExactPath } from "../helpers/move.helpers";
 
 export type CellHighlight = {
 	activeUnit?: BattleUnit["id"];
-	moveCells?: GridPosition[];
-	allyTargets?: GridPosition[];
-	enemyTargets?: GridPosition[];
-	cellTargets?: GridPosition[];
+	moveCells: GridPosition[];
+	allyTargets: GridPosition[];
+	enemyTargets: GridPosition[];
+	cellTargets: GridPosition[];
+	projectedMoves: Record<BattleUnit["id"], GridPosition>;
+	projectedCasualties: string[];
 };
 
 export function useCellHighlight(): CellHighlight {
@@ -38,6 +35,7 @@ export function useCellHighlight(): CellHighlight {
 		activeMoveHeroId,
 		hoveredCell,
 		enemyAction,
+		playerIntent,
 		...store
 	} = useBattleStore(
 		useShallow((state) => ({
@@ -49,14 +47,21 @@ export function useCellHighlight(): CellHighlight {
 			aiIntents: state.aiIntents,
 			activeHeroCard: state.activeHeroCard,
 			hoveredHeroCard: state.hoveredHeroCard,
-			resolveCard: state.resolveCard,
 			hoveredCell: state.hoveredCell,
 			activeMoveHeroId: state.activeMoveHeroId,
-			moveHero: state.moveHero,
-			setActiveMoveHeroId: state.setActiveMoveHeroId,
 			usedMovesThisTurn: state.usedMovesThisTurn,
+			playerIntent: state.playerIntent,
 		})),
 	);
+
+	const highlight = {
+		moveCells: [],
+		allyTargets: [],
+		enemyTargets: [],
+		cellTargets: [],
+		projectedMoves: {},
+		projectedCasualties: [],
+	};
 
 	// --- ENEMY TURN TRIGGER ---
 	const aliveHeroesCount = heroes.filter((h) => h.currentHp > 0).length;
@@ -74,13 +79,12 @@ export function useCellHighlight(): CellHighlight {
 
 	const allUnits = [...heroes, ...monsters, ...summons];
 
-	// --- HIGHLIGHT CELLS FOR HERO ACTION ---
-	// ----- CASE 1: HERO MOVING -----
+	// ==========================================
+	// CASE 1: HERO MOVING
+	// ==========================================
 	if (activeMoveHeroId) {
 		const hero = heroes.find(({ id }) => id === activeMoveHeroId);
-		if (!hero) {
-			return {};
-		}
+		if (!hero) return highlight;
 
 		const remainingMove =
 			hero.baseMove - (store.usedMovesThisTurn[hero.id] ?? 0);
@@ -93,139 +97,59 @@ export function useCellHighlight(): CellHighlight {
 		).filter(isTileEmpty(oppositeFaction));
 
 		return {
+			...highlight,
 			activeUnit: hero.id,
 			moveCells: validTargetCells,
 		};
 	}
 
-	// ----- CASE 2: HERO USING CARD -----
+	let intent: Intent | null = null;
+	let card: Card | undefined;
+	// ==========================================
+	// CASE 2: HERO USING CARD
+	// ==========================================
 	if (activeHeroCard || hoveredHeroCard) {
-		const { unitId, card } = activeHeroCard ?? hoveredHeroCard ?? {};
-		const hero = heroes.find(({ id }) => id === unitId);
-		if (!hero || !card) {
-			return {};
-		}
+		intent = playerIntent;
+		card = activeHeroCard?.card ?? hoveredHeroCard?.card;
+	} else {
+		// ==========================================
+		// CASE 3: HIGHLIGHT CELLS FOR ENEMY ACTION
+		// ==========================================
+		if (hoveredCell) {
+			const hoveredHeroUnit = heroes.find(isUnitInTile(hoveredCell));
+			if (hoveredHeroUnit) {
+				return {
+					...highlight,
+					activeUnit: hoveredHeroUnit.id,
+				};
+			}
 
-		const allyFaction = [
-			...heroes,
-			...summons.filter(({ allegiance }) => allegiance === "PLAYER"),
-		];
-		const enemyFaction = [
-			...monsters,
-			...summons.filter(({ allegiance }) => allegiance === "ENEMY"),
-		];
-		const cellHighlight: CellHighlight = {
-			activeUnit: hero.id,
-			moveCells: [],
-			allyTargets: [],
-			enemyTargets: [],
-			cellTargets: [],
-		};
-
-		const { playRequirement } = card;
-		if (
-			hoveredCell &&
-			card.range > 1 &&
-			getManhattanDistance(hoveredCell, hero.gridPosition) <= card.range
-		) {
-			const collision = getActualTarget(
-				hero.gridPosition,
-				hoveredCell,
-				allUnits,
+			const hoveredAiUnit = [...monsters, ...summons].find(
+				isUnitInTile(hoveredCell),
 			);
-			cellHighlight.moveCells = getLineOfSightPath(
-				hero.gridPosition,
-				hoveredCell,
-			);
-			const targetedCell = collision?.gridPosition ?? hoveredCell;
-			let targetedCells = [targetedCell];
-			if (card.aoePattern) {
-				const rotatedPattern = rotatePattern(
-					card.aoePattern,
-					hero.gridPosition,
-					targetedCell,
-				);
+			if (!hoveredAiUnit) return highlight;
 
-				targetedCells = rotatedPattern.map((p) => ({
-					col: targetedCell.col + p.col,
-					row: targetedCell.row + p.row,
-				}));
-			}
-
-			if (playRequirement === "requires_enemy") {
-				cellHighlight.enemyTargets = targetedCells;
-			}
-			if (playRequirement === "requires_ally") {
-				cellHighlight.allyTargets = targetedCells;
-			}
-		} else {
-			if (playRequirement === "requires_enemy") {
-				cellHighlight.enemyTargets = calculateAttackableCells(
-					hero.gridPosition,
-					card.range,
-					false,
-				).filter(isTileOccupied(enemyFaction));
-			}
-			if (playRequirement === "requires_ally") {
-				cellHighlight.allyTargets = calculateAttackableCells(
-					hero.gridPosition,
-					card.range,
-					true,
-				).filter(isTileOccupied(allyFaction));
-			}
-			if (playRequirement === "requires_empty_cell") {
-				cellHighlight.cellTargets = calculateAttackableCells(
-					hero.gridPosition,
-					card.range,
-					false,
-				);
-			}
+			intent = aiIntents[hoveredAiUnit.id];
+			card = cardLibrary[intent.cardId];
 		}
-
-		return cellHighlight;
 	}
 
-	// --- HIGHLIGHT CELLS FOR ENEMY ACTION ---
-	if (hoveredCell) {
-		const hoveredHeroUnit = heroes.find(isUnitInTile(hoveredCell));
-		if (hoveredHeroUnit) {
-			return {
-				activeUnit: hoveredHeroUnit.id,
-			};
-		}
+	if (!intent || !card) return highlight;
+	const { playRequirement } = card;
 
-		const hoveredAiUnit = [...monsters, ...summons].find(
-			isUnitInTile(hoveredCell),
-		);
-		if (!hoveredAiUnit) {
-			return {};
-		}
-		const AIIntent = aiIntents[hoveredAiUnit.id];
-		if (!AIIntent) {
-			return {};
-		}
-
-		const oppositeFaction = [
-			...heroes,
-			...summons.filter(({ allegiance }) => allegiance !== "ENEMY"),
-		];
-		const { playRequirement } = cardLibrary[AIIntent.cardId];
-
-		return {
-			activeUnit: hoveredAiUnit.id,
-			moveCells: calculateExactPath(
-				hoveredAiUnit.gridPosition,
-				AIIntent.intendedMove,
-				oppositeFaction,
-			),
-			allyTargets:
-				playRequirement === "requires_ally" ? AIIntent.dangerZone : [],
-			enemyTargets:
-				playRequirement === "requires_enemy" ? AIIntent.dangerZone : [],
-			cellTargets:
-				playRequirement === "requires_empty_cell" ? AIIntent.dangerZone : [],
-		};
-	}
-
-	return {};
+	return {
+		...highlight,
+		activeUnit: intent.figureId,
+		moveCells: intent.intendedMove ?? [],
+		allyTargets:
+			playRequirement === "requires_ally" ? (intent.dangerZone ?? []) : [],
+		enemyTargets:
+			playRequirement === "requires_enemy" ? (intent.dangerZone ?? []) : [],
+		cellTargets:
+			playRequirement === "requires_empty_cell"
+				? (intent.dangerZone ?? [])
+				: [],
+		projectedMoves: intent.projectedMoves ?? {},
+		projectedCasualties: intent.projectedCasualties ?? [],
+	};
 }

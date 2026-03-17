@@ -4,7 +4,9 @@ import {
 	isMonster,
 	isSummon,
 } from "@/modules/figures/helpers/figures.helpers";
+import type { GridPosition } from "../domain/grid.type";
 import type { BattleState, StoreSet } from "../store/battle.store";
+import { isUnitInTile } from "./grid.helpers";
 
 export function updateBattleUnitState<T extends BattleUnit>(set: StoreSet) {
 	return (unit: T, newState: Partial<BattleState> = {}) => {
@@ -31,3 +33,24 @@ export function updateBattleUnitState<T extends BattleUnit>(set: StoreSet) {
 		}
 	};
 }
+
+export const calculateStateDiff = (
+	shadowFigures: BattleUnit[],
+	realFigures: BattleUnit[],
+) => {
+	const projectedMoves: Record<BattleUnit["id"], GridPosition> = {};
+	const projectedCasualties: BattleUnit["id"][] = [];
+
+	shadowFigures.forEach((shadowUnit) => {
+		const realUnit = realFigures.find((f) => f.id === shadowUnit.id);
+		if (!realUnit) return;
+
+		if (!isUnitInTile(realUnit.gridPosition)(shadowUnit)) {
+			projectedMoves[shadowUnit.id] = shadowUnit.gridPosition;
+		}
+		if (realUnit.currentHp > 0 && shadowUnit.currentHp <= 0) {
+			projectedCasualties.push(shadowUnit.id);
+		}
+	});
+	return { projectedMoves, projectedCasualties };
+};

@@ -8,7 +8,7 @@ import { applyDamageToEntity, resolveTargets } from "./effect.helpers";
 import type { EffectResolverParams } from "./effect.resolvers";
 
 export const resolvePushEffect =
-	(get: StoreGet, set: StoreSet) =>
+	(get: StoreGet, set: StoreSet, isSimulation = false) =>
 	(effect: PushEffect) =>
 	async <C extends BattleUnit>({
 		anchorTarget,
@@ -16,135 +16,179 @@ export const resolvePushEffect =
 		patternCells,
 	}: EffectResolverParams<C>) => {
 		const { heroes, monsters, summons } = get();
-		const draftFigures = [...heroes, ...monsters, ...summons];
+		let currentFigures = [...heroes, ...monsters, ...summons];
+
 		const targets = resolveTargets<BattleUnit>(
 			effect.target,
 			anchorTarget,
 			caster,
-			draftFigures,
+			currentFigures,
 			patternCells,
 		);
-		const { col: cX, row: cY } = caster.gridPosition;
 
+		const { col: cX, row: cY } = caster.gridPosition;
 		const anchorPos =
 			anchorTarget && typeof anchorTarget === "object" && "col" in anchorTarget
 				? anchorTarget
 				: caster.gridPosition;
 
-		const { col: aX, row: aY } = anchorPos;
+		const chargeDx = Math.sign(anchorPos.col - cX);
+		const chargeDy = Math.sign(anchorPos.row - cY);
 
-		const chargeDx = Math.sign(aX - cX);
-		const chargeDy = Math.sign(aY - cY);
+		const processPush = async (entityId: BattleUnit["id"]) => {
+			// 1. RE-FETCH STATE: Ensure accurate board layout for sequential pushes
+			const state = get();
+			currentFigures = [...state.heroes, ...state.monsters, ...state.summons];
+			let entity = currentFigures.find((f) => f.id === entityId);
 
-		const processPush = async <U extends BattleUnit>(entity: U) => {
+			if (!entity || entity.currentHp <= 0) return;
+
 			const { col: tX, row: tY } = entity.gridPosition;
 			let dx = 0;
 			let dy = 0;
 
+			let isCrushed = false;
+			let crushObstacleA: BattleUnit | null = null;
+			let crushObstacleB: BattleUnit | null = null;
+
+			const getObstacleAt = (col: number, row: number) =>
+				currentFigures.find(
+					(f) =>
+						f.gridPosition.col === col &&
+						f.gridPosition.row === row &&
+						f.id !== entityId &&
+						f.currentHp > 0,
+				);
+
+			// ==========================================
+			// 2. DETERMINE TRAJECTORY
+			// ==========================================
 			if (effect.pushDirection === "sideways") {
-				dx = -chargeDy;
-				dy = chargeDx;
+				const dirA = { dx: -chargeDy, dy: chargeDx };
+				const dirB = { dx: chargeDy, dy: -chargeDx };
+
+				const posA = { col: tX + dirA.dx, row: tY + dirA.dy };
+				const posB = { col: tX + dirB.dx, row: tY + dirB.dy };
+
+				crushObstacleA = getObstacleAt(posA.col, posA.row) || null;
+				crushObstacleB = getObstacleAt(posB.col, posB.row) || null;
+
+				const aBlocked = !isTileInBounds(posA) || !!crushObstacleA;
+				const bBlocked = !isTileInBounds(posB) || !!crushObstacleB;
+
+				if (aBlocked && bBlocked) {
+					isCrushed = true;
+				} else if (aBlocked && !bBlocked) {
+					dx = dirB.dx;
+					dy = dirB.dy;
+				} else if (!aBlocked && bBlocked) {
+					dx = dirA.dx;
+					dy = dirA.dy;
+				} else {
+					dx = dirA.dx; // Tie-breaker: defaults to clockwise
+					dy = dirA.dy;
+				}
 			} else if (effect.pushDirection === "towards") {
 				dx = -Math.sign(tX - cX);
 				dy = -Math.sign(tY - cY);
 			} else {
+				// "away"
 				dx = Math.sign(tX - cX);
 				dy = Math.sign(tY - cY);
 			}
 
-			if (dx === 0 && dy === 0) return entity;
+			// ==========================================
+			// 3. EXECUTE CRUSH (Early Exit)
+			// ==========================================
+			if (isCrushed) {
+				if (effect.collisionDamage > 0) {
+					// Double damage to the crushed unit
+					entity = applyDamageToEntity(entity, effect.collisionDamage * 2);
+					updateBattleUnitState(set)(entity);
 
+					// Standard damage to the walls (if they are entities)
+					if (crushObstacleA) {
+						const updatedA = applyDamageToEntity(
+							crushObstacleA,
+							effect.collisionDamage,
+						);
+						updateBattleUnitState(set)(updatedA);
+					}
+					if (crushObstacleB) {
+						const updatedB = applyDamageToEntity(
+							crushObstacleB,
+							effect.collisionDamage,
+						);
+						updateBattleUnitState(set)(updatedB);
+					}
+				}
+				return;
+			}
+
+			if (dx === 0 && dy === 0) return;
+
+			// ==========================================
+			// 4. CALCULATE MOVEMENT PATH
+			// ==========================================
 			let currentX = tX;
 			let currentY = tY;
-			let collided = false;
+			let collidedWith: BattleUnit | null = null;
 			const pushPath: { col: number; row: number }[] = [];
 
 			for (let i = 0; i < effect.distance; i++) {
-				const nextX = currentX + dx;
-				const nextY = currentY + dy;
-				const nextPos = { col: nextX, row: nextY };
+				const nextPos = { col: currentX + dx, row: currentY + dy };
+				const obstacle = getObstacleAt(nextPos.col, nextPos.row);
 
-				const isOccupied = draftFigures.some(
-					(f) =>
-						f.gridPosition.col === nextPos.col &&
-						f.gridPosition.row === nextPos.row &&
-						f.id !== entity.id,
-				);
-
-				if (!isTileInBounds(nextPos) || isOccupied) {
-					if (effect.pushDirection === "sideways") {
-						const altDx = -dx;
-						const altDy = -dy;
-						const altNextPos = { col: currentX + altDx, row: currentY + altDy };
-
-						const altOccupied = draftFigures.some(
-							(f) =>
-								f.gridPosition.col === altNextPos.col &&
-								f.gridPosition.row === altNextPos.row &&
-								f.id !== entity.id,
-						);
-
-						if (!isTileInBounds(altNextPos) || altOccupied) {
-							collided = true;
-							break;
-						} else {
-							dx = altDx;
-							dy = altDy;
-							currentX = altNextPos.col;
-							currentY = altNextPos.row;
-							pushPath.push({ col: currentX, row: currentY });
-							continue;
-						}
-					} else {
-						collided = true;
-						break;
-					}
+				if (!isTileInBounds(nextPos) || obstacle) {
+					collidedWith = obstacle || null;
+					break;
 				}
 
-				currentX = nextX;
-				currentY = nextY;
+				currentX = nextPos.col;
+				currentY = nextPos.row;
 				pushPath.push({ col: currentX, row: currentY });
 			}
 
-			if (pushPath.length === 0 && !collided) return entity;
+			if (pushPath.length === 0 && !collidedWith) return;
 
-			let updatedEntity = await moveBattleUnit(
-				get,
-				set,
-			)({
-				movingUnit: entity,
-				path: pushPath,
-				stepDelayMs: 100,
-			});
-
-			if (
-				collided &&
-				effect.collisionDamage > 0 &&
-				updatedEntity.currentHp > 0
-			) {
-				const expectedEnd =
-					pushPath.length > 0
-						? pushPath[pushPath.length - 1]
-						: entity.gridPosition;
-				if (
-					updatedEntity.gridPosition.col === expectedEnd.col &&
-					updatedEntity.gridPosition.row === expectedEnd.row
-				) {
-					updatedEntity = applyDamageToEntity(
-						updatedEntity,
-						effect.collisionDamage,
-					);
-					updateBattleUnitState(set)(updatedEntity);
-				}
+			// ==========================================
+			// 5. ANIMATE MOVEMENT
+			// ==========================================
+			if (pushPath.length > 0) {
+				entity = await moveBattleUnit(
+					get,
+					set,
+				)({
+					movingUnit: entity,
+					path: pushPath,
+					stepDelayMs: isSimulation ? 0 : 100,
+				});
 			}
 
-			return updatedEntity;
+			// ==========================================
+			// 6. RESOLVE STANDARD COLLISION
+			// ==========================================
+			const stoppedShort = pushPath.length < effect.distance;
+			if (stoppedShort || collidedWith) {
+				if (effect.collisionDamage > 0 && entity.currentHp > 0) {
+					// Damage the pushed unit
+					entity = applyDamageToEntity(entity, effect.collisionDamage);
+					updateBattleUnitState(set)(entity);
+
+					// Damage the obstacle it hit
+					if (collidedWith) {
+						const updatedObstacle = applyDamageToEntity(
+							collidedWith,
+							effect.collisionDamage,
+						);
+						updateBattleUnitState(set)(updatedObstacle);
+					}
+				}
+			}
 		};
 
-		await Promise.all(
-			targets
-				.map((targetId) => draftFigures.find((f) => f.id === targetId))
-				.filter((f) => f !== undefined)
-				.map(processPush),
-		);
+		// Execute sequentially to prevent concurrent grid state clobbering
+		for (const targetId of targets) {
+			await processPush(targetId);
+		}
 	};

@@ -43,7 +43,7 @@ export const VERDANT_RECLAMATION_MAP_NODES: MapData = {
 			{
 				type: "QUEST_COMPLETED",
 				questId: VERDANT_RECLAMATION.id,
-			}
+			},
 		],
 		variants: [
 			{

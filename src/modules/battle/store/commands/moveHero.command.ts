@@ -56,18 +56,15 @@ export function moveHero(newPosition: GridPosition) {
 		);
 		await moveBattleUnit(get, set)({ movingUnit: hero, path });
 
-		return set(({ heroes, aiIntents, usedMovesThisTurn }) => {
-			const newIntents = calculateAIIntents(
-				[...heroes, ...monsters, ...summons],
-				aiIntents,
-			);
+		set(({ usedMovesThisTurn }) => {
 			return {
 				usedMovesThisTurn: {
 					...usedMovesThisTurn,
 					[heroId]: moveAlreadyDone + distance,
 				},
-				aiIntents: newIntents,
 			};
 		});
+
+		await calculateAIIntents(get, set)();
 	};
 }

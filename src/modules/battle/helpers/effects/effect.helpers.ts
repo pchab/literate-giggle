@@ -23,7 +23,7 @@ export const areEnemies = (u1: BattleUnit) => (u2: BattleUnit) => {
 export function resolveTargets<T extends BattleUnit>(
 	targetType: EffectTarget,
 	anchorTarget: AnchorTarget,
-	caster: T,
+	caster: BattleUnit,
 	currentFigures: T[],
 	patternCells?: { col: number; row: number }[],
 ): T["id"][] {

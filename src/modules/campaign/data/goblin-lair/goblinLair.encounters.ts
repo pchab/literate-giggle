@@ -1,6 +1,6 @@
+import { goblin } from "@/modules/figures/data/monsters/goblin.data";
 import type { Encounter } from "../../domain/encounters.type";
 import { GOBLIN_LAIR } from "./goblinLair.definitions";
-import { goblin } from '@/modules/figures/data/monsters/goblin.data';
 
 export const GOBLIN_LAIR_ENCOUNTERS: Record<string, Encounter> = {
 	[GOBLIN_LAIR.encounters.goblin_shaman]: {

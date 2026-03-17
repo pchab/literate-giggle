@@ -50,7 +50,10 @@ export function Hand({ id: heroId, hand }: Pick<BattleHero, "id" | "hand">) {
 					hoveredHeroCard?.card.id === card.id;
 
 				return (
-					<div className="relative origin-bottom focus:outline-none">
+					<div
+						className="relative origin-bottom focus:outline-none"
+						key={card.id}
+					>
 						<AnimatePresence>
 							{isHovered && (
 								<motion.div
@@ -65,7 +68,6 @@ export function Hand({ id: heroId, hand }: Pick<BattleHero, "id" | "hand">) {
 							)}
 						</AnimatePresence>
 						<button
-							key={card.id}
 							type="button"
 							style={{ cursor: hasUsedCard ? "not-allowed" : "pointer" }}
 							disabled={hasUsedCard}

@@ -1,4 +1,4 @@
-import type { BattleStoreServerAction } from "@/modules/battle/store/battle.store";
+import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
 import type { Encounter } from "@/modules/campaign/domain/encounters.type";
 import { getComputedCard } from "@/modules/cards/helpers/cards.helper";
 import {
@@ -43,17 +43,14 @@ const bluePrintToSummon = (
 	stance: UnitStance.IDLE,
 });
 
-export function initBattle(
-	roster: Hero[],
-	encounterId: Encounter["id"],
-	background: string,
-): BattleStoreServerAction {
-	return () => {
+export const initBattle =
+	(get: StoreGet, set: StoreSet) =>
+	async (roster: Hero[], encounterId: Encounter["id"], background: string) => {
 		const encounter = ENCOUNTER_DB[encounterId];
 
 		if (!encounter) {
 			console.error(`Encounter ${encounterId} not found!`);
-			return {};
+			return;
 		}
 		const {
 			generateMonsters,
@@ -79,17 +76,12 @@ export function initBattle(
 				hand: [card1, card2, card3],
 			};
 		});
-		const initialIntents = calculateAIIntents(
-			[...battleRoster, ...freshMonsters],
-			{},
-		);
-		return {
+		set(() => ({
 			encounterId,
 			heroes: battleRoster,
 			monsters: freshMonsters,
 			summons: freshSummons,
 			surfaces,
-			aiIntents: initialIntents,
 			activeHeroCard: null,
 			activeMoveHeroId: null,
 			usedCardsThisTurn: {},
@@ -97,6 +89,6 @@ export function initBattle(
 			hoveredCell: null,
 			xpEarned: 0,
 			background,
-		};
+		}));
+		await calculateAIIntents(get, set)({});
 	};
-}
