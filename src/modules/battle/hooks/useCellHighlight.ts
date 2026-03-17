@@ -54,7 +54,7 @@ export function useCellHighlight(): CellHighlight {
 		})),
 	);
 
-	const highlight = {
+	const highlight: CellHighlight = {
 		moveCells: [],
 		allyTargets: [],
 		enemyTargets: [],
@@ -62,6 +62,13 @@ export function useCellHighlight(): CellHighlight {
 		projectedMoves: {},
 		projectedCasualties: [],
 	};
+
+	if (hoveredCell) {
+		const hoveredHeroUnit = heroes.find(isUnitInTile(hoveredCell));
+		if (hoveredHeroUnit) {
+			highlight.activeUnit = hoveredHeroUnit.id;
+		}
+	}
 
 	// --- ENEMY TURN TRIGGER ---
 	const aliveHeroesCount = heroes.filter((h) => h.currentHp > 0).length;
@@ -116,21 +123,13 @@ export function useCellHighlight(): CellHighlight {
 		// CASE 3: HIGHLIGHT CELLS FOR ENEMY ACTION
 		// ==========================================
 		if (hoveredCell) {
-			const hoveredHeroUnit = heroes.find(isUnitInTile(hoveredCell));
-			if (hoveredHeroUnit) {
-				return {
-					...highlight,
-					activeUnit: hoveredHeroUnit.id,
-				};
-			}
-
 			const hoveredAiUnit = [...monsters, ...summons].find(
 				isUnitInTile(hoveredCell),
 			);
 			if (!hoveredAiUnit) return highlight;
 
 			intent = aiIntents[hoveredAiUnit.id];
-			card = cardLibrary[intent.cardId];
+			card = intent && cardLibrary[intent.cardId];
 		}
 	}
 
@@ -146,7 +145,8 @@ export function useCellHighlight(): CellHighlight {
 		enemyTargets:
 			playRequirement === "requires_enemy" ? (intent.dangerZone ?? []) : [],
 		cellTargets:
-			playRequirement === "requires_empty_cell"
+			playRequirement === "requires_empty_cell" ||
+			playRequirement === "requires_entity"
 				? (intent.dangerZone ?? [])
 				: [],
 		projectedMoves: intent.projectedMoves ?? {},

@@ -12,6 +12,14 @@ export const setHoveredCell =
 			get();
 		const cardContext = activeHeroCard || hoveredHeroCard;
 		if (!cardContext) return;
+		const newPlayerIntent = {
+			cardId: cardContext.card.id,
+			figureId: cardContext.unitId,
+			target: cell,
+		};
+		set(() => ({
+			playerIntent: newPlayerIntent,
+		}));
 
 		const { hoveredCell } = get();
 		if (hoveredCell?.col !== cell.col || hoveredCell?.row !== cell.row) {
@@ -36,8 +44,7 @@ export const setHoveredCell =
 		set(({ ...prev }) => ({
 			...prev,
 			playerIntent: {
-				figureId: cardContext.unitId,
-				cardId: cardContext.card.id,
+				...newPlayerIntent,
 				...shadowState.playerIntent,
 				projectedMoves,
 				projectedCasualties,

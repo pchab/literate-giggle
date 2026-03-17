@@ -3,7 +3,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import type { Quest } from "@/modules/campaign/domain/quests.type";
 import { initialDeck } from "@/modules/cards/data/cards.data";
 import type { EvolutionRuneId } from "@/modules/cards/data/evolutionRecipes.data";
-import type { Card } from "@/modules/cards/domain/cards.type";
+import type { Card, HeroCard } from "@/modules/cards/domain/cards.type";
 import { createHeroCard } from "@/modules/cards/helpers/cards.helper";
 import { baseHeroStats } from "@/modules/figures/data/heroes/baseHeroStats";
 import type { Hero } from "@/modules/figures/domain/figures.type";
@@ -96,11 +96,9 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 					...baseHeroStats,
 					currentHp: baseHeroStats.maxHp,
 					deck: [...initialDeck].map(createHeroCard(startingIds[0])),
-					selectedCards: [
-						createHeroCard(startingIds[0])(initialDeck[0]),
-						createHeroCard(startingIds[0])(initialDeck[1]),
-						null,
-					],
+					selectedCards: [...initialDeck].map(
+						createHeroCard(startingIds[0]),
+					) as [HeroCard, HeroCard | null, HeroCard | null],
 				},
 				{
 					id: startingIds[1],
@@ -108,11 +106,9 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 					...baseHeroStats,
 					currentHp: baseHeroStats.maxHp,
 					deck: [...initialDeck].map(createHeroCard(startingIds[1])),
-					selectedCards: [
-						createHeroCard(startingIds[1])(initialDeck[0]),
-						createHeroCard(startingIds[1])(initialDeck[1]),
-						null,
-					],
+					selectedCards: [...initialDeck].map(
+						createHeroCard(startingIds[1]),
+					) as [HeroCard, HeroCard | null, HeroCard | null],
 				},
 				{
 					id: startingIds[2],
@@ -120,11 +116,9 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 					...baseHeroStats,
 					currentHp: baseHeroStats.maxHp,
 					deck: [...initialDeck].map(createHeroCard(startingIds[2])),
-					selectedCards: [
-						createHeroCard(startingIds[2])(initialDeck[0]),
-						createHeroCard(startingIds[2])(initialDeck[1]),
-						null,
-					],
+					selectedCards: [...initialDeck].map(
+						createHeroCard(startingIds[2]),
+					) as [HeroCard, HeroCard | null, HeroCard | null],
 				},
 			],
 			pendingPromotions: [],

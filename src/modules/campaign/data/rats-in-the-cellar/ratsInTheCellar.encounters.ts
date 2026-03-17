@@ -31,22 +31,28 @@ export const RATS_IN_THE_CELLAR_ENCOUNTERS: Record<string, Encounter> = {
 			{
 				...barrel,
 				allegiance: "NEUTRAL",
-				gridPosition: { col: 4, row: 1 },
+				gridPosition: { col: 3, row: 1 },
 			},
 			{
 				...barrel,
 				allegiance: "NEUTRAL",
-				gridPosition: { col: 4, row: 2 },
+				gridPosition: { col: 3, row: 2 },
 			},
 		],
 		surfaces: {
-			[getCellId({ col: 3, row: 2 })]: {
-				position: { col: 3, row: 2 },
+			[getCellId({ col: 1, row: 3 })]: {
+				position: { col: 1, row: 3 },
 				type: "TRAP",
 				duration: -1,
 				damage: 3,
 				spriteBase: "/surfaces/mouse_trap.webp",
 				charges: 1,
+			},
+			[getCellId({ col: 2, row: 2 })]: {
+				position: { col: 2, row: 2 },
+				type: "SPECIAL",
+				duration: -1,
+				spriteBase: "/surfaces/closed_trapdoor.webp",
 			},
 		},
 		onWinSceneId: RAT_IN_THE_CELLAR.scenes.investigate_cellar,
@@ -74,14 +80,22 @@ export const RATS_IN_THE_CELLAR_ENCOUNTERS: Record<string, Encounter> = {
 			{
 				...barrel,
 				allegiance: "NEUTRAL",
-				gridPosition: { col: 4, row: 1 },
+				gridPosition: { col: 3, row: 1 },
 			},
 			{
 				...barrel,
 				allegiance: "NEUTRAL",
-				gridPosition: { col: 4, row: 2 },
+				gridPosition: { col: 3, row: 2 },
 			},
 		],
+		surfaces: {
+			[getCellId({ col: 2, row: 2 })]: {
+				position: { col: 2, row: 2 },
+				type: "SPECIAL",
+				duration: -1,
+				spriteBase: "/surfaces/closed_trapdoor.webp",
+			},
+		},
 		onWinSceneId: RAT_IN_THE_CELLAR.scenes.report_victory,
 	},
 };

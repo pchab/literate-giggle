@@ -12,6 +12,7 @@ export const getSimulationState = (
 		summons: summons,
 		surfaces: surfaces,
 		aiIntents: {},
+		playerIntent: {},
 	}) as ReturnType<StoreGet>;
 
 	// 2. Create the Fake Zustand API

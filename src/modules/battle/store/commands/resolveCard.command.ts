@@ -49,7 +49,7 @@ export const resolveCard =
 		}
 
 		// --- 2. CALCULATE THE BLAST ZONE ---
-		let patternCells: GridPosition[] | undefined;
+		let patternCells: GridPosition[] = actualTarget ? [actualTarget] : [];
 		if (card.aoePattern && actualTarget) {
 			const rotatedPattern = rotatePattern(
 				card.aoePattern,
@@ -70,9 +70,9 @@ export const resolveCard =
 			...state,
 			playerIntent: {
 				figureId: hero.id,
+				target: actualTarget,
 				cardId: cardContext.card.id,
 				intendedMove: firePath,
-				target: actualTarget,
 				dangerZone: patternCells,
 			},
 		}));

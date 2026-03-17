@@ -9,7 +9,7 @@ import type { BattleUnit } from "@/modules/figures/domain/figures.type";
 import { isHeroId, isSummon } from "@/modules/figures/helpers/figures.helpers";
 import type { SurfaceData } from "../../domain/grid.type";
 import type { StoreSet } from "../../store/battle.store";
-import { getCellId, getLineOfSightPath } from "../grid.helpers";
+import { getCellId, getLineOfSightPath, isUnitInTile } from "../grid.helpers";
 import { updateBattleUnitState } from "../state.helpers";
 
 export const areEnemies = (u1: BattleUnit) => (u2: BattleUnit) => {
@@ -33,22 +33,10 @@ export function resolveTargets<T extends BattleUnit>(
 
 	if (targetType === "anchor" && anchorTarget) {
 		if (patternCells && patternCells.length > 0) {
-			return aliveFigures
-				.filter((f) =>
-					patternCells.some(
-						(p) => p.col === f.gridPosition.col && p.row === f.gridPosition.row,
-					),
-				)
-				.map((f) => f.id);
+			return aliveFigures.filter(isUnitInTile(anchorTarget)).map((f) => f.id);
 		}
 
-		return aliveFigures
-			.filter(
-				(f) =>
-					f.gridPosition.col === anchorTarget.col &&
-					f.gridPosition.row === anchorTarget.row,
-			)
-			.map((f) => f.id);
+		return aliveFigures.filter(isUnitInTile(anchorTarget)).map((f) => f.id);
 	}
 
 	if (targetType === "all_enemies") {

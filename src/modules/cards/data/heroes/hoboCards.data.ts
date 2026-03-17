@@ -40,6 +40,16 @@ export const hoboCards: Record<Card["id"], Card> = {
 			},
 		],
 	},
+	[cardId("shove")]: {
+		id: cardId("shove"),
+		name: "Shove",
+		range: 1,
+		image: "/cards/shove.webp",
+		playRequirement: "requires_entity",
+		effects: [
+			{ type: "push", distance: 1, collisionDamage: 1, target: "anchor" },
+		],
+	},
 	[cardId("bandage")]: {
 		id: cardId("bandage"),
 		name: "Bandage",

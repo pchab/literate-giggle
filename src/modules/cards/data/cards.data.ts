@@ -10,4 +10,4 @@ export const cardLibrary: Record<Card["id"], Card> = {
 	...dwarvenPassageCards,
 };
 
-export const initialDeck = [cardId("club"), cardId("bandage")];
+export const initialDeck = [cardId("club"), cardId("bandage"), cardId("shove")];
