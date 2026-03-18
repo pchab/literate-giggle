@@ -67,7 +67,7 @@ export function BattleCard({
 			onClick={onClick}
 			className={`
                 relative rounded-md overflow-hidden shadow-xl bg-zinc-950
-                ${!isPlayable ? "opacity-50 grayscale cursor-not-allowed" : "cursor-pointer"}
+                ${!isPlayable ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
                 group
                 ${isLg ? "w-card-large h-card-large" : "w-card h-card"}
             `}

@@ -26,6 +26,7 @@ export const selectCard =
 				stance: UnitStance.ATTACKING,
 			}),
 			activeHeroCard,
+			activeMoveHeroId: null,
 		}));
 
 		if (card.playRequirement === "no_target") {
