@@ -44,7 +44,7 @@ export const DWARVEN_PASSAGE_SCENE_DB: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: encounterId("golem_boss"),
-								background: "/battlegrounds/mountain_city.webp",
+								background: "mountain_city",
 							},
 						],
 					},
@@ -83,7 +83,7 @@ export const DWARVEN_PASSAGE_SCENE_DB: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: encounterId("golem_boss"),
-								background: "/battlegrounds/mountain_city.webp",
+								background: "mountain_city",
 							},
 						],
 					},

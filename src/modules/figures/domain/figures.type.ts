@@ -1,7 +1,7 @@
 import type { GridPosition } from "@/modules/battle/domain/grid.type";
 import type { Card, Hand, HeroCard } from "@/modules/cards/domain/cards.type";
 import type { HeroClass } from "@/modules/figures/domain/heroClass.types";
-import type { Status } from "./status.type";
+import type { Status, StatusType } from "./status.type";
 
 export enum UnitStance {
 	IDLE = 0,
@@ -25,6 +25,7 @@ export interface Figure {
 	maxHp: number;
 	baseDef: number;
 	baseMove: number;
+	immunities?: StatusType[];
 }
 
 export interface BattleUnit extends Figure {

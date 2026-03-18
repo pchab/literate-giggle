@@ -60,7 +60,7 @@ export function GridCell({
 	);
 
 	const baseClasses =
-		"w-24 h-24 relative flex items-center justify-center transition-colors duration-300";
+		"w-grid h-grid relative flex items-center justify-center transition-colors duration-300";
 	const stateClasses = highlightClassMapping[highlight];
 	const surface = surfaces[cell.id];
 
@@ -96,7 +96,7 @@ export function GridCell({
 				const isDying = projectedCasualtyIds?.has(unit.id);
 
 				return (
-					<div key={unit.id} className="relative z-10 h-full">
+					<div key={unit.id}>
 						<UnitSprite unitInCell={unit} />
 
 						{/* --- PROJECTED CASUALTY INDICATOR --- */}

@@ -4,7 +4,7 @@ import { useShallow } from "zustand/shallow";
 import FloatingDamage from "@/modules/battle/components/FloatingDamage";
 import HealthBar from "@/modules/battle/components/HealthBar";
 import IntentDisplay from "@/modules/battle/components/IntentDisplay";
-import { useCombatText } from "@/modules/battle/hooks/useCombatText.hook";
+import { useCombatText } from "@/modules/battle/hooks/useCombatText";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
 import { getBlockFromStatuses } from "../helpers/figures.helpers";
@@ -28,7 +28,7 @@ export function UnitSprite({
 	const intent = aiIntents?.[id];
 
 	return (
-		<div className="absolute inset-0 z-10 flex flex-col items-center justify-end">
+		<div className="absolute inset-0 flex flex-col items-center">
 			{intent && <IntentDisplay intent={intent} />}
 
 			<FloatingDamage texts={texts} />
@@ -36,13 +36,10 @@ export function UnitSprite({
 				layout
 				layoutId={`unit-${id}`}
 				transition={{ type: "spring", stiffness: 350, damping: 30 }}
-				className="relative w-grid h-grid flex items-center justify-center pointer-events-none"
+				className="relative h-full flex pointer-events-none"
 			>
 				<motion.div
-					className={`
-                        absolute inset-0
-                        flex items-center justify-center origin-bottom
-                    `}
+					className="flex flex-col h-full origin-bottom overflow-x-visible items-center"
 					animate={
 						isHit
 							? {
@@ -59,15 +56,16 @@ export function UnitSprite({
 					}
 					transition={{ duration: 0.4, ease: "easeInOut" }}
 				>
-					<div className="absolute w-full h-full flex items-center justify-center pointer-events-none">
-						<Image
-							src={src}
-							alt={`${spriteBase} stance ${stance}`}
-							fill
-							className="object-contain z-20"
-							priority
-						/>
-					</div>
+					<Image
+						src={src}
+						alt={`${spriteBase} stance ${stance}`}
+						width={0}
+						height={0}
+						sizes="100vw"
+						style={{ width: "auto", height: "100%", maxWidth: "150%" }}
+						className="z-20"
+						priority
+					/>
 				</motion.div>
 			</motion.div>
 

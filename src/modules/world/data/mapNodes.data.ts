@@ -14,7 +14,7 @@ export const WorldMapNodes: MapData = {
 		townId: townId("ironhold_city"),
 		position: { x: 58, y: 45 },
 		connectedNodeIds: ["northern_road", "crossroads", "kiven_river_bridge"],
-		background: "/battlegrounds/ironhold_gates.webp",
+		background: "ironhold_gates",
 		variants: [
 			{
 				condition: { type: "HAS_FLAG", flagId: "ironhold_fallen" },
@@ -60,7 +60,7 @@ export const WorldMapNodes: MapData = {
 			mapNodeId("desert_ruins"),
 		],
 		encounterId: encounterId("tutorial_fight"),
-		background: "/battlegrounds/plain_crossroad.webp",
+		background: "plain_crossroad",
 	},
 	wizard_tower: {
 		id: mapNodeId("wizard_tower"),
@@ -68,7 +68,7 @@ export const WorldMapNodes: MapData = {
 		type: "EVENT",
 		position: { x: 70, y: 64 },
 		connectedNodeIds: [mapNodeId("crossroads"), mapNodeId("port_city")],
-		background: "/battlegrounds/dungeon.webp",
+		background: "dungeon",
 	},
 	port_city: {
 		id: mapNodeId("port_city"),
@@ -80,7 +80,7 @@ export const WorldMapNodes: MapData = {
 			mapNodeId("wizard_tower"),
 			mapNodeId("whispering_woods"),
 		],
-		background: "/battlegrounds/city.webp",
+		background: "city",
 	},
 	desert_ruins: {
 		id: mapNodeId("desert_ruins"),
@@ -89,7 +89,7 @@ export const WorldMapNodes: MapData = {
 		position: { x: 52, y: 80 },
 		connectedNodeIds: [mapNodeId("crossroads"), mapNodeId("cromee_town")],
 		encounterId: encounterId("skeleton_horde"),
-		background: "/battlegrounds/desert_ruins.webp",
+		background: "desert_ruins",
 	},
 	cromee_town: {
 		id: mapNodeId("cromee_town"),
@@ -98,7 +98,7 @@ export const WorldMapNodes: MapData = {
 		townId: townId("cromee_town"),
 		position: { x: 49, y: 67 },
 		connectedNodeIds: [mapNodeId("desert_ruins")],
-		background: "/battlegrounds/city.webp",
+		background: "city",
 	},
 	northern_road: {
 		id: mapNodeId("northern_road"),
@@ -111,7 +111,7 @@ export const WorldMapNodes: MapData = {
 			mapNodeId("dark_forest"),
 		],
 		encounterId: encounterId("cultists_ambush"),
-		background: "/battlegrounds/plain_crossroad.webp",
+		background: "plain_crossroad",
 	},
 	dark_forest: {
 		id: mapNodeId("dark_forest"),
@@ -120,7 +120,7 @@ export const WorldMapNodes: MapData = {
 		position: { x: 67, y: 22 },
 		connectedNodeIds: [mapNodeId("northern_road"), mapNodeId("connury_town")],
 		encounterId: encounterId("bat_swarm"),
-		background: "/battlegrounds/forest.webp",
+		background: "forest",
 		variants: [
 			{
 				condition: {
@@ -157,7 +157,7 @@ export const WorldMapNodes: MapData = {
 		position: { x: 72, y: 76 },
 		connectedNodeIds: [mapNodeId("port_city"), mapNodeId("wizard_tower")],
 		encounterId: encounterId("bat_swarm"),
-		background: "/battlegrounds/forest.webp",
+		background: "forest",
 	},
 	connury_town: {
 		id: mapNodeId("connury_town"),
@@ -166,14 +166,14 @@ export const WorldMapNodes: MapData = {
 		townId: townId("connury_town"),
 		position: { x: 75, y: 24 },
 		connectedNodeIds: [mapNodeId("northern_road"), mapNodeId("dark_forest")],
-		background: "/battlegrounds/city.webp",
+		background: "city",
 	},
 	// --- DWARVEN PASSAGE QUEST NODES ---
 	stone_gates: {
 		id: mapNodeId("stone_gates"),
 		name: "Stone Gate",
 		type: "BATTLE",
-		background: "/battlegrounds/cave.webp",
+		background: "cave",
 		position: { x: 56, y: 18 },
 		encounterId: encounterId("stone_gate_guards"),
 		connectedNodeIds: [mapNodeId("dark_forest")],
@@ -188,7 +188,7 @@ export const WorldMapNodes: MapData = {
 		id: mapNodeId("dwarven_passage"),
 		name: "Dwarven City",
 		type: "EVENT",
-		background: "/battlegrounds/mountain_city.webp",
+		background: "mountain_city",
 		position: { x: 52, y: 16 },
 		connectedNodeIds: [mapNodeId("dark_forest")],
 		unlockCondition: [

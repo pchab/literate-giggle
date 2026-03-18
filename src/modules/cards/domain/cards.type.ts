@@ -13,7 +13,8 @@ export type AITargetPreference =
 	| "lowestDef"
 	| "closest"
 	| "self"
-	| "empty_adjacent";
+	| "empty_adjacent"
+	| GridPosition;
 
 export type PlayRequirement =
 	| "requires_enemy"

@@ -31,12 +31,7 @@ export const RATS_IN_THE_CELLAR_ENCOUNTERS: Record<string, Encounter> = {
 			{
 				...barrel,
 				allegiance: "NEUTRAL",
-				gridPosition: { col: 3, row: 1 },
-			},
-			{
-				...barrel,
-				allegiance: "NEUTRAL",
-				gridPosition: { col: 3, row: 2 },
+				gridPosition: { col: 2, row: 1 },
 			},
 		],
 		surfaces: {
@@ -80,12 +75,7 @@ export const RATS_IN_THE_CELLAR_ENCOUNTERS: Record<string, Encounter> = {
 			{
 				...barrel,
 				allegiance: "NEUTRAL",
-				gridPosition: { col: 3, row: 1 },
-			},
-			{
-				...barrel,
-				allegiance: "NEUTRAL",
-				gridPosition: { col: 3, row: 2 },
+				gridPosition: { col: 2, row: 1 },
 			},
 		],
 		surfaces: {

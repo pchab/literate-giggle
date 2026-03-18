@@ -25,32 +25,32 @@ export type EffectResolver = <C extends BattleUnit, E extends CardEffect>(
 
 export const resolvers =
 	(effect: CardEffect) =>
-	(get: StoreGet, set: StoreSet, isSimulation = false) => {
-		switch (effect.type) {
-			case "move":
-				return resolveMoveEffect(get, set)(effect);
-			case "damage":
-				return resolveStandardEffect(get, set)(effect);
-			case "heal":
-				return resolveStandardEffect(get, set)(effect);
-			case "apply_status":
-				return resolveStandardEffect(get, set)(effect);
-			case "create_surface":
-				return resolveSurfaceEffect(get, set)(effect);
-			case "summon":
-				return resolveSummonEffect(get, set)(effect);
-			case "push":
-				return resolvePushEffect(get, set, isSimulation)(effect);
-			case "custom_script":
-				return async (params: EffectResolverParams<BattleUnit>) => {
-					const script = customScriptRegistry[effect.scriptId];
-					if (!script) {
-						console.error(`[Engine] Missing custom script: ${effect.scriptId}`);
-						return;
-					}
-					await script(get, set)(params, effect.payload);
-				};
-			default:
-				return resolveStandardEffect(get, set)(effect);
-		}
-	};
+		(get: StoreGet, set: StoreSet, isSimulation = false) => {
+			switch (effect.type) {
+				case "move":
+					return resolveMoveEffect(get, set)(effect);
+				case "damage":
+					return resolveStandardEffect(get, set)(effect);
+				case "heal":
+					return resolveStandardEffect(get, set)(effect);
+				case "apply_status":
+					return resolveStandardEffect(get, set)(effect);
+				case "create_surface":
+					return resolveSurfaceEffect(get, set)(effect);
+				case "summon":
+					return resolveSummonEffect(get, set)(effect);
+				case "push":
+					return resolvePushEffect(get, set, isSimulation)(effect);
+				case "custom_script":
+					return async (params: EffectResolverParams<BattleUnit>) => {
+						const script = customScriptRegistry[effect.scriptId];
+						if (!script) {
+							console.error(`[Engine] Missing custom script: ${effect.scriptId}`);
+							return;
+						}
+						await script(get, set, isSimulation)(params, effect.payload);
+					};
+				default:
+					return resolveStandardEffect(get, set)(effect);
+			}
+		};

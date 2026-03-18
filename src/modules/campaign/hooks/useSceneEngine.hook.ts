@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { useShallow } from "zustand/shallow";
-import { useBattleStore } from "@/modules/battle/store/battle.store";
 import type { SceneAction } from "@/modules/campaign/domain/scenes.type";
 import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
 import { useDynamicMap } from "@/modules/world/hooks/useDynamicMap";
@@ -17,7 +16,7 @@ export function useSceneEngine(setLocalStep: (stepId: string) => void) {
 				setFlag: state.setFlag,
 			})),
 		);
-	const { currentNodeId, setPhase, roster, rewardEvoRune, travelToNode } =
+	const { currentNodeId, setPhase, rewardEvoRune, travelToNode } =
 		useWorldStore(
 			useShallow((state) => ({
 				currentNodeId: state.currentNodeId,
@@ -27,11 +26,6 @@ export function useSceneEngine(setLocalStep: (stepId: string) => void) {
 				travelToNode: state.travelToNode,
 			})),
 		);
-	const { initBattle } = useBattleStore(
-		useShallow((state) => ({
-			initBattle: state.initBattle,
-		})),
-	);
 	const dynamicMap = useDynamicMap();
 
 	const processActions = (actions: SceneAction[]) => {
@@ -69,9 +63,10 @@ export function useSceneEngine(setLocalStep: (stepId: string) => void) {
 				// --- ROUTING & SIDE EFFECTS ---
 				case "START_BATTLE":
 					setActiveSceneId(null);
-					initBattle(roster, action.encounterId, action.background);
 					setPhase("BATTLE");
-					redirect("/battle");
+					redirect(
+						`/battle/${action.encounterId}?background=${action.background}`,
+					);
 					break;
 				case "START_SCENE":
 					setActiveSceneId(action.sceneId);

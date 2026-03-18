@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useShallow } from "zustand/shallow";
 import type { GridPosition } from "@/modules/battle/domain/grid.type";
 import {
@@ -69,20 +68,6 @@ export function useCellHighlight(): CellHighlight {
 			highlight.activeUnit = hoveredHeroUnit.id;
 		}
 	}
-
-	// --- ENEMY TURN TRIGGER ---
-	const aliveHeroesCount = heroes.filter((h) => h.currentHp > 0).length;
-	const isEnemyTurn =
-		!activeHeroCard &&
-		aliveHeroesCount > 0 &&
-		Object.keys(usedCardsThisTurn).length === aliveHeroesCount;
-
-	useEffect(() => {
-		if (isEnemyTurn) {
-			const timeoutId = setTimeout(() => enemyAction(), 200);
-			return () => clearTimeout(timeoutId);
-		}
-	}, [isEnemyTurn, enemyAction]);
 
 	const allUnits = [...heroes, ...monsters, ...summons];
 

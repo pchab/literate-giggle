@@ -1,4 +1,4 @@
-import type { AnchorTarget, Card } from "@/modules/cards/domain/cards.type";
+import type { AITargetPreference, AnchorTarget, Card } from "@/modules/cards/domain/cards.type";
 import type {
 	AIBattleUnit,
 	BattleUnit,
@@ -8,9 +8,14 @@ import { areEnemies } from "./effects/effect.helpers";
 import {
 	getLineOfSightPath,
 	getManhattanDistance,
+	isUnitInTile,
 	rotatePattern,
 } from "./grid.helpers";
 import { calculateExactPath } from "./move.helpers";
+
+function isGridPosition(targetPref: AITargetPreference): targetPref is GridPosition {
+	return typeof targetPref !== "string";
+}
 
 const calculateAIMove = <C extends AIBattleUnit, T extends BattleUnit>(
 	monster: C,
@@ -57,10 +62,21 @@ export const getIdealTarget = <C extends AIBattleUnit, T extends BattleUnit>(
 ) => {
 	if (card.aiTargetPreference === "self") {
 		return {
-			reachableTarget: aiFigure as C,
+			reachableTarget: aiFigure,
 			moveDest: aiFigure.gridPosition,
 			canHit: true,
 		};
+	}
+	if (card.aiTargetPreference && isGridPosition(card.aiTargetPreference)) {
+		const target = figures.find(isUnitInTile(card.aiTargetPreference));
+		if (target) {
+			const moveDest = calculateAIMove(aiFigure, target, card, figures);
+			return {
+				reachableTarget: target,
+				moveDest,
+				canHit: moveDest && isTargetInRange(card, 1, aiFigure.gridPosition, moveDest),
+			};
+		}
 	}
 
 	const targetsAllies = card.playRequirement === "requires_ally";

@@ -18,7 +18,7 @@ export const RATS_IN_THE_CELLAR_SCENES: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: RAT_IN_THE_CELLAR.encounters.rat_mob,
-								background: "/battlegrounds/rusty_boar_cellar.webp",
+								background: "rusty_boar_cellar",
 							},
 						],
 					},
@@ -42,7 +42,7 @@ export const RATS_IN_THE_CELLAR_SCENES: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: RAT_IN_THE_CELLAR.encounters.rat_boss,
-								background: "/battlegrounds/rusty_boar_cellar.webp",
+								background: "rusty_boar_cellar",
 							},
 						],
 					},

@@ -32,7 +32,6 @@ export type ActiveCardContext = {
 
 export type BattleState = {
 	encounterId: Encounter["id"] | null;
-	background: string;
 
 	heroes: BattleHero[];
 	monsters: Monster[];
@@ -58,7 +57,6 @@ type BattleAction = {
 	initBattle: (
 		heroRoster: Hero[],
 		encounterId: Encounter["id"],
-		background: string,
 	) => Promise<void>;
 	setActiveMoveHeroId: (heroId: Hero["id"] | null) => void;
 	moveHero: (newPosition: GridPosition) => void;
@@ -90,7 +88,6 @@ const initialState: BattleState = {
 	summons: [],
 	currentVfx: {},
 	xpEarned: 0,
-	background: "",
 	surfaces: {},
 	playerIntent: null,
 };
@@ -108,11 +105,8 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 	persist(
 		(set, get) => ({
 			...initialState,
-			initBattle: (
-				heroRoster: Hero[],
-				encounterId: Encounter["id"],
-				background: string,
-			) => initBattle(get, set)(heroRoster, encounterId, background),
+			initBattle: (heroRoster: Hero[], encounterId: Encounter["id"]) =>
+				initBattle(get, set)(heroRoster, encounterId),
 			selectCard: async (heroId, card) =>
 				await selectCard(get, set)(heroId, card),
 			cancelCard: () => set(cancelCard()),
@@ -142,7 +136,6 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 				usedMovesThisTurn: state.usedMovesThisTurn,
 				usedCardsThisTurn: state.usedCardsThisTurn,
 				xpEarned: state.xpEarned,
-				background: state.background,
 				surfaces: state.surfaces,
 			}),
 		},

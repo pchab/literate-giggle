@@ -6,8 +6,10 @@ import {
 	getCellId,
 	isUnitInTile,
 } from "@/modules/battle/helpers/grid.helpers";
+import type { Encounter } from "@/modules/campaign/domain/encounters.type";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
 import { isHero, isHeroId } from "@/modules/figures/helpers/figures.helpers";
+import { useBattleTurns } from "../hooks/useBattleTurns";
 import { useCellHighlight } from "../hooks/useCellHighlight";
 import { useBattleStore } from "../store/battle.store";
 import { GridCell, type Highlight } from "./GridCell";
@@ -27,7 +29,8 @@ const tailwindGridCols = [
 	"grid-cols-5",
 ];
 
-export function BattleGrid() {
+export function BattleGrid({ encounterId }: { encounterId: Encounter["id"] }) {
+	useBattleTurns(encounterId);
 	const cellHighlight = useCellHighlight();
 	const {
 		heroes,

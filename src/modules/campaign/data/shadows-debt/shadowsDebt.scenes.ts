@@ -83,7 +83,7 @@ export const SHADOWS_DEBT_SCENES: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: SHADOWS_DEBT.encounters.briar_wolf_boss,
-								background: "/battlegrounds/forest.webp",
+								background: "forest",
 							},
 						],
 					},

@@ -40,12 +40,12 @@ export const monsterCardLibrary: Record<Card["id"], Card> = {
 		range: 1,
 		image: "/cards/nasty_bite.webp",
 		playRequirement: "requires_enemy",
-		aiTargetPreference: "lowestHp",
+		aiTargetPreference: { col: 2, row: 2 },
 		effects: [
 			{ type: "damage", amount: 2, target: "anchor" },
 			{
 				type: "apply_status",
-				status: { type: "poison", amount: 1, duration: 2 },
+				status: { type: "poison", amount: 3, duration: 2 },
 				target: "anchor",
 			},
 		],

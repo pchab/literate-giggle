@@ -83,7 +83,7 @@ export const GOBLIN_LAIR_SCENES: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: GOBLIN_LAIR.encounters.goblin_shaman,
-								background: "/battlegrounds/forest.webp",
+								background: "forest",
 							},
 						],
 					},

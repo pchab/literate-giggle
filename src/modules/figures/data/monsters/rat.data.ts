@@ -23,10 +23,6 @@ export const ratBoss: UnitBlueprint = {
 	xpReward: 9,
 	intentPool: [
 		{
-			cardId: cardId("nasty_bite"),
-			weight: 2,
-		},
-		{
 			cardId: cardId("call_more_rats"),
 			weight: 1,
 		},

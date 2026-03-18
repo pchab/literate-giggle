@@ -10,7 +10,7 @@ export const VERDANT_RECLAMATION_MAP_NODES: MapData = {
 		type: "EVENT",
 		position: { x: 40, y: 49 },
 		connectedNodeIds: ["kiven_river_bridge"],
-		background: "/battlegrounds/logging_camp_ruins.webp",
+		background: "logging_camp_ruins",
 		unlockCondition: [
 			{
 				type: "QUEST_ACTIVE",
@@ -34,7 +34,7 @@ export const VERDANT_RECLAMATION_MAP_NODES: MapData = {
 			"southern_beastmaster_army",
 			"heart_tree",
 		],
-		background: "/battlegrounds/kiven_dam_hostile.webp",
+		background: "kiven_dam_hostile",
 		unlockCondition: [
 			{
 				type: "QUEST_ACTIVE",
@@ -116,7 +116,7 @@ export const VERDANT_RECLAMATION_MAP_NODES: MapData = {
 		townId: townId("heart_tree_sanctuary"),
 		position: { x: 15, y: 20 },
 		connectedNodeIds: ["kiven_river_bridge"],
-		background: "/battlegrounds/heart_tree.webp",
+		background: "heart_tree",
 		unlockCondition: [{ type: "HAS_FLAG", flagId: "aligned_with_forest" }],
 	},
 
@@ -128,7 +128,7 @@ export const VERDANT_RECLAMATION_MAP_NODES: MapData = {
 		encounterId: encounterId("treant_bruisers"),
 		position: { x: 34, y: 28 },
 		connectedNodeIds: ["kiven_river_bridge"],
-		background: "/battlegrounds/plain.webp",
+		background: "plain",
 		unlockCondition: [
 			{
 				type: "QUEST_ACTIVE",
@@ -177,7 +177,7 @@ export const VERDANT_RECLAMATION_MAP_NODES: MapData = {
 		encounterId: encounterId("elven_weavers"),
 		position: { x: 32, y: 38 },
 		connectedNodeIds: ["ironhold_city"],
-		background: "/battlegrounds/plain_river.webp",
+		background: "plain_river",
 		unlockCondition: [
 			{
 				type: "QUEST_ACTIVE",
@@ -226,7 +226,7 @@ export const VERDANT_RECLAMATION_MAP_NODES: MapData = {
 		encounterId: encounterId("beastmasters"),
 		position: { x: 30, y: 50 },
 		connectedNodeIds: ["ironhold_city", "heart_tree"],
-		background: "/battlegrounds/trade_road_ambush.webp",
+		background: "trade_road_ambush",
 		unlockCondition: [
 			{
 				type: "QUEST_ACTIVE",

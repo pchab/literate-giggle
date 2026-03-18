@@ -106,7 +106,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: encounterId("elven_commander"),
-								background: "/battlegrounds/river_bridge_hostile.webp",
+								background: "river_bridge_hostile",
 							},
 						],
 					},
@@ -295,7 +295,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: encounterId("defend_siege_gates"),
-								background: "/battlegrounds/ironhold_gates.webp",
+								background: "ironhold_gates",
 							},
 						],
 					},
@@ -345,7 +345,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: encounterId("assault_siege_gates"),
-								background: "/battlegrounds/ironhold_gates.webp",
+								background: "ironhold_gates",
 							},
 						],
 					},
@@ -396,7 +396,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: encounterId("defend_tavern_ambush"),
-								background: "/battlegrounds/rusty_boar_ruined.webp",
+								background: "rusty_boar_ruined",
 							},
 						],
 					},
@@ -446,7 +446,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: encounterId("assault_tavern_ambush"),
-								background: "/battlegrounds/rusty_boar_assault.webp",
+								background: "rusty_boar_assault",
 							},
 						],
 					},
@@ -497,7 +497,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: encounterId("ironhold_arch_druid_boss"),
-								background: "/battlegrounds/ironhold_throne_room.webp",
+								background: "ironhold_throne_room",
 							},
 						],
 					},
@@ -520,7 +520,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: encounterId("ironhold_king_boss"),
-								background: "/battlegrounds/ironhold_throne_room.webp",
+								background: "ironhold_throne_room",
 							},
 						],
 					},

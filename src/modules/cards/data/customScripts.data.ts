@@ -6,6 +6,7 @@ import { trapdoorSpawn } from "./custom-scripts/trapDoorSpawn.script";
 type CustomScriptEffectResolver<T extends BattleUnit, P> = (
 	get: StoreGet,
 	set: StoreSet,
+	isSimulation: boolean,
 ) => (params: EffectResolverParams<T>, payload: P) => Promise<void>;
 
 export const customScriptRegistry: Record<

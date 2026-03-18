@@ -1,3 +1,5 @@
+import type { Intent } from "@/modules/battle/domain/intent.type";
+import { handleAICardIntent } from "@/modules/battle/helpers/ai.actions.helpers";
 import type { EffectResolverParams } from "@/modules/battle/helpers/effects/effect.resolvers";
 import {
 	getCellId,
@@ -13,84 +15,96 @@ import {
 } from "@/modules/figures/domain/figures.type";
 import { summonId } from "@/modules/figures/helpers/figures.helpers";
 import { sleep } from "@/modules/shared/helpers/sleep";
+import { cardId } from "../../helpers/cards.helper";
+import { monsterCardLibrary } from "../monsters/monsterCards.data";
 
 export const trapdoorSpawn =
-	<C extends BattleUnit>(get: StoreGet, set: StoreSet) =>
-	async (
-		{ caster }: EffectResolverParams<C>,
-		payload: { spawnCount: number; blueprintId: Summon["id"] },
-	) => {
-		const { heroes, monsters, summons, surfaces } = get();
-		const figures = [...heroes, ...monsters, ...summons];
+	<C extends BattleUnit>(get: StoreGet, set: StoreSet, isSimulation = false) =>
+		async (
+			{ caster }: EffectResolverParams<C>,
+			payload: { spawnCount: number; blueprintId: Summon["id"] },
+		) => {
+			const { heroes, monsters, summons, surfaces } = get();
+			const figures = [...heroes, ...monsters, ...summons];
 
-		const targetPos = { col: 2, row: 2 };
+			const targetPos = { col: 2, row: 2 };
+			const isBlocked = !isTileEmpty(figures)(targetPos);
 
-		const isBlocked = !isTileEmpty(figures)(targetPos);
+			// --- TRAP DOOR BLOCKED => ATTACK WHOEVER IS BLOCKING IT ! ---
+			if (isBlocked) {
+				const nastyBiteId = cardId("nasty_bite");
+				const nastyBiteCard = monsterCardLibrary[nastyBiteId];
+				const newIntent: Intent = {
+					cardId: nastyBiteId,
+					figureId: caster.id,
+				};
+				set(({ aiIntents, ...prev }) => ({
+					...prev,
+					aiIntents: {
+						...aiIntents,
+						[caster.id]: newIntent,
+					},
+				}));
 
-		if (isBlocked) {
-			console.log("Trap door blocked! Rat King enrages.");
+				await handleAICardIntent(
+					get,
+					set,
+					isSimulation,
+				)(caster.id, nastyBiteCard);
 
-			// Example: Heal the boss for 5 HP if blocked
+				return;
+			}
+
+			// --- TRAP DOOR FREE => SUMMONS RATS ! ---
+			const trapdoorSurface = surfaces[getCellId(targetPos)];
 			set((prev) => ({
 				...prev,
-				monsters: prev.monsters.map((m) =>
-					m.id === caster.id
-						? { ...m, currentHp: Math.min(m.maxHp, m.currentHp + 5) }
-						: m,
-				),
+				surfaces: {
+					...surfaces,
+					[getCellId(targetPos)]: {
+						...trapdoorSurface,
+						spriteBase: "/surfaces/open_trapdoor.webp",
+					},
+				},
 			}));
-			return;
-		}
+			await sleep(isSimulation ? 0 : 1000);
 
-		const trapdoorSurface = surfaces[getCellId(targetPos)];
-		set((prev) => ({
-			...prev,
-			surfaces: {
-				...surfaces,
-				[getCellId(targetPos)]: {
-					...trapdoorSurface,
-					spriteBase: "/surfaces/open_trapdoor.webp",
+			const neighbors = [
+				{ col: targetPos.col, row: targetPos.row - 1 },
+				{ col: targetPos.col, row: targetPos.row + 1 },
+				{ col: targetPos.col - 1, row: targetPos.row },
+				{ col: targetPos.col + 1, row: targetPos.row },
+			];
+
+			const validSpawns = neighbors
+				.filter(isTileInBounds)
+				.filter(isTileEmpty(figures));
+
+			const spawnAmount = payload.spawnCount;
+			const spawnTiles = validSpawns.slice(0, spawnAmount);
+			const blueprint = summonLibrary[payload.blueprintId];
+
+			if (spawnTiles.length === 0) return;
+
+			const newRats: Summon[] = spawnTiles.map((pos, index) => ({
+				id: summonId(`trap-door-rat-${Date.now()}-${index}`),
+				...blueprint,
+				stance: UnitStance.IDLE,
+				currentHp: blueprint.maxHp,
+				statuses: [],
+				gridPosition: pos,
+				allegiance: "ENEMY",
+			}));
+
+			set((prev) => ({
+				...prev,
+				summons: [...prev.summons, ...newRats],
+				surfaces: {
+					...surfaces,
+					[getCellId(targetPos)]: {
+						...trapdoorSurface,
+						spriteBase: "/surfaces/closed_trapdoor.webp",
+					},
 				},
-			},
-		}));
-		await sleep(500);
-
-		const neighbors = [
-			{ col: targetPos.col, row: targetPos.row - 1 },
-			{ col: targetPos.col, row: targetPos.row + 1 },
-			{ col: targetPos.col - 1, row: targetPos.row },
-			{ col: targetPos.col + 1, row: targetPos.row },
-		];
-
-		const validSpawns = neighbors
-			.filter(isTileInBounds)
-			.filter(isTileEmpty(figures));
-
-		const spawnAmount = payload.spawnCount;
-		const spawnTiles = validSpawns.slice(0, spawnAmount);
-		const blueprint = summonLibrary[payload.blueprintId];
-
-		if (spawnTiles.length === 0) return;
-
-		const newRats: Summon[] = spawnTiles.map((pos, index) => ({
-			id: summonId(`trap-door-rat-${Date.now()}-${index}`),
-			...blueprint,
-			stance: UnitStance.IDLE,
-			currentHp: blueprint.maxHp,
-			statuses: [],
-			gridPosition: pos,
-			allegiance: "ENEMY",
-		}));
-
-		set((prev) => ({
-			...prev,
-			summons: [...prev.summons, ...newRats],
-			surfaces: {
-				...surfaces,
-				[getCellId(targetPos)]: {
-					...trapdoorSurface,
-					spriteBase: "/surfaces/closed_trapdoor.webp",
-				},
-			},
-		}));
-	};
+			}));
+		};

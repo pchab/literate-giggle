@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "motion/react";
-import type { CombatText } from "../hooks/useCombatText.hook";
+import type { CombatText } from "../hooks/useCombatText";
 
 const getColorAndIcon = (type: CombatText["type"]) => {
 	switch (type) {
@@ -14,7 +14,7 @@ const getColorAndIcon = (type: CombatText["type"]) => {
 
 export default function FloatingDamage({ texts }: { texts: CombatText[] }) {
 	return (
-		<div className="absolute top-0 left-0 w-full h-full flex items-center justify-center z-50 pointer-events-none">
+		<div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none">
 			<AnimatePresence>
 				{texts.map((text) => {
 					const { color, icon } = getColorAndIcon(text.type);

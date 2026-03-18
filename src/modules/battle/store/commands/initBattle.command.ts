@@ -45,7 +45,7 @@ const bluePrintToSummon = (
 
 export const initBattle =
 	(get: StoreGet, set: StoreSet) =>
-	async (roster: Hero[], encounterId: Encounter["id"], background: string) => {
+	async (roster: Hero[], encounterId: Encounter["id"]) => {
 		const encounter = ENCOUNTER_DB[encounterId];
 
 		if (!encounter) {
@@ -88,7 +88,6 @@ export const initBattle =
 			usedMovesThisTurn: {},
 			hoveredCell: null,
 			xpEarned: 0,
-			background,
 		}));
 		await calculateAIIntents(get, set)({});
 	};

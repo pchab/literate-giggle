@@ -126,7 +126,7 @@ export function applyEffectToEntity<T extends BattleUnit>(
 		return applyDamageToEntity(entity, effect.amount);
 	}
 
-	if (effect.type === "apply_status") {
+	if (effect.type === "apply_status" && !entity.immunities?.includes(effect.status.type)) {
 		const newStatuses = [...entity.statuses];
 		const existingStatusIndex = newStatuses.findIndex(
 			(s) => s.type === effect.status.type,
@@ -154,41 +154,41 @@ export function applyEffectToEntity<T extends BattleUnit>(
 
 export const tickStatuses =
 	(set: StoreSet) =>
-	<T extends BattleUnit>(figures: T[]): void =>
-		figures.forEach((figure) => {
-			if (figure.currentHp <= 0) return;
+		<T extends BattleUnit>(figures: T[]): void =>
+			figures.forEach((figure) => {
+				if (figure.currentHp <= 0) return;
 
-			const poison =
-				figure.statuses.find(({ type }) => type === "poison")?.amount ?? 0;
-			const regen =
-				figure.statuses.find(({ type }) => type === "regen")?.amount ?? 0;
+				const poison =
+					figure.statuses.find(({ type }) => type === "poison")?.amount ?? 0;
+				const regen =
+					figure.statuses.find(({ type }) => type === "regen")?.amount ?? 0;
 
-			const newHp = Math.min(
-				figure.maxHp,
-				Math.max(0, figure.currentHp - poison + regen),
-			);
+				const newHp = Math.min(
+					figure.maxHp,
+					Math.max(0, figure.currentHp - poison + regen),
+				);
 
-			const newStatuses = figure.statuses
-				.map((status) => ({
-					...status,
-					duration: status.duration === -1 ? -1 : status.duration - 1,
-				}))
-				.filter((status) => status.duration > 0 || status.duration === -1);
+				const newStatuses = figure.statuses
+					.map((status) => ({
+						...status,
+						duration: status.duration === -1 ? -1 : status.duration - 1,
+					}))
+					.filter((status) => status.duration > 0 || status.duration === -1);
 
-			const cellId = getCellId(figure.gridPosition);
-			updateBattleUnitState(set)({
-				...figure,
-				currentHp: newHp,
-				statuses: newStatuses,
+				const cellId = getCellId(figure.gridPosition);
+				updateBattleUnitState(set)({
+					...figure,
+					currentHp: newHp,
+					statuses: newStatuses,
+				});
+				set(({ currentVfx }) => ({
+					currentVfx: {
+						...currentVfx,
+						...(poison > 0 ? { [cellId]: "POISON" } : {}),
+						...(regen > 0 ? { [cellId]: "HEAL" } : {}),
+					},
+				}));
 			});
-			set(({ currentVfx }) => ({
-				currentVfx: {
-					...currentVfx,
-					...(poison > 0 ? { [cellId]: "POISON" } : {}),
-					...(regen > 0 ? { [cellId]: "HEAL" } : {}),
-				},
-			}));
-		});
 
 // --- 4. FIXED SURFACE HELPER ---
 export function applySurfaceEffect<T extends BattleUnit>({
