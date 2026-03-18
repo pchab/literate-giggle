@@ -133,6 +133,7 @@ export const handleAICardIntent =
 		)({
 			movingUnit: initialAttacker,
 			path,
+			stepDelayMs: isSimulation ? 0 : 200,
 		});
 
 		// updated simulation results

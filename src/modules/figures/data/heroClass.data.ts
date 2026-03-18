@@ -12,13 +12,14 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		utilityCardChoices: [cardId("bandage")],
 		xpThresholds: [0, 5, 10, 15, 20, 25],
 		levelUpTriggers: [
+			[],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			[
 				{ type: "statsIncrease", amount: 1, stat: "hp" },
+				{ type: "powerRune" },
 				{
 					type: "classPromotion",
 					classId: ["MAGE", "FIGHTER", "ROGUE", "ARCHER", "CLERIC"],
@@ -35,7 +36,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		name: "Fighter",
 		spriteBase: "heroes/fighter",
 		utilityCardChoices: [cardId("shield_block"), cardId("bull_rush")],
-		xpThresholds: [10, 20, 30, 40, 50],
+		xpThresholds: [10, 20, 30, 40, 50, 60],
 		levelUpTriggers: [
 			[
 				{ type: "statsIncrease", stat: "hp", amount: 2 },
@@ -49,7 +50,8 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				{ type: "unlockQuest", questId: QUEST_DWARVEN_HIGHWAY },
 			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			[{ type: "classPromotion", classId: ["KNIGHT", "BARBARIAN"] }],
 		],
@@ -59,7 +61,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		name: "Mage",
 		spriteBase: "heroes/mage",
 		utilityCardChoices: [cardId("arcane_shield"), cardId("summon_arcane_wisp")],
-		xpThresholds: [10, 20, 30, 40, 50],
+		xpThresholds: [10, 20, 30, 40, 50, 60],
 		levelUpTriggers: [
 			[
 				{ type: "statsIncrease", stat: "hp", amount: 1 },
@@ -72,7 +74,8 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				{ type: "unlockQuest", questId: NECROMANCER_QUEST_ID },
 			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			[{ type: "classPromotion", classId: ["PYROMANCER", "CRYOMANCER"] }],
 		],
@@ -82,7 +85,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		name: "Rogue",
 		spriteBase: "heroes/rogue",
 		utilityCardChoices: [cardId("poison_shiv"), cardId("hamstring")],
-		xpThresholds: [10, 20, 30, 40, 50],
+		xpThresholds: [10, 20, 30, 40, 50, 60],
 		levelUpTriggers: [
 			[
 				{ type: "statsIncrease", stat: "hp", amount: 1 },
@@ -95,7 +98,8 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				},
 			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			// [{ type: "classPromotion", classId: [] }],
 		],
@@ -105,7 +109,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		name: "Archer",
 		spriteBase: "heroes/archer",
 		utilityCardChoices: [cardId("bear_trap")],
-		xpThresholds: [10, 20, 30, 40, 50],
+		xpThresholds: [10, 20, 30, 40, 50, 60],
 		levelUpTriggers: [
 			[
 				{ type: "statsIncrease", stat: "hp", amount: 1 },
@@ -117,7 +121,8 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				},
 			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			// [{ type: "classPromotion", classId: [] }],
 		],
@@ -127,7 +132,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		name: "Cleric",
 		spriteBase: "heroes/cleric",
 		utilityCardChoices: [cardId("divine_aegis"), cardId("blinding_sigil")],
-		xpThresholds: [10, 20, 30, 40, 50],
+		xpThresholds: [10, 20, 30, 40, 50, 60],
 		levelUpTriggers: [
 			[
 				{ type: "statsIncrease", stat: "hp", amount: 2 },
@@ -139,7 +144,8 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				},
 			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 		],
 	},
@@ -148,7 +154,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		name: "Knight",
 		spriteBase: "heroes/knight",
 		utilityCardChoices: [cardId("knight_placeholder")],
-		xpThresholds: [10, 20, 30, 40, 50],
+		xpThresholds: [10, 20, 30, 40, 50, 60],
 		levelUpTriggers: [
 			[
 				{ type: "statsIncrease", stat: "hp", amount: 2 },
@@ -160,7 +166,8 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				},
 			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 		],
 	},
@@ -169,7 +176,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		name: "Barbarian",
 		spriteBase: "heroes/barbarian",
 		utilityCardChoices: [cardId("barbarian_placeholder")],
-		xpThresholds: [10, 20, 30, 40, 50],
+		xpThresholds: [10, 20, 30, 40, 50, 60],
 		levelUpTriggers: [
 			[
 				{ type: "statsIncrease", stat: "hp", amount: 2 },
@@ -181,7 +188,8 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				},
 			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 		],
 	},
@@ -190,7 +198,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		name: "Pyromancer",
 		spriteBase: "heroes/pyromancer",
 		utilityCardChoices: [cardId("pyromancer_placeholder")],
-		xpThresholds: [10, 20, 30, 40, 50],
+		xpThresholds: [10, 20, 30, 40, 50, 60],
 		levelUpTriggers: [
 			[
 				{ type: "statsIncrease", stat: "hp", amount: 2 },
@@ -201,16 +209,17 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				},
 			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 		],
 	},
 	CRYOMANCER: {
 		id: "CRYOMANCER",
-		name: " Cryomancer",
+		name: "Cryomancer",
 		spriteBase: "heroes/cryomancer",
 		utilityCardChoices: [cardId("ice_wall"), cardId("cryomancer_placeholder")],
-		xpThresholds: [10, 20, 30, 40, 50],
+		xpThresholds: [10, 20, 30, 40, 50, 60],
 		levelUpTriggers: [
 			[
 				{ type: "statsIncrease", stat: "hp", amount: 2 },
@@ -221,7 +230,8 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				},
 			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 		],
 	},

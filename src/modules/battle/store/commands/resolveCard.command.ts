@@ -11,7 +11,10 @@ import {
 	getManhattanDistance,
 	rotatePattern,
 } from "../../helpers/grid.helpers";
-import { updateBattleUnitState } from "../../helpers/state.helpers";
+import {
+	calculateStateDiff,
+	updateBattleUnitState,
+} from "../../helpers/state.helpers";
 import type { ActiveCardContext, StoreGet, StoreSet } from "../battle.store";
 import { calculateAIIntents } from "./calculateAIIntents.command";
 
@@ -87,6 +90,14 @@ export const resolveCard =
 		}
 		updateHeroStance(get, set)(unitId)(UnitStance.IDLE);
 
+		const xpEarnedThisTurn = calculateStateDiff(
+			get().monsters,
+			monsters,
+		).projectedCasualties.reduce(
+			(xp, monsterId) =>
+				xp + (monsters.find(({ id }) => id === monsterId)?.xpReward ?? 0),
+			0,
+		);
 		// --- 4. CLEAN UP ---
 		set(
 			({
@@ -98,11 +109,6 @@ export const resolveCard =
 				xpEarned,
 				...prev
 			}) => {
-				const deadMonsters = monsters.filter((m) => m.currentHp <= 0);
-				const xpEarnedThisTurn = deadMonsters.reduce(
-					(acc, m) => acc + m.xpReward,
-					0,
-				);
 				const remainingMonsters = monsters.filter((m) => m.currentHp > 0);
 				const remainingSummons = summons.filter((m) => m.currentHp > 0);
 				return {

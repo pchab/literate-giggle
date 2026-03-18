@@ -7,8 +7,9 @@ import type { Hero } from "@/modules/figures/domain/figures.type";
 import { useWorldStore } from "@/modules/world/store/world.store";
 
 export function useBattleTurns(encounterId: Encounter["id"]): void {
-	const { roster, stageBattleRewards } = useWorldStore(
+	const { phase, roster, stageBattleRewards } = useWorldStore(
 		useShallow((state) => ({
+			phase: state.phase,
 			roster: state.roster,
 			stageBattleRewards: state.stageBattleRewards,
 		})),
@@ -32,11 +33,17 @@ export function useBattleTurns(encounterId: Encounter["id"]): void {
 	);
 	const [isInit, setIsInit] = useState(false);
 
+	if (phase !== "BATTLE") {
+		redirect("/");
+	}
+
 	// --- BATTLE INIT ---
 	useEffect(() => {
-		initBattle(roster, encounterId);
-		setIsInit(true);
-	}, [roster, encounterId, initBattle]);
+		if (!isInit) {
+			initBattle(roster, encounterId);
+			setIsInit(true);
+		}
+	}, [isInit, roster, encounterId, initBattle]);
 
 	// --- ENEMY TURN TRIGGER ---
 	const aliveHeroesCount = heroes.filter((h) => h.currentHp > 0).length;
@@ -63,7 +70,8 @@ export function useBattleTurns(encounterId: Encounter["id"]): void {
 			{} as Record<Hero["id"], number>,
 		);
 
-		stageBattleRewards(remainingHealth);
-		redirect("/");
+		setTimeout(() => {
+			stageBattleRewards(remainingHealth);
+		}, 1000);
 	}
 }

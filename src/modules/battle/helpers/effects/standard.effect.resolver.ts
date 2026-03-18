@@ -32,14 +32,16 @@ export const resolveStandardEffect =
 
 		set((prev) => {
 			const updateList = <T extends BattleUnit>(list: T[]) =>
-				list.map((figure) => {
-					if (targetSet.has(figure.id)) {
-						const updatedEntity = applyEffectToEntity(figure, effect);
-						targetPositions.push(updatedEntity.gridPosition);
-						return updatedEntity;
-					}
-					return figure;
-				});
+				list
+					.map((figure) => {
+						if (targetSet.has(figure.id)) {
+							const updatedEntity = applyEffectToEntity(figure, effect);
+							targetPositions.push(updatedEntity.gridPosition);
+							return updatedEntity;
+						}
+						return figure;
+					})
+					.filter(({ currentHp }) => currentHp > 0);
 
 			const updatedHeroes = updateList(prev.heroes);
 			const updatedMonsters = updateList(prev.monsters);

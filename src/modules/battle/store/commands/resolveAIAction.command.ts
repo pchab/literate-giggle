@@ -97,7 +97,16 @@ export const resolveAIActions = async (
 	// ============================================
 	tickStatuses(set)(get().heroes);
 
-	set(({ heroes, monsters, summons, ...prev }) => {
+	const xpEarnedThisTurn = calculateStateDiff(
+		get().monsters,
+		draftMonsters,
+	).projectedCasualties.reduce(
+		(xp, monsterId) =>
+			xp + (draftMonsters.find(({ id }) => id === monsterId)?.xpReward ?? 0),
+		0,
+	);
+
+	set(({ heroes, monsters, summons, xpEarned, ...prev }) => {
 		const survivingHeroes = heroes.filter((h) => h.currentHp > 0);
 		const survivingMonsters = monsters.filter((m) => m.currentHp > 0);
 		const survivingSummons = summons.filter((s) => s.currentHp > 0);
@@ -108,6 +117,7 @@ export const resolveAIActions = async (
 			summons: survivingSummons,
 			usedMovesThisTurn: {},
 			usedCardsThisTurn: {},
+			xpEarned: xpEarned + xpEarnedThisTurn,
 		};
 	});
 
