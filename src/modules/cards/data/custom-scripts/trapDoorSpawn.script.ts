@@ -20,91 +20,91 @@ import { monsterCardLibrary } from "../monsters/monsterCards.data";
 
 export const trapdoorSpawn =
 	<C extends BattleUnit>(get: StoreGet, set: StoreSet, isSimulation = false) =>
-		async (
-			{ caster }: EffectResolverParams<C>,
-			payload: { spawnCount: number; blueprintId: Summon["id"] },
-		) => {
-			const { heroes, monsters, summons, surfaces } = get();
-			const figures = [...heroes, ...monsters, ...summons];
+	async (
+		{ caster }: EffectResolverParams<C>,
+		payload: { spawnCount: number; blueprintId: Summon["id"] },
+	) => {
+		const { heroes, monsters, summons, surfaces } = get();
+		const figures = [...heroes, ...monsters, ...summons];
 
-			const targetPos = { col: 2, row: 2 };
-			const isBlocked = !isTileEmpty(figures)(targetPos);
+		const targetPos = { col: 2, row: 2 };
+		const isBlocked = !isTileEmpty(figures)(targetPos);
 
-			// --- TRAP DOOR BLOCKED => ATTACK WHOEVER IS BLOCKING IT ! ---
-			if (isBlocked) {
-				const nastyBiteId = cardId("nasty_bite");
-				const nastyBiteCard = monsterCardLibrary[nastyBiteId];
-				const newIntent: Intent = {
-					cardId: nastyBiteId,
-					figureId: caster.id,
-				};
-				set(({ aiIntents, ...prev }) => ({
-					...prev,
-					aiIntents: {
-						...aiIntents,
-						[caster.id]: newIntent,
-					},
-				}));
-
-				await handleAICardIntent(
-					get,
-					set,
-					isSimulation,
-				)(caster.id, nastyBiteCard);
-
-				return;
-			}
-
-			// --- TRAP DOOR FREE => SUMMONS RATS ! ---
-			const trapdoorSurface = surfaces[getCellId(targetPos)];
-			set((prev) => ({
+		// --- TRAP DOOR BLOCKED => ATTACK WHOEVER IS BLOCKING IT ! ---
+		if (isBlocked) {
+			const nastyBiteId = cardId("nasty_bite");
+			const nastyBiteCard = monsterCardLibrary[nastyBiteId];
+			const newIntent: Intent = {
+				cardId: nastyBiteId,
+				figureId: caster.id,
+			};
+			set(({ aiIntents, ...prev }) => ({
 				...prev,
-				surfaces: {
-					...surfaces,
-					[getCellId(targetPos)]: {
-						...trapdoorSurface,
-						spriteBase: "/surfaces/open_trapdoor.webp",
-					},
+				aiIntents: {
+					...aiIntents,
+					[caster.id]: newIntent,
 				},
 			}));
-			await sleep(isSimulation ? 0 : 1000);
 
-			const neighbors = [
-				{ col: targetPos.col, row: targetPos.row - 1 },
-				{ col: targetPos.col, row: targetPos.row + 1 },
-				{ col: targetPos.col - 1, row: targetPos.row },
-				{ col: targetPos.col + 1, row: targetPos.row },
-			];
+			await handleAICardIntent(
+				get,
+				set,
+				isSimulation,
+			)(caster.id, nastyBiteCard);
 
-			const validSpawns = neighbors
-				.filter(isTileInBounds)
-				.filter(isTileEmpty(figures));
+			return;
+		}
 
-			const spawnAmount = payload.spawnCount;
-			const spawnTiles = validSpawns.slice(0, spawnAmount);
-			const blueprint = summonLibrary[payload.blueprintId];
-
-			if (spawnTiles.length === 0) return;
-
-			const newRats: Summon[] = spawnTiles.map((pos, index) => ({
-				id: summonId(`trap-door-rat-${Date.now()}-${index}`),
-				...blueprint,
-				stance: UnitStance.IDLE,
-				currentHp: blueprint.maxHp,
-				statuses: [],
-				gridPosition: pos,
-				allegiance: "ENEMY",
-			}));
-
-			set((prev) => ({
-				...prev,
-				summons: [...prev.summons, ...newRats],
-				surfaces: {
-					...surfaces,
-					[getCellId(targetPos)]: {
-						...trapdoorSurface,
-						spriteBase: "/surfaces/closed_trapdoor.webp",
-					},
+		// --- TRAP DOOR FREE => SUMMONS RATS ! ---
+		const trapdoorSurface = surfaces[getCellId(targetPos)];
+		set((prev) => ({
+			...prev,
+			surfaces: {
+				...surfaces,
+				[getCellId(targetPos)]: {
+					...trapdoorSurface,
+					spriteBase: "/surfaces/open_trapdoor.webp",
 				},
-			}));
-		};
+			},
+		}));
+		await sleep(isSimulation ? 0 : 1000);
+
+		const neighbors = [
+			{ col: targetPos.col, row: targetPos.row - 1 },
+			{ col: targetPos.col, row: targetPos.row + 1 },
+			{ col: targetPos.col - 1, row: targetPos.row },
+			{ col: targetPos.col + 1, row: targetPos.row },
+		];
+
+		const validSpawns = neighbors
+			.filter(isTileInBounds)
+			.filter(isTileEmpty(figures));
+
+		const spawnAmount = payload.spawnCount;
+		const spawnTiles = validSpawns.slice(0, spawnAmount);
+		const blueprint = summonLibrary[payload.blueprintId];
+
+		if (spawnTiles.length === 0) return;
+
+		const newRats: Summon[] = spawnTiles.map((pos, index) => ({
+			id: summonId(`trap-door-rat-${Date.now()}-${index}`),
+			...blueprint,
+			stance: UnitStance.IDLE,
+			currentHp: blueprint.maxHp,
+			statuses: [],
+			gridPosition: pos,
+			allegiance: "ENEMY",
+		}));
+
+		set((prev) => ({
+			...prev,
+			summons: [...prev.summons, ...newRats],
+			surfaces: {
+				...surfaces,
+				[getCellId(targetPos)]: {
+					...trapdoorSurface,
+					spriteBase: "/surfaces/closed_trapdoor.webp",
+				},
+			},
+		}));
+	};

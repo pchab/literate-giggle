@@ -16,6 +16,8 @@ const runeTypeToCardEffectType: Record<string, CardEffect["type"]> = {
 	bonusHeal: "heal",
 	bonusStatusAmount: "apply_status",
 	bonusStatusDuration: "apply_status",
+	bonusPushDistance: "push",
+	bonusPushCollision: "push",
 };
 
 export default function HeroRewardPanel({

@@ -3,56 +3,18 @@ import type {
 	CardEffect,
 	PlayRequirement,
 } from "@/modules/cards/domain/cards.type";
-import { getStatusEffectText } from "../helpers/cards.helper";
+import { formatCardEffect } from "../helpers/cards.helper";
 
 interface CardTooltipProps {
 	card: Card;
 }
 
 function renderEffectText(effect: CardEffect, index: number) {
-	switch (effect.type) {
-		case "damage": {
-			return (
-				<span key={index} className="text-xs text-zinc-300 text-left">
-					⚔️ Deal <strong className="text-red-400">{effect.amount}</strong>{" "}
-					damage.
-				</span>
-			);
-		}
-		case "apply_status": {
-			const verbText = effect.target === "self" ? "Gain" : "Apply";
-			const { icon, statusName, durationText } = getStatusEffectText(effect);
-			return (
-				<span key={index} className="text-xs text-zinc-300 text-left">
-					{icon} {verbText}{" "}
-					{effect.status.amount > 0 && (
-						<strong className="text-zinc-200">{effect.status.amount} </strong>
-					)}
-					<span className="text-zinc-400">{statusName}</span>
-					{durationText}.
-				</span>
-			);
-		}
-		case "heal":
-			return (
-				<span key={index} className="text-xs text-zinc-300 text-left">
-					💚 Heal <strong className="text-green-400">{effect.amount}</strong>{" "}
-					HP.
-				</span>
-			);
-		case "move":
-			return (
-				<span key={index} className="text-xs text-zinc-300 text-left">
-					👟 Move to target cell.
-				</span>
-			);
-		default:
-			return (
-				<span key={index} className="text-xs text-zinc-500 text-left">
-					Unknown effect
-				</span>
-			);
-	}
+	return (
+		<span key={index} className="text-xs text-zinc-300 text-left">
+			{formatCardEffect(effect)}
+		</span>
+	);
 }
 
 function renderRequirementText(req: PlayRequirement) {
@@ -76,7 +38,7 @@ export function CardTooltip({ card }: CardTooltipProps) {
 	}
 
 	return (
-		<div className="w-48 bg-zinc-950 border border-zinc-700 rounded-lg shadow-2xl p-3 z-50 pointer-events-none">
+		<div className="w-48 bg-zinc-950 border border-zinc-700 rounded-lg shadow-2xl p-3 z-50">
 			<div className="flex justify-between items-start border-b border-zinc-800 pb-2 mb-2 gap-2">
 				<h3 className="text-sm font-bold text-zinc-100 leading-tight">
 					{card.name}

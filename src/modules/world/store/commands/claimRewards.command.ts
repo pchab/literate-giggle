@@ -1,4 +1,5 @@
 import type { HeroCard } from "@/modules/cards/domain/cards.type";
+import { addPowerRune } from "@/modules/cards/helpers/heroCards.helper";
 import { CLASS_REGISTRY } from "@/modules/figures/data/heroClass.data";
 import type { Hero } from "@/modules/figures/domain/figures.type";
 import type { RuneDraftOption } from "@/modules/figures/domain/heroClass.types";
@@ -59,42 +60,10 @@ export function claimRewards(
 
 				if (deckIndex !== -1) {
 					const newDeck = [...newHero.deck];
-					const targetCard = {
+					const targetCard = addPowerRune(rune, {
 						...newDeck[deckIndex],
 						powerRunes: { ...newDeck[deckIndex].powerRunes },
-					};
-
-					switch (rune.type) {
-						case "bonusDamage":
-							targetCard.powerRunes.bonusDamage =
-								(targetCard.powerRunes.bonusDamage || 0) + rune.amount;
-							break;
-						case "bonusHeal":
-							targetCard.powerRunes.bonusHeal =
-								(targetCard.powerRunes.bonusHeal || 0) + rune.amount;
-							break;
-						case "bonusRange":
-							targetCard.powerRunes.bonusRange =
-								(targetCard.powerRunes.bonusRange || 0) + rune.amount;
-							break;
-						case "bonusStatusAmount":
-							targetCard.powerRunes.bonusStatusAmount = {
-								...targetCard.powerRunes.bonusStatusAmount,
-								[rune.statusType]:
-									(targetCard.powerRunes.bonusStatusAmount?.[rune.statusType] ||
-										0) + rune.amount,
-							};
-							break;
-						case "bonusStatusDuration":
-							targetCard.powerRunes.bonusStatusDuration = {
-								...targetCard.powerRunes.bonusStatusDuration,
-								[rune.statusType]:
-									(targetCard.powerRunes.bonusStatusDuration?.[
-										rune.statusType
-									] || 0) + rune.amount,
-							};
-							break;
-					}
+					});
 
 					newDeck[deckIndex] = targetCard;
 					newHero.deck = newDeck;

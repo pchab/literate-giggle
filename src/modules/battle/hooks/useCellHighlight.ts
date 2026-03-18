@@ -1,7 +1,9 @@
 import { useShallow } from "zustand/shallow";
 import type { GridPosition } from "@/modules/battle/domain/grid.type";
 import {
+	calculateAttackableCells,
 	calculateReachableCells,
+	getManhattanDistance,
 	isTileEmpty,
 	isUnitInTile,
 } from "@/modules/battle/helpers/grid.helpers";
@@ -100,9 +102,45 @@ export function useCellHighlight(): CellHighlight {
 	// ==========================================
 	// CASE 2: HERO USING CARD
 	// ==========================================
-	if (activeHeroCard || hoveredHeroCard) {
+	const cardContext = activeHeroCard || hoveredHeroCard;
+	if (cardContext) {
 		intent = playerIntent;
-		card = activeHeroCard?.card ?? hoveredHeroCard?.card;
+		card = cardContext.card;
+		const hero = heroes.find((h) => h.id === cardContext.unitId);
+		if (!intent && hero) {
+			const { playRequirement, range } = card;
+			let dangerZone: GridPosition[] = [];
+			if (playRequirement === "requires_empty_cell") {
+				dangerZone = calculateAttackableCells(
+					hero.gridPosition,
+					range,
+					false,
+				).filter(isTileEmpty(allUnits));
+			} else {
+				let targets: BattleUnit[] = [];
+				if (playRequirement === "requires_ally") {
+					targets = [
+						...heroes,
+						...summons.filter((s) => s.allegiance === "PLAYER"),
+					];
+				}
+				if (playRequirement === "requires_enemy") {
+					targets = [
+						...monsters,
+						...summons.filter((s) => s.allegiance === "ENEMY"),
+					];
+				}
+				if (playRequirement === "requires_entity") {
+					targets = allUnits;
+				}
+				dangerZone = targets
+					.map(({ gridPosition }) => gridPosition)
+					.filter(
+						(pos) => range >= getManhattanDistance(hero.gridPosition, pos),
+					);
+			}
+			intent = { figureId: hero.id, cardId: card.id, dangerZone };
+		}
 	} else {
 		// ==========================================
 		// CASE 3: HIGHLIGHT CELLS FOR ENEMY ACTION

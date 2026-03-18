@@ -61,7 +61,7 @@ export function Hand({ id: heroId, hand }: Pick<BattleHero, "id" | "hand">) {
 									animate={{ opacity: 1, y: 0, scale: 1 }}
 									exit={{ opacity: 0, scale: 0.95 }}
 									transition={{ duration: 0.15, ease: "easeOut" }}
-									className="absolute bottom-[110%] left-1/2 -translate-x-1/2"
+									className="absolute bottom-[110%] left-1/2 -translate-x-1/2 pointer-events-none"
 								>
 									<CardTooltip card={card} />
 								</motion.div>

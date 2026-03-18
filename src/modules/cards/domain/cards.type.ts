@@ -129,6 +129,8 @@ export type PowerRunes = {
 	// --- EFFECT-LEVEL MODIFIERS (Applies to specific effect types) ---
 	bonusDamage?: number;
 	bonusHeal?: number;
+	bonusPushDistance?: number;
+	bonusPushCollision?: number;
 
 	// --- STATUS-SPECIFIC MODIFIERS ---
 	bonusStatusAmount?: Partial<Record<StatusType, number>>;

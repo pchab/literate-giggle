@@ -39,6 +39,7 @@ export function BattleGrid({ encounterId }: { encounterId: Encounter["id"] }) {
 		activeHeroCard,
 		activeMoveHeroId,
 		usedMovesThisTurn,
+		setHoveredCell,
 		moveHero,
 		setActiveMoveHeroId,
 		resolveCard,
@@ -51,6 +52,7 @@ export function BattleGrid({ encounterId }: { encounterId: Encounter["id"] }) {
 			activeHeroCard: state.activeHeroCard,
 			activeMoveHeroId: state.activeMoveHeroId,
 			usedMovesThisTurn: state.usedMovesThisTurn,
+			setHoveredCell: state.setHoveredCell,
 			moveHero: state.moveHero,
 			setActiveMoveHeroId: state.setActiveMoveHeroId,
 			resolveCard: state.resolveCard,
@@ -90,6 +92,8 @@ export function BattleGrid({ encounterId }: { encounterId: Encounter["id"] }) {
 	return (
 		<div
 			className={`grid ${tailwindGridCols[GRID_BOUNDS.cols]} gap-1 p-1 bg-zinc-900/80 rounded-lg border border-zinc-800 relative`}
+			onMouseLeave={() => setHoveredCell(null)}
+			role="toolbar"
 		>
 			{cells.map((cell) => {
 				const unitsInCell = allUnits.filter(isUnitInTile(cell));

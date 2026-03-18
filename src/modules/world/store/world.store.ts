@@ -19,7 +19,6 @@ import { claimRewards } from "./commands/claimRewards.command";
 import { forgeEvolution } from "./commands/forgeEvolution.command";
 import { healParty } from "./commands/healParty.command";
 import { resolvePendingPromotion } from "./commands/resolvePendingPromotion.command";
-import { resolvePowerRune } from "./commands/resolvePowerRune.command";
 import { setPhase } from "./commands/setPhase.command";
 import { stageBattleRewards } from "./commands/stageBattleRewards.command";
 import { travelToNode } from "./commands/travelToNode.command";
@@ -62,11 +61,6 @@ export interface WorldAction {
 		heroId: Hero["id"],
 		chosenClass: HeroClass,
 		utilityCardId: Card["id"],
-	) => void;
-	resolvePowerRune: (
-		heroId: Hero["id"],
-		cardInstanceId: string,
-		chosenRune: RuneDraftOption,
 	) => void;
 	updateSelectedCards: (
 		heroId: Hero["id"],
@@ -142,10 +136,6 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 			) => set(claimRewards(earnedXp, completedDraft)),
 			resolvePromotion: (heroId, chosenClass, utilityCardId) =>
 				set(resolvePendingPromotion(heroId, chosenClass, utilityCardId)),
-			resolvePowerRune: (heroId, cardInstanceId, chosenRune) =>
-				set((state) =>
-					resolvePowerRune(state, heroId, cardInstanceId, chosenRune),
-				),
 			updateSelectedCards: (heroId, selectedCards) =>
 				set(updateSelectedCards(heroId, selectedCards)),
 			clearUnlockedQuestsQueue: () => set({ unlockedQuestsQueue: [] }),

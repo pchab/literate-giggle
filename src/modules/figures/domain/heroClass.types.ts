@@ -19,6 +19,8 @@ export type RuneDraftOption =
 	| { type: "bonusDamage"; amount: number; label: string }
 	| { type: "bonusHeal"; amount: number; label: string }
 	| { type: "bonusRange"; amount: number; label: string }
+	| { type: "bonusPushDistance"; amount: number; label: string }
+	| { type: "bonusPushCollision"; amount: number; label: string }
 	| {
 			type: "bonusStatusAmount";
 			statusType: StatusType;

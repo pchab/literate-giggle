@@ -55,6 +55,17 @@ export function generateDynamicRuneChoices(
 						label: `+1 ${formattedStatus} Duration`,
 					});
 				}
+			} else if (effect.type === "push") {
+				possibleOptions.set("push_distance", {
+					type: "bonusPushDistance",
+					amount: 1,
+					label: `+1 Push distance`,
+				});
+				possibleOptions.set("push_collision", {
+					type: "bonusPushCollision",
+					amount: 1,
+					label: `+1 Push collision damage`,
+				});
 			}
 		});
 	});

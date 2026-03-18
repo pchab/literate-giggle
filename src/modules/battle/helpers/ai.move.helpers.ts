@@ -1,4 +1,8 @@
-import type { AITargetPreference, AnchorTarget, Card } from "@/modules/cards/domain/cards.type";
+import type {
+	AITargetPreference,
+	AnchorTarget,
+	Card,
+} from "@/modules/cards/domain/cards.type";
 import type {
 	AIBattleUnit,
 	BattleUnit,
@@ -13,7 +17,9 @@ import {
 } from "./grid.helpers";
 import { calculateExactPath } from "./move.helpers";
 
-function isGridPosition(targetPref: AITargetPreference): targetPref is GridPosition {
+function isGridPosition(
+	targetPref: AITargetPreference,
+): targetPref is GridPosition {
 	return typeof targetPref !== "string";
 }
 
@@ -74,7 +80,8 @@ export const getIdealTarget = <C extends AIBattleUnit, T extends BattleUnit>(
 			return {
 				reachableTarget: target,
 				moveDest,
-				canHit: moveDest && isTargetInRange(card, 1, aiFigure.gridPosition, moveDest),
+				canHit:
+					moveDest && isTargetInRange(card, 1, aiFigure.gridPosition, moveDest),
 			};
 		}
 	}

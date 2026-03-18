@@ -97,6 +97,20 @@ export function getComputedCard(instance: HeroCard): Card {
 				amount: effect.amount + instance.powerRunes.bonusHeal,
 			};
 		}
+		if (
+			effect.type === "push" &&
+			(instance.powerRunes.bonusPushDistance ||
+				instance.powerRunes.bonusPushCollision)
+		) {
+			return {
+				...effect,
+				distance:
+					effect.distance + (instance.powerRunes.bonusPushDistance ?? 0),
+				collisionDamage:
+					effect.collisionDamage +
+					(instance.powerRunes.bonusPushCollision ?? 0),
+			};
+		}
 
 		if (effect.type === "apply_status") {
 			const addedAmount =
