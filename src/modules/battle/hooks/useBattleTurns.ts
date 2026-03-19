@@ -1,4 +1,6 @@
-import { redirect } from "next/navigation";
+"use client";
+
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
@@ -7,9 +9,9 @@ import type { Hero } from "@/modules/figures/domain/figures.type";
 import { useWorldStore } from "@/modules/world/store/world.store";
 
 export function useBattleTurns(encounterId: Encounter["id"]): void {
-	const { phase, roster, stageBattleRewards } = useWorldStore(
+	const router = useRouter();
+	const { roster, stageBattleRewards } = useWorldStore(
 		useShallow((state) => ({
-			phase: state.phase,
 			roster: state.roster,
 			stageBattleRewards: state.stageBattleRewards,
 		})),
@@ -33,15 +35,11 @@ export function useBattleTurns(encounterId: Encounter["id"]): void {
 	);
 	const [isInit, setIsInit] = useState(false);
 
-	if (phase !== "BATTLE") {
-		redirect("/");
-	}
-
 	// --- BATTLE INIT ---
 	useEffect(() => {
-		if (!isInit) {
-			initBattle(roster, encounterId);
+		if (!isInit && roster.length > 0) {
 			setIsInit(true);
+			initBattle(roster, encounterId);
 		}
 	}, [isInit, roster, encounterId, initBattle]);
 
@@ -72,6 +70,8 @@ export function useBattleTurns(encounterId: Encounter["id"]): void {
 
 		setTimeout(() => {
 			stageBattleRewards(remainingHealth);
+
+			router.push("/");
 		}, 1000);
 	}
 }

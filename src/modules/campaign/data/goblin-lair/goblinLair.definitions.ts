@@ -21,6 +21,7 @@ export const GOBLIN_LAIR = {
 		game_over_lair: sceneId("game_over_lair"),
 	},
 	encounters: {
+		goblin_band: encounterId("goblin_band"),
 		goblin_shaman: encounterId("goblin_shaman"),
 		frenzied_merchant: encounterId("frenzied_merchant"),
 	},

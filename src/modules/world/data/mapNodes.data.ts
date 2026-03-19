@@ -59,7 +59,7 @@ export const WorldMapNodes: MapData = {
 			mapNodeId("wizard_tower"),
 			mapNodeId("desert_ruins"),
 		],
-		encounterId: encounterId("tutorial_fight"),
+		encounterId: encounterId("cultists_ambush"),
 		background: "plain_crossroad",
 	},
 	wizard_tower: {
@@ -110,7 +110,7 @@ export const WorldMapNodes: MapData = {
 			mapNodeId("connury_town"),
 			mapNodeId("dark_forest"),
 		],
-		encounterId: encounterId("cultists_ambush"),
+		encounterId: encounterId("goblin_band"),
 		background: "plain_crossroad",
 	},
 	dark_forest: {

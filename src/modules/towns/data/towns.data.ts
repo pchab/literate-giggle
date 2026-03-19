@@ -188,8 +188,14 @@ export const TOWN_DB: Record<TownData["id"], TownData> = {
 				id: townLocationId("connury_inn"),
 				name: "Connury Inn (Rest)",
 				type: "HEAL",
-				position: { x: 40, y: 42 },
+				position: { x: 40, y: 46 },
 			},
+			{
+				id: townLocationId("alchemist_shop"),
+				name: "Alchemist Shop",
+				type: "SCENE",
+				position: { x: 56, y: 34 },
+			}
 		],
 	},
 	[townId("port_city")]: {
