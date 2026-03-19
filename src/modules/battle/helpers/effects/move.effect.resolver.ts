@@ -5,13 +5,17 @@ import { updateBattleUnitState } from "../state.helpers";
 import type { EffectResolverParams } from "./effect.resolvers";
 
 export const resolveMoveEffect =
-	(_: StoreGet, set: StoreSet) =>
+	(get: StoreGet, set: StoreSet, isSimulation = false) =>
 	(effect: MoveEffect) =>
-	<T extends BattleUnit>({
+	async <T extends BattleUnit>({
 		anchorTarget,
 		caster,
-	}: EffectResolverParams<T>): void => {
+	}: EffectResolverParams<T>): Promise<void> => {
 		if (anchorTarget && effect.target === "self") {
-			updateBattleUnitState(set)({ ...caster, gridPosition: anchorTarget });
+			await updateBattleUnitState(
+				get,
+				set,
+				isSimulation,
+			)({ ...caster, gridPosition: anchorTarget });
 		}
 	};

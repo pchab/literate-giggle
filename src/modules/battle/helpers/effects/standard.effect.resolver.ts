@@ -6,18 +6,19 @@ import type {
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
 import type { GridPosition } from "../../domain/grid.type";
 import type { StoreGet, StoreSet } from "../../store/battle.store";
+import { findUnit, updateBattleUnitState } from "../state.helpers";
 import { getVfxForEffect } from "../vfx.helper";
 import { applyEffectToEntity, resolveTargets } from "./effect.helpers";
 import type { EffectResolverParams } from "./effect.resolvers";
 
 export const resolveStandardEffect =
-	(get: StoreGet, set: StoreSet) =>
+	(get: StoreGet, set: StoreSet, isSimulation = false) =>
 	(effect: DamageEffect | HealEffect | ApplyStatusEffect) =>
-	<C extends BattleUnit>({
+	async <C extends BattleUnit>({
 		anchorTarget,
 		caster,
 		patternCells,
-	}: EffectResolverParams<C>): void => {
+	}: EffectResolverParams<C>): Promise<void> => {
 		const { heroes, monsters, summons } = get();
 		const figures = [...heroes, ...monsters, ...summons];
 		const targets = resolveTargets<BattleUnit>(
@@ -27,33 +28,25 @@ export const resolveStandardEffect =
 			figures,
 			patternCells,
 		);
-		const targetSet = new Set(targets);
+		console.log({ targets });
 		const targetPositions: GridPosition[] = [];
 
+		for (const targetId of targets) {
+			const target = findUnit(get)(targetId);
+			if (!target) continue;
+			if (!isSimulation) {
+				console.log("applying effect to target", { target, effect });
+			}
+			const updatedEntity = applyEffectToEntity(target, effect);
+			targetPositions.push(updatedEntity.gridPosition);
+			await updateBattleUnitState(get, set, isSimulation)(updatedEntity);
+		}
+
 		set((prev) => {
-			const updateList = <T extends BattleUnit>(list: T[]) =>
-				list
-					.map((figure) => {
-						if (targetSet.has(figure.id)) {
-							const updatedEntity = applyEffectToEntity(figure, effect);
-							targetPositions.push(updatedEntity.gridPosition);
-							return updatedEntity;
-						}
-						return figure;
-					})
-					.filter(({ currentHp }) => currentHp > 0);
-
-			const updatedHeroes = updateList(prev.heroes);
-			const updatedMonsters = updateList(prev.monsters);
-			const updatedSummons = updateList(prev.summons);
-
 			const newVfx = getVfxForEffect(effect, targetPositions);
 
 			return {
 				...prev,
-				heroes: updatedHeroes,
-				monsters: updatedMonsters,
-				summons: updatedSummons,
 				currentVfx: { ...prev.currentVfx, ...newVfx },
 			};
 		});

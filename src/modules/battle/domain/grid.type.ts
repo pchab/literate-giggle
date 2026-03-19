@@ -5,7 +5,7 @@ export type GridPosition = {
 	row: number;
 };
 
-export type SurfaceType = "MAGMA" | "TRAP" | "ICE" | "MUD" | "SPECIAL";
+export type SurfaceType = "TRAP" | "ACID" | "SPECIAL";
 
 export type SurfaceData = {
 	position: GridPosition;

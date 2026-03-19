@@ -19,12 +19,12 @@ import type { ActiveCardContext, StoreGet, StoreSet } from "../battle.store";
 import { calculateAIIntents } from "./calculateAIIntents.command";
 
 const updateHeroStance =
-	(get: StoreGet, set: StoreSet) =>
+	(get: StoreGet, set: StoreSet, isSimulation = false) =>
 	(heroId: BattleHero["id"]) =>
 	(stance: UnitStance) => {
 		const freshHero = [...get().heroes].find(({ id }) => id === heroId);
 		if (!freshHero) return;
-		updateBattleUnitState(set)({ ...freshHero, stance });
+		updateBattleUnitState(get, set, isSimulation)({ ...freshHero, stance });
 		return freshHero;
 	};
 
@@ -88,7 +88,7 @@ export const resolveCard =
 				patternCells,
 			});
 		}
-		updateHeroStance(get, set)(unitId)(UnitStance.IDLE);
+		updateHeroStance(get, set, isSimulation)(unitId)(UnitStance.IDLE);
 
 		const xpEarnedThisTurn = calculateStateDiff(
 			get().monsters,

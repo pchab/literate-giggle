@@ -26,6 +26,7 @@ export interface Figure {
 	baseDef: number;
 	baseMove: number;
 	immunities?: StatusType[];
+	onDeath?: Card["id"];
 }
 
 export interface BattleUnit extends Figure {
@@ -33,6 +34,7 @@ export interface BattleUnit extends Figure {
 	gridPosition: GridPosition;
 	statuses: Status[];
 	stance: UnitStance;
+	isDeathRattle?: boolean;
 }
 
 export interface AIBattleUnit extends BattleUnit {

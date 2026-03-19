@@ -15,7 +15,11 @@ export const resolveAIActions = async (
 	// 1. START OF AI TURN (Tick AI statuses)
 	// ==========================================
 	const { monsters: draftMonsters, summons: draftSummons } = get();
-	tickStatuses(set)([...draftMonsters, ...draftSummons]);
+	await tickStatuses(
+		get,
+		set,
+		isSimulation,
+	)([...draftMonsters, ...draftSummons]);
 
 	await sleep(isSimulation ? 0 : 200);
 
@@ -95,7 +99,7 @@ export const resolveAIActions = async (
 	// ============================================
 	// 3. START OF PLAYER TURN (Tick Hero statuses)
 	// ============================================
-	tickStatuses(set)(get().heroes);
+	await tickStatuses(get, set, isSimulation)(get().heroes);
 
 	const xpEarnedThisTurn = calculateStateDiff(
 		get().monsters,

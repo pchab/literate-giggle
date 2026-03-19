@@ -5,22 +5,16 @@ import { getCellId } from "../grid.helpers";
 import type { EffectResolverParams } from "./effect.resolvers";
 
 export const resolveSurfaceEffect =
-	(_: StoreGet, set: StoreSet) =>
+	(get: StoreGet, set: StoreSet) =>
 	(effect: CreateSurfaceEffect) =>
-	<C extends BattleUnit>({ anchorTarget }: EffectResolverParams<C>) => {
-		if (!anchorTarget) {
-			console.warn(
-				`Create surface effect ${effect.surfaceType} called on non cell anchor`,
-			);
-			return;
-		}
-		const cellId = getCellId(anchorTarget);
+	<C extends BattleUnit>({ patternCells }: EffectResolverParams<C>) => {
+		const currentSurfaces = get().surfaces;
 
-		set(({ surfaces }) => ({
-			surfaces: {
-				...surfaces,
+		const newSurfaces = patternCells?.reduce((surfaces, cell) => {
+			const cellId = getCellId(cell);
+			Object.assign(surfaces, {
 				[cellId]: {
-					position: anchorTarget,
+					position: cell,
 					type: effect.surfaceType,
 					duration: effect.duration,
 					damage: effect.damage,
@@ -28,6 +22,11 @@ export const resolveSurfaceEffect =
 					status: effect.status,
 					charges: effect.charges,
 				},
-			},
+			});
+			return surfaces;
+		}, currentSurfaces);
+
+		set(() => ({
+			surfaces: newSurfaces,
 		}));
 	};

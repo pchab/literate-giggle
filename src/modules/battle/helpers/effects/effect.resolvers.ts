@@ -28,13 +28,13 @@ export const resolvers =
 	(get: StoreGet, set: StoreSet, isSimulation = false) => {
 		switch (effect.type) {
 			case "move":
-				return resolveMoveEffect(get, set)(effect);
+				return resolveMoveEffect(get, set, isSimulation)(effect);
 			case "damage":
-				return resolveStandardEffect(get, set)(effect);
+				return resolveStandardEffect(get, set, isSimulation)(effect);
 			case "heal":
-				return resolveStandardEffect(get, set)(effect);
+				return resolveStandardEffect(get, set, isSimulation)(effect);
 			case "apply_status":
-				return resolveStandardEffect(get, set)(effect);
+				return resolveStandardEffect(get, set, isSimulation)(effect);
 			case "create_surface":
 				return resolveSurfaceEffect(get, set)(effect);
 			case "summon":
@@ -51,6 +51,6 @@ export const resolvers =
 					await script(get, set, isSimulation)(params, effect.payload);
 				};
 			default:
-				return resolveStandardEffect(get, set)(effect);
+				return resolveStandardEffect(get, set, isSimulation)(effect);
 		}
 	};

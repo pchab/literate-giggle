@@ -71,14 +71,18 @@ function getAnchorTarget<C extends BattleUnit, T extends BattleUnit>({
 }
 
 const updateAIUnitStance =
-	(get: StoreGet, set: StoreSet) =>
+	(get: StoreGet, set: StoreSet, isSimulation = false) =>
 	(unitId: BattleUnit["id"], wait: number = 300) =>
 	async (stance: UnitStance) => {
 		const freshAIUnit = [...get().monsters, ...get().summons].find(
 			({ id }) => id === unitId,
 		);
 		if (!freshAIUnit) return;
-		updateBattleUnitState(set)({ ...freshAIUnit, stance });
+		await updateBattleUnitState(
+			get,
+			set,
+			isSimulation,
+		)({ ...freshAIUnit, stance });
 		await sleep(wait);
 		return freshAIUnit;
 	};
@@ -109,17 +113,21 @@ export const handleAICardIntent =
 		// ==========================================
 		// 1. ANIMATE THE WALK
 		// ==========================================
+		const isNeutralSummon =
+			isSummon(initialAttacker) && initialAttacker.allegiance === "NEUTRAL";
 		const isAlly =
 			isSummon(initialAttacker) && initialAttacker.allegiance === "PLAYER";
-		const enemies = isAlly
-			? [
-					...initialState.monsters,
-					...initialState.summons.filter((s) => s.allegiance !== "PLAYER"),
-				]
-			: [
-					...initialState.heroes,
-					...initialState.summons.filter((s) => s.allegiance !== "ENEMY"),
-				];
+		const enemies = isNeutralSummon
+			? allFigures
+			: isAlly
+				? [
+						...initialState.monsters,
+						...initialState.summons.filter((s) => s.allegiance !== "PLAYER"),
+					]
+				: [
+						...initialState.heroes,
+						...initialState.summons.filter((s) => s.allegiance !== "ENEMY"),
+					];
 
 		const path = calculateExactPath<BattleUnit>(
 			initialAttacker.gridPosition,
@@ -130,6 +138,7 @@ export const handleAICardIntent =
 		const movedUnit = await moveBattleUnit(
 			get,
 			set,
+			isSimulation,
 		)({
 			movingUnit: initialAttacker,
 			path,
@@ -140,7 +149,9 @@ export const handleAICardIntent =
 		if (isSimulation) {
 			set(({ aiIntents, ...prev }) => {
 				const unitIntent = aiIntents[initialAttacker.id];
-				unitIntent.intendedMove = path;
+				if (unitIntent) {
+					unitIntent.intendedMove = path;
+				}
 				return { aiIntents, ...prev };
 			});
 		}
@@ -148,7 +159,7 @@ export const handleAICardIntent =
 		// ==========================================
 		// 2. PREPARE THE ATTACK
 		// ==========================================
-		if (!movedUnit || movedUnit.currentHp < 1) {
+		if (!movedUnit) {
 			return;
 		}
 
@@ -178,8 +189,10 @@ export const handleAICardIntent =
 		if (isSimulation) {
 			set(({ aiIntents, ...prev }) => {
 				const unitIntent = aiIntents[initialAttacker.id];
-				unitIntent.dangerZone = targetedCells;
-				unitIntent.target = anchorTarget;
+				if (unitIntent) {
+					unitIntent.dangerZone = targetedCells;
+					unitIntent.target = anchorTarget;
+				}
 				return { aiIntents, ...prev };
 			});
 		}
@@ -187,12 +200,14 @@ export const handleAICardIntent =
 		// ==========================================
 		// 3. RESOLVE EFFECTS
 		// ==========================================
-		const changeStance = await updateAIUnitStance(get, set)(
-			attackerId,
-			isSimulation ? 0 : 300,
-		);
+		const changeStance = await updateAIUnitStance(
+			get,
+			set,
+			isSimulation,
+		)(attackerId, isSimulation ? 0 : 300);
 		const attackingUnit = await changeStance(UnitStance.ATTACKING);
 		if (!attackingUnit) return;
+		console.log("applying effects of card ", card.name);
 		for (const effect of card.effects) {
 			await resolvers(effect)(get, set, isSimulation)({
 				anchorTarget,

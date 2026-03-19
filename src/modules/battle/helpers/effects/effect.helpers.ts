@@ -8,7 +8,7 @@ import type {
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
 import { isHeroId, isSummon } from "@/modules/figures/helpers/figures.helpers";
 import type { SurfaceData } from "../../domain/grid.type";
-import type { StoreSet } from "../../store/battle.store";
+import type { StoreGet, StoreSet } from "../../store/battle.store";
 import { getCellId, getLineOfSightPath, isUnitInTile } from "../grid.helpers";
 import { updateBattleUnitState } from "../state.helpers";
 
@@ -29,7 +29,14 @@ export function resolveTargets<T extends BattleUnit>(
 ): T["id"][] {
 	const aliveFigures = currentFigures.filter((f) => f.currentHp > 0);
 
-	if (targetType === "self") return [caster.id];
+	if (targetType === "self") {
+		if (patternCells && patternCells.length > 0) {
+			return aliveFigures
+				.filter((f) => patternCells.some((pos) => isUnitInTile(pos)(f)))
+				.map((f) => f.id);
+		}
+		return [caster.id];
+	}
 
 	if (targetType === "anchor" && anchorTarget) {
 		if (patternCells && patternCells.length > 0) {
@@ -156,9 +163,9 @@ export function applyEffectToEntity<T extends BattleUnit>(
 }
 
 export const tickStatuses =
-	(set: StoreSet) =>
-	<T extends BattleUnit>(figures: T[]): void =>
-		figures.forEach((figure) => {
+	(get: StoreGet, set: StoreSet, isSimulation = false) =>
+	async <T extends BattleUnit>(figures: T[]): Promise<void> => {
+		for (const figure of figures) {
 			if (figure.currentHp <= 0) return;
 
 			const poison =
@@ -179,7 +186,11 @@ export const tickStatuses =
 				.filter((status) => status.duration > 0 || status.duration === -1);
 
 			const cellId = getCellId(figure.gridPosition);
-			updateBattleUnitState(set)({
+			await updateBattleUnitState(
+				get,
+				set,
+				isSimulation,
+			)({
 				...figure,
 				currentHp: newHp,
 				statuses: newStatuses,
@@ -191,7 +202,8 @@ export const tickStatuses =
 					...(regen > 0 ? { [cellId]: "HEAL" } : {}),
 				},
 			}));
-		});
+		}
+	};
 
 // --- 4. FIXED SURFACE HELPER ---
 export function applySurfaceEffect<T extends BattleUnit>({

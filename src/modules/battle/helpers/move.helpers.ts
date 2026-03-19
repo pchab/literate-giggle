@@ -14,23 +14,32 @@ import {
 } from "./grid.helpers";
 import { updateBattleUnitState } from "./state.helpers";
 
-export function moveBattleUnit(get: StoreGet, set: StoreSet) {
+export function moveBattleUnit(
+	get: StoreGet,
+	set: StoreSet,
+	isSimulation = false,
+) {
 	return async <T extends BattleUnit>({
 		movingUnit,
 		path,
+		forcedMove = false,
 		stepDelayMs = 200,
 	}: {
 		movingUnit: T;
 		path: GridPosition[];
+		forcedMove?: boolean;
 		stepDelayMs?: number;
 	}): Promise<T> => {
-		let currentUnit = { ...movingUnit, stance: UnitStance.MOVING };
-		updateBattleUnitState(set)(currentUnit);
+		let currentUnit = movingUnit;
+		if (!forcedMove) {
+			currentUnit = { ...movingUnit, stance: UnitStance.MOVING };
+			await updateBattleUnitState(get, set, isSimulation)(currentUnit);
+		}
 
 		for (const step of path) {
 			currentUnit = { ...currentUnit, gridPosition: step };
 
-			updateBattleUnitState(set)(currentUnit);
+			await updateBattleUnitState(get, set, isSimulation)(currentUnit);
 			await sleep(stepDelayMs);
 
 			const { surfaces: draftSurfaces } = get();
@@ -55,7 +64,7 @@ export function moveBattleUnit(get: StoreGet, set: StoreSet) {
 					return { ...prev, surfaces: nextSurfaces };
 				});
 
-				updateBattleUnitState(set)(currentUnit);
+				await updateBattleUnitState(get, set, isSimulation)(currentUnit);
 
 				if (
 					currentUnit.currentHp <= 0 ||
@@ -65,9 +74,10 @@ export function moveBattleUnit(get: StoreGet, set: StoreSet) {
 				}
 			}
 		}
-
-		currentUnit = { ...currentUnit, stance: UnitStance.IDLE };
-		updateBattleUnitState(set)(currentUnit);
+		if (!forcedMove) {
+			currentUnit = { ...currentUnit, stance: UnitStance.IDLE };
+			await updateBattleUnitState(get, set, isSimulation)(currentUnit);
+		}
 		return currentUnit;
 	};
 }

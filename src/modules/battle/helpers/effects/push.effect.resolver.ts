@@ -104,7 +104,7 @@ export const resolvePushEffect =
 				if (effect.collisionDamage > 0) {
 					// Double damage to the crushed unit
 					entity = applyDamageToEntity(entity, effect.collisionDamage * 2);
-					updateBattleUnitState(set)(entity);
+					updateBattleUnitState(get, set, isSimulation)(entity);
 
 					// Standard damage to the walls (if they are entities)
 					if (crushObstacleA) {
@@ -112,14 +112,14 @@ export const resolvePushEffect =
 							crushObstacleA,
 							effect.collisionDamage,
 						);
-						updateBattleUnitState(set)(updatedA);
+						updateBattleUnitState(get, set, isSimulation)(updatedA);
 					}
 					if (crushObstacleB) {
 						const updatedB = applyDamageToEntity(
 							crushObstacleB,
 							effect.collisionDamage,
 						);
-						updateBattleUnitState(set)(updatedB);
+						updateBattleUnitState(get, set, isSimulation)(updatedB);
 					}
 				}
 				return;
@@ -158,10 +158,12 @@ export const resolvePushEffect =
 				entity = await moveBattleUnit(
 					get,
 					set,
+					isSimulation,
 				)({
 					movingUnit: entity,
 					path: pushPath,
 					stepDelayMs: isSimulation ? 0 : 100,
+					forcedMove: true,
 				});
 			}
 
@@ -173,7 +175,7 @@ export const resolvePushEffect =
 				if (effect.collisionDamage > 0 && entity.currentHp > 0) {
 					// Damage the pushed unit
 					entity = applyDamageToEntity(entity, effect.collisionDamage);
-					updateBattleUnitState(set)(entity);
+					updateBattleUnitState(get, set, isSimulation)(entity);
 
 					// Damage the obstacle it hit
 					if (collidedWith) {
@@ -181,7 +183,7 @@ export const resolvePushEffect =
 							collidedWith,
 							effect.collisionDamage,
 						);
-						updateBattleUnitState(set)(updatedObstacle);
+						updateBattleUnitState(get, set, isSimulation)(updatedObstacle);
 					}
 				}
 			}
