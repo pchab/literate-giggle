@@ -1,10 +1,10 @@
 import type { Quest } from "../domain/quests.type";
+import { THE_ALCHEMISTS_LEDGER } from './alchemists-ledger/alchemistsLedger.definitions';
+import { alchemistQuest } from './alchemists-ledger/alchemistsLedger.quest';
 import {
 	DWARVEN_PASSAGE_QUEST,
 	QUEST_DWARVEN_HIGHWAY,
 } from "./dwarven-passage/dwarvenPassage.quest";
-import { GOBLIN_LAIR } from "./goblin-lair/goblinLair.definitions";
-import { GOBLIN_LAIR_QUEST } from "./goblin-lair/goblinLair.quest";
 import {
 	NECROMANCER_QUEST,
 	NECROMANCER_QUEST_ID,
@@ -24,5 +24,5 @@ export const QUEST_DB: Record<Quest["id"], Quest> = {
 	[NECROMANCER_QUEST_ID]: NECROMANCER_QUEST,
 	[QUEST_DWARVEN_HIGHWAY]: DWARVEN_PASSAGE_QUEST,
 	[SHADOWS_DEBT.id]: SHADOWS_DEBT_QUEST,
-	[GOBLIN_LAIR.id]: GOBLIN_LAIR_QUEST,
+	[THE_ALCHEMISTS_LEDGER.id]: alchemistQuest,
 };
