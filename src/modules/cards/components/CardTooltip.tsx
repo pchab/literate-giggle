@@ -38,7 +38,7 @@ export function CardTooltip({ card }: CardTooltipProps) {
 	}
 
 	return (
-		<div className="w-48 bg-zinc-950 border border-zinc-700 rounded-lg shadow-2xl p-3 z-50">
+		<div className="w-48 bg-zinc-950 border border-zinc-700 rounded-lg shadow-2xl p-2 z-50">
 			<div className="flex justify-between items-start border-b border-zinc-800 pb-2 mb-2 gap-2">
 				<h3 className="text-sm font-bold text-zinc-100 leading-tight">
 					{card.name}
@@ -52,7 +52,7 @@ export function CardTooltip({ card }: CardTooltipProps) {
 				{card.effects.map((effect, idx) => renderEffectText(effect, idx))}
 			</div>
 
-			<div className="mt-3 pt-2 border-t border-zinc-800 text-center">
+			<div className="mt-1 pt-1 border-t border-zinc-800 text-center">
 				<span className="text-[10px] text-zinc-500 italic block tracking-wide uppercase">
 					{renderRequirementText(card.playRequirement)}
 				</span>

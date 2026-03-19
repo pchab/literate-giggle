@@ -1,6 +1,7 @@
 import type { UnitBlueprint } from "../../domain/figures.type";
 
 export const iceWall: UnitBlueprint = {
+	name: "Ice Wall",
 	spriteBase: "summons/ice_wall",
 	maxHp: 10,
 	baseMove: 0,

@@ -2,6 +2,7 @@ import { cardId } from "@/modules/cards/helpers/cards.helper";
 import type { UnitBlueprint } from "../../domain/figures.type";
 
 export const elvenCommander: UnitBlueprint = {
+	name: "Elven Commander",
 	spriteBase: "monsters/elven_commander",
 	maxHp: 24,
 	baseDef: 1,

@@ -2,6 +2,7 @@ import { cardId } from "@/modules/cards/helpers/cards.helper";
 import type { UnitBlueprint } from "../../domain/figures.type";
 
 export const bat: UnitBlueprint = {
+	name: "Giant Bat",
 	spriteBase: "monsters/bat",
 	maxHp: 6,
 	baseMove: 4,

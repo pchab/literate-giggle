@@ -2,6 +2,7 @@ import { cardId } from "@/modules/cards/helpers/cards.helper";
 import type { UnitBlueprint } from "../../domain/figures.type";
 
 export const stone_elemental: UnitBlueprint = {
+	name: "Stone Elemental",
 	spriteBase: "monsters/stone_elemental",
 	maxHp: 20,
 	baseMove: 1,
@@ -20,6 +21,7 @@ export const stone_elemental: UnitBlueprint = {
 };
 
 export const golem_overseer: UnitBlueprint = {
+	name: "Golem Overseer",
 	spriteBase: "monsters/golem_overseer",
 	maxHp: 60,
 	baseMove: 1,

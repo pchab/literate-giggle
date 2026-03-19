@@ -2,6 +2,7 @@ import { cardId } from "@/modules/cards/helpers/cards.helper";
 import type { UnitBlueprint } from "../../domain/figures.type";
 
 export const arcaneWisp: UnitBlueprint = {
+	name: "Arcane Wisp",
 	spriteBase: "summons/arcane_wisp",
 	maxHp: 5,
 	baseDef: 0,

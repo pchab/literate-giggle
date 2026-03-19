@@ -2,6 +2,7 @@ import { cardId } from "@/modules/cards/helpers/cards.helper";
 import type { UnitBlueprint } from "../../domain/figures.type";
 
 export const humanSoldier: UnitBlueprint = {
+	name: "Iron Footman",
 	spriteBase: "monsters/human_soldier",
 	maxHp: 20,
 	baseMove: 2,

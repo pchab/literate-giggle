@@ -2,6 +2,7 @@ import { cardId } from "@/modules/cards/helpers/cards.helper";
 import type { UnitBlueprint } from "../../domain/figures.type";
 
 export const humanKing: UnitBlueprint = {
+	name: "King Tanotalos II",
 	spriteBase: "monsters/human_king",
 	maxHp: 80,
 	baseMove: 2,

@@ -2,6 +2,7 @@ import { cardId } from "@/modules/cards/helpers/cards.helper";
 import type { UnitBlueprint } from "../../domain/figures.type";
 
 export const goblin: UnitBlueprint = {
+	name: "Goblin",
 	spriteBase: "monsters/goblin",
 	maxHp: 10,
 	baseMove: 2,

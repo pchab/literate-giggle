@@ -21,6 +21,7 @@ export interface UnitBlueprint extends Omit<Figure, "id"> {
 
 export interface Figure {
 	id: string;
+	name: string;
 	spriteBase: string;
 	maxHp: number;
 	baseDef: number;
@@ -43,7 +44,6 @@ export interface AIBattleUnit extends BattleUnit {
 
 export interface Hero extends Figure {
 	id: string & { readonly __brand: "HeroId" };
-	name: string;
 	heroClass: HeroClass;
 	deck: HeroCard[];
 	selectedCards: [HeroCard, HeroCard | null, HeroCard | null];

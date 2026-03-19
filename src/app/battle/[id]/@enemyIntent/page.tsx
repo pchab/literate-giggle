@@ -57,10 +57,11 @@ export default function EnemyIntentSidebar() {
 
 					{/* --- HEADER & HP --- */}
 					<div className="relative z-10 flex flex-col gap-1.5">
-						<div className="flex justify-between items-end mb-1">
+						<div className="flex items-center justify-between mb-1">
 							<h3 className="text-sm font-bold text-red-300 uppercase tracking-widest drop-shadow-md">
-								Enemy Info
+								{aiUnit.name}
 							</h3>
+
 							<span className="text-[11px] font-mono text-zinc-300">
 								Move {aiUnit.baseMove}
 							</span>
@@ -68,7 +69,6 @@ export default function EnemyIntentSidebar() {
 								{aiUnit.currentHp} / {aiUnit.maxHp} HP
 							</span>
 						</div>
-
 						<div className="w-full h-1.5 bg-zinc-900 rounded-sm overflow-hidden border border-zinc-800 shadow-inner">
 							<motion.div
 								className="h-full bg-red-600 origin-left"
@@ -112,24 +112,41 @@ export default function EnemyIntentSidebar() {
 					)}
 
 					{/* --- INTENT/NEXT ACTION --- */}
-					{aiIntents[aiUnit.id] && (
-						<div className="relative z-10 mt-auto pt-3 border-t border-red-900/30">
-							<h4 className="text-[10px] text-zinc-500 uppercase tracking-widest mb-2 font-semibold">
-								Intended Action
-							</h4>
-							{(() => {
-								const intentCard = cardLibrary[aiIntents[aiUnit.id].cardId];
-								if (!intentCard) return null;
+					{aiIntents[aiUnit.id] &&
+						(() => {
+							const intentCard = cardLibrary[aiIntents[aiUnit.id].cardId];
+							if (!intentCard) return null;
 
-								return (
-									<div className="flex flex-row justify-between items-start">
+							return (
+								<div className="flex flex-row z-10 mt-auto pt-3 border-t border-red-900/30 gap-2">
+									<div>
+										<h4 className="text-[10px] text-zinc-500 uppercase tracking-widest mb-2 font-semibold">
+											On death
+										</h4>
 										<BattleCard card={intentCard} />
-										<CardTooltip card={intentCard} />
 									</div>
-								);
-							})()}
-						</div>
-					)}
+									<CardTooltip card={intentCard} />
+								</div>
+							);
+						})()}
+					{/* --- INTENT/ON DEATH ACTION --- */}
+					{aiUnit.onDeath &&
+						(() => {
+							const onDeathCard = cardLibrary[aiUnit.onDeath];
+							if (!onDeathCard) return null;
+
+							return (
+								<div className="flex flex-row z-10 mt-auto pt-3 border-t border-red-900/30 gap-2">
+									<div>
+										<h4 className="text-[10px] text-zinc-500 uppercase tracking-widest mb-2 font-semibold">
+											On death
+										</h4>
+										<BattleCard card={onDeathCard} />
+									</div>
+									<CardTooltip card={onDeathCard} />
+								</div>
+							);
+						})()}
 				</motion.div>
 			</AnimatePresence>
 		</div>
