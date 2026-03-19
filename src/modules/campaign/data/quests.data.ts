@@ -3,8 +3,8 @@ import {
 	DWARVEN_PASSAGE_QUEST,
 	QUEST_DWARVEN_HIGHWAY,
 } from "./dwarven-passage/dwarvenPassage.quest";
-import { GOBLIN_LAIR } from './goblin-lair/goblinLair.definitions';
-import { GOBLIN_LAIR_QUEST } from './goblin-lair/goblinLair.quest';
+import { GOBLIN_LAIR } from "./goblin-lair/goblinLair.definitions";
+import { GOBLIN_LAIR_QUEST } from "./goblin-lair/goblinLair.quest";
 import {
 	NECROMANCER_QUEST,
 	NECROMANCER_QUEST_ID,

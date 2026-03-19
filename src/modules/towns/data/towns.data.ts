@@ -174,7 +174,7 @@ export const TOWN_DB: Record<TownData["id"], TownData> = {
 	},
 	[townId("connury_town")]: {
 		id: townId("connury_town"),
-		name: "Cromee Town",
+		name: "Connury Town",
 		backgroundImage: "/towns/connury_town.webp",
 		locations: [
 			{
@@ -195,7 +195,7 @@ export const TOWN_DB: Record<TownData["id"], TownData> = {
 				name: "Alchemist Shop",
 				type: "SCENE",
 				position: { x: 56, y: 34 },
-			}
+			},
 		],
 	},
 	[townId("port_city")]: {

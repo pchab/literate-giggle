@@ -39,22 +39,40 @@ export function updateBattleUnitState<T extends BattleUnit>(
 		if (isDead) nextUnit.isDeathRattle = true;
 
 		if (isSummon(nextUnit)) {
-			set(({ summons, ...state }) => ({ ...state, summons: summons.map((s) => (s.id === unit.id ? nextUnit : s)), ...newState }));
+			set(({ summons, ...state }) => ({
+				...state,
+				summons: summons.map((s) => (s.id === unit.id ? nextUnit : s)),
+				...newState,
+			}));
 		} else if (isMonster(nextUnit)) {
-			set(({ monsters, ...state }) => ({ ...state, monsters: monsters.map((m) => (m.id === unit.id ? nextUnit : m)), ...newState }));
+			set(({ monsters, ...state }) => ({
+				...state,
+				monsters: monsters.map((m) => (m.id === unit.id ? nextUnit : m)),
+				...newState,
+			}));
 		} else if (isHero(nextUnit)) {
-			set(({ heroes, ...state }) => ({ ...state, heroes: heroes.map((h) => (h.id === unit.id ? nextUnit : h)), ...newState }));
+			set(({ heroes, ...state }) => ({
+				...state,
+				heroes: heroes.map((h) => (h.id === unit.id ? nextUnit : h)),
+				...newState,
+			}));
 		}
 
 		if (isDead) {
 			await processUnitDeath(get, set, isSimulation)(nextUnit);
 
 			if (isSummon(unit)) {
-				set(({ summons }) => ({ summons: summons.filter((s) => s.id !== unit.id) }));
+				set(({ summons }) => ({
+					summons: summons.filter((s) => s.id !== unit.id),
+				}));
 			} else if (isMonster(unit)) {
-				set(({ monsters }) => ({ monsters: monsters.filter((m) => m.id !== unit.id) }));
+				set(({ monsters }) => ({
+					monsters: monsters.filter((m) => m.id !== unit.id),
+				}));
 			} else if (isHero(unit)) {
-				set(({ heroes }) => ({ heroes: heroes.filter((h) => h.id !== unit.id) }));
+				set(({ heroes }) => ({
+					heroes: heroes.filter((h) => h.id !== unit.id),
+				}));
 			}
 		}
 	};

@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 import { QuestTracker } from "@/modules/campaign/components/QuestTracker";
 import { HandMenu } from "@/modules/cards/components/HandMenu";
 import { RetroPanel } from "./RetroPanel";
+import { SystemMenu } from "./SystemMenu";
 
-type MenuTab = "HAND" | "QUESTS";
+type MenuTab = "HAND" | "QUESTS" | "SYSTEM";
 
 interface MenuModalProps {
 	isOpen: boolean;
@@ -22,6 +23,13 @@ export function MenuModal({ isOpen, onClose }: MenuModalProps) {
 	}, [isOpen]);
 
 	if (!isOpen) return null;
+
+	const tabClass = (tabName: MenuTab) =>
+		`px-8 py-4 font-pixel text-xl tracking-widest uppercase transition-all ${
+			activeTab === tabName
+				? "bg-zinc-900 text-amber-500 border-t-4 border-x-4 border-zinc-700 translate-y-1 pb-5"
+				: "bg-zinc-950 text-zinc-500 border-t-4 border-x-4 border-transparent hover:text-zinc-300 hover:bg-zinc-900"
+		}`;
 
 	return (
 		<AnimatePresence>
@@ -44,24 +52,23 @@ export function MenuModal({ isOpen, onClose }: MenuModalProps) {
 								<button
 									type="button"
 									onClick={() => setActiveTab("HAND")}
-									className={`px-8 py-4 font-pixel text-xl tracking-widest uppercase transition-all ${
-										activeTab === "HAND"
-											? "bg-zinc-900 text-amber-500 border-t-4 border-x-4 border-zinc-700 translate-y-1 pb-5"
-											: "bg-zinc-950 text-zinc-500 border-t-4 border-x-4 border-transparent hover:text-zinc-300 hover:bg-zinc-900"
-									}`}
+									className={tabClass("HAND")}
 								>
 									Hand
 								</button>
 								<button
 									type="button"
 									onClick={() => setActiveTab("QUESTS")}
-									className={`px-8 py-4 font-pixel text-xl tracking-widest uppercase transition-all ${
-										activeTab === "QUESTS"
-											? "bg-zinc-900 text-amber-500 border-t-4 border-x-4 border-zinc-700 translate-y-1 pb-5"
-											: "bg-zinc-950 text-zinc-500 border-t-4 border-x-4 border-transparent hover:text-zinc-300 hover:bg-zinc-900"
-									}`}
+									className={tabClass("QUESTS")}
 								>
 									Quest Log
+								</button>
+								<button
+									type="button"
+									onClick={() => setActiveTab("SYSTEM")}
+									className={tabClass("SYSTEM")}
+								>
+									System
 								</button>
 							</div>
 
@@ -78,12 +85,8 @@ export function MenuModal({ isOpen, onClose }: MenuModalProps) {
 						{/* --- TAB CONTENT AREA --- */}
 						<div className="grow overflow-hidden relative min-h-150">
 							{activeTab === "HAND" && <HandMenu />}
-
-							{activeTab === "QUESTS" && (
-								<div className="absolute inset-0">
-									<QuestTracker />
-								</div>
-							)}
+							{activeTab === "QUESTS" && <QuestTracker />}
+							{activeTab === "SYSTEM" && <SystemMenu />}
 						</div>
 					</RetroPanel>
 				</motion.div>

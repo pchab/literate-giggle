@@ -1,6 +1,6 @@
 import { type Scene, sceneId } from "../domain/scenes.type";
 import { DWARVEN_PASSAGE_SCENE_DB } from "./dwarven-passage/dwarvenPassage.scenes";
-import { GOBLIN_LAIR_SCENES } from './goblin-lair/goblinLair.scenes';
+import { GOBLIN_LAIR_SCENES } from "./goblin-lair/goblinLair.scenes";
 import { NECROMANCER_SCENE_DB } from "./necromancer/necromancer.scenes";
 import { RATS_IN_THE_CELLAR_SCENES } from "./rats-in-the-cellar/ratsInTheCellar.scenes";
 import { SHADOWS_DEBT } from "./shadows-debt/shadowsDebt.definitions";

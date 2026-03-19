@@ -1,11 +1,8 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import type { Quest } from "@/modules/campaign/domain/quests.type";
-import { initialDeck } from "@/modules/cards/data/cards.data";
 import type { EvolutionRuneId } from "@/modules/cards/data/evolutionRecipes.data";
-import type { Card, HeroCard } from "@/modules/cards/domain/cards.type";
-import { createHeroCard } from "@/modules/cards/helpers/cards.helper";
-import { baseHeroStats } from "@/modules/figures/data/heroes/baseHeroStats";
+import type { Card } from "@/modules/cards/domain/cards.type";
 import type { Hero } from "@/modules/figures/domain/figures.type";
 import type {
 	HeroClass,
@@ -13,11 +10,11 @@ import type {
 	PendingPromotion,
 	RuneDraftOption,
 } from "@/modules/figures/domain/heroClass.types";
-import { heroId } from "@/modules/figures/helpers/figures.helpers";
 import { type MapNode, mapNodeId } from "@/modules/world/domain/map.types";
 import { claimRewards } from "./commands/claimRewards.command";
 import { forgeEvolution } from "./commands/forgeEvolution.command";
 import { healParty } from "./commands/healParty.command";
+import { initializeRoster } from "./commands/initializeRoster.command";
 import { resolvePendingPromotion } from "./commands/resolvePendingPromotion.command";
 import { setPhase } from "./commands/setPhase.command";
 import { stageBattleRewards } from "./commands/stageBattleRewards.command";
@@ -25,11 +22,7 @@ import { travelToNode } from "./commands/travelToNode.command";
 import { updateSelectedCards } from "./commands/updateSelectedCards.command";
 
 export type GamePhase = "TOWN" | "CAMP" | "MAP" | "BATTLE" | "REWARD" | "SCENE";
-const startingIds = [
-	heroId(crypto.randomUUID()),
-	heroId(crypto.randomUUID()),
-	heroId(crypto.randomUUID()),
-];
+
 export interface WorldState {
 	phase: GamePhase;
 	currentNodeId: MapNode["id"];
@@ -41,6 +34,7 @@ export interface WorldState {
 }
 
 export interface WorldAction {
+	initializeRoster: () => void;
 	setPhase: (phase: GamePhase) => void;
 	stageBattleRewards: (remainingHp: Record<string, number>) => void;
 	travelToNode: (
@@ -89,6 +83,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 			unlockedQuestsQueue: [],
 			evolutionRunesInventory: [],
 
+			initializeRoster: () => set(initializeRoster()),
 			setPhase: (phase) => set(setPhase(phase)),
 			travelToNode: (nodeId, dynamicMap) =>
 				set(travelToNode(nodeId, dynamicMap)),

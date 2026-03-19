@@ -1,4 +1,4 @@
-import { mapNodeId } from '@/modules/world/domain/map.types';
+import { mapNodeId } from "@/modules/world/domain/map.types";
 import type { Scene } from "../../domain/scenes.type";
 import { GOBLIN_LAIR } from "./goblinLair.definitions";
 
@@ -11,7 +11,11 @@ export const GOBLIN_LAIR_SCENES: Record<Scene["id"], Scene> = {
 				text: "It seems those goblins found the stash of some merchants. Maybe that book contains information about whoever it belongs too.",
 				backgroundImage: "/scenes/goblin_loot.webp",
 				onNext: [
-					{ type: "ADVANCE_QUEST", questId: GOBLIN_LAIR.id, newStepId: GOBLIN_LAIR.steps.bring_back_ledger },
+					{
+						type: "ADVANCE_QUEST",
+						questId: GOBLIN_LAIR.id,
+						newStepId: GOBLIN_LAIR.steps.bring_back_ledger,
+					},
 					{ type: "END_SCENE" },
 				],
 			},
@@ -28,10 +32,8 @@ export const GOBLIN_LAIR_SCENES: Record<Scene["id"], Scene> = {
 				choices: [
 					{
 						label: "Give him the ledger and supplies.",
-						actions: [
-							{ type: "CHANGE_STEP", stepId: "deception" },
-						]
-					}
+						actions: [{ type: "CHANGE_STEP", stepId: "deception" }],
+					},
 				],
 			},
 			deception: {
@@ -41,17 +43,15 @@ export const GOBLIN_LAIR_SCENES: Record<Scene["id"], Scene> = {
 				choices: [
 					{
 						label: "I could track the goblins.",
-						actions: [
-							{ type: "CHANGE_STEP", stepId: "job" },
-						]
+						actions: [{ type: "CHANGE_STEP", stepId: "job" }],
 					},
 					{
 						label: "K Thx Bye.",
 						actions: [
 							{ type: "COMPLETE_QUEST", questId: GOBLIN_LAIR.id },
 							{ type: "END_SCENE" },
-						]
-					}
+						],
+					},
 				],
 			},
 			job: {
@@ -62,12 +62,16 @@ export const GOBLIN_LAIR_SCENES: Record<Scene["id"], Scene> = {
 					{
 						label: "Bye.",
 						actions: [
-							{ type: "ADVANCE_QUEST", questId: GOBLIN_LAIR.id, newStepId: GOBLIN_LAIR.steps.find_the_goblin_lair },
+							{
+								type: "ADVANCE_QUEST",
+								questId: GOBLIN_LAIR.id,
+								newStepId: GOBLIN_LAIR.steps.find_the_goblin_lair,
+							},
 							{ type: "END_SCENE" },
-						]
+						],
 					},
 				],
-			}
+			},
 		},
 	},
 	[GOBLIN_LAIR.scenes.find_goblin_lair]: {
@@ -96,7 +100,7 @@ export const GOBLIN_LAIR_SCENES: Record<Scene["id"], Scene> = {
 							},
 							{
 								type: "END_SCENE",
-							}
+							},
 						],
 					},
 				],
@@ -108,10 +112,10 @@ export const GOBLIN_LAIR_SCENES: Record<Scene["id"], Scene> = {
 					{
 						type: "START_BATTLE",
 						encounterId: GOBLIN_LAIR.encounters.goblin_shaman,
-						background: "goblin_lair"
+						background: "goblin_lair",
 					},
 				],
-			}
+			},
 		},
 	},
 };
