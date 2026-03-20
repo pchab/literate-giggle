@@ -124,6 +124,6 @@ export const resolveCard =
 		);
 
 		if (!isSimulation) {
-			await calculateAIIntents(get, set)({});
+			await calculateAIIntents(get, set)();
 		}
 	};

@@ -26,54 +26,78 @@ export const findUnit = (get: StoreGet) => (unitId: BattleUnit["id"]) => {
 
 export function updateBattleUnitState<T extends BattleUnit>(
 	get: StoreGet,
+
 	set: StoreSet,
+
 	isSimulation = false,
 ) {
 	return async (unit: T, newState: Partial<BattleState> = {}) => {
-		const currentStoreUnit = findUnit(get)(unit.id);
-		if (currentStoreUnit?.isDeathRattle) return;
-
 		const isDead = unit.currentHp < 1;
 
-		const nextUnit = { ...unit };
-		if (isDead) nextUnit.isDeathRattle = true;
+		const toRemove = isDead && !unit.isDeathRattle;
 
-		if (isSummon(nextUnit)) {
+		if (toRemove) {
+			if (isHeroId(unit.id)) {
+				set(({ heroes }) => ({
+					heroes: heroes.map((h) =>
+						h.id === unit.id ? { ...h, isDeathRattle: true } : h,
+					),
+				}));
+			}
+
+			if (isMonsterId(unit.id)) {
+				set(({ monsters }) => ({
+					monsters: monsters.map((m) =>
+						m.id === unit.id ? { ...m, isDeathRattle: true } : m,
+					),
+				}));
+			}
+
+			if (isSummonId(unit.id)) {
+				set(({ summons }) => ({
+					summons: summons.map((s) =>
+						s.id === unit.id ? { ...s, isDeathRattle: true } : s,
+					),
+				}));
+			}
+
+			await processUnitDeath(get, set, isSimulation)(unit);
+		}
+
+		if (isSummon(unit)) {
 			set(({ summons, ...state }) => ({
 				...state,
-				summons: summons.map((s) => (s.id === unit.id ? nextUnit : s)),
-				...newState,
-			}));
-		} else if (isMonster(nextUnit)) {
-			set(({ monsters, ...state }) => ({
-				...state,
-				monsters: monsters.map((m) => (m.id === unit.id ? nextUnit : m)),
-				...newState,
-			}));
-		} else if (isHero(nextUnit)) {
-			set(({ heroes, ...state }) => ({
-				...state,
-				heroes: heroes.map((h) => (h.id === unit.id ? nextUnit : h)),
+
+				summons: toRemove
+					? summons.filter((s) => s.id !== unit.id)
+					: summons.map((s) => (s.id === unit.id ? unit : s)),
+
 				...newState,
 			}));
 		}
 
-		if (isDead) {
-			await processUnitDeath(get, set, isSimulation)(nextUnit);
+		if (isMonster(unit)) {
+			set(({ monsters, ...state }) => ({
+				...state,
 
-			if (isSummon(unit)) {
-				set(({ summons }) => ({
-					summons: summons.filter((s) => s.id !== unit.id),
-				}));
-			} else if (isMonster(unit)) {
-				set(({ monsters }) => ({
-					monsters: monsters.filter((m) => m.id !== unit.id),
-				}));
-			} else if (isHero(unit)) {
-				set(({ heroes }) => ({
-					heroes: heroes.filter((h) => h.id !== unit.id),
-				}));
-			}
+				monsters: toRemove
+					? monsters.filter((m) => m.id !== unit.id)
+					: monsters.map((m) => (m.id === unit.id ? unit : m)),
+
+				...newState,
+			}));
+		}
+
+		if (isHero(unit)) {
+			set(({ heroes, ...state }) => ({
+				...state,
+
+				heroes: toRemove
+					? heroes.filter((h) => h.id !== unit.id)
+					: heroes.map((h) => (h.id === unit.id ? unit : h)),
+
+				...newState,
+			}));
 		}
 	};
 }

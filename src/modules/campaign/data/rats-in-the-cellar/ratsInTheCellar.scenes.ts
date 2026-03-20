@@ -1,4 +1,5 @@
 import type { Scene } from "../../domain/scenes.type";
+import { THE_ALCHEMISTS_LEDGER } from "../alchemists-ledger/alchemistsLedger.definitions";
 import { RAT_IN_THE_CELLAR } from "./ratsInTheCellar.definitions";
 
 export const RATS_IN_THE_CELLAR_SCENES: Record<Scene["id"], Scene> = {
@@ -64,6 +65,11 @@ export const RATS_IN_THE_CELLAR_SCENES: Record<Scene["id"], Scene> = {
 					{
 						type: "REWARD_EVO_RUNE",
 						evoRune: "rune_rat",
+					},
+					{
+						type: "ADVANCE_QUEST",
+						questId: THE_ALCHEMISTS_LEDGER.id,
+						newStepId: THE_ALCHEMISTS_LEDGER.steps.meet_barnaby,
 					},
 					{ type: "END_SCENE" },
 				],

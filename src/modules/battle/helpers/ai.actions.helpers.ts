@@ -95,6 +95,7 @@ export const handleAICardIntent =
 			...initialState.monsters,
 			...initialState.summons,
 		].find((m) => m.id === attackerId) as AIBattleUnit | undefined;
+
 		if (!initialAttacker) return;
 
 		const allFigures = [
@@ -159,6 +160,7 @@ export const handleAICardIntent =
 		// ==========================================
 		// 2. PREPARE THE ATTACK
 		// ==========================================
+
 		if (!movedUnit) {
 			return;
 		}
@@ -207,6 +209,7 @@ export const handleAICardIntent =
 		)(attackerId, isSimulation ? 0 : 300);
 		const attackingUnit = await changeStance(UnitStance.ATTACKING);
 		if (!attackingUnit) return;
+
 		for (const effect of card.effects) {
 			await resolvers(effect)(get, set, isSimulation)({
 				anchorTarget,

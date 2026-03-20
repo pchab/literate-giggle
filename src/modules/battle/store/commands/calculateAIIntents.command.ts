@@ -20,7 +20,6 @@ export const calculateAIIntents =
 
 		for (const aiFigure of aiFigures) {
 			let selectedCardId = existingIntents[aiFigure.id]?.cardId;
-
 			if (!selectedCardId) {
 				const totalWeight = aiFigure.intentPool.reduce(
 					(sum, intent) => sum + intent.weight,
@@ -57,5 +56,8 @@ export const calculateAIIntents =
 		await resolveAIActions(fakeGet, fakeSet, true);
 
 		const simulatedAiIntents = fakeGet().aiIntents;
-		set(() => ({ aiIntents: simulatedAiIntents }));
+		set((prev) => ({
+			...prev,
+			aiIntents: simulatedAiIntents,
+		}));
 	};

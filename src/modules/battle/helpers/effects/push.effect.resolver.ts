@@ -102,11 +102,9 @@ export const resolvePushEffect =
 			// ==========================================
 			if (isCrushed) {
 				if (effect.collisionDamage > 0) {
-					// Double damage to the crushed unit
 					entity = applyDamageToEntity(entity, effect.collisionDamage * 2);
 					updateBattleUnitState(get, set, isSimulation)(entity);
 
-					// Standard damage to the walls (if they are entities)
 					if (crushObstacleA) {
 						const updatedA = applyDamageToEntity(
 							crushObstacleA,

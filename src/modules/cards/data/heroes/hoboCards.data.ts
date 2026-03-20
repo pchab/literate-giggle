@@ -8,9 +8,7 @@ export const hoboCards: Record<Card["id"], Card> = {
 		range: 1,
 		image: "/cards/club.webp",
 		playRequirement: "requires_enemy",
-		effects: [
-			{ type: "damage", amount: 2, target: "anchor", vfx: "BLUNT" },
-		],
+		effects: [{ type: "damage", amount: 2, target: "anchor", vfx: "BLUNT" }],
 	},
 	[cardId("iron_club")]: {
 		id: cardId("i_ronclub"),

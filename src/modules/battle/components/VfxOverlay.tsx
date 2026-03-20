@@ -90,8 +90,8 @@ export function VfxOverlay({ vfx, onComplete }: VfxOverlayProps) {
 			)}
 
 			{type === "ARROW" && (
-				<div className="w-1 h-8 bg-zinc-400 relative">
-					<div className="absolute -right-0.5 -top-1 border-x-4 border-x-transparent border-b-8 border-b-zinc-300" />
+				<div className="w-8 h-1 bg-zinc-400 relative">
+					<div className="absolute -right-1 -bottom-0.5 border-y-4 border-y-transparent border-l-8 border-l-zinc-300" />
 				</div>
 			)}
 

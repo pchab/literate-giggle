@@ -16,70 +16,69 @@ import type { EffectResolverParams } from "./effect.resolvers";
 
 export const resolveStandardEffect =
 	(get: StoreGet, set: StoreSet, isSimulation = false) =>
-		(effect: DamageEffect | HealEffect | ApplyStatusEffect) =>
-			async <C extends BattleUnit>({
-				anchorTarget,
-				caster,
-				patternCells,
-			}: EffectResolverParams<C>): Promise<void> => {
-				const { heroes, monsters, summons } = get();
-				const figures = [...heroes, ...monsters, ...summons];
-				const targets = resolveTargets<BattleUnit>(
-					effect.target,
-					anchorTarget,
-					caster,
-					figures,
-					patternCells,
-				);
-				const targetPositions: GridPosition[] = [];
+	(effect: DamageEffect | HealEffect | ApplyStatusEffect) =>
+	async <C extends BattleUnit>({
+		anchorTarget,
+		caster,
+		patternCells,
+	}: EffectResolverParams<C>): Promise<void> => {
+		const { heroes, monsters, summons } = get();
+		const figures = [...heroes, ...monsters, ...summons];
+		const targets = resolveTargets<BattleUnit>(
+			effect.target,
+			anchorTarget,
+			caster,
+			figures,
+			patternCells,
+		);
+		const targetPositions: GridPosition[] = [];
+		if (anchorTarget && effect.projectile && !isSimulation) {
+			const { currentVfx } = get();
+			const projectileId = crypto.randomUUID();
 
-				for (const targetId of targets) {
-					const target = findUnit(get)(targetId);
-					if (!target) continue;
+			const dx = anchorTarget.col - caster.gridPosition.col;
+			const dy = anchorTarget.row - caster.gridPosition.row;
+			const angle = Math.atan2(dx, dy) * (180 / Math.PI);
 
-					if (effect.projectile && !isSimulation) {
-						const { currentVfx } = get();
-						const projectileId = crypto.randomUUID();
+			set(() => ({
+				currentVfx: {
+					...currentVfx,
+					[getCellId(caster.gridPosition)]: {
+						type: effect.projectile!,
+						id: projectileId,
+						angle,
+					},
+				},
+			}));
+			await sleep(100);
+			set(() => ({
+				currentVfx: {
+					...currentVfx,
+					[getCellId(anchorTarget)]: {
+						type: effect.projectile!,
+						id: projectileId,
+						angle,
+					},
+				},
+			}));
+			await sleep(300);
+		}
 
-						const dx = target.gridPosition.col - caster.gridPosition.col;
-						const dy = target.gridPosition.row - caster.gridPosition.row;
-						const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+		for (const targetId of targets) {
+			const target = findUnit(get)(targetId);
+			if (!target) continue;
 
-						set(() => ({
-							currentVfx: {
-								...currentVfx,
-								[getCellId(caster.gridPosition)]: {
-									type: effect.projectile!,
-									id: projectileId,
-									angle,
-								},
-							},
-						}));
-						await sleep(100);
-						set(() => ({
-							currentVfx: {
-								...currentVfx,
-								[getCellId(target.gridPosition)]: {
-									type: effect.projectile!,
-									id: projectileId,
-									angle,
-								},
-							},
-						}));
-						await sleep(300);
-					}
+			const updatedEntity = applyEffectToEntity({ entity: target, effect });
+			targetPositions.push(updatedEntity.gridPosition);
+			await updateBattleUnitState(get, set, isSimulation)(updatedEntity);
+		}
 
-					const updatedEntity = applyEffectToEntity({ entity: target, effect });
-					targetPositions.push(updatedEntity.gridPosition);
-					await updateBattleUnitState(get, set, isSimulation)(updatedEntity);
-				}
+		set((prev) => {
+			const newVfx = getVfxForEffect(effect, targetPositions);
 
-				set((prev) => {
-					const newVfx = getVfxForEffect(effect, targetPositions);
-
-					return {
-						...prev,
-						currentVfx: { ...prev.currentVfx, ...newVfx },
-					};
-				});
+			return {
+				...prev,
+				currentVfx: { ...prev.currentVfx, ...newVfx },
 			};
+		});
+	};

@@ -9,7 +9,15 @@ export const cryomancerCards: Record<Card["id"], Card> = {
 		range: 2,
 		image: "/cards/frost_shards.webp",
 		playRequirement: "requires_enemy",
-		effects: [{ type: "damage", amount: 6, target: "anchor", projectile: "ARROW", vfx: "ICE" }],
+		effects: [
+			{
+				type: "damage",
+				amount: 6,
+				target: "anchor",
+				projectile: "ARROW",
+				vfx: "ICE",
+			},
+		],
 	},
 
 	[cardId("ice_wall")]: {

@@ -10,18 +10,30 @@ export const alchemistQuest: Quest = {
 		"Barnaby the Alchemist hired you to recover his stolen master ledger from a band of goblins. He claims it contains vital cures, but the goblins' trail suggests something far more sinister.",
 	initialStepId: ALCHEMIST.steps.track_goblins,
 	steps: {
+		[ALCHEMIST.steps.meet_barnaby]: {
+			id: ALCHEMIST.steps.meet_barnaby,
+			logDescription:
+				"Track the goblins through the frost-caves to their cache.",
+			targetNodeId: [
+				{
+					mapNodeId: mapNodeId("connury_town"),
+					locationId: townLocationId("alchemist_shop"),
+				},
+			],
+			onEnterSceneId: ALCHEMIST.scenes.intro,
+		},
 		[ALCHEMIST.steps.track_goblins]: {
 			id: ALCHEMIST.steps.track_goblins,
 			logDescription:
 				"Track the goblins through the frost-caves to their cache.",
-			targetNodeId: [{ mapNodeId: mapNodeId("node_frost_woods") }],
-			onEnterSceneId: ALCHEMIST.scenes.cache,
+			targetNodeId: [{ mapNodeId: mapNodeId("northern_road") }],
+			onWinSceneId: ALCHEMIST.scenes.cache,
 		},
 		[ALCHEMIST.steps.infiltrate_lab]: {
 			id: ALCHEMIST.steps.infiltrate_lab,
 			logDescription:
-				"Infiltrate the goblin laboratory and recover the stolen ledger.",
-			targetNodeId: [{ mapNodeId: mapNodeId("node_goblin_caves") }],
+				"Infiltrate the goblin lair and recover the stolen ledger.",
+			targetNodeId: [{ mapNodeId: mapNodeId("goblin_lair") }],
 		},
 		[ALCHEMIST.steps.confront_barnaby]: {
 			id: ALCHEMIST.steps.confront_barnaby,

@@ -1,3 +1,5 @@
+import { THE_ALCHEMISTS_LEDGER } from "@/modules/campaign/data/alchemists-ledger/alchemistsLedger.definitions";
+import { alchemistsMapNodes } from "@/modules/campaign/data/alchemists-ledger/alchemistsLedger.mapNodes";
 import { QUEST_DWARVEN_HIGHWAY } from "@/modules/campaign/data/dwarven-passage/dwarvenPassage.quest";
 import { VERDANT_RECLAMATION_MAP_NODES } from "@/modules/campaign/data/verdant-reclamation/verdantReclamation.mapNodes";
 import { VERDANT_RECLAMATION } from "@/modules/campaign/data/verdant-reclamation/verdantReclamation.quest";
@@ -112,6 +114,23 @@ export const WorldMapNodes: MapData = {
 		],
 		encounterId: encounterId("goblin_band"),
 		background: "plain_crossroad",
+		variants: [
+			{
+				condition: {
+					type: "QUEST_ACTIVE",
+					questId: THE_ALCHEMISTS_LEDGER.id,
+					stepId: [THE_ALCHEMISTS_LEDGER.steps.infiltrate_lab],
+				},
+				override: {
+					connectedNodeIds: [
+						mapNodeId("ironhold_city"),
+						mapNodeId("connury_town"),
+						mapNodeId("dark_forest"),
+						mapNodeId("goblin_lair"),
+					],
+				},
+			},
+		],
 	},
 	dark_forest: {
 		id: mapNodeId("dark_forest"),
@@ -199,6 +218,7 @@ export const WorldMapNodes: MapData = {
 		],
 	},
 
-	// --- VERDANT RECLAMATION QUEST NODES ---
+	// ---  QUEST NODES ---
 	...VERDANT_RECLAMATION_MAP_NODES,
+	...alchemistsMapNodes,
 };

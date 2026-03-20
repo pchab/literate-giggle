@@ -4,14 +4,31 @@ import type { Encounter } from "../../domain/encounters.type";
 import { THE_ALCHEMISTS_LEDGER } from "./alchemistsLedger.definitions";
 
 export const alchemistEncounters: Record<string, Encounter> = {
-	[THE_ALCHEMISTS_LEDGER.encounters.goblin_lab]: {
-		id: THE_ALCHEMISTS_LEDGER.encounters.goblin_lab,
+	[THE_ALCHEMISTS_LEDGER.encounters.goblin_band]: {
+		id: THE_ALCHEMISTS_LEDGER.encounters.goblin_band,
+		name: "Goblin Band",
+		generateMonsters: () => [
+			{
+				...goblin,
+				gridPosition: { col: 2, row: 4 },
+			},
+			{
+				...goblin,
+				gridPosition: { col: 3, row: 4 },
+			},
+			{
+				...goblin,
+				gridPosition: { col: 3, row: 2 },
+			},
+		],
+	},
+	[THE_ALCHEMISTS_LEDGER.encounters.goblin_shaman]: {
+		id: THE_ALCHEMISTS_LEDGER.encounters.goblin_shaman,
 		name: "Goblin Laboratory",
-		onWinSceneId: THE_ALCHEMISTS_LEDGER.scenes.betrayal,
 
 		generateMonsters: () => [
 			{
-				...goblin, // TODO goblin shaman
+				...goblin,
 				gridPosition: { col: 2, row: 4 },
 			},
 			{
