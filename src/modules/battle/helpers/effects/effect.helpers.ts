@@ -176,46 +176,46 @@ export function applyEffectToEntity<T extends BattleUnit>({
 
 export const tickStatuses =
 	(get: StoreGet, set: StoreSet, isSimulation = false) =>
-		async <T extends BattleUnit>(figures: T[]): Promise<void> => {
-			for (const figure of figures) {
-				if (figure.currentHp <= 0) return;
+	async <T extends BattleUnit>(figures: T[]): Promise<void> => {
+		for (const figure of figures) {
+			if (figure.currentHp <= 0) return;
 
-				const poison =
-					figure.statuses.find(({ type }) => type === "poison")?.amount ?? 0;
-				const regen =
-					figure.statuses.find(({ type }) => type === "regen")?.amount ?? 0;
+			const poison =
+				figure.statuses.find(({ type }) => type === "poison")?.amount ?? 0;
+			const regen =
+				figure.statuses.find(({ type }) => type === "regen")?.amount ?? 0;
 
-				const newHp = Math.min(
-					figure.maxHp,
-					Math.max(0, figure.currentHp - poison + regen),
-				);
+			const newHp = Math.min(
+				figure.maxHp,
+				Math.max(0, figure.currentHp - poison + regen),
+			);
 
-				const newStatuses = figure.statuses
-					.map((status) => ({
-						...status,
-						duration: status.duration === -1 ? -1 : status.duration - 1,
-					}))
-					.filter((status) => status.duration > 0 || status.duration === -1);
+			const newStatuses = figure.statuses
+				.map((status) => ({
+					...status,
+					duration: status.duration === -1 ? -1 : status.duration - 1,
+				}))
+				.filter((status) => status.duration > 0 || status.duration === -1);
 
-				const cellId = getCellId(figure.gridPosition);
-				await updateBattleUnitState(
-					get,
-					set,
-					isSimulation,
-				)({
-					...figure,
-					currentHp: newHp,
-					statuses: newStatuses,
-				});
-				set(({ currentVfx }) => ({
-					currentVfx: {
-						...currentVfx,
-						...(poison > 0 ? { [cellId]: { type: "POISON" } } : {}),
-						...(regen > 0 ? { [cellId]: { type: "HEAL" } } : {}),
-					},
-				}));
-			}
-		};
+			const cellId = getCellId(figure.gridPosition);
+			await updateBattleUnitState(
+				get,
+				set,
+				isSimulation,
+			)({
+				...figure,
+				currentHp: newHp,
+				statuses: newStatuses,
+			});
+			set(({ currentVfx }) => ({
+				currentVfx: {
+					...currentVfx,
+					...(poison > 0 ? { [cellId]: { type: "POISON" } } : {}),
+					...(regen > 0 ? { [cellId]: { type: "HEAL" } } : {}),
+				},
+			}));
+		}
+	};
 
 // --- 4. FIXED SURFACE HELPER ---
 export function applySurfaceEffect<T extends BattleUnit>({

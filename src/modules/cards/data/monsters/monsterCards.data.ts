@@ -107,7 +107,15 @@ export const monsterCardLibrary: Record<Card["id"], Card> = {
 		image: "/cards/necrobolt.webp",
 		playRequirement: "requires_enemy",
 		aiTargetPreference: "lowestHp",
-		effects: [{ type: "damage", amount: 6, target: "anchor" }],
+		effects: [
+			{
+				type: "damage",
+				amount: 6,
+				target: "anchor",
+				projectile: "NECROBOLT",
+				vfx: "NECROTIC_IMPACT",
+			},
+		],
 	},
 	[cardId("skeleton_summon")]: {
 		id: cardId("skeleton_summon"),
@@ -147,6 +155,7 @@ export const monsterCardLibrary: Record<Card["id"], Card> = {
 					amount: 2,
 					duration: 2,
 				},
+				target: "anchor",
 			},
 		],
 	},

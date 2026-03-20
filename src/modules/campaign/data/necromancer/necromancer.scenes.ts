@@ -44,7 +44,7 @@ export const NECROMANCER_SCENE_DB: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: encounterId("necromancer_boss"),
-								background: "/scenes/desert_crypt.webp",
+								background: "desert_crypt",
 							},
 						],
 					},
@@ -78,7 +78,7 @@ export const NECROMANCER_SCENE_DB: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: encounterId("necromancer_boss"),
-								background: "/scenes/desert_crypt.webp",
+								background: "desert_crypt",
 							},
 						],
 					},

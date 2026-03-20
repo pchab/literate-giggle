@@ -26,7 +26,9 @@ export function formatStatusEffect({ status }: ApplyStatusEffect): string {
 		case "rooted":
 			return `🌱 Apply rooted for ${status.duration} turn(s).`;
 		case "vulnerable":
-			return `⚡ Apply vulnerable for ${status.duration} turn(s).`;
+			return `⚡ Apply vulnerable ${status.amount} for ${status.duration} turn(s).`;
+		case "regen":
+			return `💚 Apply regen ${status.amount} for ${status.duration} turn(s).`;
 		default:
 			return `Unknown status effect.`;
 	}
@@ -53,7 +55,7 @@ export function formatCardEffect(effect: CardEffect): string {
 			return `👟 Move to target cell.`;
 		case "summon":
 			// Optional: look up the actual summon name from summonLibrary
-			return `🧱 Summon ${effect.blueprintId.replace(/_/g, " ")}.`;
+			return `🧱 ${effect.blueprintId.replace(/-/g, " ")}.`;
 		case "create_surface":
 			return `📛 Create ${effect.surfaceType} on the target cell.`;
 		default:

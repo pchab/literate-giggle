@@ -10,7 +10,7 @@ export const elvenWeaver: UnitBlueprint = {
 	xpReward: 30,
 
 	intentPool: [
-		{ cardId: cardId("weaver_whip"), weight: 7 },
-		{ cardId: cardId("weaver_mend"), weight: 30 },
+		{ cardId: cardId("weaver_whip"), weight: 30 },
+		{ cardId: cardId("weaver_mend"), weight: 7 },
 	],
 };

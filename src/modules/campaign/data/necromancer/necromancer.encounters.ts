@@ -85,11 +85,11 @@ export const NECROMANCER_ENCOUNTER_DB: Record<string, Encounter> = {
 			},
 			{
 				...skeleton,
-				gridPosition: { col: 4, row: 3 },
+				gridPosition: { col: 4, row: 2 },
 			},
 			{
 				...skeleton,
-				gridPosition: { col: 3, row: 4 },
+				gridPosition: { col: 2, row: 4 },
 			},
 		],
 	},
