@@ -121,7 +121,7 @@ export default function EnemyIntentSidebar() {
 								<div className="flex flex-row z-10 mt-auto pt-3 border-t border-red-900/30 gap-2">
 									<div>
 										<h4 className="text-[10px] text-zinc-500 uppercase tracking-widest mb-2 font-semibold">
-											On death
+											Next action
 										</h4>
 										<BattleCard card={intentCard} />
 									</div>

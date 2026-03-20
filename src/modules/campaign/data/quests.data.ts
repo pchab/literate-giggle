@@ -1,6 +1,6 @@
 import type { Quest } from "../domain/quests.type";
-import { THE_ALCHEMISTS_LEDGER } from './alchemists-ledger/alchemistsLedger.definitions';
-import { alchemistQuest } from './alchemists-ledger/alchemistsLedger.quest';
+import { THE_ALCHEMISTS_LEDGER } from "./alchemists-ledger/alchemistsLedger.definitions";
+import { alchemistQuest } from "./alchemists-ledger/alchemistsLedger.quest";
 import {
 	DWARVEN_PASSAGE_QUEST,
 	QUEST_DWARVEN_HIGHWAY,

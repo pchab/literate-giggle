@@ -118,10 +118,13 @@ export function applyDamageToEntity<T extends BattleUnit>(
 	};
 }
 
-export function applyEffectToEntity<T extends BattleUnit>(
-	entity: T,
-	effect: HealEffect | ApplyStatusEffect | DamageEffect,
-): T {
+export function applyEffectToEntity<T extends BattleUnit>({
+	entity,
+	effect,
+}: {
+	entity: T;
+	effect: HealEffect | ApplyStatusEffect | DamageEffect;
+}): T {
 	if (effect.type === "heal" && entity.currentHp > 0) {
 		return {
 			...entity,
@@ -198,8 +201,8 @@ export const tickStatuses =
 			set(({ currentVfx }) => ({
 				currentVfx: {
 					...currentVfx,
-					...(poison > 0 ? { [cellId]: "POISON" } : {}),
-					...(regen > 0 ? { [cellId]: "HEAL" } : {}),
+					...(poison > 0 ? { [cellId]: { type: "POISON" } } : {}),
+					...(regen > 0 ? { [cellId]: { type: "HEAL" } } : {}),
 				},
 			}));
 		}
@@ -221,10 +224,13 @@ export function applySurfaceEffect<T extends BattleUnit>({
 	}
 
 	if (nextSurface.status) {
-		nextUnit = applyEffectToEntity(nextUnit, {
-			type: "apply_status",
-			status: nextSurface.status,
-			target: "self",
+		nextUnit = applyEffectToEntity({
+			entity: nextUnit,
+			effect: {
+				type: "apply_status",
+				status: nextSurface.status,
+				target: "self",
+			},
 		});
 	}
 

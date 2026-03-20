@@ -5,7 +5,7 @@ import type {
 	SurfaceData,
 } from "@/modules/battle/domain/grid.type";
 import type { Intent } from "@/modules/battle/domain/intent.type";
-import type { VfxType } from "@/modules/battle/domain/vfx.type";
+import type { Vfx } from "@/modules/battle/domain/vfx.type";
 import type { Encounter } from "@/modules/campaign/domain/encounters.type";
 import type { AnchorTarget, Card } from "@/modules/cards/domain/cards.type";
 import type {
@@ -45,7 +45,7 @@ export type BattleState = {
 	usedCardsThisTurn: Record<BattleHero["id"], Card["id"]>;
 	hoveredCell: GridPosition | null; // getGridId(GridPosition)
 
-	currentVfx: Record<string, VfxType>; // key is cell id
+	currentVfx: Record<string, Vfx>; // key is cell id
 
 	aiIntents: Record<BattleUnit["id"], Intent>;
 	playerIntent: Intent | null;
@@ -70,7 +70,7 @@ type BattleAction = {
 	enemyAction: () => Promise<void>;
 	setHoveredCell: (cell: GridPosition | null) => Promise<void>;
 	setHoveredCard: (cardContext: ActiveCardContext | null) => void;
-	setVfx: (cellId: string, vfx: VfxType | null) => void;
+	setVfx: (cellId: string, vfx: Vfx | null) => void;
 	resetXpEarned: () => void;
 };
 

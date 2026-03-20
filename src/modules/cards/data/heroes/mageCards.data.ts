@@ -9,7 +9,7 @@ export const mageCards: Record<Card["id"], Card> = {
 		range: 2,
 		image: "/cards/arcane_shot.webp",
 		playRequirement: "requires_enemy",
-		effects: [{ type: "damage", amount: 3, target: "anchor" }],
+		effects: [{ type: "damage", amount: 3, target: "anchor", projectile: "ARROW" }],
 	},
 	[cardId("arcane_shield")]: {
 		id: cardId("arcane_shield"),

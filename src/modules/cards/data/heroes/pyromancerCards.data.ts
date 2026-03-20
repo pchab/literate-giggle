@@ -9,7 +9,9 @@ export const pyromancerCards: Record<Card["id"], Card> = {
 		range: 1,
 		image: "/cards/pyromancer.webp",
 		playRequirement: "requires_enemy",
-		effects: [{ type: "damage", amount: 4, target: "anchor" }],
+		effects: [
+			{ type: "damage", amount: 4, target: "anchor" },
+		],
 	},
 	[cardId("fireball")]: {
 		id: cardId("fireball"),
@@ -18,6 +20,6 @@ export const pyromancerCards: Record<Card["id"], Card> = {
 		image: "/cards/fireball.webp",
 		playRequirement: "requires_enemy",
 		aoePattern: crossPattern,
-		effects: [{ type: "damage", amount: 6, target: "anchor" }],
+		effects: [{ type: "damage", amount: 6, target: "anchor", projectile: "FIREBALL", vfx: "FIRE" }],
 	},
 };

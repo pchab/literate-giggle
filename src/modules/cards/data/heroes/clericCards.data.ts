@@ -14,6 +14,7 @@ export const clericCards: Record<Card["id"], Card> = {
 				type: "damage",
 				amount: 4,
 				target: "anchor",
+				vfx: "BLUNT",
 			},
 		],
 	},

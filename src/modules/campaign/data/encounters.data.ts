@@ -1,5 +1,5 @@
 import type { Encounter } from "../domain/encounters.type";
-import { alchemistEncounters } from './alchemists-ledger/alchemistsLedger.encounters';
+import { alchemistEncounters } from "./alchemists-ledger/alchemistsLedger.encounters";
 import { DWARVEN_PASSAGE_ENCOUNTER_DB } from "./dwarven-passage/dwarvenPassage.encounters";
 import { NECROMANCER_ENCOUNTER_DB } from "./necromancer/necromancer.encounters";
 import { RATS_IN_THE_CELLAR_ENCOUNTERS } from "./rats-in-the-cellar/ratsInTheCellar.encounters";

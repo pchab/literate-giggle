@@ -110,7 +110,7 @@ export function GridCell({
 			})}
 
 			<VfxOverlay
-				type={currentVfx[cell.id]}
+				vfx={currentVfx[cell.id]}
 				onComplete={() => setVfx(cell.id, null)}
 			/>
 		</button>

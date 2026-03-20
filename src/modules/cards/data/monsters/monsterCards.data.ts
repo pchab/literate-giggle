@@ -22,7 +22,7 @@ export const monsterCardLibrary: Record<Card["id"], Card> = {
 		image: "",
 		playRequirement: "requires_enemy",
 		aiTargetPreference: "lowestHp",
-		effects: [{ type: "damage", amount: 2, target: "anchor" }],
+		effects: [{ type: "damage", amount: 2, target: "anchor", projectile: "ARROW" }],
 	},
 	// --- RAT CARD ---
 	[cardId("rat_bite")]: {

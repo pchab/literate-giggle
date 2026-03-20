@@ -8,7 +8,9 @@ export const hoboCards: Record<Card["id"], Card> = {
 		range: 1,
 		image: "/cards/club.webp",
 		playRequirement: "requires_enemy",
-		effects: [{ type: "damage", amount: 2, target: "anchor" }],
+		effects: [
+			{ type: "damage", amount: 2, target: "anchor", vfx: "BLUNT" },
+		],
 	},
 	[cardId("iron_club")]: {
 		id: cardId("i_ronclub"),
@@ -17,7 +19,7 @@ export const hoboCards: Record<Card["id"], Card> = {
 		image: "/cards/iron_club.webp",
 		playRequirement: "requires_enemy",
 		effects: [
-			{ type: "damage", amount: 2, target: "anchor" },
+			{ type: "damage", amount: 2, target: "anchor", vfx: "BLUNT" },
 			{ type: "push", distance: 1, collisionDamage: 2, target: "anchor" },
 		],
 	},
@@ -28,7 +30,7 @@ export const hoboCards: Record<Card["id"], Card> = {
 		image: "/cards/thorn_club.webp",
 		playRequirement: "requires_enemy",
 		effects: [
-			{ type: "damage", amount: 2, target: "anchor" },
+			{ type: "damage", amount: 2, target: "anchor", vfx: "BLUNT" },
 			{
 				type: "apply_status",
 				status: {

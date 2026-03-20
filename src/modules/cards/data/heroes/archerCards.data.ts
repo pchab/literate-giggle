@@ -8,7 +8,9 @@ export const archerCards: Record<Card["id"], Card> = {
 		range: 2,
 		image: "/cards/short_bow.webp",
 		playRequirement: "requires_enemy",
-		effects: [{ type: "damage", amount: 4, target: "anchor" }],
+		effects: [
+			{ type: "damage", amount: 4, target: "anchor", projectile: "ARROW" },
+		],
 	},
 	[cardId("bear_trap")]: {
 		id: cardId("bear_trap"),

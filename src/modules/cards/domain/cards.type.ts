@@ -2,6 +2,7 @@ import type {
 	GridPosition,
 	SurfaceType,
 } from "@/modules/battle/domain/grid.type";
+import type { VfxType } from "@/modules/battle/domain/vfx.type";
 import type { Summon } from "@/modules/figures/domain/figures.type";
 import type { Status, StatusType } from "@/modules/figures/domain/status.type";
 
@@ -40,12 +41,15 @@ export type DamageEffect = {
 	type: "damage";
 	amount: number;
 	target: EffectTarget;
+	projectile?: VfxType;
+	vfx?: VfxType;
 };
 
 export type HealEffect = {
 	type: "heal";
 	amount: number;
 	target: EffectTarget;
+	projectile?: VfxType;
 };
 
 export type BlockEffect = {
@@ -72,6 +76,7 @@ export type ApplyStatusEffect = {
 	type: "apply_status";
 	status: Status;
 	target: EffectTarget;
+	projectile?: VfxType;
 };
 
 export type CreateSurfaceEffect = {
