@@ -7,6 +7,7 @@ import { getSimulationState } from "@/modules/battle/helpers/simulation.helper";
 import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
 import { acidFlask } from "@/modules/figures/data/summons/acidFlask";
 import type { AIBattleUnit } from "@/modules/figures/domain/figures.type";
+import { isSummonId } from "@/modules/figures/helpers/figures.helpers";
 import { cardId } from "../../helpers/cards.helper";
 import { goblinCards } from "../monsters/goblinCards.data";
 
@@ -44,7 +45,7 @@ export const volatileTransmutation =
     isSimulation = false,
   ) =>
     async ({ caster }: EffectResolverParams<C>) => {
-      const { summons } = get();
+      const { summons, heroes } = get();
       const volatileBoltCard = goblinCards[cardId("volatile_bolt")];
 
       const availableFlasks = summons.filter(
@@ -53,12 +54,12 @@ export const volatileTransmutation =
 
       if (availableFlasks.length > 0) {
         // --- SHADOW STATE: SCORING THE FLASKS ---
-        const bestFlask = (
+        const bestTarget = (
           await Promise.all(
-            availableFlasks.map(async (flask) => {
+            [...availableFlasks, ...heroes].map(async (target) => {
               const { fakeGet, fakeSet } = getSimulationState(get);
-              const targetFlask: TargetResolver = () => ({
-                reachableTarget: flask,
+              const shadowTarget: TargetResolver = () => ({
+                reachableTarget: target,
                 moveDest: caster.gridPosition,
                 canHit: true,
               });
@@ -69,21 +70,22 @@ export const volatileTransmutation =
               )({
                 attackerId: caster.id,
                 card: volatileBoltCard,
-                getTarget: targetFlask,
+                getTarget: shadowTarget,
               });
-              const score = getStateScore(fakeGet, get);
+              const bonusScore = isSummonId(target.id) ? 20 : 0;
+              const score = getStateScore(fakeGet, get) + bonusScore;
               return {
-                flask,
+                target,
                 score,
               };
             }),
           )
         ).sort(({ score: scoreA }, { score: scoreB }) => scoreB - scoreA)[0]
-          .flask;
+          .target;
 
         // --- EXECUTION VIA ADAPTER ---
         const targetFlask: TargetResolver = () => ({
-          reachableTarget: bestFlask,
+          reachableTarget: bestTarget,
           moveDest: caster.gridPosition,
           canHit: true,
         });

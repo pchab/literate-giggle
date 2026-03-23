@@ -20,8 +20,14 @@ export const acidFlaskExplosionCard: Card = {
 		{
 			type: "create_surface",
 			surfaceType: "ACID",
-			duration: -1,
+			duration: 3,
+			damage: 1,
 			spriteBase: "/surfaces/acid.webp",
+			status: {
+				type: "poison",
+				amount: 2,
+				duration: 2,
+			},
 		},
 	],
 };
