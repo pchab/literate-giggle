@@ -61,7 +61,10 @@ export const resolveAIActions = async (
 			get,
 			set,
 			isSimulation,
-		)(freshAIFigure.id, cardToPlay);
+		)({
+			attackerId: freshAIFigure.id,
+			card: cardToPlay,
+		});
 
 		if (isSimulation) {
 			const previousFigures = [...heroes, ...monsters, ...summons];

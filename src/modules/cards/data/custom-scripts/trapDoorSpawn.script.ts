@@ -50,7 +50,7 @@ export const trapdoorSpawn =
 				get,
 				set,
 				isSimulation,
-			)(caster.id, nastyBiteCard);
+			)({ attackerId: caster.id, card: nastyBiteCard });
 
 			return;
 		}

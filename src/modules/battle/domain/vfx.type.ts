@@ -18,4 +18,5 @@ export type Vfx = {
 	angle?: number; // orientation for arrows
 };
 
-export const isProjectile = (vfx: VfxType): vfx is VfxProjectile => !!vfx && ["FIREBALL", "ARROW", "ICE", "NECROBOLT"].includes(vfx);
+export const isProjectile = (vfx: VfxType): vfx is VfxProjectile =>
+	!!vfx && ["FIREBALL", "ARROW", "ICE", "NECROBOLT"].includes(vfx);

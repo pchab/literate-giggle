@@ -9,5 +9,12 @@ export const processUnitDeath =
 		if (!onDeath) return;
 
 		const onDeathCard = cardLibrary[onDeath];
-		await handleAICardIntent(get, set, isSimulation)(deadUnitId, onDeathCard);
+		await handleAICardIntent(
+			get,
+			set,
+			isSimulation,
+		)({
+			attackerId: deadUnitId,
+			card: onDeathCard,
+		});
 	};

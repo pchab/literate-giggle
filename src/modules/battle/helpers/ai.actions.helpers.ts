@@ -12,6 +12,7 @@ import {
 } from "@/modules/figures/domain/figures.type";
 import { isSummon } from "@/modules/figures/helpers/figures.helpers";
 import { sleep } from "@/modules/shared/helpers/sleep";
+import type { GridPosition } from "../domain/grid.type";
 import {
 	filterGridByAttackPattern,
 	getActualTarget,
@@ -21,8 +22,30 @@ import { resolvers } from "./effects/effect.resolvers";
 import { calculateExactPath, moveBattleUnit } from "./move.helpers";
 import { updateBattleUnitState } from "./state.helpers";
 
+export type TargetResolver = <C extends AIBattleUnit>(
+	aiFigure: C,
+	card: Card,
+	figures: BattleUnit[],
+) => {
+	reachableTarget: C | BattleUnit | null;
+	moveDest: GridPosition | null;
+	canHit: boolean;
+};
+
+export type AnchorResolver = ({
+	attacker: { gridPosition },
+	card,
+	reachableTarget,
+	obstacles,
+}: {
+	attacker: AIBattleUnit;
+	card: Card;
+	reachableTarget: BattleUnit | AIBattleUnit;
+	obstacles: BattleUnit[];
+}) => AnchorTarget;
+
 function getAnchorTarget<C extends BattleUnit, T extends BattleUnit>({
-	attacker,
+	attacker: { gridPosition },
 	card,
 	reachableTarget,
 	obstacles,
@@ -33,40 +56,39 @@ function getAnchorTarget<C extends BattleUnit, T extends BattleUnit>({
 	obstacles: BattleUnit[];
 }): AnchorTarget {
 	if (card.aiTargetPreference === "self") {
-		return attacker.gridPosition;
+		return gridPosition;
 	}
 
 	if (card.aiTargetPreference === "empty_adjacent") {
 		const possibleSpawns = [
 			{
-				col: attacker.gridPosition.col,
-				row: attacker.gridPosition.row - 1,
+				col: gridPosition.col,
+				row: gridPosition.row - 1,
 			},
 			{
-				col: attacker.gridPosition.col - 1,
-				row: attacker.gridPosition.row,
+				col: gridPosition.col - 1,
+				row: gridPosition.row,
 			},
 			{
-				col: attacker.gridPosition.col,
-				row: attacker.gridPosition.row + 1,
+				col: gridPosition.col,
+				row: gridPosition.row + 1,
 			},
 			{
-				col: attacker.gridPosition.col + 1,
-				row: attacker.gridPosition.row,
+				col: gridPosition.col + 1,
+				row: gridPosition.row,
 			},
 		]
 			.filter(isTileInBounds)
 			.filter(isTileEmpty(obstacles));
 
-		return possibleSpawns.length > 0 ? possibleSpawns[0] : null;
+		return possibleSpawns.length > 0
+			? possibleSpawns[Math.floor(Math.random() * possibleSpawns.length)]
+			: null;
 	}
 
 	const actualTarget =
-		getActualTarget(
-			attacker.gridPosition,
-			reachableTarget.gridPosition,
-			obstacles,
-		) ?? reachableTarget;
+		getActualTarget(gridPosition, reachableTarget.gridPosition, obstacles) ??
+		reachableTarget;
 	return actualTarget.gridPosition;
 }
 
@@ -89,7 +111,17 @@ const updateAIUnitStance =
 
 export const handleAICardIntent =
 	(get: StoreGet, set: StoreSet, isSimulation = false) =>
-	async (attackerId: BattleUnit["id"], card: Card) => {
+	async ({
+		attackerId,
+		card,
+		getTarget = getIdealTarget,
+		getAnchor = getAnchorTarget,
+	}: {
+		attackerId: BattleUnit["id"];
+		card: Card;
+		getTarget?: TargetResolver;
+		getAnchor?: AnchorResolver;
+	}) => {
 		const initialState = get();
 		const initialAttacker = [
 			...initialState.monsters,
@@ -103,7 +135,7 @@ export const handleAICardIntent =
 			...initialState.monsters,
 			...initialState.summons,
 		];
-		const { reachableTarget, moveDest } = getIdealTarget(
+		const { reachableTarget, moveDest } = getTarget(
 			initialAttacker,
 			card,
 			allFigures,
@@ -174,7 +206,7 @@ export const handleAICardIntent =
 			return;
 		}
 
-		const anchorTarget = getAnchorTarget({
+		const anchorTarget = getAnchor({
 			attacker: movedUnit,
 			card,
 			reachableTarget,

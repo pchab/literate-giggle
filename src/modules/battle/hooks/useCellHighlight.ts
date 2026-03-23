@@ -88,7 +88,7 @@ export function useCellHighlight(): CellHighlight {
 			remainingMove,
 			oppositeFaction,
 			false,
-		).filter(isTileEmpty(oppositeFaction));
+		).filter(isTileEmpty(allUnits));
 
 		return {
 			...highlight,

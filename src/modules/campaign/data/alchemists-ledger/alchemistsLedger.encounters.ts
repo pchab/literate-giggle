@@ -1,5 +1,8 @@
-import { goblin } from "@/modules/figures/data/monsters/goblin.data";
-import { acidFlask } from "@/modules/figures/data/summons/acidFlask";
+import { cardId } from "@/modules/cards/helpers/cards.helper";
+import {
+	goblin,
+	goblinShaman,
+} from "@/modules/figures/data/monsters/goblin.data";
 import type { Encounter } from "../../domain/encounters.type";
 import { THE_ALCHEMISTS_LEDGER } from "./alchemistsLedger.definitions";
 
@@ -29,33 +32,47 @@ export const alchemistEncounters: Record<string, Encounter> = {
 		generateMonsters: () => [
 			{
 				...goblin,
+				gridPosition: { col: 1, row: 4 },
+				intentPool: [
+					{
+						cardId: cardId("reckless_experiment"),
+						weight: 1,
+					},
+				],
+			},
+			{
+				...goblin,
 				gridPosition: { col: 2, row: 4 },
+				intentPool: [
+					{
+						cardId: cardId("reckless_experiment"),
+						weight: 1,
+					},
+				],
 			},
 			{
 				...goblin,
-				gridPosition: { col: 1, row: 2 },
+				gridPosition: { col: 4, row: 0 },
+				intentPool: [
+					{
+						cardId: cardId("reckless_experiment"),
+						weight: 1,
+					},
+				],
 			},
 			{
 				...goblin,
-				gridPosition: { col: 3, row: 2 },
-			},
-		],
-
-		generateSummons: () => [
-			{
-				...acidFlask,
-				gridPosition: { col: 2, row: 2 },
-				allegiance: "NEUTRAL",
+				gridPosition: { col: 4, row: 1 },
+				intentPool: [
+					{
+						cardId: cardId("reckless_experiment"),
+						weight: 1,
+					},
+				],
 			},
 			{
-				...acidFlask,
-				gridPosition: { col: 1, row: 3 },
-				allegiance: "NEUTRAL",
-			},
-			{
-				...acidFlask,
-				gridPosition: { col: 3, row: 3 },
-				allegiance: "NEUTRAL",
+				...goblinShaman,
+				gridPosition: { col: 4, row: 4 },
 			},
 		],
 	},

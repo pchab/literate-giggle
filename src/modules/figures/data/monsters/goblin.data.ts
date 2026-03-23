@@ -19,3 +19,18 @@ export const goblin: UnitBlueprint = {
 		},
 	],
 };
+
+export const goblinShaman: UnitBlueprint = {
+	name: "Goblin Shaman",
+	spriteBase: "monsters/goblin_shaman",
+	maxHp: 24,
+	baseMove: 2,
+	baseDef: 0,
+	xpReward: 18,
+	intentPool: [
+		{
+			cardId: cardId("volatile_transmutation"),
+			weight: 1,
+		},
+	],
+};

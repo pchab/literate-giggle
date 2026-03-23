@@ -103,7 +103,7 @@ export const monsterCardLibrary: Record<Card["id"], Card> = {
 	[cardId("necrobolt")]: {
 		id: cardId("necrobolt"),
 		name: "Necrobolt",
-		range: 2,
+		range: 3,
 		image: "/cards/necrobolt.webp",
 		playRequirement: "requires_enemy",
 		aiTargetPreference: "lowestHp",

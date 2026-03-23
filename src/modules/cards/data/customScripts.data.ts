@@ -1,7 +1,9 @@
 import type { EffectResolverParams } from "@/modules/battle/helpers/effects/effect.resolvers";
 import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
+import { recklessExperiment } from "./custom-scripts/recklessExperiment.script";
 import { trapdoorSpawn } from "./custom-scripts/trapDoorSpawn.script";
+import { volatileTransmutation } from "./custom-scripts/volatileTransmutation.script";
 
 type CustomScriptEffectResolver<T extends BattleUnit, P> = (
 	get: StoreGet,
@@ -14,6 +16,14 @@ export const customScriptRegistry: Record<
 	CustomScriptEffectResolver<BattleUnit, unknown>
 > = {
 	trapdoor_spawn: trapdoorSpawn as CustomScriptEffectResolver<
+		BattleUnit,
+		unknown
+	>,
+	reckless_experiment: recklessExperiment as CustomScriptEffectResolver<
+		BattleUnit,
+		unknown
+	>,
+	volatile_transmutation: volatileTransmutation as CustomScriptEffectResolver<
 		BattleUnit,
 		unknown
 	>,

@@ -8,6 +8,7 @@ import type {
 	BattleUnit,
 } from "../../figures/domain/figures.type";
 import type { GridPosition } from "../domain/grid.type";
+import type { TargetResolver } from "./ai.actions.helpers";
 import { areEnemies } from "./effects/effect.helpers";
 import {
 	getLineOfSightPath,
@@ -61,12 +62,15 @@ const calculateAIMove = <C extends AIBattleUnit, T extends BattleUnit>(
 	return fullPath[stepsToTake - 1];
 };
 
-export const getIdealTarget = <C extends AIBattleUnit, T extends BattleUnit>(
+export const getIdealTarget: TargetResolver = <C extends AIBattleUnit>(
 	aiFigure: C,
 	card: Card,
-	figures: T[],
+	figures: BattleUnit[],
 ) => {
-	if (card.aiTargetPreference === "self") {
+	if (
+		card.aiTargetPreference === "self" ||
+		card.aiTargetPreference === "empty_adjacent"
+	) {
 		return {
 			reachableTarget: aiFigure,
 			moveDest: aiFigure.gridPosition,
@@ -80,8 +84,9 @@ export const getIdealTarget = <C extends AIBattleUnit, T extends BattleUnit>(
 			return {
 				reachableTarget: target,
 				moveDest,
-				canHit:
+				canHit: Boolean(
 					moveDest && isTargetInRange(card, 1, aiFigure.gridPosition, moveDest),
+				),
 			};
 		}
 	}
@@ -95,14 +100,14 @@ export const getIdealTarget = <C extends AIBattleUnit, T extends BattleUnit>(
 		return targetsAllies ? !areEnemies(aiFigure)(f) : areEnemies(aiFigure)(f);
 	});
 
-	const orderedTargets = getOrderedTargets<C, T>(
+	const orderedTargets = getOrderedTargets<C, BattleUnit>(
 		aiFigure,
 		card,
 		validTargetsToEvaluate,
 	);
 
 	let fallbackMove: {
-		reachableTarget: T;
+		reachableTarget: BattleUnit;
 		moveDest: GridPosition;
 		canHit: boolean;
 	} | null = null;
