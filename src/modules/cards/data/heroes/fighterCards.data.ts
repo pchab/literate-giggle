@@ -10,6 +10,36 @@ export const fighterCards: Record<Card["id"], Card> = {
 		playRequirement: "requires_enemy",
 		effects: [{ type: "damage", amount: 4, target: "anchor" }],
 	},
+	[cardId("venom_sword")]: {
+		id: cardId("venom_sword"),
+		name: "Venom Sword",
+		range: 1,
+		image: "/cards/short_sword.webp",
+		playRequirement: "requires_enemy",
+		effects: [
+			{ type: "damage", amount: 4, target: "anchor" },
+			{
+				type: "apply_status",
+				status: { type: "poison", amount: 1, duration: 2 },
+				target: "anchor",
+			},
+		],
+	},
+	[cardId("melting_blade")]: {
+		id: cardId("melting_blade"),
+		name: "Melting Blade",
+		range: 1,
+		image: "/cards/short_sword.webp",
+		playRequirement: "requires_enemy",
+		effects: [
+			{ type: "damage", amount: 4, target: "anchor" },
+			{
+				type: "apply_status",
+				status: { type: "vulnerable", amount: 2, duration: 2 },
+				target: "anchor",
+			},
+		],
+	},
 	[cardId("bull_rush")]: {
 		id: cardId("bull_rush"),
 		name: "Bull Rush",

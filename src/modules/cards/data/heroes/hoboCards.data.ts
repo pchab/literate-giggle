@@ -10,6 +10,36 @@ export const hoboCards: Record<Card["id"], Card> = {
 		playRequirement: "requires_enemy",
 		effects: [{ type: "damage", amount: 2, target: "anchor", vfx: "BLUNT" }],
 	},
+	[cardId("plague_club")]: {
+		id: cardId("plague_club"),
+		name: "Plague Club",
+		range: 1,
+		image: "/cards/club.webp",
+		playRequirement: "requires_enemy",
+		effects: [
+			{ type: "damage", amount: 2, target: "anchor", vfx: "BLUNT" },
+			{
+				type: "apply_status",
+				status: { type: "poison", amount: 1, duration: 2 },
+				target: "anchor",
+			},
+		],
+	},
+	[cardId("corrosive_club")]: {
+		id: cardId("corrosive_club"),
+		name: "Corrosive Club",
+		range: 1,
+		image: "/cards/club.webp",
+		playRequirement: "requires_enemy",
+		effects: [
+			{ type: "damage", amount: 2, target: "anchor", vfx: "BLUNT" },
+			{
+				type: "apply_status",
+				status: { type: "vulnerable", amount: 1, duration: 2 },
+				target: "anchor",
+			},
+		],
+	},
 	[cardId("iron_club")]: {
 		id: cardId("i_ronclub"),
 		name: "Club",
@@ -48,6 +78,55 @@ export const hoboCards: Record<Card["id"], Card> = {
 		playRequirement: "requires_entity",
 		effects: [
 			{ type: "push", distance: 1, collisionDamage: 1, target: "anchor" },
+		],
+	},
+	[cardId("dirty_shove")]: {
+		id: cardId("dirty_shove"),
+		name: "Dirty Shove",
+		range: 1,
+		image: "/cards/shove.webp",
+		playRequirement: "requires_entity",
+		effects: [
+			{ type: "push", distance: 1, collisionDamage: 1, target: "anchor" },
+			{
+				type: "apply_status",
+				status: { type: "poison", amount: 1, duration: 2 },
+				target: "anchor",
+			},
+		],
+	},
+
+	// Acid + Shove = Throwing an acid flask instead of pushing. Range increases!
+	[cardId("flask_shove")]: {
+		id: cardId("flask_shove"),
+		name: "Acid Flask",
+		range: 2,
+		image: "/cards/shove.webp",
+		playRequirement: "requires_empty_cell",
+		effects: [
+			{
+				type: "create_surface",
+				surfaceType: "ACID",
+				duration: 3,
+				spriteBase: "/surfaces/acid.webp",
+			},
+		],
+	},
+
+	// Acid + Bandage = Massive heal, but strips your armor.
+	[cardId("cauterizing_salve")]: {
+		id: cardId("cauterizing_salve"),
+		name: "Cauterizing Salve",
+		range: 1,
+		image: "/cards/bandage.webp",
+		playRequirement: "requires_ally",
+		effects: [
+			{ type: "heal", amount: 4, target: "anchor" }, // Huge heal compared to base Bandage
+			{
+				type: "apply_status",
+				status: { type: "vulnerable", amount: 2, duration: 2 },
+				target: "anchor",
+			},
 		],
 	},
 	[cardId("bandage")]: {

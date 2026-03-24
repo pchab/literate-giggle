@@ -47,6 +47,7 @@ export const alchemistQuest: Quest = {
 				},
 			],
 			onEnterSceneId: ALCHEMIST.scenes.betrayal,
+			onWinSceneId: ALCHEMIST.scenes.barnaby_defeated,
 		},
 	},
 };

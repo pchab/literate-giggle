@@ -13,6 +13,36 @@ export const mageCards: Record<Card["id"], Card> = {
 			{ type: "damage", amount: 3, target: "anchor", projectile: "ARROW" },
 		],
 	},
+	[cardId("pestilence_bolt")]: {
+		id: cardId("pestilence_bolt"),
+		name: "Pestilence Bolt",
+		range: 2,
+		image: "/cards/arcane_shot.webp",
+		playRequirement: "requires_enemy",
+		effects: [
+			{ type: "damage", amount: 3, target: "anchor", projectile: "ARROW" },
+			{
+				type: "apply_status",
+				status: { type: "poison", amount: 1, duration: 2 },
+				target: "anchor",
+			},
+		],
+	},
+	[cardId("volatile_shot")]: {
+		id: cardId("volatile_shot"),
+		name: "Volatile Shot",
+		range: 2,
+		image: "/cards/arcane_shot.webp",
+		playRequirement: "requires_enemy",
+		effects: [
+			{ type: "damage", amount: 3, target: "anchor", projectile: "ARROW" },
+			{
+				type: "apply_status",
+				status: { type: "vulnerable", amount: 1, duration: 2 },
+				target: "anchor",
+			},
+		],
+	},
 	[cardId("arcane_shield")]: {
 		id: cardId("arcane_shield"),
 		name: "Arcane Shield",

@@ -10,6 +10,37 @@ export const rogueCards: Record<Card["id"], Card> = {
 		playRequirement: "requires_enemy",
 		effects: [{ type: "damage", amount: 4, target: "anchor" }],
 	},
+	[cardId("toxic_dagger")]: {
+		id: cardId("toxic_dagger"),
+		name: "Toxic Dagger",
+		range: 1,
+		image: "/cards/dagger.webp",
+		playRequirement: "requires_enemy",
+		effects: [
+			{ type: "damage", amount: 4, target: "anchor" },
+			{
+				type: "apply_status",
+				status: { type: "poison", amount: 2, duration: 2 },
+				target: "anchor",
+			},
+		],
+	},
+	[cardId("acid_dagger")]: {
+		id: cardId("acid_dagger"),
+		name: "Acid Dagger",
+		range: 1,
+		image: "/cards/dagger.webp",
+		playRequirement: "requires_enemy",
+		effects: [
+			{ type: "damage", amount: 4, target: "anchor" },
+			{
+				type: "create_surface",
+				surfaceType: "ACID",
+				duration: 2,
+				spriteBase: "/surfaces/acid.webp",
+			},
+		],
+	},
 	[cardId("thorn_dagger")]: {
 		id: cardId("thorn_dagger"),
 		name: "Thorn Dagger",

@@ -144,12 +144,28 @@ export const alchemistScenes: Record<string, Scene> = {
 				backgroundImage: "/scenes/merchant_potion.webp",
 				text: "Barnaby draws a swirling purple vial from his coat. His eyes gleam with a manic, desperate light before he uncorks it and downs it in one gulp.",
 				onNext: [
-					{ type: "COMPLETE_QUEST", questId: ALCHEMIST.id },
 					{
 						type: "START_BATTLE",
 						encounterId: ALCHEMIST.encounters.mutated_barnaby,
 						background: "alchemist_shop",
 					},
+				],
+			},
+		},
+	},
+	[ALCHEMIST.scenes.barnaby_defeated]: {
+		id: ALCHEMIST.scenes.barnaby_defeated,
+		initialStepId: "step_1",
+		steps: {
+			step_1: {
+				backgroundImage: "/scenes/alchemist_aftermath.webp",
+				text: `Barnaby collapses into a display case, shattering what little glass remained in the shop. His mutated muscles twitch and shrink as the volatile concoctions leave his system.
+					The air is thick with the acrid smoke of bubbling acid and crushed herbs.
+					As you search the wreckage, you spot something humming at the bottom of a broken vat. It is a jagged, glowing green stone that seems to melt the very wood it rests upon.`,
+				onNext: [
+					{ type: "COMPLETE_QUEST", questId: ALCHEMIST.id },
+					{ type: "REWARD_EVO_RUNE", evoRune: "rune_acid" },
+					{ type: "END_SCENE" },
 				],
 			},
 		},

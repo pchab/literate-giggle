@@ -64,7 +64,7 @@ export const RATS_IN_THE_CELLAR_SCENES: Record<Scene["id"], Scene> = {
 					{ type: "COMPLETE_QUEST", questId: RAT_IN_THE_CELLAR.id },
 					{
 						type: "REWARD_EVO_RUNE",
-						evoRune: "rune_rat",
+						evoRune: "rune_pestilence",
 					},
 					{
 						type: "ADVANCE_QUEST",

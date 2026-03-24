@@ -15,6 +15,7 @@ export const THE_ALCHEMISTS_LEDGER = {
 		cache: sceneId("alchemist_cache"),
 		goblin_lab_victory: sceneId("goblin_lab_victory"),
 		betrayal: sceneId("alchemist_betrayal"),
+		barnaby_defeated: sceneId("barnaby_defeated"),
 	},
 	encounters: {
 		goblin_band: encounterId("goblin_band"),

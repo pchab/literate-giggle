@@ -210,6 +210,12 @@ export const TOWN_DB: Record<TownData["id"], TownData> = {
 				defaultSceneId: sceneId("port_city_ship"),
 				position: { x: 84, y: 70 },
 			},
+			{
+				id: townLocationId("port_inn"),
+				name: "Port city Inn (Rest)",
+				type: "HEAL",
+				position: { x: 39, y: 50 },
+			},
 		],
 	},
 };

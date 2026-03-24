@@ -12,6 +12,37 @@ export const archerCards: Record<Card["id"], Card> = {
 			{ type: "damage", amount: 4, target: "anchor", projectile: "ARROW" },
 		],
 	},
+	[cardId("blight_bow")]: {
+		id: cardId("blight_bow"),
+		name: "Blight Bow",
+		range: 2,
+		image: "/cards/short_bow.webp",
+		playRequirement: "requires_enemy",
+		effects: [
+			{ type: "damage", amount: 4, target: "anchor", projectile: "ARROW" },
+			{
+				type: "apply_status",
+				status: { type: "poison", amount: 1, duration: 2 },
+				target: "anchor",
+			},
+		],
+	},
+	[cardId("acid_bow")]: {
+		id: cardId("acid_bow"),
+		name: "Acid Bow",
+		range: 2,
+		image: "/cards/short_bow.webp",
+		playRequirement: "requires_enemy",
+		effects: [
+			{ type: "damage", amount: 4, target: "anchor", projectile: "ARROW" },
+			{
+				type: "create_surface",
+				surfaceType: "ACID",
+				duration: 2,
+				spriteBase: "/surfaces/acid.webp",
+			},
+		],
+	},
 	[cardId("bear_trap")]: {
 		id: cardId("bear_trap"),
 		name: "Bear Trap",
