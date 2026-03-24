@@ -41,7 +41,6 @@ export default function EnemyIntentSidebar() {
 	}
 
 	return (
-		// Fixed height wrapper so the layout doesn't constantly jump when hovering
 		<div className="h-64 relative">
 			<AnimatePresence mode="wait">
 				<motion.div
@@ -52,7 +51,6 @@ export default function EnemyIntentSidebar() {
 					transition={{ duration: 0.2 }}
 					className="flex flex-col gap-3 p-4 bg-zinc-950/80 border border-red-900/40 rounded-lg shadow-[0_0_20px_rgba(153,27,27,0.15)] relative overflow-hidden h-full"
 				>
-					{/* Subtle red danger glow in the background */}
 					<div className="absolute inset-0 bg-linear-to-b from-red-950/20 to-transparent pointer-events-none" />
 
 					{/* --- HEADER & HP --- */}
@@ -62,12 +60,17 @@ export default function EnemyIntentSidebar() {
 								{aiUnit.name}
 							</h3>
 
-							<span className="text-[11px] font-mono text-zinc-300">
-								Move {aiUnit.baseMove}
-							</span>
-							<span className="text-[11px] font-mono text-zinc-300">
-								{aiUnit.currentHp} / {aiUnit.maxHp} HP
-							</span>
+							<div className="flex items-center gap-3">
+								<span className="text-[11px] font-mono text-zinc-300">
+									Move {aiUnit.baseMove}
+								</span>
+								<span className="text-[11px] font-mono text-zinc-300">
+									Def {aiUnit.baseDef}
+								</span>
+								<span className="text-[11px] font-mono text-zinc-300">
+									{aiUnit.currentHp} / {aiUnit.maxHp} HP
+								</span>
+							</div>
 						</div>
 						<div className="w-full h-1.5 bg-zinc-900 rounded-sm overflow-hidden border border-zinc-800 shadow-inner">
 							<motion.div

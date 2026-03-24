@@ -148,7 +148,7 @@ export const alchemistScenes: Record<string, Scene> = {
 					{
 						type: "START_BATTLE",
 						encounterId: ALCHEMIST.encounters.mutated_barnaby,
-						background: "alchemist_shop_ruined",
+						background: "alchemist_shop",
 					},
 				],
 			},

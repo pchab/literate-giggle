@@ -7,6 +7,7 @@ import { acidFlask } from "./acidFlask";
 import { arcaneWisp } from "./arcaneWisp";
 import { barrel } from "./barrel";
 import { iceWall } from "./iceWall";
+import { shelves } from "./shelves";
 
 export const summonLibrary: Record<string, UnitBlueprint> = {
 	[summonId("barrel")]: barrel,
@@ -16,4 +17,5 @@ export const summonLibrary: Record<string, UnitBlueprint> = {
 	[summonId("briar-wolf")]: briarWolf,
 	[summonId("arcane-wisp")]: arcaneWisp,
 	[summonId("acid-flask")]: acidFlask,
+	[summonId("shelves")]: shelves,
 };

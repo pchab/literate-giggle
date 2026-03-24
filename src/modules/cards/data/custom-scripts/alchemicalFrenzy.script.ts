@@ -1,0 +1,152 @@
+import {
+	type AnchorResolver,
+	handleAICardIntent,
+	type TargetResolver,
+} from "@/modules/battle/helpers/ai.actions.helpers";
+import type { EffectResolverParams } from "@/modules/battle/helpers/effects/effect.resolvers";
+import {
+	calculateReachableCells,
+	getLineOfSightPath,
+	getManhattanDistance,
+	isTileEmpty,
+	isTileInBounds,
+} from "@/modules/battle/helpers/grid.helpers";
+import { getSimulationState } from "@/modules/battle/helpers/simulation.helper";
+import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
+import type {
+	AIBattleUnit,
+	BattleUnit,
+} from "@/modules/figures/domain/figures.type";
+import { cardId } from "../../helpers/cards.helper";
+import { alchemistLedgerCards } from "../monsters/alchemistLedgerCards.data";
+
+export const getBarnabyStateScore = (
+	fakeGet: StoreGet,
+	realGet: StoreGet,
+	casterId: string,
+): number => {
+	const { heroes: oldHeroes, monsters: oldMonsters } = realGet();
+	const { heroes: newHeroes, monsters: newMonsters } = fakeGet();
+
+	let score = 0;
+
+	for (const oldHero of oldHeroes) {
+		const newHero = newHeroes.find((h) => h.id === oldHero.id);
+		if (newHero) {
+			const hpDiff = oldHero.currentHp - Math.max(0, newHero.currentHp);
+			score += hpDiff * 10;
+		}
+	}
+
+	const newBarnaby = newMonsters.find((m) => m.id === casterId);
+	const oldBarnaby = oldMonsters.find((m) => m.id === casterId);
+
+	if (newBarnaby && oldBarnaby) {
+		const hpDiff = oldBarnaby.currentHp - Math.max(0, newBarnaby.currentHp);
+		score -= hpDiff * 2;
+
+		const gotVulnerable = newBarnaby.statuses?.some(
+			(s) => s.type === "vulnerable",
+		);
+		if (gotVulnerable) {
+			score -= 50;
+		}
+	}
+
+	return score;
+};
+
+export const alchemicalFrenzy =
+	<C extends AIBattleUnit>(
+		get: StoreGet,
+		set: StoreSet,
+		isSimulation = false,
+	) =>
+	async ({ caster }: EffectResolverParams<C>) => {
+		const { heroes, monsters, summons } = get();
+		const allUnits = [...heroes, ...monsters, ...summons];
+		const activeHeroes = heroes.filter((h) => h.currentHp > 0);
+
+		if (activeHeroes.length === 0) return;
+
+		const chargeCard = alchemistLedgerCards[cardId("reckless_charge")];
+
+		const reachableCells = calculateReachableCells(
+			caster.gridPosition,
+			caster.baseMove,
+			activeHeroes,
+			true,
+		).filter(isTileEmpty(allUnits));
+
+		reachableCells.push(caster.gridPosition);
+
+		let bestScore = -Infinity;
+		let bestStartPos = caster.gridPosition;
+		let bestTargetPos = caster.gridPosition;
+
+		// --- SHADOW STATE: SCORING EVERY POSSIBLE CHARGE ---
+		const heroPositions = activeHeroes.map(({ gridPosition }) => gridPosition);
+		for (const startPos of reachableCells) {
+			for (const { col, row } of heroPositions) {
+				const dx = Math.sign(col - startPos.col);
+				const dy = Math.sign(row - startPos.row);
+
+				const path = getLineOfSightPath(startPos, {
+					col: startPos.col + 5 * dx,
+					row: startPos.row + 5 * dy,
+				}).filter(isTileInBounds);
+				const targetPos = path[path.length - 1];
+
+				const { fakeGet, fakeSet } = getSimulationState(get);
+
+				const fakeBarnaby = fakeGet().monsters.find((m) => m.id === caster.id);
+				if (fakeBarnaby) fakeBarnaby.gridPosition = startPos;
+
+				const targetResolver: TargetResolver = () => ({
+					reachableTarget: { gridPosition: targetPos } as BattleUnit,
+					moveDest: startPos,
+					canHit: true,
+				});
+				const anchorResolver: AnchorResolver = () => targetPos;
+
+				await handleAICardIntent(
+					fakeGet,
+					fakeSet,
+					true,
+				)({
+					attackerId: caster.id,
+					card: chargeCard,
+					getTarget: targetResolver,
+					getAnchor: anchorResolver,
+				});
+
+				const score = getBarnabyStateScore(fakeGet, get, caster.id);
+				const finalScore =
+					score - getManhattanDistance(caster.gridPosition, startPos) * 0.1;
+
+				if (finalScore > bestScore) {
+					bestScore = finalScore;
+					bestStartPos = startPos;
+					bestTargetPos = targetPos;
+				}
+			}
+		}
+
+		// Execute the optimal charge
+		const finalTargetResolver: TargetResolver = () => ({
+			reachableTarget: { gridPosition: bestTargetPos } as BattleUnit,
+			moveDest: bestStartPos,
+			canHit: true,
+		});
+		const finalAnchorResolver: AnchorResolver = () => bestTargetPos;
+		await handleAICardIntent(
+			get,
+			set,
+			isSimulation,
+		)({
+			attackerId: caster.id,
+			card: chargeCard,
+			getTarget: finalTargetResolver,
+			getAnchor: finalAnchorResolver,
+		});
+	};
