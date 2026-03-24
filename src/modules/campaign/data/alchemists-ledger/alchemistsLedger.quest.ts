@@ -34,6 +34,7 @@ export const alchemistQuest: Quest = {
 			logDescription:
 				"Infiltrate the goblin lair and recover the stolen ledger.",
 			targetNodeId: [{ mapNodeId: mapNodeId("goblin_lair") }],
+			onWinSceneId: ALCHEMIST.scenes.goblin_lab_victory,
 		},
 		[ALCHEMIST.steps.confront_barnaby]: {
 			id: ALCHEMIST.steps.confront_barnaby,
@@ -41,8 +42,8 @@ export const alchemistQuest: Quest = {
 				"Return to Barnaby and confront him about his 'medicine'.",
 			targetNodeId: [
 				{
-					mapNodeId: mapNodeId("node_starting_town"),
-					locationId: townLocationId("loc_alchemist_shop"),
+					mapNodeId: mapNodeId("connury_town"),
+					locationId: townLocationId("alchemist_shop"),
 				},
 			],
 			onEnterSceneId: ALCHEMIST.scenes.betrayal,

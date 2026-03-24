@@ -2,7 +2,7 @@ import { summonId } from "@/modules/figures/helpers/figures.helpers";
 import type { Card } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
 
-export const goblinCards: Record<Card["id"], Card> = {
+export const alchemistLedgerCards: Record<Card["id"], Card> = {
 	[cardId("volatile_transmutation")]: {
 		id: cardId("volatile_transmutation"),
 		name: "Transmute Flask",
@@ -84,6 +84,43 @@ export const goblinCards: Record<Card["id"], Card> = {
 				collisionDamage: 0,
 				target: "anchor",
 			},
+		],
+	},
+	[cardId("potion_frenzy")]: {
+		id: cardId("potion_frenzy"),
+		name: "Potion Frenzy",
+		range: 10,
+		image: "/cards/reckless_charge.webp",
+		playRequirement: "no_target",
+		effects: [
+			{ type: "damage", amount: 6, target: "path" },
+			{
+				type: "push",
+				distance: 2,
+				collisionDamage: 3,
+				target: "path",
+				pushDirection: "sideways",
+			},
+			{ type: "move", target: "self" },
+			{ type: "custom_script", scriptId: "barnaby_collision", target: "self" },
+		],
+	},
+	[cardId("reckless_charge")]: {
+		id: cardId("reckless_charge"),
+		name: "Reckless Charge",
+		range: 10,
+		image: "/cards/reckless_charge.webp",
+		playRequirement: "no_target",
+		effects: [
+			{ type: "damage", amount: 6, target: "path" },
+			{
+				type: "push",
+				distance: 2,
+				collisionDamage: 4,
+				target: "path",
+				pushDirection: "sideways",
+			},
+			{ type: "move", target: "self" },
 		],
 	},
 };

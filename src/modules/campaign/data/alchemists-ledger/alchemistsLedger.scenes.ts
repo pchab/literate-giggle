@@ -1,4 +1,5 @@
 import type { Scene } from "@/modules/campaign/domain/scenes.type";
+import { mapNodeId } from "@/modules/world/domain/map.types";
 import { THE_ALCHEMISTS_LEDGER as ALCHEMIST } from "./alchemistsLedger.definitions";
 
 export const alchemistScenes: Record<string, Scene> = {
@@ -93,13 +94,38 @@ export const alchemistScenes: Record<string, Scene> = {
 		},
 	},
 
+	[ALCHEMIST.scenes.goblin_lab_victory]: {
+		id: ALCHEMIST.scenes.goblin_lab_victory,
+		initialStepId: "loot",
+		steps: {
+			loot: {
+				backgroundImage: "/scenes/goblin_lab_victory.webp",
+				text: "I find the missing ledger amidst the mess.",
+				onNext: [{ type: "CHANGE_STEP", stepId: "inspect" }],
+			},
+			inspect: {
+				backgroundImage: "/scenes/goblin_lab_victory.webp",
+				text: "The ledger reveals more of Barnaby's horrific experiments...",
+				onNext: [
+					{
+						type: "ADVANCE_QUEST",
+						questId: ALCHEMIST.id,
+						newStepId: ALCHEMIST.steps.confront_barnaby,
+					},
+					{ type: "FORCE_MOVE", nodeId: mapNodeId("northern_road") },
+					{ type: "END_SCENE" },
+				],
+			},
+		},
+	},
+
 	[ALCHEMIST.scenes.betrayal]: {
 		id: ALCHEMIST.scenes.betrayal,
 		initialStepId: "step_1",
 		steps: {
 			step_1: {
 				speaker: "Barnaby",
-				backgroundImage: "/backgrounds/alchemist_betrayal.jpg",
+				backgroundImage: "/scenes/merchant_shop.webp",
 				text: "You survived! And you have the ledger! Give it to me at once!",
 				choices: [
 					{
@@ -110,12 +136,12 @@ export const alchemistScenes: Record<string, Scene> = {
 			},
 			step_2: {
 				speaker: "Barnaby",
-				backgroundImage: "/backgrounds/alchemist_betrayal.jpg",
+				backgroundImage: "/scenes/merchant_shop.webp",
 				text: "Poison? You ignorant gutter-trash. It is evolution! The city rejects my genius, so I will force them to see it!",
 				onNext: [{ type: "CHANGE_STEP", stepId: "step_3" }],
 			},
 			step_3: {
-				backgroundImage: "/backgrounds/alchemist_betrayal.jpg",
+				backgroundImage: "/scenes/merchant_potion.webp",
 				text: "Barnaby draws a swirling purple vial from his coat. His eyes gleam with a manic, desperate light before he uncorks it and downs it in one gulp.",
 				onNext: [
 					{ type: "COMPLETE_QUEST", questId: ALCHEMIST.id },

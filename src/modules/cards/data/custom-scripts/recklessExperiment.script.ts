@@ -22,7 +22,7 @@ import { acidFlask } from "@/modules/figures/data/summons/acidFlask";
 import type { AIBattleUnit } from "@/modules/figures/domain/figures.type";
 import { cardId } from "../../helpers/cards.helper";
 import { hoboCards } from "../heroes/hoboCards.data";
-import { goblinCards } from "../monsters/goblinCards.data";
+import { alchemistLedgerCards } from "../monsters/alchemistLedgerCards.data";
 
 export const recklessExperiment =
 	<C extends AIBattleUnit>(
@@ -116,7 +116,7 @@ export const recklessExperiment =
 			const spawnTile = emptyAdjacentTiles[0];
 
 			// Force the AI to spawn the vial on our perfectly calculated tile
-			const spawnVialCard = goblinCards[cardId("spawn_vial")];
+			const spawnVialCard = alchemistLedgerCards[cardId("spawn_vial")];
 			const targetSpawnTile: AnchorResolver = () => spawnTile;
 
 			await handleAICardIntent(
@@ -147,7 +147,7 @@ export const recklessExperiment =
 					canHit: true,
 				});
 
-				const kickVialCard = goblinCards[cardId("kick_vial")];
+				const kickVialCard = alchemistLedgerCards[cardId("kick_vial")];
 				await handleAICardIntent(
 					get,
 					set,

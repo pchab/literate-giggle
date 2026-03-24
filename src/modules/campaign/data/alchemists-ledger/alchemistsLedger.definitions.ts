@@ -13,6 +13,7 @@ export const THE_ALCHEMISTS_LEDGER = {
 	scenes: {
 		intro: sceneId("alchemist_intro"),
 		cache: sceneId("alchemist_cache"),
+		goblin_lab_victory: sceneId("goblin_lab_victory"),
 		betrayal: sceneId("alchemist_betrayal"),
 	},
 	encounters: {
