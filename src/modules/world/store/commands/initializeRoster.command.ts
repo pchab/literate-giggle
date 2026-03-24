@@ -3,7 +3,10 @@ import type { HeroCard } from "@/modules/cards/domain/cards.type";
 import { createHeroCard } from "@/modules/cards/helpers/cards.helper";
 import { baseHeroStats } from "@/modules/figures/data/heroes/baseHeroStats";
 import { heroId } from "@/modules/figures/helpers/figures.helpers";
-import type { WorldStoreServerAction } from "@/modules/world/store/world.store";
+import {
+	initialWorldState,
+	type WorldStoreServerAction,
+} from "@/modules/world/store/world.store";
 
 const startingIds = [
 	heroId(crypto.randomUUID()),
@@ -14,6 +17,7 @@ const startingIds = [
 export function initializeRoster(): WorldStoreServerAction {
 	return () => {
 		return {
+			...initialWorldState,
 			roster: [
 				{
 					id: startingIds[0],

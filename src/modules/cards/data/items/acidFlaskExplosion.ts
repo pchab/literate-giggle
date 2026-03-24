@@ -11,17 +11,16 @@ export const acidFlaskExplosionCard: Card = {
 	aiTargetPreference: "self",
 	aoePattern: crossPattern,
 	effects: [
-		{ type: "damage", amount: 4, target: "self" },
+		{ type: "damage", amount: 3, target: "self" },
 		{
 			type: "apply_status",
-			status: { type: "vulnerable", amount: 3, duration: 2 },
+			status: { type: "vulnerable", amount: 2, duration: 2 },
 			target: "self",
 		},
 		{
 			type: "create_surface",
 			surfaceType: "ACID",
 			duration: 3,
-			damage: 1,
 			spriteBase: "/surfaces/acid.webp",
 			status: {
 				type: "poison",

@@ -9,5 +9,6 @@ export const acidFlask: UnitBlueprint = {
 	baseDef: 0,
 	xpReward: 0,
 	intentPool: [],
+	immunities: ["poison"],
 	onDeath: cardId("acid_flask_explosion"),
 };

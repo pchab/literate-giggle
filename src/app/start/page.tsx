@@ -19,9 +19,15 @@ export default function StartScreen() {
 			initializeRoster: state.initializeRoster,
 		})),
 	);
+	const { initializeCampaign } = useCampaignStore(
+		useShallow((state) => ({
+			initializeCampaign: state.initializeCampaign,
+		})),
+	);
 
 	const handleNewGame = () => {
 		initializeRoster();
+		initializeCampaign();
 		router.push("/world");
 	};
 

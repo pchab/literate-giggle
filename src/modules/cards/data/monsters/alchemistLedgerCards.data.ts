@@ -28,14 +28,14 @@ export const alchemistLedgerCards: Record<Card["id"], Card> = {
 		effects: [
 			{
 				type: "damage",
-				amount: 4,
+				amount: 3,
 				target: "anchor",
 				projectile: "ACID_SPIT",
 				vfx: "ACID_SPIT",
 			},
 			{
 				type: "apply_status",
-				status: { type: "poison", amount: 2, duration: 2 },
+				status: { type: "poison", amount: 1, duration: 2 },
 				target: "anchor",
 			},
 		],

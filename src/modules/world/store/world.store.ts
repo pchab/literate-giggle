@@ -70,18 +70,22 @@ export interface WorldAction {
 	) => void;
 }
 
+export const initialWorldState: WorldState = {
+	phase: "MAP",
+	currentNodeId: mapNodeId("ironhold_city"),
+	roster: [],
+	pendingPromotions: [],
+	pendingPowerRunes: [],
+	unlockedQuestsQueue: [],
+	evolutionRunesInventory: [],
+};
+
 export type WorldStoreServerAction = (state: WorldState) => Partial<WorldState>;
 
 export const useWorldStore = create<WorldState & WorldAction>()(
 	persist(
 		(set) => ({
-			phase: "MAP",
-			currentNodeId: mapNodeId("ironhold_city"),
-			roster: [],
-			pendingPromotions: [],
-			pendingPowerRunes: [],
-			unlockedQuestsQueue: [],
-			evolutionRunesInventory: [],
+			...initialWorldState,
 
 			initializeRoster: () => set(initializeRoster()),
 			setPhase: (phase) => set(setPhase(phase)),

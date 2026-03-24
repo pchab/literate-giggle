@@ -69,7 +69,7 @@ export function useBattleTurns(encounterId: Encounter["id"]): void {
 		setTimeout(() => {
 			stageBattleRewards(remainingHealth);
 
-			router.push("/");
+			router.push("/reward");
 		}, 1000);
 	}
 }
