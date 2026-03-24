@@ -3,6 +3,7 @@ import type {
 	AnchorTarget,
 	Card,
 } from "@/modules/cards/domain/cards.type";
+import { isSummon } from "@/modules/figures/helpers/figures.helpers";
 import type {
 	AIBattleUnit,
 	BattleUnit,
@@ -97,6 +98,7 @@ export const getIdealTarget: TargetResolver = <C extends AIBattleUnit>(
 
 	const validTargetsToEvaluate = aliveOthers.filter((f) => {
 		if (targetsAny) return true;
+		if (isSummon(f) && f.allegiance === "NEUTRAL") return false;
 		return targetsAllies ? !areEnemies(aiFigure)(f) : areEnemies(aiFigure)(f);
 	});
 
