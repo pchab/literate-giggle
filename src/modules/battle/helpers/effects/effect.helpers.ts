@@ -7,7 +7,7 @@ import type {
 } from "@/modules/cards/domain/cards.type";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
 import { isHeroId, isSummon } from "@/modules/figures/helpers/figures.helpers";
-import type { SurfaceData } from "../../domain/grid.type";
+import type { SurfaceData, SurfaceType } from "../../domain/grid.type";
 import type { StoreGet, StoreSet } from "../../store/battle.store";
 import { getCellId, getLineOfSightPath, isUnitInTile } from "../grid.helpers";
 import { updateBattleUnitState } from "../state.helpers";
@@ -184,48 +184,125 @@ export function applyEffectToEntity<T extends BattleUnit>({
 	return entity;
 }
 
-export const tickStatuses =
+export const tickStatusesAndSurfaces =
 	(get: StoreGet, set: StoreSet, isSimulation = false) =>
-	async <T extends BattleUnit>(figures: T[]): Promise<void> => {
-		for (const figure of figures) {
-			if (figure.currentHp <= 0) return;
+		async <T extends BattleUnit>(figures: T[]): Promise<void> => {
+			const { surfaces } = get();
+			const nextSurfaces = { ...surfaces };
 
-			const poison =
-				figure.statuses.find(({ type }) => type === "poison")?.amount ?? 0;
-			const regen =
-				figure.statuses.find(({ type }) => type === "regen")?.amount ?? 0;
+			// ==========================================
+			// 1. TICK FIGURES & APPLY SURFACES
+			// ==========================================
+			for (const figure of figures) {
+				if (figure.currentHp <= 0) continue;
 
-			const newHp = Math.min(
-				figure.maxHp,
-				Math.max(0, figure.currentHp - poison + regen),
-			);
+				let updatedFigure = { ...figure };
 
-			const newStatuses = figure.statuses
-				.map((status) => ({
-					...status,
-					duration: status.duration === -1 ? -1 : status.duration - 1,
-				}))
-				.filter((status) => status.duration > 0 || status.duration === -1);
+				// --- A. Evaluate EXISTING Statuses First ---
+				const poison =
+					updatedFigure.statuses.find(({ type }) => type === "poison")?.amount ?? 0;
+				const regen =
+					updatedFigure.statuses.find(({ type }) => type === "regen")?.amount ?? 0;
 
-			const cellId = getCellId(figure.gridPosition);
-			await updateBattleUnitState(
-				get,
-				set,
-				isSimulation,
-			)({
-				...figure,
-				currentHp: newHp,
-				statuses: newStatuses,
-			});
-			set(({ currentVfx }) => ({
-				currentVfx: {
-					...currentVfx,
-					...(poison > 0 ? { [cellId]: { type: "POISON" } } : {}),
-					...(regen > 0 ? { [cellId]: { type: "HEAL" } } : {}),
-				},
-			}));
-		}
-	};
+				const totalTickHarm = poison;
+
+				updatedFigure.currentHp = Math.min(
+					updatedFigure.maxHp,
+					Math.max(0, updatedFigure.currentHp - poison + regen),
+				);
+
+				updatedFigure.statuses = updatedFigure.statuses
+					.map((status) => ({
+						...status,
+						duration: status.duration === -1 ? -1 : status.duration - 1,
+					}))
+					.filter((status) => status.duration > 0 || status.duration === -1);
+
+				if (updatedFigure.currentHp <= 0) {
+					await updateBattleUnitState(get, set, isSimulation)(updatedFigure);
+					continue;
+				}
+
+				// --- B. Evaluate Surfaces Under the Unit ---
+				const size = updatedFigure.size ?? 1;
+				const processedSurfaceTypes = new Set<SurfaceType>();
+
+				for (let r = 0; r < size; r++) {
+					for (let c = 0; c < size; c++) {
+						const cellId = getCellId({
+							col: updatedFigure.gridPosition.col + c,
+							row: updatedFigure.gridPosition.row + r,
+						});
+
+						const surface = nextSurfaces[cellId];
+						if (!surface) continue;
+
+						if (processedSurfaceTypes.has(surface.type)) continue;
+						processedSurfaceTypes.add(surface.type);
+
+						// 1. Apply Surface Damage via Helper
+						if (surface.damage) {
+							updatedFigure = applyEffectToEntity({
+								entity: updatedFigure,
+								effect: { type: "damage", amount: surface.damage, target: "anchor" },
+							});
+						}
+
+						// 2. Apply Surface Status via Helper (handles immunities/stacking!)
+						if (surface.status) {
+							updatedFigure = applyEffectToEntity({
+								entity: updatedFigure,
+								effect: { type: "apply_status", status: surface.status, target: "anchor" },
+							});
+						}
+
+						// 3. Handle Trap Charges
+						if (surface.charges !== undefined) {
+							surface.charges -= 1;
+							if (surface.charges <= 0) {
+								surface.duration = 0;
+							}
+						}
+					}
+				}
+
+				// --- C. Save State & Trigger VFX ---
+				const anchorCellId = getCellId(updatedFigure.gridPosition);
+
+				await updateBattleUnitState(
+					get,
+					set,
+					isSimulation,
+				)(updatedFigure);
+
+				if (!isSimulation) {
+					set(({ currentVfx }) => ({
+						currentVfx: {
+							...currentVfx,
+							...(totalTickHarm > 0 ? { [anchorCellId]: { type: "POISON" } } : {}),
+							...(regen > 0 ? { [anchorCellId]: { type: "HEAL" } } : {}),
+						},
+					}));
+				}
+			}
+
+			// ==========================================
+			// 2. TICK SURFACES DURATION & CLEANUP
+			// ==========================================
+			for (const cellId in nextSurfaces) {
+				const surface = nextSurfaces[cellId];
+				if (surface.duration !== -1) {
+					surface.duration -= 1;
+				}
+				if (surface.duration <= 0) {
+					delete nextSurfaces[cellId];
+				}
+			}
+
+			if (!isSimulation) {
+				set(() => ({ surfaces: nextSurfaces }));
+			}
+		};
 
 // --- 4. FIXED SURFACE HELPER ---
 export function applySurfaceEffect<T extends BattleUnit>({

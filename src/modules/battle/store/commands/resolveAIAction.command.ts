@@ -1,7 +1,7 @@
 import { cardLibrary } from "@/modules/cards/data/cards.data";
 import { sleep } from "@/modules/shared/helpers/sleep";
 import { handleAICardIntent } from "../../helpers/ai.actions.helpers";
-import { tickStatuses } from "../../helpers/effects/effect.helpers";
+import { tickStatusesAndSurfaces } from "../../helpers/effects/effect.helpers";
 import { calculateStateDiff } from "../../helpers/state.helpers";
 import type { StoreGet, StoreSet } from "../battle.store";
 import { calculateAIIntents } from "./calculateAIIntents.command";
@@ -15,7 +15,7 @@ export const resolveAIActions = async (
 	// 1. START OF AI TURN (Tick AI statuses)
 	// ==========================================
 	const { monsters: draftMonsters, summons: draftSummons } = get();
-	await tickStatuses(
+	await tickStatusesAndSurfaces(
 		get,
 		set,
 		isSimulation,
@@ -102,7 +102,7 @@ export const resolveAIActions = async (
 	// ============================================
 	// 3. START OF PLAYER TURN (Tick Hero statuses)
 	// ============================================
-	await tickStatuses(get, set, isSimulation)(get().heroes);
+	await tickStatusesAndSurfaces(get, set, isSimulation)(get().heroes);
 
 	const xpEarnedThisTurn = calculateStateDiff(
 		get().monsters,
