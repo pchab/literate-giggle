@@ -11,11 +11,12 @@ export const setHoveredCell =
 		const { activeHeroCard, hoveredHeroCard, heroes, monsters, summons } =
 			get();
 		const cardContext = activeHeroCard || hoveredHeroCard;
+		const anchorTarget = { gridPosition: cell };
 		if (!cardContext) return;
 		const newPlayerIntent = {
 			cardId: cardContext.card.id,
 			figureId: cardContext.unitId,
-			target: cell,
+			target: anchorTarget,
 		};
 		set(() => ({
 			playerIntent: newPlayerIntent,
@@ -27,7 +28,7 @@ export const setHoveredCell =
 		}
 
 		const { fakeGet, fakeSet } = getSimulationState(get);
-		await resolveCard(fakeGet, fakeSet, true)(cell, cardContext);
+		await resolveCard(fakeGet, fakeSet, true)(anchorTarget, cardContext);
 
 		const shadowState = fakeGet();
 		const shadowFigures = [

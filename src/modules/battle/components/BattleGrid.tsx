@@ -133,7 +133,7 @@ export function BattleGrid({ encounterId }: { encounterId: Encounter["id"] }) {
 								highlight,
 							)
 						) {
-							resolveCard(cell, activeHeroCard);
+							resolveCard({ gridPosition: cell }, activeHeroCard);
 						} else {
 							cancelCard();
 						}

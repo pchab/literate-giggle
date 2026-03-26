@@ -26,15 +26,15 @@ export function isUnitInTile<T extends BattleUnit>(tile: GridPosition) {
 
 export const isTileOccupied =
 	<T extends BattleUnit>(figures: T[]) =>
-		(tile: GridPosition) =>
-			figures.some(
-				(figure) => figure.currentHp > 0 && isUnitInTile(tile)(figure),
-			);
+	(tile: GridPosition) =>
+		figures.some(
+			(figure) => figure.currentHp > 0 && isUnitInTile(tile)(figure),
+		);
 
 export const isTileEmpty =
 	<T extends BattleUnit>(figures: T[]) =>
-		(tile: GridPosition) =>
-			!isTileOccupied(figures)(tile);
+	(tile: GridPosition) =>
+		!isTileOccupied(figures)(tile);
 
 // --- 2. CLEARANCE LOGIC (For Giant Pathfinding) ---
 export const canUnitFit = <C extends BattleUnit, T extends BattleUnit>({
@@ -259,12 +259,33 @@ export function filterGridByAttackPattern({
 	const pattern = card.aoePattern || [{ col: 0, row: 0 }];
 	if (!targetPos) return pattern;
 
-	const rotatedPattern = rotatePattern({ pattern, originPos, targetPos });
+	const rotatedPattern = rotatePattern({
+		pattern,
+		originPos,
+		targetPos: targetPos.gridPosition,
+	});
 
-	return rotatedPattern.map(({ col, row }) => ({
-		col: targetPos.col + col,
-		row: targetPos.row + row,
-	}));
+	const size = targetPos.size ?? 1;
+	const expandedPattern: GridPosition[] = [];
+
+	for (const p of rotatedPattern) {
+		const colStart = p.col < 0 ? p.col : p.col > 0 ? p.col + size - 1 : 0;
+		const colEnd = p.col === 0 ? size - 1 : colStart;
+
+		const rowStart = p.row < 0 ? p.row : p.row > 0 ? p.row + size - 1 : 0;
+		const rowEnd = p.row === 0 ? size - 1 : rowStart;
+
+		for (let c = colStart; c <= colEnd; c++) {
+			for (let r = rowStart; r <= rowEnd; r++) {
+				expandedPattern.push({
+					col: targetPos.gridPosition.col + c,
+					row: targetPos.gridPosition.row + r,
+				});
+			}
+		}
+	}
+
+	return expandedPattern;
 }
 
 export const getClosestOriginTile = ({
@@ -286,7 +307,10 @@ export const getClosestOriginTile = ({
 				row: gridPosition.row + r,
 				col: gridPosition.col + c,
 			};
-			const distance = getManhattanDistance(currentTile, anchorTarget);
+			const distance = getManhattanDistance(
+				currentTile,
+				anchorTarget.gridPosition,
+			);
 
 			if (distance < minDistance) {
 				minDistance = distance;

@@ -45,12 +45,15 @@ export const resolveCard =
 		if (anchorTarget) {
 			const distance = getDistanceToBoundingBox({
 				caster: hero,
-				target: { gridPosition: anchorTarget },
+				target: anchorTarget,
 			});
 			if (distance > card.range) {
 				return;
 			}
-			const flightPath = getLineOfSightPath(hero.gridPosition, anchorTarget);
+			const flightPath = getLineOfSightPath(
+				hero.gridPosition,
+				anchorTarget.gridPosition,
+			);
 
 			for (let i = 1; i < flightPath.length; i++) {
 				const tile = flightPath[i];
@@ -59,7 +62,7 @@ export const resolveCard =
 				);
 
 				if (isOccupied) {
-					actualTarget = tile; // Detonate exactly on the tile we hit!
+					actualTarget = { gridPosition: tile }; // Detonate exactly on the tile we hit!
 					break;
 				}
 			}
@@ -78,7 +81,7 @@ export const resolveCard =
 		});
 
 		const firePath = anchorTarget
-			? getLineOfSightPath(hero.gridPosition, anchorTarget)
+			? getLineOfSightPath(hero.gridPosition, anchorTarget.gridPosition)
 			: [];
 		set((state) => ({
 			...state,

@@ -1,4 +1,5 @@
 import type {
+	BoundingBox,
 	GridPosition,
 	SurfaceType,
 } from "@/modules/battle/domain/grid.type";
@@ -6,7 +7,7 @@ import type { VfxType } from "@/modules/battle/domain/vfx.type";
 import type { Summon } from "@/modules/figures/domain/figures.type";
 import type { Status, StatusType } from "@/modules/figures/domain/status.type";
 
-export type AnchorTarget = GridPosition | null;
+export type AnchorTarget = BoundingBox | null;
 
 export type AITargetPreference =
 	| "lowestHp"
@@ -14,7 +15,7 @@ export type AITargetPreference =
 	| "lowestDef"
 	| "closest"
 	| "self"
-	| "empty_adjacent"
+	| "away"
 	| GridPosition;
 
 export type PlayRequirement =

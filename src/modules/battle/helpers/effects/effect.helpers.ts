@@ -55,7 +55,9 @@ export function resolveTargets<T extends BattleUnit>(
 			return Array.from(new Set(hitIds));
 		}
 
-		return aliveFigures.filter(isUnitInTile(anchorTarget)).map((f) => f.id);
+		return aliveFigures
+			.filter(isUnitInTile(anchorTarget.gridPosition))
+			.map((f) => f.id);
 	}
 
 	if (targetType === "all_enemies") {
@@ -67,7 +69,7 @@ export function resolveTargets<T extends BattleUnit>(
 	}
 
 	if (targetType === "path" && anchorTarget) {
-		const targetPos = anchorTarget as { col: number; row: number };
+		const targetPos = anchorTarget.gridPosition;
 		const tilePath = getLineOfSightPath(caster.gridPosition, targetPos).slice(
 			1,
 		);

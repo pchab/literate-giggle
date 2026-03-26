@@ -11,9 +11,13 @@ import type { GridPosition } from "../domain/grid.type";
 import type { TargetResolver } from "./ai.actions.helpers";
 import { areEnemies } from "./effects/effect.helpers";
 import {
+	calculateAttackableCells,
+	calculateReachableCells,
 	canUnitFit,
 	getDistanceToBoundingBox,
 	getLineOfSightPath,
+	isTileEmpty,
+	isTileInBounds,
 	isUnitInTile,
 } from "./grid.helpers";
 import { calculateExactPath } from "./move.helpers";
@@ -34,21 +38,75 @@ const calculateAIMove = <C extends AIBattleUnit, T extends BattleUnit>(
 		return monster.gridPosition;
 	}
 
+	const canTargetSelf = ["requires_entity", "requires_ally"].includes(
+		card.playRequirement,
+	);
+	const minRange = canTargetSelf ? 0 : 1;
+	const hardObstacles = figures.filter(areEnemies(monster));
+
+	// ==========================================
+	// 1. COWARD / KITING LOGIC ("away")
+	// ==========================================
+	if (card.aiTargetPreference === "away") {
+		const reachable = calculateReachableCells({
+			movingUnit: monster,
+			blockingFigures: hardObstacles,
+			canTargetSelf: true,
+		});
+
+		const validStops = reachable.filter((cell) =>
+			canUnitFit({ unit: { ...monster, gridPosition: cell }, figures }),
+		);
+
+		const firingSpots = validStops.filter((cell) => {
+			if (card.playRequirement === "requires_empty_cell") {
+				const possibleSpawns = calculateAttackableCells({
+					attacker: { ...monster, gridPosition: cell },
+					rangeValue: card.range,
+					canTargetSelf: false,
+				})
+					.filter(isTileInBounds)
+					.filter(isTileEmpty(figures));
+
+				return possibleSpawns.length > 0;
+			}
+
+			return isTargetInRange({
+				card,
+				minRange,
+				attacker: { ...monster, gridPosition: cell },
+				target: targetFigure,
+			});
+		});
+
+		if (firingSpots.length > 0) {
+			firingSpots.sort((a, b) => {
+				const distA = getDistanceToBoundingBox({
+					caster: { ...monster, gridPosition: a },
+					target: targetFigure,
+				});
+				const distB = getDistanceToBoundingBox({
+					caster: { ...monster, gridPosition: b },
+					target: targetFigure,
+				});
+				return distB - distA;
+			});
+
+			return firingSpots[0];
+		}
+	}
+
+	// ==========================================
+	// 2. STANDARD / AGGRESSIVE LOGIC
+	// ==========================================
 	const distance = getDistanceToBoundingBox({
 		caster: monster,
 		target: targetFigure,
 	});
 
-	const canTargetSelf = ["requires_entity", "requires_ally"].includes(
-		card.playRequirement,
-	);
-	const minRange = canTargetSelf ? 0 : 1;
-
 	if (distance >= minRange && distance <= card.range) {
 		return monster.gridPosition;
 	}
-
-	const hardObstacles = figures.filter(areEnemies(monster));
 
 	const fullPath = calculateExactPath({
 		movingUnit: monster,
@@ -62,7 +120,6 @@ const calculateAIMove = <C extends AIBattleUnit, T extends BattleUnit>(
 
 	let stepsToTake = Math.min(monster.baseMove, fullPath.length);
 
-	// 2. BACKTRACKING
 	while (stepsToTake > 0) {
 		const candidateDest = fullPath[stepsToTake - 1];
 
@@ -83,8 +140,7 @@ export const getIdealTarget: TargetResolver = <C extends AIBattleUnit>(
 	figures: BattleUnit[],
 ) => {
 	if (
-		card.aiTargetPreference === "self" ||
-		card.aiTargetPreference === "empty_adjacent"
+		card.aiTargetPreference === "self"
 	) {
 		return {
 			reachableTarget: aiFigure,
@@ -102,15 +158,15 @@ export const getIdealTarget: TargetResolver = <C extends AIBattleUnit>(
 				moveDest,
 				canHit: Boolean(
 					moveDest &&
-						isTargetInRange({
-							card,
-							minRange: 1,
-							attacker: {
-								...aiFigure,
-								gridPosition: moveDest,
-							},
-							target,
-						}),
+					isTargetInRange({
+						card,
+						minRange: 1,
+						attacker: {
+							...aiFigure,
+							gridPosition: moveDest,
+						},
+						target,
+					}),
 				),
 			};
 		}

@@ -13,8 +13,8 @@ export const elvenCards: Record<Card["id"], Card> = {
 		name: "Call of the Briar",
 		range: 1,
 		image: "/cards/elven_horn.webp",
-		playRequirement: "no_target",
-		aiTargetPreference: "empty_adjacent",
+		playRequirement: "requires_empty_cell",
+		aiTargetPreference: "self",
 		effects: [
 			{ type: "summon", blueprintId: summonId("briar-wolf"), target: "anchor" },
 		],

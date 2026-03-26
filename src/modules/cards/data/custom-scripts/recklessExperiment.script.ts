@@ -4,21 +4,15 @@ import {
 	handleAICardIntent,
 	type TargetResolver,
 } from "@/modules/battle/helpers/ai.actions.helpers";
-import { areEnemies } from "@/modules/battle/helpers/effects/effect.helpers";
 import type { EffectResolverParams } from "@/modules/battle/helpers/effects/effect.resolvers";
 import {
-	calculateReachableCells,
 	GRID_BOUNDS,
 	getDistanceToBoundingBox,
 	isTileEmpty,
 	isTileInBounds,
+	isUnitInTile,
 } from "@/modules/battle/helpers/grid.helpers";
-import {
-	calculateExactPath,
-	moveBattleUnit,
-} from "@/modules/battle/helpers/move.helpers";
 import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
-import { acidFlask } from "@/modules/figures/data/summons/acidFlask";
 import type { AIBattleUnit } from "@/modules/figures/domain/figures.type";
 import { cardId } from "../../helpers/cards.helper";
 import { hoboCards } from "../heroes/hoboCards.data";
@@ -30,154 +24,147 @@ export const recklessExperiment =
 		set: StoreSet,
 		isSimulation = false,
 	) =>
-	async ({ caster }: EffectResolverParams<C>) => {
-		const { heroes, monsters, summons } = get();
-		const allUnits = [...heroes, ...monsters, ...summons];
-		const oppositeFaction = allUnits.filter(areEnemies(caster));
-		const activeHeroes = heroes.filter((h) => h.currentHp > 0);
+		async ({ caster }: EffectResolverParams<C>) => {
+			const {
+				[cardId("spawn_vial")]: spawnVialCard,
+				[cardId("kick_vial")]: kickVialCard,
+			} = alchemistLedgerCards;
 
-		if (activeHeroes.length === 0) return;
+			const { heroes } = get();
+			const activeHeroes = heroes.filter((h) => h.currentHp > 0);
 
-		// --- GRID BOUNDS ---
-		const isBorder = ({ col, row }: GridPosition) =>
-			col === GRID_BOUNDS.cols - 1 || row === GRID_BOUNDS.rows - 1;
+			if (activeHeroes.length === 0) return;
 
-		// --- STEP 1: MOVE TO THE PERIMETER ---
-		const reachableCells = calculateReachableCells({
-			movingUnit: caster,
-			blockingFigures: oppositeFaction,
-			canTargetSelf: true,
-		}).filter(isTileEmpty(allUnits));
+			// --- GRID BOUNDS ---
+			const isBorder = ({ col, row }: GridPosition) =>
+				col === GRID_BOUNDS.cols - 1 || row === GRID_BOUNDS.rows - 1;
 
-		let finalPos = caster.gridPosition;
-
-		if (reachableCells.length > 0) {
-			let bestScore = -Infinity;
-
-			for (const cell of reachableCells) {
-				let score = 0;
-
-				// Massive reward for being on the edge of the map
-				if (isBorder(cell)) score += 100;
-
-				if (score > bestScore) {
-					bestScore = score;
-					finalPos = cell;
-				}
-			}
-
-			const path = calculateExactPath({
-				movingUnit: caster,
-				targetPos: finalPos,
-				figures: oppositeFaction,
-			});
-			await moveBattleUnit(
-				get,
-				set,
-				isSimulation,
-			)({ movingUnit: caster, path });
-		}
-
-		// --- STEP 2: SPAWN VIAL TOWARDS CLOSEST HERO ---
-		// Find the closest hero from the new position
-		const closestHero = activeHeroes.sort(
-			(a, b) =>
-				getDistanceToBoundingBox({
-					caster: a,
-					target: { gridPosition: finalPos },
-				}) -
-				getDistanceToBoundingBox({
-					caster: b,
-					target: { gridPosition: finalPos },
-				}),
-		)[0];
-
-		// Find all empty adjacent tiles
-		const currentUnits = [...get().heroes, ...get().monsters, ...get().summons];
-		const adjacentOffsets = [
-			{ col: 0, row: -1 },
-			{ col: 1, row: 0 },
-			{ col: 0, row: 1 },
-			{ col: -1, row: 0 },
-		];
-		const emptyAdjacentTiles = adjacentOffsets
-			.map((offset) => ({
-				col: finalPos.col + offset.col,
-				row: finalPos.row + offset.row,
-			}))
-			.filter(
-				(pos) =>
-					isTileInBounds(pos) &&
-					isTileEmpty(currentUnits)(pos) &&
-					!isBorder(pos),
-			)
-			.sort(
+			// --- STEP 1: SPAWN VIAL TOWARDS CLOSEST HERO ---
+			// Find the closest hero from the new position
+			const closestHero = activeHeroes.sort(
 				(a, b) =>
 					getDistanceToBoundingBox({
-						caster: closestHero,
-						target: { gridPosition: a },
+						caster,
+						target: a,
 					}) -
 					getDistanceToBoundingBox({
-						caster: closestHero,
-						target: { gridPosition: b },
+						caster,
+						target: b,
 					}),
-			);
+			)[0];
 
-		if (emptyAdjacentTiles.length > 0) {
-			const spawnTile = emptyAdjacentTiles[0];
+			// Find all empty adjacent tiles
+			const currentUnits = [...get().heroes, ...get().monsters, ...get().summons];;
 
-			// Force the AI to spawn the vial on our perfectly calculated tile
-			const spawnVialCard = alchemistLedgerCards[cardId("spawn_vial")];
-			const targetSpawnTile: AnchorResolver = () => spawnTile;
+			const getVialLandingSpot = (spawnTile: GridPosition): GridPosition => {
+				const dx = Math.sign(spawnTile.col - caster.gridPosition.col);
+				const dy = Math.sign(spawnTile.row - caster.gridPosition.row);
 
-			await handleAICardIntent(
-				get,
-				set,
-				isSimulation,
-			)({
-				attackerId: caster.id,
-				card: spawnVialCard,
-				getAnchor: targetSpawnTile,
-			});
+				let currentX = spawnTile.col;
+				let currentY = spawnTile.row;
 
-			// --- STEP 3: KICK THE VIAL ---
-			// Re-fetch summons to get the newly spawned vial
-			const currentSummons = get().summons;
-			const targetToKick = currentSummons.find(
-				(s) =>
-					s.name === acidFlask.name &&
-					s.currentHp > 0 &&
-					s.gridPosition.col === spawnTile.col &&
-					s.gridPosition.row === spawnTile.row,
-			);
+				const pushDistance = kickVialCard.effects.find((effect) => effect.type === "push")?.distance ?? 2;
 
-			if (targetToKick) {
-				const targetAdjacentUnit: TargetResolver = () => ({
-					reachableTarget: targetToKick,
-					moveDest: finalPos,
-					canHit: true,
+				for (let i = 0; i < pushDistance; i++) {
+					const nextPos = { col: currentX + dx, row: currentY + dy };
+
+					if (!isTileInBounds(nextPos) || !isTileEmpty(currentUnits)(nextPos)) {
+						break;
+					}
+					currentX = nextPos.col;
+					currentY = nextPos.row;
+				}
+
+				return { col: currentX, row: currentY };
+			};
+
+			const adjacentOffsets = [
+				{ col: 0, row: -1 },
+				{ col: 1, row: 0 },
+				{ col: 0, row: 1 },
+				{ col: -1, row: 0 },
+			];
+			const emptyAdjacentTiles = adjacentOffsets
+				.map((offset) => ({
+					col: caster.gridPosition.col + offset.col,
+					row: caster.gridPosition.row + offset.row,
+				}))
+				.filter(
+					(pos) =>
+						isTileInBounds(pos) &&
+						isTileEmpty(currentUnits)(pos) &&
+						!isBorder(pos),
+				);
+
+			const sortedSpawnTiles = emptyAdjacentTiles.sort((spawnA, spawnB) => {
+				const landingA = getVialLandingSpot(spawnA);
+				const landingB = getVialLandingSpot(spawnB);
+
+				const distA = getDistanceToBoundingBox({
+					caster: closestHero,
+					target: { gridPosition: landingA },
+				});
+				const distB = getDistanceToBoundingBox({
+					caster: closestHero,
+					target: { gridPosition: landingB },
 				});
 
-				const kickVialCard = alchemistLedgerCards[cardId("kick_vial")];
+				if (distA === distB) {
+					const travelA = Math.abs(landingA.col - spawnA.col) + Math.abs(landingA.row - spawnA.row);
+					const travelB = Math.abs(landingB.col - spawnB.col) + Math.abs(landingB.row - spawnB.row);
+					return travelB - travelA;
+				}
+
+				return distA - distB;
+			});
+
+			if (sortedSpawnTiles.length > 0) {
+				const spawnTile = sortedSpawnTiles[0];
+
+				const targetSpawnTile: AnchorResolver = () => ({
+					gridPosition: spawnTile,
+				});
+
 				await handleAICardIntent(
 					get,
 					set,
 					isSimulation,
 				)({
 					attackerId: caster.id,
-					card: kickVialCard,
-					getTarget: targetAdjacentUnit,
+					card: spawnVialCard,
+					getAnchor: targetSpawnTile,
+				});
+
+				// --- STEP 2: KICK THE VIAL ---
+				const currentSummons = get().summons;
+				const targetToKick = currentSummons.find(isUnitInTile(spawnTile));
+
+				if (targetToKick) {
+					const targetAdjacentUnit: TargetResolver = () => ({
+						reachableTarget: targetToKick,
+						moveDest: caster.gridPosition,
+						canHit: true,
+					});
+
+					await handleAICardIntent(
+						get,
+						set,
+						isSimulation,
+					)({
+						attackerId: caster.id,
+						card: kickVialCard,
+						getTarget: targetAdjacentUnit,
+					});
+				}
+			} else {
+				const ironClub = hoboCards[cardId("iron_club")];
+				await handleAICardIntent(
+					get,
+					set,
+					isSimulation,
+				)({
+					attackerId: caster.id,
+					card: ironClub,
 				});
 			}
-		} else {
-			const ironClub = hoboCards[cardId("iron_club")];
-			await handleAICardIntent(
-				get,
-				set,
-				isSimulation,
-			)({
-				attackerId: caster.id,
-				card: ironClub,
-			});
-		}
-	};
+		};

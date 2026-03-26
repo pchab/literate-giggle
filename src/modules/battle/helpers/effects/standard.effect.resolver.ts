@@ -36,8 +36,8 @@ export const resolveStandardEffect =
 			const { currentVfx } = get();
 			const projectileId = crypto.randomUUID();
 
-			const dx = anchorTarget.col - caster.gridPosition.col;
-			const dy = anchorTarget.row - caster.gridPosition.row;
+			const dx = anchorTarget.gridPosition.col - caster.gridPosition.col;
+			const dy = anchorTarget.gridPosition.row - caster.gridPosition.row;
 			const angle = Math.atan2(dx, dy) * (180 / Math.PI);
 
 			set(() => ({
@@ -54,7 +54,7 @@ export const resolveStandardEffect =
 			set(() => ({
 				currentVfx: {
 					...currentVfx,
-					[getCellId(anchorTarget)]: {
+					[getCellId(anchorTarget.gridPosition)]: {
 						type: effect.projectile!,
 						id: projectileId,
 						angle,

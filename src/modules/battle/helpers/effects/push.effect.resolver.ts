@@ -22,7 +22,7 @@ export const resolvePushEffect =
 		const { heroes, monsters, summons } = get();
 		let currentFigures = [...heroes, ...monsters, ...summons];
 
-		const targets = resolveTargets<BattleUnit>(
+		const targets = resolveTargets(
 			effect.target,
 			anchorTarget,
 			caster,
@@ -36,7 +36,7 @@ export const resolvePushEffect =
 		});
 		const anchorPos =
 			anchorTarget && typeof anchorTarget === "object" && "col" in anchorTarget
-				? anchorTarget
+				? anchorTarget.gridPosition
 				: caster.gridPosition;
 
 		const chargeDx = Math.sign(anchorPos.col - cX);
@@ -51,6 +51,10 @@ export const resolvePushEffect =
 			if (!entity || entity.currentHp <= 0) return;
 
 			const { col: tX, row: tY } = entity.gridPosition;
+			const { col: bodyX, row: bodyY } = getClosestOriginTile({
+				caster,
+				anchorTarget: entity,
+			});
 			let dx = 0;
 			let dy = 0;
 
@@ -95,12 +99,12 @@ export const resolvePushEffect =
 					dy = dirA.dy;
 				}
 			} else if (effect.pushDirection === "towards") {
-				dx = -Math.sign(tX - cX);
-				dy = -Math.sign(tY - cY);
+				dx = -Math.sign(tX - bodyX);
+				dy = -Math.sign(tY - bodyY);
 			} else {
 				// "away"
-				dx = Math.sign(tX - cX);
-				dy = Math.sign(tY - cY);
+				dx = Math.sign(tX - bodyX);
+				dy = Math.sign(tY - bodyY);
 			}
 
 			// ==========================================

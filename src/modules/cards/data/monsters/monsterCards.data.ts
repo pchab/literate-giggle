@@ -122,8 +122,8 @@ export const monsterCardLibrary: Record<Card["id"], Card> = {
 		name: "Raise the dead",
 		range: 1,
 		image: "/cards/raise_skeleton.webp",
-		playRequirement: "no_target",
-		aiTargetPreference: "empty_adjacent",
+		playRequirement: "requires_empty_cell",
+		aiTargetPreference: "away",
 		effects: [
 			{ type: "summon", blueprintId: summonId("skeleton"), target: "anchor" },
 		],

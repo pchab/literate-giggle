@@ -43,10 +43,10 @@ export const alchemistLedgerCards: Record<Card["id"], Card> = {
 	[cardId("reckless_experiment")]: {
 		id: cardId("reckless_experiment"),
 		name: "Reckless Experiment",
-		range: 0,
+		range: 3,
 		image: "/cards/reckless_experiment.webp",
 		playRequirement: "no_target",
-		aiTargetPreference: "self",
+		aiTargetPreference: "away",
 		effects: [
 			{
 				type: "custom_script",
@@ -60,8 +60,8 @@ export const alchemistLedgerCards: Record<Card["id"], Card> = {
 		name: "Spawn Vial",
 		range: 1,
 		image: "/cards/reckless_experiment.webp",
-		playRequirement: "no_target",
-		aiTargetPreference: "empty_adjacent",
+		playRequirement: "requires_empty_cell",
+		aiTargetPreference: "self",
 		effects: [
 			{
 				type: "summon",

@@ -45,7 +45,7 @@ export const resolveSummonEffect =
 						stance: UnitStance.IDLE,
 						currentHp: blueprint.maxHp,
 						statuses: [],
-						gridPosition: anchorTarget,
+						gridPosition: anchorTarget.gridPosition,
 						allegiance,
 					},
 				],

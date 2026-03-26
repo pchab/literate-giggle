@@ -103,7 +103,9 @@ export const alchemicalFrenzy =
 					moveDest: startPos,
 					canHit: true,
 				});
-				const anchorResolver: AnchorResolver = () => targetPos;
+				const anchorResolver: AnchorResolver = () => ({
+					gridPosition: targetPos,
+				});
 
 				await handleAICardIntent(
 					fakeGet,
@@ -139,7 +141,9 @@ export const alchemicalFrenzy =
 			moveDest: bestStartPos,
 			canHit: true,
 		});
-		const finalAnchorResolver: AnchorResolver = () => bestTargetPos;
+		const finalAnchorResolver: AnchorResolver = () => ({
+			gridPosition: bestTargetPos,
+		});
 		await handleAICardIntent(
 			get,
 			set,

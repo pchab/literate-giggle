@@ -1,4 +1,4 @@
-import { crossPattern } from "@/modules/battle/data/attackPattern.data";
+import { adjacentPattern } from "@/modules/battle/data/attackPattern.data";
 import type { Card } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
 
@@ -43,8 +43,8 @@ export const goliathToadCards: Record<Card["id"], Card> = {
 		range: 0,
 		image: "/cards/belly_flop.webp",
 		playRequirement: "no_target",
-		aiTargetPreference: "self",
-		aoePattern: crossPattern,
+		aiTargetPreference: "closest",
+		aoePattern: adjacentPattern,
 		effects: [
 			{ type: "damage", amount: 4, target: "anchor" },
 			{
