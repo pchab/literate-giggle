@@ -1,5 +1,7 @@
 import {
-	getManhattanDistance,
+	filterGridByAttackPattern,
+	getClosestOriginTile,
+	getDistanceToBoundingBox,
 	isTileEmpty,
 	isTileInBounds,
 } from "@/modules/battle/helpers/grid.helpers";
@@ -12,12 +14,8 @@ import {
 } from "@/modules/figures/domain/figures.type";
 import { isSummon } from "@/modules/figures/helpers/figures.helpers";
 import { sleep } from "@/modules/shared/helpers/sleep";
-import type { GridPosition } from "../domain/grid.type";
-import {
-	filterGridByAttackPattern,
-	getActualTarget,
-	getIdealTarget,
-} from "./ai.move.helpers";
+import type { BoundingBox, GridPosition } from "../domain/grid.type";
+import { getActualTarget, getIdealTarget } from "./ai.move.helpers";
 import { resolvers } from "./effects/effect.resolvers";
 import { calculateExactPath, moveBattleUnit } from "./move.helpers";
 import { updateBattleUnitState } from "./state.helpers";
@@ -27,7 +25,7 @@ export type TargetResolver = <C extends AIBattleUnit>(
 	card: Card,
 	figures: BattleUnit[],
 ) => {
-	reachableTarget: C | BattleUnit | null;
+	reachableTarget: BoundingBox | null;
 	moveDest: GridPosition | null;
 	canHit: boolean;
 };
@@ -40,12 +38,12 @@ export type AnchorResolver = ({
 }: {
 	attacker: AIBattleUnit;
 	card: Card;
-	reachableTarget: BattleUnit | AIBattleUnit;
+	reachableTarget: BoundingBox;
 	obstacles: BattleUnit[];
 }) => AnchorTarget;
 
-function getAnchorTarget<C extends BattleUnit, T extends BattleUnit>({
-	attacker: { gridPosition },
+function getAnchorTarget<C extends BattleUnit, T extends BoundingBox>({
+	attacker,
 	card,
 	reachableTarget,
 	obstacles,
@@ -55,6 +53,7 @@ function getAnchorTarget<C extends BattleUnit, T extends BattleUnit>({
 	reachableTarget: T;
 	obstacles: BattleUnit[];
 }): AnchorTarget {
+	const { gridPosition } = attacker;
 	if (card.aiTargetPreference === "self") {
 		return gridPosition;
 	}
@@ -87,8 +86,12 @@ function getAnchorTarget<C extends BattleUnit, T extends BattleUnit>({
 	}
 
 	const actualTarget =
-		getActualTarget(gridPosition, reachableTarget.gridPosition, obstacles) ??
-		reachableTarget;
+		getActualTarget({
+			attacker,
+			intendedTargetPos: reachableTarget.gridPosition,
+			figures: obstacles,
+		}) ?? reachableTarget;
+
 	return actualTarget.gridPosition;
 }
 
@@ -162,11 +165,11 @@ export const handleAICardIntent =
 						...initialState.summons.filter((s) => s.allegiance !== "ENEMY"),
 					];
 
-		const path = calculateExactPath<BattleUnit>(
-			initialAttacker.gridPosition,
-			moveDest,
-			enemies,
-		);
+		const path = calculateExactPath({
+			movingUnit: initialAttacker,
+			targetPos: moveDest,
+			figures: enemies,
+		});
 
 		const movedUnit = await moveBattleUnit(
 			get,
@@ -192,15 +195,14 @@ export const handleAICardIntent =
 		// ==========================================
 		// 2. PREPARE THE ATTACK
 		// ==========================================
-
 		if (!movedUnit) {
 			return;
 		}
 
-		const distanceToTarget = getManhattanDistance(
-			movedUnit.gridPosition,
-			reachableTarget.gridPosition,
-		);
+		const distanceToTarget = getDistanceToBoundingBox({
+			caster: movedUnit,
+			target: reachableTarget,
+		});
 
 		if (card.aiTargetPreference !== "self" && distanceToTarget > card.range) {
 			return;
@@ -213,11 +215,16 @@ export const handleAICardIntent =
 			obstacles: allFigures,
 		});
 
-		const targetedCells = filterGridByAttackPattern(
-			card,
+		const attackOrigin = getClosestOriginTile({
+			caster: movedUnit,
 			anchorTarget,
-			movedUnit.gridPosition,
-		);
+		});
+
+		const targetedCells = filterGridByAttackPattern({
+			card,
+			targetPos: anchorTarget,
+			originPos: attackOrigin,
+		});
 
 		// updated simulation results
 		if (isSimulation) {

@@ -16,3 +16,8 @@ export type SurfaceData = {
 	status?: Status;
 	charges?: number;
 };
+
+export type BoundingBox = {
+	gridPosition: GridPosition;
+	size?: number;
+};

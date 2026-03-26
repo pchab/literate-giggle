@@ -64,10 +64,14 @@ export function GridCell({
 	const stateClasses = highlightClassMapping[highlight];
 	const surface = surfaces[cell.id];
 
+	const hasAnchorUnit = unitsInCell.some(
+		(u) => u.gridPosition.col === cell.col && u.gridPosition.row === cell.row,
+	);
+
 	return (
 		<button
 			type="button"
-			className={`${baseClasses} ${stateClasses}`}
+			className={`${baseClasses} ${stateClasses} ${hasAnchorUnit ? "z-30!" : ""}`}
 			onClick={onClick}
 			onMouseEnter={() => setHoveredCell(cell)}
 			onMouseLeave={() => setHoveredCell(null)}
@@ -93,10 +97,18 @@ export function GridCell({
 			)}
 
 			{unitsInCell.map((unit) => {
+				const isAnchorTile =
+					unit.gridPosition.col === cell.col &&
+					unit.gridPosition.row === cell.row;
+				if (!isAnchorTile) return null;
+
 				const isDying = projectedCasualtyIds?.has(unit.id);
 
 				return (
-					<div key={unit.id}>
+					<div
+						key={unit.id}
+						className="absolute top-0 left-0 z-40 pointer-events-none"
+					>
 						<UnitSprite unitInCell={unit} />
 
 						{/* --- PROJECTED CASUALTY INDICATOR --- */}

@@ -4,12 +4,13 @@ import {
 	UnitStance,
 } from "@/modules/figures/domain/figures.type";
 import type { GridPosition } from "../../domain/grid.type";
-import { getActualTarget } from "../../helpers/ai.move.helpers";
 import { resolvers } from "../../helpers/effects/effect.resolvers";
 import {
+	filterGridByAttackPattern,
+	getClosestOriginTile,
+	getDistanceToBoundingBox,
 	getLineOfSightPath,
-	getManhattanDistance,
-	rotatePattern,
+	isUnitInTile,
 } from "../../helpers/grid.helpers";
 import {
 	calculateStateDiff,
@@ -42,29 +43,39 @@ export const resolveCard =
 
 		// --- 1. CHECK RANGE ---
 		if (anchorTarget) {
-			const distance = getManhattanDistance(anchorTarget, hero.gridPosition);
+			const distance = getDistanceToBoundingBox({
+				caster: hero,
+				target: { gridPosition: anchorTarget },
+			});
 			if (distance > card.range) {
 				return;
 			}
-			actualTarget =
-				getActualTarget(hero.gridPosition, anchorTarget, allUnits)
-					?.gridPosition ?? actualTarget;
+			const flightPath = getLineOfSightPath(hero.gridPosition, anchorTarget);
+
+			for (let i = 1; i < flightPath.length; i++) {
+				const tile = flightPath[i];
+				const isOccupied = allUnits.some(
+					(f) => f.currentHp > 0 && isUnitInTile(tile)(f),
+				);
+
+				if (isOccupied) {
+					actualTarget = tile; // Detonate exactly on the tile we hit!
+					break;
+				}
+			}
 		}
 
 		// --- 2. CALCULATE THE BLAST ZONE ---
-		let patternCells: GridPosition[] = actualTarget ? [actualTarget] : [];
-		if (card.aoePattern && actualTarget) {
-			const rotatedPattern = rotatePattern(
-				card.aoePattern,
-				hero.gridPosition,
-				actualTarget,
-			);
+		const attackOrigin = getClosestOriginTile({
+			caster: hero,
+			anchorTarget: actualTarget,
+		});
 
-			patternCells = rotatedPattern.map((p) => ({
-				col: actualTarget.col + p.col,
-				row: actualTarget.row + p.row,
-			}));
-		}
+		const patternCells: GridPosition[] = filterGridByAttackPattern({
+			card,
+			originPos: attackOrigin,
+			targetPos: actualTarget,
+		});
 
 		const firePath = anchorTarget
 			? getLineOfSightPath(hero.gridPosition, anchorTarget)

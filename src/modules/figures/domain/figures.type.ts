@@ -28,6 +28,7 @@ export interface Figure {
 	baseMove: number;
 	immunities?: StatusType[];
 	onDeath?: Card["id"];
+	size?: number;
 }
 
 export interface BattleUnit extends Figure {

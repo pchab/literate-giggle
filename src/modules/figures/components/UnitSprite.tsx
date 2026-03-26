@@ -10,7 +10,7 @@ import type { BattleUnit } from "@/modules/figures/domain/figures.type";
 import { getBlockFromStatuses } from "../helpers/figures.helpers";
 
 export function UnitSprite({
-	unitInCell: { id, statuses, currentHp, maxHp, spriteBase, stance },
+	unitInCell: { id, statuses, currentHp, maxHp, spriteBase, stance, size = 1 }, // Default size to 1
 }: {
 	unitInCell: BattleUnit;
 }) {
@@ -27,8 +27,17 @@ export function UnitSprite({
 	const src = `/sprites/${spriteBase}_${stance}.webp`;
 	const intent = aiIntents?.[id];
 
+	// Dynamically calculate width/height to span multiple tiles, including the gap-1 (4px)
+	const wrapperStyle = {
+		width: `calc((var(--width-grid) * ${size}) + (4px * ${size - 1}))`,
+		height: `calc((var(--height-grid) * ${size}) + (4px * ${size - 1}))`,
+	};
+
 	return (
-		<div className="absolute inset-0 flex flex-col items-center">
+		<div
+			style={wrapperStyle}
+			className="absolute inset-0 flex flex-col items-center z-10"
+		>
 			{intent && <IntentDisplay intent={intent} />}
 
 			<FloatingDamage texts={texts} />
@@ -36,10 +45,10 @@ export function UnitSprite({
 				layout
 				layoutId={`unit-${id}`}
 				transition={{ type: "spring", stiffness: 350, damping: 30 }}
-				className="relative h-full flex pointer-events-none"
+				className="relative h-full flex pointer-events-none w-full"
 			>
 				<motion.div
-					className="flex flex-col h-full origin-bottom overflow-x-visible items-center"
+					className="flex flex-col h-full w-full origin-bottom overflow-visible items-center"
 					animate={
 						isHit
 							? {
@@ -62,13 +71,15 @@ export function UnitSprite({
 						width={0}
 						height={0}
 						sizes="100vw"
+						// Ensures the image fills the new multi-tile wrapper nicely
 						style={{ width: "auto", height: "100%", maxWidth: "150%" }}
-						className="z-20"
+						className="z-20 object-contain object-bottom"
 						priority
 					/>
 				</motion.div>
 			</motion.div>
 
+			{/* HealthBar stays at the bottom center of the whole multi-tile block */}
 			<HealthBar currentHp={currentHp} maxHp={maxHp} statuses={statuses} />
 		</div>
 	);

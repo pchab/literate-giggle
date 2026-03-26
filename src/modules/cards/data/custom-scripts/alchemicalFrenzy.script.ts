@@ -6,17 +6,14 @@ import {
 import type { EffectResolverParams } from "@/modules/battle/helpers/effects/effect.resolvers";
 import {
 	calculateReachableCells,
+	getDistanceToBoundingBox,
 	getLineOfSightPath,
-	getManhattanDistance,
 	isTileEmpty,
 	isTileInBounds,
 } from "@/modules/battle/helpers/grid.helpers";
 import { getSimulationState } from "@/modules/battle/helpers/simulation.helper";
 import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
-import type {
-	AIBattleUnit,
-	BattleUnit,
-} from "@/modules/figures/domain/figures.type";
+import type { AIBattleUnit } from "@/modules/figures/domain/figures.type";
 import { cardId } from "../../helpers/cards.helper";
 import { alchemistLedgerCards } from "../monsters/alchemistLedgerCards.data";
 
@@ -71,12 +68,11 @@ export const alchemicalFrenzy =
 
 		const chargeCard = alchemistLedgerCards[cardId("reckless_charge")];
 
-		const reachableCells = calculateReachableCells(
-			caster.gridPosition,
-			caster.baseMove,
-			activeHeroes,
-			true,
-		).filter(isTileEmpty(allUnits));
+		const reachableCells = calculateReachableCells({
+			movingUnit: caster,
+			blockingFigures: activeHeroes,
+			canTargetSelf: true,
+		}).filter(isTileEmpty(allUnits));
 
 		reachableCells.push(caster.gridPosition);
 
@@ -103,7 +99,7 @@ export const alchemicalFrenzy =
 				if (fakeBarnaby) fakeBarnaby.gridPosition = startPos;
 
 				const targetResolver: TargetResolver = () => ({
-					reachableTarget: { gridPosition: targetPos } as BattleUnit,
+					reachableTarget: { gridPosition: targetPos },
 					moveDest: startPos,
 					canHit: true,
 				});
@@ -122,7 +118,12 @@ export const alchemicalFrenzy =
 
 				const score = getBarnabyStateScore(fakeGet, get, caster.id);
 				const finalScore =
-					score - getManhattanDistance(caster.gridPosition, startPos) * 0.1;
+					score -
+					getDistanceToBoundingBox({
+						caster,
+						target: { gridPosition: startPos },
+					}) *
+						0.1;
 
 				if (finalScore > bestScore) {
 					bestScore = finalScore;
@@ -134,7 +135,7 @@ export const alchemicalFrenzy =
 
 		// Execute the optimal charge
 		const finalTargetResolver: TargetResolver = () => ({
-			reachableTarget: { gridPosition: bestTargetPos } as BattleUnit,
+			reachableTarget: { gridPosition: bestTargetPos },
 			moveDest: bestStartPos,
 			canHit: true,
 		});

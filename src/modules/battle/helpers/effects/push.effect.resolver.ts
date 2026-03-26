@@ -1,7 +1,11 @@
 import type { PushEffect } from "@/modules/cards/domain/cards.type";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
 import type { StoreGet, StoreSet } from "../../store/battle.store";
-import { isTileInBounds } from "../grid.helpers";
+import {
+	getClosestOriginTile,
+	isTileInBounds,
+	isUnitInTile,
+} from "../grid.helpers";
 import { moveBattleUnit } from "../move.helpers";
 import { updateBattleUnitState } from "../state.helpers";
 import { applyDamageToEntity, resolveTargets } from "./effect.helpers";
@@ -26,7 +30,10 @@ export const resolvePushEffect =
 			patternCells,
 		);
 
-		const { col: cX, row: cY } = caster.gridPosition;
+		const { col: cX, row: cY } = getClosestOriginTile({
+			caster,
+			anchorTarget,
+		});
 		const anchorPos =
 			anchorTarget && typeof anchorTarget === "object" && "col" in anchorTarget
 				? anchorTarget
@@ -54,8 +61,7 @@ export const resolvePushEffect =
 			const getObstacleAt = (col: number, row: number) =>
 				currentFigures.find(
 					(f) =>
-						f.gridPosition.col === col &&
-						f.gridPosition.row === row &&
+						isUnitInTile({ col, row })(f) &&
 						f.id !== entityId &&
 						f.currentHp > 0,
 				);

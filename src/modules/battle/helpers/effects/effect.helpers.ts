@@ -28,28 +28,31 @@ export function resolveTargets<T extends BattleUnit>(
 	patternCells?: { col: number; row: number }[],
 ): T["id"][] {
 	const aliveFigures = currentFigures.filter((f) => f.currentHp > 0);
+
 	if (targetType === "self") {
 		if (patternCells && patternCells.length > 0) {
-			return patternCells.reduce(
+			const hitIds = patternCells.reduce(
 				(targets, cell) =>
 					targets.concat(
 						aliveFigures.filter(isUnitInTile(cell)).map(({ id }) => id),
 					),
 				[] as BattleUnit["id"][],
 			);
+			return Array.from(new Set(hitIds)); //
 		}
 		return [caster.id];
 	}
 
 	if (targetType === "anchor" && anchorTarget) {
 		if (patternCells && patternCells.length > 0) {
-			return patternCells.reduce(
+			const hitIds = patternCells.reduce(
 				(targets, cell) =>
 					targets.concat(
 						aliveFigures.filter(isUnitInTile(cell)).map(({ id }) => id),
 					),
 				[] as BattleUnit["id"][],
 			);
+			return Array.from(new Set(hitIds));
 		}
 
 		return aliveFigures.filter(isUnitInTile(anchorTarget)).map((f) => f.id);
@@ -68,11 +71,16 @@ export function resolveTargets<T extends BattleUnit>(
 		const tilePath = getLineOfSightPath(caster.gridPosition, targetPos).slice(
 			1,
 		);
-		const pathCellIds = tilePath.map(getCellId);
 
-		return aliveFigures
-			.filter((f) => pathCellIds.includes(getCellId(f.gridPosition)))
-			.map((f) => f.id);
+		const hitIds = tilePath.reduce(
+			(targets, cell) =>
+				targets.concat(
+					aliveFigures.filter(isUnitInTile(cell)).map(({ id }) => id),
+				),
+			[] as BattleUnit["id"][],
+		);
+
+		return Array.from(new Set(hitIds));
 	}
 
 	return [];

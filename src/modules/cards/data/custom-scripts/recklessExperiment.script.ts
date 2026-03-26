@@ -9,7 +9,7 @@ import type { EffectResolverParams } from "@/modules/battle/helpers/effects/effe
 import {
 	calculateReachableCells,
 	GRID_BOUNDS,
-	getManhattanDistance,
+	getDistanceToBoundingBox,
 	isTileEmpty,
 	isTileInBounds,
 } from "@/modules/battle/helpers/grid.helpers";
@@ -43,12 +43,11 @@ export const recklessExperiment =
 			col === GRID_BOUNDS.cols - 1 || row === GRID_BOUNDS.rows - 1;
 
 		// --- STEP 1: MOVE TO THE PERIMETER ---
-		const reachableCells = calculateReachableCells(
-			caster.gridPosition,
-			caster.baseMove,
-			oppositeFaction,
-			true,
-		).filter(isTileEmpty(allUnits));
+		const reachableCells = calculateReachableCells({
+			movingUnit: caster,
+			blockingFigures: oppositeFaction,
+			canTargetSelf: true,
+		}).filter(isTileEmpty(allUnits));
 
 		let finalPos = caster.gridPosition;
 
@@ -67,11 +66,11 @@ export const recklessExperiment =
 				}
 			}
 
-			const path = calculateExactPath(
-				caster.gridPosition,
-				finalPos,
-				oppositeFaction,
-			);
+			const path = calculateExactPath({
+				movingUnit: caster,
+				targetPos: finalPos,
+				figures: oppositeFaction,
+			});
 			await moveBattleUnit(
 				get,
 				set,
@@ -83,8 +82,14 @@ export const recklessExperiment =
 		// Find the closest hero from the new position
 		const closestHero = activeHeroes.sort(
 			(a, b) =>
-				getManhattanDistance(finalPos, a.gridPosition) -
-				getManhattanDistance(finalPos, b.gridPosition),
+				getDistanceToBoundingBox({
+					caster: a,
+					target: { gridPosition: finalPos },
+				}) -
+				getDistanceToBoundingBox({
+					caster: b,
+					target: { gridPosition: finalPos },
+				}),
 		)[0];
 
 		// Find all empty adjacent tiles
@@ -108,8 +113,14 @@ export const recklessExperiment =
 			)
 			.sort(
 				(a, b) =>
-					getManhattanDistance(a, closestHero.gridPosition) -
-					getManhattanDistance(b, closestHero.gridPosition),
+					getDistanceToBoundingBox({
+						caster: closestHero,
+						target: { gridPosition: a },
+					}) -
+					getDistanceToBoundingBox({
+						caster: closestHero,
+						target: { gridPosition: b },
+					}),
 			);
 
 		if (emptyAdjacentTiles.length > 0) {

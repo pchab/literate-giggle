@@ -7,10 +7,9 @@ import type { GridPosition } from "../domain/grid.type";
 import type { StoreGet, StoreSet } from "../store/battle.store";
 import { applySurfaceEffect } from "./effects/effect.helpers";
 import {
+	canUnitFit,
 	getCellId,
-	getManhattanDistance,
-	isTileEmpty,
-	isTileInBounds,
+	getDistanceToBoundingBox,
 } from "./grid.helpers";
 import { updateBattleUnitState } from "./state.helpers";
 
@@ -82,20 +81,28 @@ export function moveBattleUnit(
 	};
 }
 
-export const calculateExactPath = <T extends BattleUnit>(
-	startPos: GridPosition,
-	targetPos: GridPosition,
-	figures: T[],
+export const calculateExactPath = <C extends BattleUnit, T extends BattleUnit>({
+	movingUnit,
+	targetPos,
+	figures,
 	minRange = 0,
 	maxRange = 0,
-): GridPosition[] => {
-	const initialDist = getManhattanDistance(startPos, targetPos);
+}: {
+	movingUnit: C;
+	targetPos: GridPosition;
+	figures: T[];
+	minRange?: number;
+	maxRange?: number;
+}): GridPosition[] => {
+	const startPos = movingUnit.gridPosition;
+	const target = { gridPosition: targetPos };
+
+	const initialDist = getDistanceToBoundingBox({ caster: movingUnit, target });
 	if (initialDist >= minRange && initialDist <= maxRange) {
 		return [];
 	}
 
 	const queue: GridPosition[] = [startPos];
-
 	const cameFrom = new Map<string, GridPosition | null>();
 	cameFrom.set(getCellId(startPos), null);
 
@@ -105,7 +112,10 @@ export const calculateExactPath = <T extends BattleUnit>(
 		// biome-ignore lint/style/noNonNullAssertion: <We just checked the length>
 		const currentPos = queue.shift()!;
 
-		const distToTarget = getManhattanDistance(currentPos, targetPos);
+		const distToTarget = getDistanceToBoundingBox({
+			caster: { ...movingUnit, gridPosition: currentPos },
+			target,
+		});
 		if (distToTarget >= minRange && distToTarget <= maxRange) {
 			validDestination = currentPos;
 			break;
@@ -119,13 +129,15 @@ export const calculateExactPath = <T extends BattleUnit>(
 		];
 
 		for (const next of neighbors) {
-			if (!isTileInBounds(next)) continue;
-
-			const isOccupied = !isTileEmpty(figures)(next);
 			const isTargetTile =
 				next.row === targetPos.row && next.col === targetPos.col;
 
-			if (isOccupied && !(isTargetTile && minRange === 0)) {
+			const fits = canUnitFit({
+				unit: { ...movingUnit, gridPosition: next },
+				figures,
+			});
+
+			if (!fits && !(isTargetTile && minRange === 0)) {
 				continue;
 			}
 

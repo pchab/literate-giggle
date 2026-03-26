@@ -1,6 +1,5 @@
 import type {
 	AITargetPreference,
-	AnchorTarget,
 	Card,
 } from "@/modules/cards/domain/cards.type";
 import { isSummon } from "@/modules/figures/helpers/figures.helpers";
@@ -12,10 +11,10 @@ import type { GridPosition } from "../domain/grid.type";
 import type { TargetResolver } from "./ai.actions.helpers";
 import { areEnemies } from "./effects/effect.helpers";
 import {
+	canUnitFit,
+	getDistanceToBoundingBox,
 	getLineOfSightPath,
-	getManhattanDistance,
 	isUnitInTile,
-	rotatePattern,
 } from "./grid.helpers";
 import { calculateExactPath } from "./move.helpers";
 
@@ -35,10 +34,10 @@ const calculateAIMove = <C extends AIBattleUnit, T extends BattleUnit>(
 		return monster.gridPosition;
 	}
 
-	const distance = getManhattanDistance(
-		monster.gridPosition,
-		targetFigure.gridPosition,
-	);
+	const distance = getDistanceToBoundingBox({
+		caster: monster,
+		target: targetFigure,
+	});
 
 	const canTargetSelf = ["requires_entity", "requires_ally"].includes(
 		card.playRequirement,
@@ -49,18 +48,33 @@ const calculateAIMove = <C extends AIBattleUnit, T extends BattleUnit>(
 		return monster.gridPosition;
 	}
 
-	const fullPath = calculateExactPath(
-		monster.gridPosition,
-		targetFigure.gridPosition,
-		figures,
+	const hardObstacles = figures.filter(areEnemies(monster));
+
+	const fullPath = calculateExactPath({
+		movingUnit: monster,
+		targetPos: targetFigure.gridPosition,
+		figures: hardObstacles,
 		minRange,
-		card.range,
-	);
+		maxRange: card.range,
+	});
 
 	if (fullPath.length === 0) return null;
 
-	const stepsToTake = Math.min(monster.baseMove, fullPath.length);
-	return fullPath[stepsToTake - 1];
+	let stepsToTake = Math.min(monster.baseMove, fullPath.length);
+
+	// 2. BACKTRACKING
+	while (stepsToTake > 0) {
+		const candidateDest = fullPath[stepsToTake - 1];
+
+		if (
+			canUnitFit({ unit: { ...monster, gridPosition: candidateDest }, figures })
+		) {
+			return candidateDest;
+		}
+		stepsToTake--;
+	}
+
+	return monster.gridPosition;
 };
 
 export const getIdealTarget: TargetResolver = <C extends AIBattleUnit>(
@@ -78,6 +92,7 @@ export const getIdealTarget: TargetResolver = <C extends AIBattleUnit>(
 			canHit: true,
 		};
 	}
+
 	if (card.aiTargetPreference && isGridPosition(card.aiTargetPreference)) {
 		const target = figures.find(isUnitInTile(card.aiTargetPreference));
 		if (target) {
@@ -86,7 +101,16 @@ export const getIdealTarget: TargetResolver = <C extends AIBattleUnit>(
 				reachableTarget: target,
 				moveDest,
 				canHit: Boolean(
-					moveDest && isTargetInRange(card, 1, aiFigure.gridPosition, moveDest),
+					moveDest &&
+						isTargetInRange({
+							card,
+							minRange: 1,
+							attacker: {
+								...aiFigure,
+								gridPosition: moveDest,
+							},
+							target,
+						}),
 				),
 			};
 		}
@@ -113,16 +137,21 @@ export const getIdealTarget: TargetResolver = <C extends AIBattleUnit>(
 		moveDest: GridPosition;
 		canHit: boolean;
 	} | null = null;
+
 	for (const target of orderedTargets) {
 		const moveDest = calculateAIMove(aiFigure, target, card, figures);
+
 		if (moveDest) {
 			const minRange = targetsAllies || targetsAny ? 0 : 1;
-			const canHit = isTargetInRange(
+			const canHit = isTargetInRange({
 				card,
 				minRange,
-				moveDest,
-				target.gridPosition,
-			);
+				attacker: {
+					...aiFigure,
+					gridPosition: moveDest,
+				},
+				target,
+			});
 
 			if (canHit) {
 				return { reachableTarget: target, moveDest, canHit: true };
@@ -158,8 +187,14 @@ export function getOrderedTargets<C extends AIBattleUnit, T extends BattleUnit>(
 				return Math.random() - 0.5;
 			default:
 				return (
-					getManhattanDistance(figureA.gridPosition, aiFigure.gridPosition) -
-					getManhattanDistance(figureB.gridPosition, aiFigure.gridPosition)
+					getDistanceToBoundingBox({
+						caster: aiFigure,
+						target: figureA,
+					}) -
+					getDistanceToBoundingBox({
+						caster: aiFigure,
+						target: figureB,
+					})
 				);
 		}
 	};
@@ -168,48 +203,41 @@ export function getOrderedTargets<C extends AIBattleUnit, T extends BattleUnit>(
 		.sort(sortFunction);
 }
 
-export function isTargetInRange(
-	card: Card,
-	minRange: number,
-	attackerPos: GridPosition,
-	targetPos: GridPosition,
-) {
-	const distance = getManhattanDistance(attackerPos, targetPos);
+export function isTargetInRange<C extends BattleUnit, T extends BattleUnit>({
+	card,
+	minRange,
+	attacker,
+	target,
+}: {
+	card: Card;
+	minRange: number;
+	attacker: C;
+	target: T;
+}) {
+	const distance = getDistanceToBoundingBox({ caster: attacker, target });
 	return distance >= minRange && distance <= card.range;
 }
 
-export function getActualTarget<T extends BattleUnit>(
-	attackerPos: GridPosition,
-	intendedTargetPos: GridPosition,
-	figures: T[],
-) {
-	const flightPath = getLineOfSightPath(attackerPos, intendedTargetPos);
+export function getActualTarget<C extends BattleUnit, T extends BattleUnit>({
+	attacker,
+	intendedTargetPos,
+	figures,
+}: {
+	attacker: C;
+	intendedTargetPos: GridPosition;
+	figures: T[];
+}) {
+	const flightPath = getLineOfSightPath(
+		attacker.gridPosition,
+		intendedTargetPos,
+	);
 
 	for (let i = 1; i < flightPath.length; i++) {
 		const tile = flightPath[i];
 		const figureHit = figures.find(
-			(f) =>
-				f.gridPosition.col === tile.col &&
-				f.gridPosition.row === tile.row &&
-				f.currentHp > 0,
+			(f) => f.currentHp > 0 && isUnitInTile(tile)(f) && f.id !== attacker.id,
 		);
 		if (figureHit) return figureHit;
 	}
 	return null;
-}
-
-export function filterGridByAttackPattern(
-	card: Card,
-	targetPos: AnchorTarget,
-	casterPos: GridPosition,
-): GridPosition[] {
-	const pattern = card.aoePattern || [{ col: 0, row: 0 }];
-	if (!targetPos) return pattern;
-
-	const rotatedPattern = rotatePattern(pattern, casterPos, targetPos);
-
-	return rotatedPattern.map(({ col, row }) => ({
-		col: targetPos.col + col,
-		row: targetPos.row + row,
-	}));
 }

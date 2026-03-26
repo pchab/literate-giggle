@@ -3,8 +3,8 @@ import type { GridPosition } from "@/modules/battle/domain/grid.type";
 import {
 	calculateAttackableCells,
 	calculateReachableCells,
-	getManhattanDistance,
 	isTileEmpty,
+	isTileOccupied,
 	isUnitInTile,
 } from "@/modules/battle/helpers/grid.helpers";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
@@ -83,12 +83,11 @@ export function useCellHighlight(): CellHighlight {
 		const remainingMove =
 			hero.baseMove - (store.usedMovesThisTurn[hero.id] ?? 0);
 		const oppositeFaction = allUnits.filter(areEnemies(hero));
-		const validTargetCells = calculateReachableCells(
-			hero.gridPosition,
-			remainingMove,
-			oppositeFaction,
-			false,
-		).filter(isTileEmpty(allUnits));
+		const validTargetCells = calculateReachableCells({
+			movingUnit: { ...hero, baseMove: remainingMove },
+			blockingFigures: oppositeFaction,
+			canTargetSelf: false,
+		}).filter(isTileEmpty(allUnits));
 
 		return {
 			...highlight,
@@ -109,13 +108,13 @@ export function useCellHighlight(): CellHighlight {
 		const hero = heroes.find((h) => h.id === cardContext.unitId);
 		if (!intent && hero) {
 			const { playRequirement, range } = card;
-			let dangerZone: GridPosition[] = [];
+			let dangerZone: GridPosition[] = calculateAttackableCells({
+				attacker: hero,
+				rangeValue: range,
+				canTargetSelf: false,
+			});
 			if (playRequirement === "requires_empty_cell") {
-				dangerZone = calculateAttackableCells(
-					hero.gridPosition,
-					range,
-					false,
-				).filter(isTileEmpty(allUnits));
+				dangerZone = dangerZone.filter(isTileEmpty(allUnits));
 			} else {
 				let targets: BattleUnit[] = [];
 				if (playRequirement === "requires_ally") {
@@ -133,11 +132,7 @@ export function useCellHighlight(): CellHighlight {
 				if (playRequirement === "requires_entity") {
 					targets = allUnits;
 				}
-				dangerZone = targets
-					.map(({ gridPosition }) => gridPosition)
-					.filter(
-						(pos) => range >= getManhattanDistance(hero.gridPosition, pos),
-					);
+				dangerZone = dangerZone.filter(isTileOccupied(targets));
 			}
 			intent = { figureId: hero.id, cardId: card.id, dangerZone };
 		}

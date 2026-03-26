@@ -1,8 +1,8 @@
 import type { GridPosition } from "@/modules/battle/domain/grid.type";
-import { getManhattanDistance } from "@/modules/battle/helpers/grid.helpers";
 import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
 import { isHeroId } from "@/modules/figures/helpers/figures.helpers";
 import { areEnemies } from "../../helpers/effects/effect.helpers";
+import { getDistanceToBoundingBox } from "../../helpers/grid.helpers";
 import { calculateExactPath, moveBattleUnit } from "../../helpers/move.helpers";
 import { calculateAIIntents } from "./calculateAIIntents.command";
 
@@ -36,7 +36,10 @@ export function moveHero(newPosition: GridPosition) {
 			activeMoveHeroId: null,
 		}));
 
-		const distance = getManhattanDistance(newPosition, hero.gridPosition);
+		const distance = getDistanceToBoundingBox({
+			caster: hero,
+			target: { gridPosition: newPosition },
+		});
 		if (distance > remainingMove) {
 			console.warn(
 				`Hero ${heroId} cannot move more than ${hero.baseMove} squares.`,
@@ -49,11 +52,11 @@ export function moveHero(newPosition: GridPosition) {
 			...summons.filter(areEnemies(hero)),
 		];
 
-		const path = calculateExactPath(
-			hero.gridPosition,
-			newPosition,
-			allBlockingFigures,
-		);
+		const path = calculateExactPath({
+			movingUnit: hero,
+			targetPos: newPosition,
+			figures: allBlockingFigures,
+		});
 		await moveBattleUnit(get, set)({ movingUnit: hero, path });
 
 		set(({ usedMovesThisTurn }) => {
