@@ -22,7 +22,7 @@ export function moveBattleUnit(
 		movingUnit,
 		path,
 		forcedMove = false,
-		stepDelayMs = 200,
+		stepDelayMs = isSimulation ? 0 : 200,
 	}: {
 		movingUnit: T;
 		path: GridPosition[];

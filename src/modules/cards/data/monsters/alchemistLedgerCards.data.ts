@@ -88,7 +88,7 @@ export const alchemistLedgerCards: Record<Card["id"], Card> = {
 	},
 	[cardId("alchemical_frenzy")]: {
 		id: cardId("alchemical_frenzy"),
-		name: "Reckless Charge",
+		name: "Alchemical Frenzy",
 		range: 0,
 		image: "/cards/reckless_charge.webp",
 		aiTargetPreference: "self",
@@ -104,6 +104,7 @@ export const alchemistLedgerCards: Record<Card["id"], Card> = {
 		image: "/cards/reckless_charge.webp",
 		playRequirement: "no_target",
 		effects: [
+			{ type: "move", target: "self" },
 			{ type: "damage", amount: 6, target: "path" },
 			{
 				type: "push",
@@ -112,7 +113,6 @@ export const alchemistLedgerCards: Record<Card["id"], Card> = {
 				target: "path",
 				pushDirection: "sideways",
 			},
-			{ type: "move", target: "self" },
 		],
 	},
 };
