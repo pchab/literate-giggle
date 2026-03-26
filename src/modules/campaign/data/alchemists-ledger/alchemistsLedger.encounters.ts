@@ -120,5 +120,6 @@ export const alchemistEncounters: Record<string, Encounter> = {
 				allegiance: "NEUTRAL",
 			},
 		],
+		onWinSceneId: THE_ALCHEMISTS_LEDGER.scenes.barnaby_defeated,
 	},
 };
