@@ -120,9 +120,6 @@ export const calculateStateDiff = (
 			projectedMoves[shadowUnit.id] = shadowUnit.gridPosition;
 		}
 		if (realUnit.currentHp > 0 && shadowUnit.currentHp <= 0) {
-			console.warn(
-				`shadow unit ${shadowUnit.id} is dead but has not been removed`,
-			);
 			projectedCasualties.push(shadowUnit.id);
 		}
 	});

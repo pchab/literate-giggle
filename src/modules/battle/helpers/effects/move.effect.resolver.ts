@@ -16,6 +16,6 @@ export const resolveMoveEffect =
 				get,
 				set,
 				isSimulation,
-			)({ ...caster, gridPosition: anchorTarget });
+			)({ ...caster, gridPosition: anchorTarget.gridPosition });
 		}
 	};

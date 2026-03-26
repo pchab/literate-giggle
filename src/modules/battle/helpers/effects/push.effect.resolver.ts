@@ -29,15 +29,13 @@ export const resolvePushEffect =
 			currentFigures,
 			patternCells,
 		);
+		console.log({ targets });
 
 		const { col: cX, row: cY } = getClosestOriginTile({
 			caster,
 			anchorTarget,
 		});
-		const anchorPos =
-			anchorTarget && typeof anchorTarget === "object" && "col" in anchorTarget
-				? anchorTarget.gridPosition
-				: caster.gridPosition;
+		const anchorPos = anchorTarget?.gridPosition ?? caster.gridPosition;
 
 		const chargeDx = Math.sign(anchorPos.col - cX);
 		const chargeDy = Math.sign(anchorPos.row - cY);

@@ -139,9 +139,7 @@ export const getIdealTarget: TargetResolver = <C extends AIBattleUnit>(
 	card: Card,
 	figures: BattleUnit[],
 ) => {
-	if (
-		card.aiTargetPreference === "self"
-	) {
+	if (card.aiTargetPreference === "self") {
 		return {
 			reachableTarget: aiFigure,
 			moveDest: aiFigure.gridPosition,
@@ -158,15 +156,15 @@ export const getIdealTarget: TargetResolver = <C extends AIBattleUnit>(
 				moveDest,
 				canHit: Boolean(
 					moveDest &&
-					isTargetInRange({
-						card,
-						minRange: 1,
-						attacker: {
-							...aiFigure,
-							gridPosition: moveDest,
-						},
-						target,
-					}),
+						isTargetInRange({
+							card,
+							minRange: 1,
+							attacker: {
+								...aiFigure,
+								gridPosition: moveDest,
+							},
+							target,
+						}),
 				),
 			};
 		}
