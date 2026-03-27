@@ -70,17 +70,17 @@ export function resolveTargets<T extends BattleUnit>(
 
 	if (targetType === "path" && anchorTarget) {
 		const targetPos = anchorTarget.gridPosition;
-		const tilePath = getLineOfSightPath(caster.gridPosition, targetPos).slice(
-			1,
-		);
+		const tilePath = getLineOfSightPath(caster.gridPosition, targetPos);
 
-		const hitIds = tilePath.reduce(
-			(targets, cell) =>
-				targets.concat(
-					aliveFigures.filter(isUnitInTile(cell)).map(({ id }) => id),
-				),
-			[] as BattleUnit["id"][],
-		);
+		const hitIds = tilePath
+			.reduce(
+				(targets, cell) =>
+					targets.concat(
+						aliveFigures.filter(isUnitInTile(cell)).map(({ id }) => id),
+					),
+				[] as BattleUnit["id"][],
+			)
+			.filter((id) => id !== caster.id);
 
 		return Array.from(new Set(hitIds));
 	}
