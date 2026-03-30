@@ -4,13 +4,13 @@ import {
 	calculateAttackableCells,
 	calculateReachableCells,
 	isTileEmpty,
-	isTileOccupied,
 	isUnitInTile,
 } from "@/modules/battle/helpers/grid.helpers";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { cardLibrary } from "@/modules/cards/data/cards.data";
 import type { Card } from "@/modules/cards/domain/cards.type";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
+import { isHero } from "@/modules/figures/helpers/figures.helpers";
 import type { Intent } from "../domain/intent.type";
 import { areEnemies } from "../helpers/effects/effect.helpers";
 
@@ -26,25 +26,17 @@ export type CellHighlight = {
 
 export function useCellHighlight(): CellHighlight {
 	const {
-		heroes,
-		monsters,
-		summons,
+		units,
 		aiIntents,
-		usedCardsThisTurn,
 		activeHeroCard,
 		hoveredHeroCard,
 		activeMoveHeroId,
 		hoveredCell,
-		enemyAction,
 		playerIntent,
-		...store
+		usedMovesThisTurn,
 	} = useBattleStore(
 		useShallow((state) => ({
-			usedCardsThisTurn: state.usedCardsThisTurn,
-			enemyAction: state.enemyAction,
-			monsters: state.monsters,
-			heroes: state.heroes,
-			summons: state.summons,
+			units: state.units,
 			aiIntents: state.aiIntents,
 			activeHeroCard: state.activeHeroCard,
 			hoveredHeroCard: state.hoveredHeroCard,
@@ -64,14 +56,14 @@ export function useCellHighlight(): CellHighlight {
 		projectedCasualties: [],
 	};
 
+	const heroes = units.filter(isHero);
+
 	if (hoveredCell) {
 		const hoveredHeroUnit = heroes.find(isUnitInTile(hoveredCell));
 		if (hoveredHeroUnit) {
 			highlight.activeUnit = hoveredHeroUnit.id;
 		}
 	}
-
-	const allUnits = [...heroes, ...monsters, ...summons];
 
 	// ==========================================
 	// CASE 1: HERO MOVING
@@ -80,14 +72,14 @@ export function useCellHighlight(): CellHighlight {
 		const hero = heroes.find(({ id }) => id === activeMoveHeroId);
 		if (!hero) return highlight;
 
-		const remainingMove =
-			hero.baseMove - (store.usedMovesThisTurn[hero.id] ?? 0);
-		const oppositeFaction = allUnits.filter(areEnemies(hero));
+		const remainingMove = hero.baseMove - (usedMovesThisTurn[hero.id] ?? 0);
+		const oppositeFaction = units.filter(areEnemies(hero));
+
 		const validTargetCells = calculateReachableCells({
 			movingUnit: { ...hero, baseMove: remainingMove },
 			blockingFigures: oppositeFaction,
 			canTargetSelf: false,
-		}).filter(isTileEmpty(allUnits));
+		}).filter(isTileEmpty(units));
 
 		return {
 			...highlight,
@@ -98,14 +90,17 @@ export function useCellHighlight(): CellHighlight {
 
 	let intent: Intent | null = null;
 	let card: Card | undefined;
+
 	// ==========================================
 	// CASE 2: HERO USING CARD
 	// ==========================================
 	const cardContext = activeHeroCard || hoveredHeroCard;
+
 	if (cardContext) {
 		intent = playerIntent;
 		card = cardContext.card;
 		const hero = heroes.find((h) => h.id === cardContext.unitId);
+
 		if (!intent && hero) {
 			const { playRequirement, range } = card;
 			let dangerZone: GridPosition[] = calculateAttackableCells({
@@ -113,37 +108,35 @@ export function useCellHighlight(): CellHighlight {
 				rangeValue: range,
 				canTargetSelf: false,
 			});
+
 			if (playRequirement === "requires_empty_cell") {
-				dangerZone = dangerZone.filter(isTileEmpty(allUnits));
+				dangerZone = dangerZone.filter(isTileEmpty(units));
 			} else {
 				let targets: BattleUnit[] = [];
+
 				if (playRequirement === "requires_ally") {
-					targets = [
-						...heroes,
-						...summons.filter((s) => s.allegiance === "PLAYER"),
-					];
+					targets = units.filter((unit) => !areEnemies(hero)(unit));
+				} else if (playRequirement === "requires_enemy") {
+					targets = units.filter(areEnemies(hero));
+				} else if (playRequirement === "requires_entity") {
+					targets = units;
 				}
-				if (playRequirement === "requires_enemy") {
-					targets = [
-						...monsters,
-						...summons.filter((s) => s.allegiance === "ENEMY"),
-					];
-				}
-				if (playRequirement === "requires_entity") {
-					targets = allUnits;
-				}
-				dangerZone = dangerZone.filter(isTileOccupied(targets));
+
+				dangerZone = dangerZone.filter((cell) =>
+					targets.some(isUnitInTile(cell)),
+				);
 			}
 			intent = { figureId: hero.id, cardId: card.id, dangerZone };
 		}
 	} else {
 		// ==========================================
-		// CASE 3: HIGHLIGHT CELLS FOR ENEMY ACTION
+		// CASE 3: HIGHLIGHT CELLS FOR AI ACTION
 		// ==========================================
 		if (hoveredCell) {
-			const hoveredAiUnit = [...monsters, ...summons].find(
-				isUnitInTile(hoveredCell),
-			);
+			const hoveredAiUnit = units
+				.filter((u) => !isHero(u))
+				.find(isUnitInTile(hoveredCell));
+
 			if (!hoveredAiUnit) return highlight;
 
 			intent = aiIntents[hoveredAiUnit.id];
@@ -151,7 +144,11 @@ export function useCellHighlight(): CellHighlight {
 		}
 	}
 
+	// ==========================================
+	// RETURN FORMATTED HIGHLIGHTS
+	// ==========================================
 	if (!intent || !card) return highlight;
+
 	const { playRequirement } = card;
 
 	return {

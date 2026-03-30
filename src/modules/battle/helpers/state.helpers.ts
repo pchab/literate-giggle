@@ -1,14 +1,6 @@
 import { cardLibrary } from "@/modules/cards/data/cards.data";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
 import type { Status } from "@/modules/figures/domain/status.type";
-import {
-	isHero,
-	isHeroId,
-	isMonster,
-	isMonsterId,
-	isSummon,
-	isSummonId,
-} from "@/modules/figures/helpers/figures.helpers";
 import type { GridPosition } from "../domain/grid.type";
 import type { StoreGet, StoreSet } from "../store/battle.store";
 import { handleAICardIntent } from "./ai.actions.helpers";
@@ -18,15 +10,7 @@ import { statusRegistry } from "./status.helpers";
 export const findUnit =
 	(get: StoreGet) =>
 	<T extends BattleUnit>(unitId: T["id"]): T | undefined => {
-		if (isHeroId(unitId)) {
-			return get().heroes.find((h) => h.id === unitId) as unknown as T;
-		}
-		if (isMonsterId(unitId)) {
-			return get().monsters.find((m) => m.id === unitId) as unknown as T;
-		}
-		if (isSummonId(unitId)) {
-			return get().summons.find((s) => s.id === unitId) as unknown as T;
-		}
+		return get().units.find((u) => u.id === unitId) as T | undefined;
 	};
 
 export function updateUnitState<T extends BattleUnit>(
@@ -38,24 +22,9 @@ export function updateUnitState<T extends BattleUnit>(
 		unitId: T["id"],
 		newState: Partial<Omit<T, "currentHp" | "statuses">> = {},
 	): Promise<void> => {
-		if (isHeroId(unitId))
-			set(({ heroes }) => ({
-				heroes: heroes.map((h) =>
-					h.id === unitId ? { ...h, ...newState } : h,
-				),
-			}));
-		if (isMonsterId(unitId))
-			set(({ monsters }) => ({
-				monsters: monsters.map((m) =>
-					m.id === unitId ? { ...m, ...newState } : m,
-				),
-			}));
-		if (isSummonId(unitId))
-			set(({ summons }) => ({
-				summons: summons.map((s) =>
-					s.id === unitId ? { ...s, ...newState } : s,
-				),
-			}));
+		set(({ units }) => ({
+			units: units.map((u) => (u.id === unitId ? { ...u, ...newState } : u)),
+		}));
 	};
 }
 
@@ -205,27 +174,11 @@ export const applyCombatUpdate =
 		}
 
 		// ==========================================
-		// PHASE 5: STORE COMMIT
+		// 3. ONE-LINER STORE COMMIT
 		// ==========================================
-		if (isHero(currentUnit)) {
-			set(({ heroes }) => ({
-				heroes: toRemove
-					? heroes.filter((h) => h.id !== currentUnit.id)
-					: heroes.map((h) => (h.id === currentUnit.id ? currentUnit : h)),
-			}));
-		}
-		if (isMonster(currentUnit)) {
-			set(({ monsters }) => ({
-				monsters: toRemove
-					? monsters.filter((m) => m.id !== currentUnit.id)
-					: monsters.map((m) => (m.id === currentUnit.id ? currentUnit : m)),
-			}));
-		}
-		if (isSummon(currentUnit)) {
-			set(({ summons }) => ({
-				summons: toRemove
-					? summons.filter((s) => s.id !== currentUnit.id)
-					: summons.map((s) => (s.id === currentUnit.id ? currentUnit : s)),
-			}));
-		}
+		set(({ units }) => ({
+			units: toRemove
+				? units.filter((u) => u.id !== currentUnit.id)
+				: units.map((u) => (u.id === currentUnit.id ? currentUnit : u)),
+		}));
 	};

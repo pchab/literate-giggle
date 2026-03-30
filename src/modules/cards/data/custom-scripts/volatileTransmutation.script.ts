@@ -1,19 +1,25 @@
-import {
-	handleAICardIntent,
-	type TargetResolver,
-} from "@/modules/battle/helpers/ai.actions.helpers";
+import { handleAICardIntent } from "@/modules/battle/helpers/ai.actions.helpers";
+import type { TargetResolver } from "@/modules/battle/helpers/ai.targeting.helpers";
 import type { EffectResolverParams } from "@/modules/battle/helpers/effects/effect.resolvers";
 import { getSimulationState } from "@/modules/battle/helpers/simulation.helper";
 import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
 import { acidFlask } from "@/modules/figures/data/summons/acidFlask";
 import type { AIBattleUnit } from "@/modules/figures/domain/figures.type";
-import { isSummonId } from "@/modules/figures/helpers/figures.helpers";
+import {
+	isHero,
+	isMonster,
+	isSummonId,
+} from "@/modules/figures/helpers/figures.helpers";
 import { cardId } from "../../helpers/cards.helper";
 import { alchemistLedgerCards } from "../monsters/alchemistLedgerCards.data";
 
 export const getStateScore = (fakeGet: StoreGet, realGet: StoreGet): number => {
-	const { heroes: oldHeroes, monsters: oldMonsters } = realGet();
-	const { heroes: newHeroes, monsters: newMonsters } = fakeGet();
+	const { units: oldUnits } = realGet();
+	const { units: newUnits } = fakeGet();
+	const oldHeroes = oldUnits.filter(isHero);
+	const oldMonsters = oldUnits.filter(isMonster);
+	const newHeroes = newUnits.filter(isHero);
+	const newMonsters = newUnits.filter(isMonster);
 
 	let score = 0;
 
@@ -45,12 +51,13 @@ export const volatileTransmutation =
 		isSimulation = false,
 	) =>
 	async ({ caster }: EffectResolverParams<C>) => {
-		const { summons, heroes } = get();
+		const { units } = get();
 		const volatileBoltCard = alchemistLedgerCards[cardId("volatile_bolt")];
 
-		const availableFlasks = summons.filter(
+		const availableFlasks = units.filter(
 			(s) => s.name === acidFlask.name && s.currentHp > 0,
 		);
+		const heroes = units.filter(isHero);
 
 		if (availableFlasks.length > 0) {
 			// --- SHADOW STATE: SCORING THE FLASKS ---

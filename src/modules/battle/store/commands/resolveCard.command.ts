@@ -1,5 +1,6 @@
 import type { AnchorTarget } from "@/modules/cards/domain/cards.type";
 import { UnitStance } from "@/modules/figures/domain/figures.type";
+import { isMonster } from "@/modules/figures/helpers/figures.helpers";
 import type { GridPosition } from "../../domain/grid.type";
 import { resolveTargets } from "../../helpers/effects/effect.helpers";
 import { resolvers } from "../../helpers/effects/effect.resolvers";
@@ -20,13 +21,12 @@ import { calculateAIIntents } from "./calculateAIIntents.command";
 export const resolveCard =
 	(get: StoreGet, set: StoreSet, isSimulation = false) =>
 	async (anchorTarget: AnchorTarget, cardContext: ActiveCardContext) => {
-		const { heroes, monsters, summons } = get();
-
+		const { units: draftUnits } = get();
 		const { unitId, card } = cardContext;
-		const hero = heroes.find((h) => h.id === unitId);
+
+		const hero = draftUnits.find((u) => u.id === unitId);
 		if (!hero) return;
 
-		const allUnits = [...heroes, ...monsters, ...summons];
 		let actualTarget = anchorTarget;
 
 		// --- 1. CHECK RANGE ---
@@ -38,6 +38,7 @@ export const resolveCard =
 			if (distance > card.range) {
 				return;
 			}
+
 			const flightPath = getLineOfSightPath(
 				hero.gridPosition,
 				anchorTarget.gridPosition,
@@ -45,12 +46,12 @@ export const resolveCard =
 
 			for (let i = 1; i < flightPath.length; i++) {
 				const tile = flightPath[i];
-				const isOccupied = allUnits.some(
+				const isOccupied = draftUnits.some(
 					(f) => f.currentHp > 0 && isUnitInTile(tile)(f),
 				);
 
 				if (isOccupied) {
-					actualTarget = { gridPosition: tile }; // Detonate exactly on the tile we hit!
+					actualTarget = { gridPosition: tile };
 					break;
 				}
 			}
@@ -71,12 +72,13 @@ export const resolveCard =
 		const firePath = anchorTarget
 			? getLineOfSightPath(hero.gridPosition, anchorTarget.gridPosition)
 			: [];
+
 		set((state) => ({
 			...state,
 			playerIntent: {
 				figureId: hero.id,
 				target: actualTarget,
-				cardId: cardContext.card.id,
+				cardId: card.id,
 				intendedMove: firePath,
 				dangerZone: patternCells,
 			},
@@ -84,7 +86,13 @@ export const resolveCard =
 
 		// --- 3. PRE-RESOLVE TARGETS ---
 		const lockedTargets = card.effects.map((effect) =>
-			resolveTargets(effect.target, anchorTarget, hero, allUnits, patternCells),
+			resolveTargets(
+				effect.target,
+				actualTarget,
+				hero,
+				draftUnits,
+				patternCells,
+			),
 		);
 
 		// --- 4. RESOLVE EFFECTS WITH PATTERN ---
@@ -97,38 +105,37 @@ export const resolveCard =
 				targetIds: lockedTargets[i],
 			});
 		}
-		updateUnitState(
+
+		await updateUnitState(
 			get,
 			set,
 			isSimulation,
-		)(unitId, { stance: UnitStance.IDLE });
+		)(hero.id, {
+			stance: UnitStance.IDLE,
+		});
+
+		// --- 5. CLEAN UP & XP ---
+		const currentUnits = get().units;
+		const draftMonsters = draftUnits.filter(isMonster);
+		const currentMonsters = currentUnits.filter(isMonster);
 
 		const xpEarnedThisTurn = calculateStateDiff(
-			get().monsters,
-			monsters,
+			currentMonsters,
+			draftMonsters,
 		).projectedCasualties.reduce(
 			(xp, monsterId) =>
-				xp + (monsters.find(({ id }) => id === monsterId)?.xpReward ?? 0),
+				xp + (draftMonsters.find(({ id }) => id === monsterId)?.xpReward ?? 0),
 			0,
 		);
-		// --- 4. CLEAN UP ---
+
 		set(
-			({
-				heroes,
-				monsters,
-				summons,
-				usedCardsThisTurn,
-				usedMovesThisTurn,
-				xpEarned,
-				...prev
-			}) => {
-				const remainingMonsters = monsters.filter((m) => m.currentHp > 0);
-				const remainingSummons = summons.filter((m) => m.currentHp > 0);
+			({ units, usedCardsThisTurn, usedMovesThisTurn, xpEarned, ...prev }) => {
+				const survivingUnits = units.filter((u) => u.currentHp > 0);
+
 				return {
 					...prev,
 					activeHeroCard: null,
-					monsters: remainingMonsters,
-					summons: remainingSummons,
+					units: survivingUnits,
 					usedCardsThisTurn: { ...usedCardsThisTurn, [hero.id]: card },
 					usedMovesThisTurn: { ...usedMovesThisTurn, [hero.id]: 99 },
 					xpEarned: xpEarned + xpEarnedThisTurn,

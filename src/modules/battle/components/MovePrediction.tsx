@@ -4,10 +4,10 @@ import type { CellHighlight } from "../hooks/useCellHighlight";
 
 export default function MovePrediction({
 	cellHighlight,
-	allUnits,
+	units,
 }: {
 	cellHighlight: CellHighlight;
-	allUnits: BattleUnit[];
+	units: BattleUnit[];
 }) {
 	return (
 		Object.keys(cellHighlight.projectedMoves ?? {}).length > 0 && (
@@ -42,7 +42,7 @@ export default function MovePrediction({
 				</defs>
 				{Object.entries(cellHighlight.projectedMoves ?? {}).map(
 					([unitId, targetPos]) => {
-						const unit = allUnits.find((u) => u.id === unitId);
+						const unit = units.find((u) => u.id === unitId);
 						if (!unit) return null;
 						const isActiveUnit = unit.id === cellHighlight.activeUnit;
 

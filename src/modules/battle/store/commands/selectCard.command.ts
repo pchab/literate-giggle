@@ -6,7 +6,7 @@ import { resolveCard } from "./resolveCard.command";
 export const selectCard =
 	(get: StoreGet, set: StoreSet) => async (heroId: Hero["id"], card: Card) => {
 		const {
-			heroes,
+			units,
 			activeHeroCard: previousCardContext,
 			usedCardsThisTurn,
 		} = get();
@@ -16,13 +16,13 @@ export const selectCard =
 			return;
 		}
 
-		const heroIndex = heroes.findIndex(({ id }) => id === heroId);
+		const heroIndex = units.findIndex(({ id }) => id === heroId);
 		const activeHeroCard = { unitId: heroId, card };
 
-		set(({ heroes, ...prev }) => ({
+		set(({ units, ...prev }) => ({
 			...prev,
-			heroes: heroes.with(heroIndex, {
-				...heroes[heroIndex],
+			units: units.with(heroIndex, {
+				...units[heroIndex],
 				stance: UnitStance.ATTACKING,
 			}),
 			activeHeroCard,

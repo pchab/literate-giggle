@@ -11,16 +11,16 @@ export function moveHero(newPosition: GridPosition) {
 		const {
 			activeMoveHeroId: activeMoveUnitId,
 			usedMovesThisTurn,
-			heroes,
-			monsters,
-			summons,
+			units,
 		} = get();
 
 		if (!activeMoveUnitId || !isHeroId(activeMoveUnitId)) {
 			return {};
 		}
+
 		const heroId = activeMoveUnitId;
-		const hero = heroes.find((h) => h.id === heroId);
+		const hero = units.find((u) => u.id === heroId);
+
 		if (!hero) {
 			console.warn(`Hero with ID ${heroId} not found.`);
 			return {};
@@ -28,6 +28,7 @@ export function moveHero(newPosition: GridPosition) {
 
 		const moveAlreadyDone = usedMovesThisTurn[activeMoveUnitId] ?? 0;
 		const remainingMove = hero.baseMove - moveAlreadyDone;
+
 		if (remainingMove < 1) {
 			return {};
 		}
@@ -40,6 +41,7 @@ export function moveHero(newPosition: GridPosition) {
 			caster: hero,
 			target: { gridPosition: newPosition },
 		});
+
 		if (distance > remainingMove) {
 			console.warn(
 				`Hero ${heroId} cannot move more than ${hero.baseMove} squares.`,
@@ -47,16 +49,14 @@ export function moveHero(newPosition: GridPosition) {
 			return {};
 		}
 
-		const allBlockingFigures = [
-			...monsters,
-			...summons.filter(areEnemies(hero)),
-		];
+		const allBlockingFigures = units.filter(areEnemies(hero));
 
 		const path = calculateExactPath({
 			movingUnit: hero,
 			targetPos: newPosition,
 			figures: allBlockingFigures,
 		});
+
 		await moveBattleUnit(get, set)({ movingUnit: hero, path });
 
 		set(({ usedMovesThisTurn }) => {

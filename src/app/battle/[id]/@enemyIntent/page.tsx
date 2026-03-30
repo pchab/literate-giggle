@@ -7,20 +7,20 @@ import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { BattleCard } from "@/modules/cards/components/BattleCard";
 import { CardTooltip } from "@/modules/cards/components/CardTooltip";
 import { cardLibrary } from "@/modules/cards/data/cards.data";
-import { getBlockFromStatuses } from "@/modules/figures/helpers/figures.helpers";
+import { isHero } from "@/modules/figures/helpers/figures.helpers";
 
 export default function EnemyIntentSidebar() {
-	const { monsters, summons, hoveredCell, aiIntents } = useBattleStore(
+	const { units, hoveredCell, aiIntents } = useBattleStore(
 		useShallow((state) => ({
-			monsters: state.monsters,
-			summons: state.summons,
+			units: state.units, // <-- Unified array!
 			hoveredCell: state.hoveredCell,
 			aiIntents: state.aiIntents,
 		})),
 	);
 
 	const aiUnit =
-		hoveredCell && [...monsters, ...summons].find(isUnitInTile(hoveredCell));
+		hoveredCell &&
+		units.find((u) => !isHero(u) && isUnitInTile(hoveredCell)(u));
 
 	if (!hoveredCell || !aiUnit) {
 		return (
@@ -39,6 +39,26 @@ export default function EnemyIntentSidebar() {
 			</div>
 		);
 	}
+
+	// ==========================================
+	// STATUS AGGREGATION (Darkest Dungeon style UI)
+	// ==========================================
+	const aggregatedStatuses = aiUnit.statuses?.reduce(
+		(acc, status) => {
+			if (!acc[status.type]) {
+				acc[status.type] = { ...status };
+			} else {
+				acc[status.type].amount += status.amount;
+			}
+			return acc;
+		},
+		{} as Record<string, (typeof aiUnit.statuses)[0]>,
+	);
+
+	const displayStatuses = Object.values(aggregatedStatuses || {});
+	const totalBlock =
+		displayStatuses.find((s) => s.type === "block")?.amount || 0;
+	const otherStatuses = displayStatuses.filter((s) => s.type !== "block");
 
 	return (
 		<div className="h-64 relative">
@@ -79,7 +99,7 @@ export default function EnemyIntentSidebar() {
 									width: `${(aiUnit.currentHp / aiUnit.maxHp) * 100}%`,
 								}}
 								animate={{
-									width: `${(aiUnit.currentHp / aiUnit.maxHp) * 100}%`,
+									width: `${Math.max(0, (aiUnit.currentHp / aiUnit.maxHp) * 100)}%`,
 								}}
 								transition={{ type: "spring", bounce: 0, duration: 0.5 }}
 							/>
@@ -87,28 +107,26 @@ export default function EnemyIntentSidebar() {
 					</div>
 
 					{/* --- STATUS TRACKERS --- */}
-					{aiUnit.statuses && aiUnit.statuses.length > 0 && (
+					{displayStatuses.length > 0 && (
 						<div className="relative z-10 flex flex-wrap gap-2 mt-1">
-							{getBlockFromStatuses(aiUnit.statuses) > 0 && (
+							{totalBlock > 0 && (
 								<span className="text-xs bg-blue-900/50 text-blue-200 px-2 py-0.5 rounded border border-blue-800/50">
-									🛡️ {getBlockFromStatuses(aiUnit.statuses)}
+									🛡️ {totalBlock}
 								</span>
 							)}
-							{aiUnit.statuses
-								.filter((s) => s.type !== "block")
-								.map((status, idx) => (
-									<span
-										key={idx}
-										className="text-xs bg-zinc-900 text-zinc-300 px-2 py-0.5 rounded border border-zinc-700 capitalize flex items-center gap-1"
-									>
-										{status.type === "poison"
-											? "☠️"
-											: status.type === "vulnerable"
-												? "⚡"
-												: "✨"}
-										{status.type} {status.amount > 0 && status.amount}
-									</span>
-								))}
+							{otherStatuses.map((status, idx) => (
+								<span
+									key={idx}
+									className="text-xs bg-zinc-900 text-zinc-300 px-2 py-0.5 rounded border border-zinc-700 capitalize flex items-center gap-1"
+								>
+									{status.type === "poison"
+										? "☠️"
+										: status.type === "vulnerable"
+											? "⚡"
+											: "✨"}
+									{status.type} {status.amount > 0 && status.amount}
+								</span>
+							))}
 						</div>
 					)}
 
@@ -130,6 +148,7 @@ export default function EnemyIntentSidebar() {
 								</div>
 							);
 						})()}
+
 					{/* --- INTENT/ON DEATH ACTION --- */}
 					{aiUnit.onDeath &&
 						(() => {

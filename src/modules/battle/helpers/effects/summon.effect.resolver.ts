@@ -35,9 +35,9 @@ export const resolveSummonEffect =
 		const allegiance = getCasterFaction(caster) === "HERO" ? "PLAYER" : "ENEMY";
 		if (anchorTarget) {
 			const blueprint = summonLibrary[effect.blueprintId];
-			set(({ summons }) => ({
-				summons: [
-					...summons,
+			set(({ units }) => ({
+				units: [
+					...units,
 					{
 						id: summonId(Date.now()),
 						...blueprint,

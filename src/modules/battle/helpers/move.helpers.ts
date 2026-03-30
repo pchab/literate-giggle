@@ -10,7 +10,7 @@ import {
 	getCellId,
 	getDistanceToBoundingBox,
 } from "./grid.helpers";
-import { applyCombatUpdate, updateUnitState } from "./state.helpers";
+import { applyCombatUpdate, findUnit, updateUnitState } from "./state.helpers";
 import { statusRegistry } from "./status.helpers";
 
 export function moveBattleUnit(
@@ -31,12 +31,7 @@ export function moveBattleUnit(
 	}): Promise<T | undefined> => {
 		let currentUnit = movingUnit;
 
-		const refreshUnit = (): T | undefined => {
-			const state = get();
-			return (state.heroes.find((h) => h.id === currentUnit.id) ||
-				state.monsters.find((m) => m.id === currentUnit.id) ||
-				state.summons.find((s) => s.id === currentUnit.id)) as T | undefined;
-		};
+		const refreshUnit = () => findUnit(get)<T>(currentUnit.id);
 
 		if (!forcedMove) {
 			// 1. Visual Update: Set moving animation
@@ -97,7 +92,7 @@ export function moveBattleUnit(
 						get,
 						set,
 						isSimulation,
-					)(currentUnit, {
+					)(currentUnit.id, {
 						damageTaken: steppedOnSurface.damage,
 						newStatuses: steppedOnSurface.status
 							? [steppedOnSurface.status]
@@ -117,7 +112,6 @@ export function moveBattleUnit(
 					return { ...prev, surfaces: nextSurfaces };
 				});
 
-				// 4. Consequence check: Did the surface kill us or root us?
 				const freshUnit = refreshUnit();
 				if (!freshUnit || freshUnit.currentHp <= 0) {
 					return freshUnit;
@@ -132,7 +126,6 @@ export function moveBattleUnit(
 		}
 
 		if (!forcedMove && currentUnit) {
-			// 5. Visual Update: Back to idle stance
 			await updateUnitState(
 				get,
 				set,

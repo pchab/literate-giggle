@@ -1,4 +1,5 @@
 import { cardLibrary } from "@/modules/cards/data/cards.data";
+import { isHero, isMonster } from "@/modules/figures/helpers/figures.helpers";
 import { sleep } from "@/modules/shared/helpers/sleep";
 import { handleAICardIntent } from "../../helpers/ai.actions.helpers";
 import { tickStatusesAndSurfaces } from "../../helpers/effects/effect.helpers";
@@ -14,41 +15,24 @@ export const resolveAIActions = async (
 	// ==========================================
 	// 1. START OF AI TURN (Tick AI statuses)
 	// ==========================================
-	const { monsters: draftMonsters, summons: draftSummons } = get();
-	await tickStatusesAndSurfaces(
-		get,
-		set,
-		isSimulation,
-	)([...draftMonsters, ...draftSummons]);
+	const { units: draftUnits } = get();
+	const draftAIFigures = draftUnits.filter((u) => !isHero(u));
 
+	await tickStatusesAndSurfaces(get, set, isSimulation)(draftAIFigures);
 	await sleep(isSimulation ? 0 : 200);
 
 	// ==========================================
 	// 2. EXECUTE ACTIONS
 	// ==========================================
 	const stateAfterTick = get();
-	const heroSummons = stateAfterTick.summons.filter(
-		(s) => s.allegiance === "PLAYER",
+	const allAIFigures = stateAfterTick.units.filter(
+		(u) => !isHero(u) && u.currentHp > 0,
 	);
-	const monsterSummons = stateAfterTick.summons.filter(
-		(s) => s.allegiance === "ENEMY",
-	);
-	const initialMonsters = stateAfterTick.monsters.filter(
-		(m) => m.currentHp > 0,
-	);
-
-	const allAIFigures = [
-		...heroSummons,
-		...initialMonsters,
-		...monsterSummons,
-	].filter((f) => f.currentHp > 0);
 
 	for (const aiFigure of allAIFigures) {
-		const { heroes, monsters, summons, aiIntents } = get();
+		const { units, aiIntents } = get();
 
-		const freshAIFigure = [...monsters, ...summons].find(
-			(m) => m.id === aiFigure.id,
-		);
+		const freshAIFigure = units.find((u) => u.id === aiFigure.id);
 		if (!freshAIFigure || freshAIFigure.currentHp <= 0) continue;
 
 		const intent = aiIntents[freshAIFigure.id];
@@ -67,28 +51,19 @@ export const resolveAIActions = async (
 		});
 
 		if (isSimulation) {
-			const previousFigures = [...heroes, ...monsters, ...summons];
-			const {
-				heroes: simulatedHeroes,
-				monsters: simulatedMonsters,
-				summons: simulatedSummons,
-				aiIntents,
-			} = get();
-			const simulatedFigures = [
-				...simulatedHeroes,
-				...simulatedMonsters,
-				...simulatedSummons,
-			];
+			const previousFigures = units;
+			const { units: simulatedUnits, aiIntents: currentAiIntents } = get();
+
 			const { projectedMoves, projectedCasualties } = calculateStateDiff(
-				simulatedFigures,
+				simulatedUnits,
 				previousFigures,
 			);
-			const unitIntent = aiIntents[aiFigure.id];
+			const unitIntent = currentAiIntents[aiFigure.id];
 
 			set((state) => ({
 				...state,
 				aiIntents: {
-					...aiIntents,
+					...currentAiIntents,
 					[aiFigure.id]: {
 						...unitIntent,
 						projectedMoves,
@@ -102,26 +77,28 @@ export const resolveAIActions = async (
 	// ============================================
 	// 3. START OF PLAYER TURN (Tick Hero statuses)
 	// ============================================
-	await tickStatusesAndSurfaces(get, set, isSimulation)(get().heroes);
+	const { units: currentUnits } = get();
+	const heroes = currentUnits.filter(isHero);
+
+	await tickStatusesAndSurfaces(get, set, isSimulation)(heroes);
+
+	const draftMonsters = draftUnits.filter(isMonster);
+	const currentMonsters = get().units.filter(isMonster);
 
 	const xpEarnedThisTurn = calculateStateDiff(
-		get().monsters,
+		currentMonsters,
 		draftMonsters,
-	).projectedCasualties.reduce(
-		(xp, monsterId) =>
-			xp + (draftMonsters.find(({ id }) => id === monsterId)?.xpReward ?? 0),
-		0,
-	);
+	).projectedCasualties.reduce((xp, monsterId) => {
+		const monster = draftMonsters.find(({ id }) => id === monsterId);
+		return xp + (monster?.xpReward ?? 0);
+	}, 0);
 
-	set(({ heroes, monsters, summons, xpEarned, ...prev }) => {
-		const survivingHeroes = heroes.filter((h) => h.currentHp > 0);
-		const survivingMonsters = monsters.filter((m) => m.currentHp > 0);
-		const survivingSummons = summons.filter((s) => s.currentHp > 0);
+	set(({ units, xpEarned, ...prev }) => {
+		const survivingUnits = units.filter((u) => u.currentHp > 0);
+
 		return {
 			...prev,
-			heroes: survivingHeroes,
-			monsters: survivingMonsters,
-			summons: survivingSummons,
+			units: survivingUnits,
 			usedMovesThisTurn: {},
 			usedCardsThisTurn: {},
 			xpEarned: xpEarned + xpEarnedThisTurn,

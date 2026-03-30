@@ -8,45 +8,56 @@ export const setHoveredCell =
 	(get: StoreGet, set: StoreSet) => async (cell: GridPosition | null) => {
 		set(() => ({ hoveredCell: cell, playerIntent: null }));
 		if (!cell) return;
-		const { activeHeroCard, hoveredHeroCard, heroes, monsters, summons } =
-			get();
+
+		const { activeHeroCard, hoveredHeroCard, units } = get();
 		const cardContext = activeHeroCard || hoveredHeroCard;
-		const anchorTarget = { gridPosition: cell };
 		if (!cardContext) return;
+
+		const anchorTarget = { gridPosition: cell, size: 1 };
+
 		const newPlayerIntent = {
 			cardId: cardContext.card.id,
 			figureId: cardContext.unitId,
 			target: anchorTarget,
 		};
+
 		set(() => ({
 			playerIntent: newPlayerIntent,
 		}));
 
-		const { hoveredCell } = get();
-		if (hoveredCell?.col !== cell.col || hoveredCell?.row !== cell.row) {
+		// 2. Pre-simulation guard
+		if (
+			get().hoveredCell?.col !== cell.col ||
+			get().hoveredCell?.row !== cell.row
+		) {
 			return;
 		}
 
+		// 3. Run the shadow simulation
 		const { fakeGet, fakeSet } = getSimulationState(get);
 		await resolveCard(fakeGet, fakeSet, true)(anchorTarget, cardContext);
 
-		const shadowState = fakeGet();
-		const shadowFigures = [
-			...shadowState.heroes,
-			...shadowState.monsters,
-			...shadowState.summons,
-		];
-		const realFigures = [...heroes, ...monsters, ...summons];
+		// 4. POST-SIMULATION GUARD (The Race Condition Fix)
+		if (
+			get().hoveredCell?.col !== cell.col ||
+			get().hoveredCell?.row !== cell.row
+		) {
+			return;
+		}
+
+		// 5. Extract and commit diff
+		const { units: shadowUnits, playerIntent: simulatedIntent } = fakeGet();
+
 		const { projectedMoves, projectedCasualties } = calculateStateDiff(
-			shadowFigures,
-			realFigures,
+			shadowUnits,
+			units,
 		);
 
-		set(({ ...prev }) => ({
+		set((prev) => ({
 			...prev,
 			playerIntent: {
 				...newPlayerIntent,
-				...shadowState.playerIntent,
+				...simulatedIntent,
 				projectedMoves,
 				projectedCasualties,
 			},

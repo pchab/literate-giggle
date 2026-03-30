@@ -4,6 +4,7 @@ import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import type { Encounter } from "@/modules/campaign/domain/encounters.type";
 import type { Hero } from "@/modules/figures/domain/figures.type";
+import { isHero, isMonster } from "@/modules/figures/helpers/figures.helpers";
 import { useWorldStore } from "@/modules/world/store/world.store";
 
 export function useBattleTurns(encounterId: Encounter["id"]): void {
@@ -14,24 +15,19 @@ export function useBattleTurns(encounterId: Encounter["id"]): void {
 			stageBattleRewards: state.stageBattleRewards,
 		})),
 	);
-	const {
-		heroes,
-		monsters,
-		usedCardsThisTurn,
-		activeHeroCard,
-		enemyAction,
-		initBattle,
-	} = useBattleStore(
-		useShallow((state) => ({
-			heroes: state.heroes,
-			monsters: state.monsters,
-			usedCardsThisTurn: state.usedCardsThisTurn,
-			activeHeroCard: state.activeHeroCard,
-			enemyAction: state.enemyAction,
-			initBattle: state.initBattle,
-		})),
-	);
+	const { units, usedCardsThisTurn, activeHeroCard, enemyAction, initBattle } =
+		useBattleStore(
+			useShallow((state) => ({
+				units: state.units,
+				usedCardsThisTurn: state.usedCardsThisTurn,
+				activeHeroCard: state.activeHeroCard,
+				enemyAction: state.enemyAction,
+				initBattle: state.initBattle,
+			})),
+		);
 	const [isInit, setIsInit] = useState(false);
+	const heroes = units.filter(isHero);
+	const monsters = units.filter(isMonster);
 
 	// --- BATTLE INIT ---
 	useEffect(() => {

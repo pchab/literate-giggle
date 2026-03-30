@@ -24,11 +24,10 @@ export const trapdoorSpawn =
 		{ caster }: EffectResolverParams<C>,
 		payload: { spawnCount: number; blueprintId: Summon["id"] },
 	) => {
-		const { heroes, monsters, summons, surfaces } = get();
-		const figures = [...heroes, ...monsters, ...summons];
+		const { units, surfaces } = get();
 
 		const targetPos = { col: 2, row: 2 };
-		const isBlocked = !isTileEmpty(figures)(targetPos);
+		const isBlocked = !isTileEmpty(units)(targetPos);
 
 		// --- TRAP DOOR BLOCKED => ATTACK WHOEVER IS BLOCKING IT ! ---
 		if (isBlocked) {
@@ -78,7 +77,7 @@ export const trapdoorSpawn =
 
 		const validSpawns = neighbors
 			.filter(isTileInBounds)
-			.filter(isTileEmpty(figures));
+			.filter(isTileEmpty(units));
 
 		const spawnAmount = payload.spawnCount;
 		const spawnTiles = validSpawns.slice(0, spawnAmount);
@@ -98,7 +97,7 @@ export const trapdoorSpawn =
 
 		set((prev) => ({
 			...prev,
-			summons: [...prev.summons, ...newRats],
+			units: [...prev.units, ...newRats],
 			surfaces: {
 				...surfaces,
 				[getCellId(targetPos)]: {

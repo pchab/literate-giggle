@@ -1,8 +1,8 @@
-import {
-	type AnchorResolver,
-	handleAICardIntent,
-	type TargetResolver,
-} from "@/modules/battle/helpers/ai.actions.helpers";
+import { handleAICardIntent } from "@/modules/battle/helpers/ai.actions.helpers";
+import type {
+	AnchorResolver,
+	TargetResolver,
+} from "@/modules/battle/helpers/ai.targeting.helpers";
 import type { EffectResolverParams } from "@/modules/battle/helpers/effects/effect.resolvers";
 import {
 	calculateReachableCells,
@@ -15,6 +15,7 @@ import {
 import { getSimulationState } from "@/modules/battle/helpers/simulation.helper";
 import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
 import type { AIBattleUnit } from "@/modules/figures/domain/figures.type";
+import { isHero } from "@/modules/figures/helpers/figures.helpers";
 import { cardId } from "../../helpers/cards.helper";
 import { alchemistLedgerCards } from "../monsters/alchemistLedgerCards.data";
 
@@ -22,11 +23,12 @@ export const getBarnabyStateScore = (
 	fakeGet: StoreGet,
 	realGet: StoreGet,
 ): number => {
-	const { heroes: oldHeroes } = realGet();
-	const { heroes: newHeroes } = fakeGet();
+	const { units: oldUnits } = realGet();
+	const { units: newUnits } = fakeGet();
+	const oldHeroes = oldUnits.filter(isHero);
+	const newHeroes = newUnits.filter(isHero);
 
 	let score = 0;
-
 	for (const oldHero of oldHeroes) {
 		const newHero = newHeroes.find((h) => h.id === oldHero.id);
 		if (newHero) {
@@ -34,7 +36,6 @@ export const getBarnabyStateScore = (
 			score += hpDiff * 10;
 		}
 	}
-
 	return score;
 };
 
@@ -45,9 +46,8 @@ export const alchemicalFrenzy =
 		isSimulation = false,
 	) =>
 	async ({ caster }: EffectResolverParams<C>) => {
-		const { heroes, monsters, summons } = get();
-		const allUnits = [...heroes, ...monsters, ...summons];
-		const activeHeroes = heroes.filter((h) => h.currentHp > 0);
+		const { units } = get();
+		const activeHeroes = units.filter(isHero).filter((h) => h.currentHp > 0);
 
 		if (activeHeroes.length === 0) return;
 
@@ -57,7 +57,7 @@ export const alchemicalFrenzy =
 			movingUnit: caster,
 			blockingFigures: activeHeroes,
 			canTargetSelf: true,
-		}).filter(isTileEmpty(allUnits));
+		}).filter(isTileEmpty(units));
 
 		reachableCells.push(caster.gridPosition);
 
@@ -65,23 +65,38 @@ export const alchemicalFrenzy =
 		let bestStartPos = caster.gridPosition;
 		let bestTargetPos = caster.gridPosition;
 
-		// --- SHADOW STATE: SCORING EVERY POSSIBLE CHARGE ---
 		const heroPositions = activeHeroes.map(({ gridPosition }) => gridPosition);
+
+		// --- SHADOW STATE: SCORING EVERY POSSIBLE CHARGE ---
 		for (const startPos of reachableCells) {
 			for (const { col, row } of heroPositions) {
-				const dx = Math.sign(col - startPos.col);
-				const dy = Math.sign(row - startPos.row);
+				const dCol = col - startPos.col;
+				const dRow = row - startPos.row;
+
+				// GUARD: Optimization & Math Fix!
+				// Only evaluate if the start pos is perfectly cardinal or diagonal to the hero.
+				// If it isn't, Barnaby can't draw a straight line to them anyway.
+				const isAligned =
+					dCol === 0 || dRow === 0 || Math.abs(dCol) === Math.abs(dRow);
+				if (!isAligned) continue;
+
+				const dx = Math.sign(dCol);
+				const dy = Math.sign(dRow);
 
 				const path = getLineOfSightPath(startPos, {
 					col: startPos.col + GRID_BOUNDS.cols * dx,
 					row: startPos.row + GRID_BOUNDS.rows * dy,
 				}).filter(isTileInBounds);
+
 				const targetPos = path[path.length - 1];
 
 				const { fakeGet, fakeSet } = getSimulationState(get);
 
-				const fakeBarnaby = fakeGet().monsters.find((m) => m.id === caster.id);
-				if (fakeBarnaby) fakeBarnaby.gridPosition = startPos;
+				fakeSet(({ units: fakeUnits }) => ({
+					units: fakeUnits.map((u) =>
+						u.id === caster.id ? { ...u, gridPosition: startPos } : u,
+					),
+				}));
 
 				const targetResolver: TargetResolver = () => ({
 					reachableTarget: { gridPosition: targetPos },
@@ -92,6 +107,7 @@ export const alchemicalFrenzy =
 					gridPosition: targetPos,
 				});
 
+				// Run the simulation
 				await handleAICardIntent(
 					fakeGet,
 					fakeSet,
@@ -104,13 +120,13 @@ export const alchemicalFrenzy =
 				});
 
 				const score = getBarnabyStateScore(fakeGet, get);
-				const finalScore =
-					score -
+				const distancePenalty =
 					getDistanceToBoundingBox({
 						caster,
 						target: { gridPosition: startPos },
-					}) *
-						0.1;
+					}) * 0.1;
+
+				const finalScore = score - distancePenalty;
 
 				if (finalScore > bestScore) {
 					bestScore = finalScore;
@@ -120,7 +136,9 @@ export const alchemicalFrenzy =
 			}
 		}
 
-		// Execute the optimal charge
+		// ==========================================
+		// EXECUTE THE OPTIMAL TIMELINE
+		// ==========================================
 		const finalTargetResolver: TargetResolver = () => ({
 			reachableTarget: { gridPosition: bestTargetPos },
 			moveDest: bestStartPos,
@@ -129,6 +147,7 @@ export const alchemicalFrenzy =
 		const finalAnchorResolver: AnchorResolver = () => ({
 			gridPosition: bestTargetPos,
 		});
+
 		await handleAICardIntent(
 			get,
 			set,

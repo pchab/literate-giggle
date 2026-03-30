@@ -18,8 +18,8 @@ export const resolvePushEffect =
 		caster,
 		targetIds,
 	}: EffectResolverParams<C>) => {
-		const { heroes, monsters, summons } = get();
-		let currentFigures = [...heroes, ...monsters, ...summons];
+		// --- 1. USE THE UNIFIED ARRAY ---
+		let currentFigures = get().units;
 
 		const { col: cX, row: cY } = getClosestOriginTile({
 			caster,
@@ -31,9 +31,8 @@ export const resolvePushEffect =
 		const chargeDy = Math.sign(anchorPos.row - cY);
 
 		const processPush = async (entityId: BattleUnit["id"]) => {
-			// 1. RE-FETCH STATE: Ensure accurate board layout for sequential pushes
-			const state = get();
-			currentFigures = [...state.heroes, ...state.monsters, ...state.summons];
+			// --- 2. CLEAN RE-FETCH FOR SEQUENTIAL PUSHES ---
+			currentFigures = get().units;
 			let entity = currentFigures.find((f) => f.id === entityId);
 
 			if (!entity || entity.currentHp <= 0) return;

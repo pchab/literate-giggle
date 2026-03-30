@@ -2,18 +2,18 @@ import type { BattleStoreServerAction } from "@/modules/battle/store/battle.stor
 import { UnitStance } from "@/modules/figures/domain/figures.type";
 
 export function cancelCard(): BattleStoreServerAction {
-	return ({ heroes, activeHeroCard }) => {
+	return ({ units, activeHeroCard }) => {
 		if (!activeHeroCard) {
 			console.warn("No card is currently selected.");
 			return {};
 		}
 
 		const { unitId: heroId } = activeHeroCard;
-		const heroIndex = heroes.findIndex(({ id }) => id === heroId);
+		const heroIndex = units.findIndex(({ id }) => id === heroId);
 
 		return {
-			heroes: heroes.with(heroIndex, {
-				...heroes[heroIndex],
+			units: units.with(heroIndex, {
+				...units[heroIndex],
 				stance: UnitStance.IDLE,
 			}),
 			activeHeroCard: null,

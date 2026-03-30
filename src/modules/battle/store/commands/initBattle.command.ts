@@ -78,9 +78,7 @@ export const initBattle =
 		});
 		set(() => ({
 			encounterId,
-			heroes: battleRoster,
-			monsters: freshMonsters,
-			summons: freshSummons,
+			units: [...battleRoster, ...freshMonsters, ...freshSummons],
 			surfaces,
 			activeHeroCard: null,
 			activeMoveHeroId: null,

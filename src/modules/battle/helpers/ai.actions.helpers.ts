@@ -1,92 +1,31 @@
 import {
-	calculateAttackableCells,
 	filterGridByAttackPattern,
 	getClosestOriginTile,
 	getDistanceToBoundingBox,
-	isTileEmpty,
-	isTileInBounds,
 } from "@/modules/battle/helpers/grid.helpers";
 import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
-import type { AnchorTarget, Card } from "@/modules/cards/domain/cards.type";
+import type { Card } from "@/modules/cards/domain/cards.type";
 import {
 	type AIBattleUnit,
 	type BattleUnit,
 	UnitStance,
 } from "@/modules/figures/domain/figures.type";
-import { isSummon } from "@/modules/figures/helpers/figures.helpers";
+import {
+	isHero,
+	isMonster,
+	isSummon,
+} from "@/modules/figures/helpers/figures.helpers";
 import { sleep } from "@/modules/shared/helpers/sleep";
-import type { BoundingBox, GridPosition } from "../domain/grid.type";
-import { getActualTarget, getIdealTarget } from "./ai.move.helpers";
+import { getIdealTarget } from "./ai.move.helpers";
+import {
+	type AnchorResolver,
+	getAnchorTarget,
+	type TargetResolver,
+} from "./ai.targeting.helpers";
 import { resolveTargets } from "./effects/effect.helpers";
 import { resolvers } from "./effects/effect.resolvers";
 import { calculateExactPath, moveBattleUnit } from "./move.helpers";
 import { updateUnitState } from "./state.helpers";
-
-export type TargetResolver = <C extends AIBattleUnit>(
-	aiFigure: C,
-	card: Card,
-	figures: BattleUnit[],
-) => {
-	reachableTarget: BoundingBox | null;
-	moveDest: GridPosition | null;
-	canHit: boolean;
-};
-
-export type AnchorResolver = ({
-	attacker: { gridPosition },
-	card,
-	reachableTarget,
-	obstacles,
-}: {
-	attacker: AIBattleUnit;
-	card: Card;
-	reachableTarget: BoundingBox;
-	obstacles: BattleUnit[];
-}) => AnchorTarget;
-
-function getAnchorTarget<C extends BattleUnit, T extends BoundingBox>({
-	attacker,
-	card,
-	reachableTarget,
-	obstacles,
-}: {
-	attacker: C;
-	card: Card;
-	reachableTarget: T;
-	obstacles: BattleUnit[];
-}): AnchorTarget {
-	const { gridPosition, size } = attacker;
-	if (card.playRequirement === "no_target") {
-		return { gridPosition, size };
-	}
-
-	if (card.playRequirement === "requires_empty_cell") {
-		const possibleSpawns = calculateAttackableCells({
-			attacker,
-			rangeValue: card.range,
-			canTargetSelf: false,
-		})
-			.filter(isTileInBounds)
-			.filter(isTileEmpty(obstacles));
-
-		if (possibleSpawns.length === 0) return null;
-		const chosenSpawn =
-			possibleSpawns[Math.floor(Math.random() * possibleSpawns.length)];
-		return { gridPosition: chosenSpawn, size: 1 };
-	}
-
-	const actualTarget =
-		getActualTarget({
-			attacker,
-			intendedTargetPos: reachableTarget.gridPosition,
-			figures: obstacles,
-		}) ?? reachableTarget;
-
-	return {
-		gridPosition: actualTarget.gridPosition,
-		size: actualTarget.size ?? 1,
-	};
-}
 
 export const handleAICardIntent =
 	(get: StoreGet, set: StoreSet, isSimulation = false) =>
@@ -101,23 +40,17 @@ export const handleAICardIntent =
 		getTarget?: TargetResolver;
 		getAnchor?: AnchorResolver;
 	}) => {
-		const initialState = get();
-		const initialAttacker = [
-			...initialState.monsters,
-			...initialState.summons,
-		].find((m) => m.id === attackerId) as AIBattleUnit | undefined;
+		const { units } = get(); // Unified array!
+		const initialAttacker = units.find((u) => u.id === attackerId) as
+			| AIBattleUnit
+			| undefined;
 
 		if (!initialAttacker) return;
 
-		const allFigures = [
-			...initialState.heroes,
-			...initialState.monsters,
-			...initialState.summons,
-		];
 		const { reachableTarget, moveDest } = getTarget(
 			initialAttacker,
 			card,
-			allFigures,
+			units,
 		);
 
 		if (!reachableTarget || !moveDest) return;
@@ -125,26 +58,26 @@ export const handleAICardIntent =
 		// ==========================================
 		// 1. ANIMATE THE WALK
 		// ==========================================
-		const isNeutralSummon =
+		const isNeutral =
 			isSummon(initialAttacker) && initialAttacker.allegiance === "NEUTRAL";
-		const isAlly =
+		const isPlayerAligned =
 			isSummon(initialAttacker) && initialAttacker.allegiance === "PLAYER";
-		const enemies = isNeutralSummon
-			? allFigures
-			: isAlly
-				? [
-						...initialState.monsters,
-						...initialState.summons.filter((s) => s.allegiance !== "PLAYER"),
-					]
-				: [
-						...initialState.heroes,
-						...initialState.summons.filter((s) => s.allegiance !== "ENEMY"),
-					];
+
+		const blockingFigures = units.filter((f) => {
+			if (f.id === initialAttacker.id) return false;
+			if (isNeutral) return true;
+
+			if (isPlayerAligned) {
+				return isMonster(f) || (isSummon(f) && f.allegiance !== "PLAYER");
+			}
+
+			return isHero(f) || (isSummon(f) && f.allegiance !== "ENEMY");
+		});
 
 		const path = calculateExactPath({
 			movingUnit: initialAttacker,
 			targetPos: moveDest,
-			figures: enemies,
+			figures: blockingFigures,
 		});
 
 		const movedUnit = await moveBattleUnit(
@@ -156,7 +89,6 @@ export const handleAICardIntent =
 			path,
 		});
 
-		// updated simulation results
 		if (isSimulation) {
 			set(({ aiIntents, ...prev }) => {
 				const unitIntent = aiIntents[initialAttacker.id];
@@ -170,7 +102,8 @@ export const handleAICardIntent =
 		// ==========================================
 		// 2. PREPARE THE ATTACK
 		// ==========================================
-		if (!movedUnit) {
+		// Guard: Did they die to an Acid Trap during the walk?
+		if (!movedUnit || movedUnit.currentHp <= 0) {
 			return;
 		}
 
@@ -183,11 +116,13 @@ export const handleAICardIntent =
 			return;
 		}
 
+		const postMoveUnits = get().units;
+
 		const anchorTarget = getAnchor({
 			attacker: movedUnit,
 			card,
 			reachableTarget,
-			obstacles: allFigures,
+			obstacles: postMoveUnits,
 		});
 
 		const attackOrigin = getClosestOriginTile({
@@ -201,7 +136,6 @@ export const handleAICardIntent =
 			originPos: attackOrigin,
 		});
 
-		// updated simulation results
 		if (isSimulation) {
 			set(({ aiIntents, ...prev }) => {
 				const unitIntent = aiIntents[initialAttacker.id];
@@ -230,7 +164,7 @@ export const handleAICardIntent =
 				effect.target,
 				anchorTarget,
 				movedUnit,
-				allFigures,
+				postMoveUnits,
 				targetedCells,
 			),
 		);

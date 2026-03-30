@@ -25,10 +25,9 @@ export async function triggerRegurgitation(
 	isSimulation: boolean,
 	toad: BattleUnit,
 ) {
-	const state = get();
-	const allFigures = [...state.heroes, ...state.monsters, ...state.summons];
+	const allUnits = get().units;
 
-	const swallowedHero = state.heroes.find(
+	const swallowedHero = allUnits.find(
 		(h) => h.currentHp > 0 && h.statuses.some((s) => s.type === "swallowed"),
 	);
 	if (!swallowedHero) return;
@@ -41,7 +40,7 @@ export async function triggerRegurgitation(
 	for (const tile of perimeterTiles) {
 		if (!isTileInBounds(tile)) continue;
 
-		const isOccupied = allFigures.some(
+		const isOccupied = allUnits.some(
 			(f) => f.currentHp > 0 && isUnitInTile(tile)(f),
 		);
 
@@ -110,8 +109,8 @@ export const swallow =
 			return;
 		}
 
-		const { heroes } = get();
-		const targetHero = heroes.find((h) => h.id === targetIds[0]);
+		const { units } = get();
+		const targetHero = units.find((h) => h.id === targetIds[0]);
 		if (!targetHero || targetHero.currentHp <= 0) {
 			return;
 		}

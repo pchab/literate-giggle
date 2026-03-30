@@ -12,8 +12,6 @@ import type {
 	BattleHero,
 	BattleUnit,
 	Hero,
-	Monster,
-	Summon,
 } from "@/modules/figures/domain/figures.type";
 import { cancelCard } from "./commands/cancelCard.command";
 import { endTurn } from "./commands/endTurn.command";
@@ -33,9 +31,7 @@ export type ActiveCardContext = {
 export type BattleState = {
 	encounterId: Encounter["id"] | null;
 
-	heroes: BattleHero[];
-	monsters: Monster[];
-	summons: Summon[];
+	units: BattleUnit[];
 	surfaces: Record<string, SurfaceData>;
 
 	activeMoveHeroId: BattleHero["id"] | null;
@@ -76,8 +72,7 @@ type BattleAction = {
 
 const initialState: BattleState = {
 	encounterId: null,
-	heroes: [],
-	monsters: [],
+	units: [],
 	aiIntents: {},
 	activeHeroCard: null,
 	activeMoveHeroId: null,
@@ -85,7 +80,6 @@ const initialState: BattleState = {
 	hoveredCell: null,
 	usedMovesThisTurn: {},
 	usedCardsThisTurn: {},
-	summons: [],
 	currentVfx: {},
 	xpEarned: 0,
 	surfaces: {},
@@ -129,9 +123,7 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 			storage: createJSONStorage(() => sessionStorage),
 			partialize: (state) => ({
 				encounterId: state.encounterId,
-				heroes: state.heroes,
-				monsters: state.monsters,
-				summons: state.summons,
+				units: state.units,
 				aiIntents: state.aiIntents,
 				usedMovesThisTurn: state.usedMovesThisTurn,
 				usedCardsThisTurn: state.usedCardsThisTurn,

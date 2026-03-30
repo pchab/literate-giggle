@@ -36,9 +36,7 @@ export function BattleGrid({ encounterId }: { encounterId: Encounter["id"] }) {
 	useBattleTurns(encounterId);
 	const cellHighlight = useCellHighlight();
 	const {
-		heroes,
-		monsters,
-		summons,
+		units,
 		activeHeroCard,
 		activeMoveHeroId,
 		usedMovesThisTurn,
@@ -49,9 +47,7 @@ export function BattleGrid({ encounterId }: { encounterId: Encounter["id"] }) {
 		cancelCard,
 	} = useBattleStore(
 		useShallow((state) => ({
-			heroes: state.heroes,
-			monsters: state.monsters,
-			summons: state.summons,
+			units: state.units,
 			activeHeroCard: state.activeHeroCard,
 			activeMoveHeroId: state.activeMoveHeroId,
 			usedMovesThisTurn: state.usedMovesThisTurn,
@@ -63,7 +59,6 @@ export function BattleGrid({ encounterId }: { encounterId: Encounter["id"] }) {
 		})),
 	);
 
-	const allUnits = [...heroes, ...monsters, ...summons];
 	const isMoving = !!activeMoveHeroId;
 	const isActive = !!activeHeroCard;
 
@@ -109,7 +104,7 @@ export function BattleGrid({ encounterId }: { encounterId: Encounter["id"] }) {
 			role="toolbar"
 		>
 			{cells.map((cell) => {
-				const unitsInCell = allUnits.filter(isUnitInTile(cell));
+				const unitsInCell = units.filter(isUnitInTile(cell));
 				const hasUnitInCell = unitsInCell.length > 0;
 				const unitInCell = unitsInCell[0];
 
@@ -162,7 +157,7 @@ export function BattleGrid({ encounterId }: { encounterId: Encounter["id"] }) {
 				);
 			})}
 			{/* --- SVG OVERLAY FOR PROJECTED MOVES --- */}
-			<MovePrediction cellHighlight={cellHighlight} allUnits={allUnits} />
+			<MovePrediction cellHighlight={cellHighlight} units={units} />
 		</div>
 	);
 }

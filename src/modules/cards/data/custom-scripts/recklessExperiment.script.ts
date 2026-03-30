@@ -1,9 +1,9 @@
 import type { GridPosition } from "@/modules/battle/domain/grid.type";
-import {
-	type AnchorResolver,
-	handleAICardIntent,
-	type TargetResolver,
-} from "@/modules/battle/helpers/ai.actions.helpers";
+import { handleAICardIntent } from "@/modules/battle/helpers/ai.actions.helpers";
+import type {
+	AnchorResolver,
+	TargetResolver,
+} from "@/modules/battle/helpers/ai.targeting.helpers";
 import type { EffectResolverParams } from "@/modules/battle/helpers/effects/effect.resolvers";
 import {
 	GRID_BOUNDS,
@@ -15,6 +15,7 @@ import {
 import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
 import { goblinShaman } from "@/modules/figures/data/monsters/goblin.data";
 import type { AIBattleUnit } from "@/modules/figures/domain/figures.type";
+import { isHero } from "@/modules/figures/helpers/figures.helpers";
 import { cardId } from "../../helpers/cards.helper";
 import { hoboCards } from "../heroes/hoboCards.data";
 import { alchemistLedgerCards } from "../monsters/alchemistLedgerCards.data";
@@ -32,12 +33,12 @@ export const recklessExperiment =
 		} = alchemistLedgerCards;
 		const ironClub = hoboCards[cardId("iron_club")];
 
-		const { heroes, monsters } = get();
-		const activeHeroes = heroes.filter((h) => h.currentHp > 0);
+		const { units } = get();
+		const activeHeroes = units.filter(isHero).filter((h) => h.currentHp > 0);
 
 		if (activeHeroes.length === 0) return;
 
-		const shaman = monsters.find(({ name }) => name === goblinShaman.name);
+		const shaman = units.find(({ name }) => name === goblinShaman.name);
 		if (!shaman) {
 			await handleAICardIntent(
 				get,
@@ -68,7 +69,7 @@ export const recklessExperiment =
 		)[0];
 
 		// Find all empty adjacent tiles
-		const currentUnits = [...get().heroes, ...get().monsters, ...get().summons];
+		const { units: currentUnits } = get();
 
 		const getVialLandingSpot = (spawnTile: GridPosition): GridPosition => {
 			const dx = Math.sign(spawnTile.col - caster.gridPosition.col);
@@ -156,8 +157,7 @@ export const recklessExperiment =
 			});
 
 			// --- STEP 2: KICK THE VIAL ---
-			const currentSummons = get().summons;
-			const targetToKick = currentSummons.find(isUnitInTile(spawnTile));
+			const targetToKick = get().units.find(isUnitInTile(spawnTile));
 
 			if (targetToKick) {
 				const targetAdjacentUnit: TargetResolver = () => ({

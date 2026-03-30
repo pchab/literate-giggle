@@ -8,14 +8,13 @@ import type {
 	BattleUnit,
 } from "../../figures/domain/figures.type";
 import type { GridPosition } from "../domain/grid.type";
-import type { TargetResolver } from "./ai.actions.helpers";
+import type { TargetResolver } from "./ai.targeting.helpers";
 import { areEnemies } from "./effects/effect.helpers";
 import {
 	calculateAttackableCells,
 	calculateReachableCells,
 	canUnitFit,
 	getDistanceToBoundingBox,
-	getLineOfSightPath,
 	isTileEmpty,
 	isTileInBounds,
 	isUnitInTile,
@@ -257,7 +256,7 @@ export function getOrderedTargets<C extends AIBattleUnit, T extends BattleUnit>(
 		.sort(sortFunction);
 }
 
-export function isTargetInRange<C extends BattleUnit, T extends BattleUnit>({
+function isTargetInRange<C extends BattleUnit, T extends BattleUnit>({
 	card,
 	minRange,
 	attacker,
@@ -270,28 +269,4 @@ export function isTargetInRange<C extends BattleUnit, T extends BattleUnit>({
 }) {
 	const distance = getDistanceToBoundingBox({ caster: attacker, target });
 	return distance >= minRange && distance <= card.range;
-}
-
-export function getActualTarget<C extends BattleUnit, T extends BattleUnit>({
-	attacker,
-	intendedTargetPos,
-	figures,
-}: {
-	attacker: C;
-	intendedTargetPos: GridPosition;
-	figures: T[];
-}) {
-	const flightPath = getLineOfSightPath(
-		attacker.gridPosition,
-		intendedTargetPos,
-	);
-
-	for (let i = 1; i < flightPath.length; i++) {
-		const tile = flightPath[i];
-		const figureHit = figures.find(
-			(f) => f.currentHp > 0 && isUnitInTile(tile)(f) && f.id !== attacker.id,
-		);
-		if (figureHit) return figureHit;
-	}
-	return null;
 }
