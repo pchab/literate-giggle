@@ -67,13 +67,6 @@ export function BattleGrid({ encounterId }: { encounterId: Encounter["id"] }) {
 	const cellTargetIds = new Set(cellHighlight.cellTargets?.map(getCellId));
 	const moveCellIds = new Set(cellHighlight.moveCells?.map(getCellId));
 
-	const projectedLandingIds = new Set(
-		Object.values(cellHighlight.projectedMoves ?? {}).map((cell) =>
-			getCellId(cell),
-		),
-	);
-	const projectedCasualtyIds = new Set(cellHighlight.projectedCasualties || []);
-
 	const getHighlightForCell = (
 		cellId: string,
 		unitInCell?: BattleUnit,
@@ -110,7 +103,6 @@ export function BattleGrid({ encounterId }: { encounterId: Encounter["id"] }) {
 
 				const highlight = getHighlightForCell(cell.id, unitInCell);
 				const unitIsHero = unitInCell && isHero(unitInCell);
-				const isProjectedLanding = projectedLandingIds.has(cell.id);
 
 				const remainingMoves =
 					hasUnitInCell && isHeroId(unitsInCell[0].id)
@@ -150,14 +142,12 @@ export function BattleGrid({ encounterId }: { encounterId: Encounter["id"] }) {
 						cell={cell}
 						unitsInCell={unitsInCell}
 						highlight={highlight}
-						isProjectedLanding={isProjectedLanding}
-						projectedCasualtyIds={projectedCasualtyIds}
 						onClick={handleClick}
 					/>
 				);
 			})}
 			{/* --- SVG OVERLAY FOR PROJECTED MOVES --- */}
-			<MovePrediction cellHighlight={cellHighlight} units={units} />
+			<MovePrediction />
 		</div>
 	);
 }

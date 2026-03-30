@@ -73,7 +73,6 @@ export async function triggerRegurgitation(
 	)(toad.id, {
 		stance: UnitStance.IDLE,
 	});
-
 	const heroNextStatuses = swallowedHero.statuses.filter(
 		(s) => s.type !== "swallowed",
 	);
@@ -115,27 +114,9 @@ export const swallow =
 			return;
 		}
 
-		// 1. BOARD UPDATE: Banish the Hero to the shadow realm (coordinates [-1, -1])
+		// --- Banish the Hero to the shadow realm (coordinates [-1, -1])
 		const bellyUpdate = {
 			gridPosition: { col: -1, row: -1 },
 		};
 		await updateUnitState(get, set, isSimulation)(targetHero.id, bellyUpdate);
-
-		// 2. COMBAT UPDATE: Apply the 'swallowed' acid-tick status to the Hero
-		await applyCombatUpdate(
-			get,
-			set,
-			isSimulation,
-		)(targetHero.id, {
-			newStatuses: [{ type: "swallowed", duration: 3, amount: 3 }],
-		});
-
-		// 3. COMBAT UPDATE: Apply the 'digesting' HP-threshold status to the Toad
-		await applyCombatUpdate(
-			get,
-			set,
-			isSimulation,
-		)(caster.id, {
-			newStatuses: [{ type: "digesting", duration: -1, amount: 12 }],
-		});
 	};

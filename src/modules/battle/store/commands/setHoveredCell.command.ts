@@ -6,7 +6,16 @@ import { resolveCard } from "./resolveCard.command";
 
 export const setHoveredCell =
 	(get: StoreGet, set: StoreSet) => async (cell: GridPosition | null) => {
-		set(() => ({ hoveredCell: cell, playerIntent: null }));
+		set(() => ({
+			hoveredCell: cell,
+			playerIntent: null,
+			shadowStateDiff: {
+				projectedMoves: {},
+				projectedCasualties: [],
+				projectedDamage: {},
+				projectedHealing: {},
+			},
+		}));
 		if (!cell) return;
 
 		const { activeHeroCard, hoveredHeroCard, units } = get();
@@ -47,19 +56,14 @@ export const setHoveredCell =
 
 		// 5. Extract and commit diff
 		const { units: shadowUnits, playerIntent: simulatedIntent } = fakeGet();
-
-		const { projectedMoves, projectedCasualties } = calculateStateDiff(
-			shadowUnits,
-			units,
-		);
+		const shadowStateDiff = calculateStateDiff(shadowUnits, units);
 
 		set((prev) => ({
 			...prev,
 			playerIntent: {
 				...newPlayerIntent,
 				...simulatedIntent,
-				projectedMoves,
-				projectedCasualties,
 			},
+			shadowStateDiff,
 		}));
 	};

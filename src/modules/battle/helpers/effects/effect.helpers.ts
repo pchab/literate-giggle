@@ -30,16 +30,6 @@ export function resolveTargets<T extends BattleUnit>(
 	const aliveFigures = currentFigures.filter((f) => f.currentHp > 0);
 
 	if (targetType === "self") {
-		if (patternCells && patternCells.length > 0) {
-			const hitIds = patternCells.reduce(
-				(targets, cell) =>
-					targets.concat(
-						aliveFigures.filter(isUnitInTile(cell)).map(({ id }) => id),
-					),
-				[] as BattleUnit["id"][],
-			);
-			return Array.from(new Set(hitIds)); //
-		}
 		return [caster.id];
 	}
 

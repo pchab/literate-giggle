@@ -2,6 +2,7 @@ import { cardLibrary } from "@/modules/cards/data/cards.data";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
 import type { Status } from "@/modules/figures/domain/status.type";
 import type { GridPosition } from "../domain/grid.type";
+import type { ShadowStateDiff } from "../domain/intent.type";
 import type { StoreGet, StoreSet } from "../store/battle.store";
 import { handleAICardIntent } from "./ai.actions.helpers";
 import { isUnitInTile } from "./grid.helpers";
@@ -31,25 +32,44 @@ export function updateUnitState<T extends BattleUnit>(
 export const calculateStateDiff = (
 	shadowFigures: BattleUnit[],
 	realFigures: BattleUnit[],
-) => {
+): ShadowStateDiff => {
 	const projectedMoves: Record<BattleUnit["id"], GridPosition> = {};
 	const projectedCasualties: BattleUnit["id"][] = [];
+	const projectedDamage: Record<BattleUnit["id"], number> = {};
+	const projectedHealing: Record<BattleUnit["id"], number> = {}; // NEW
 
 	realFigures.forEach((realUnit) => {
 		const shadowUnit = shadowFigures.find((f) => f.id === realUnit.id);
+
 		if (!shadowUnit) {
 			projectedCasualties.push(realUnit.id);
+			projectedDamage[realUnit.id] = realUnit.currentHp;
 			return;
 		}
 
 		if (!isUnitInTile(realUnit.gridPosition)(shadowUnit)) {
 			projectedMoves[shadowUnit.id] = shadowUnit.gridPosition;
 		}
+
+		const hpDiff = realUnit.currentHp - Math.max(0, shadowUnit.currentHp);
+
+		if (hpDiff > 0) {
+			projectedDamage[realUnit.id] = hpDiff;
+		} else if (hpDiff < 0) {
+			projectedHealing[realUnit.id] = Math.abs(hpDiff);
+		}
+
 		if (realUnit.currentHp > 0 && shadowUnit.currentHp <= 0) {
 			projectedCasualties.push(shadowUnit.id);
 		}
 	});
-	return { projectedMoves, projectedCasualties };
+
+	return {
+		projectedMoves,
+		projectedCasualties,
+		projectedDamage,
+		projectedHealing,
+	};
 };
 
 export type CombatUpdate = {

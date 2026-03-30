@@ -11,11 +11,11 @@ export const acidFlaskExplosionCard: Card = {
 	aiTargetPreference: "self",
 	aoePattern: crossPattern,
 	effects: [
-		{ type: "damage", amount: 3, target: "self" },
+		{ type: "damage", amount: 3, target: "anchor" },
 		{
 			type: "apply_status",
 			status: { type: "vulnerable", amount: 2, duration: 2 },
-			target: "self",
+			target: "anchor",
 		},
 		{
 			type: "create_surface",

@@ -6,6 +6,8 @@ import type { GridPosition } from "@/modules/battle/domain/grid.type";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { UnitSprite } from "@/modules/figures/components/UnitSprite";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
+import { ProjectedCasualtyIcon } from "./ProjectedCasualtyIndicator";
+import { ProjectedLandingIndicator } from "./ProjectedLandingIndicator";
 import { VfxOverlay } from "./VfxOverlay";
 
 export type Highlight =
@@ -21,8 +23,6 @@ interface GridCellProps {
 	cell: { id: string } & GridPosition;
 	unitsInCell: BattleUnit[];
 	highlight?: Highlight;
-	isProjectedLanding?: boolean;
-	projectedCasualtyIds?: Set<BattleUnit["id"]>;
 	onClick: () => void;
 }
 
@@ -46,8 +46,6 @@ export function GridCell({
 	cell,
 	unitsInCell,
 	highlight = "default",
-	isProjectedLanding,
-	projectedCasualtyIds,
 	onClick,
 }: GridCellProps) {
 	const { setHoveredCell, currentVfx, setVfx, surfaces } = useBattleStore(
@@ -81,9 +79,7 @@ export function GridCell({
 			</span>
 
 			{/* --- PROJECTED LANDING HIGHLIGHT --- */}
-			{isProjectedLanding && (
-				<div className="absolute inset-0 border-2 border-dashed border-yellow-400 bg-yellow-400/20 z-20 pointer-events-none" />
-			)}
+			<ProjectedLandingIndicator cellId={cell.id} />
 
 			{surface && (
 				<div className="absolute inset-4 z-0 pointer-events-none flex items-center justify-center">
@@ -102,8 +98,6 @@ export function GridCell({
 					unit.gridPosition.row === cell.row;
 				if (!isAnchorTile) return null;
 
-				const isDying = projectedCasualtyIds?.has(unit.id);
-
 				return (
 					<div
 						key={unit.id}
@@ -112,11 +106,7 @@ export function GridCell({
 						<UnitSprite unitInCell={unit} />
 
 						{/* --- PROJECTED CASUALTY INDICATOR --- */}
-						{isDying && (
-							<div className="absolute -top-2 -right-2 text-red-500 font-bold drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] text-xl pointer-events-none">
-								☠
-							</div>
-						)}
+						<ProjectedCasualtyIcon unitId={unit.id} />
 					</div>
 				);
 			})}

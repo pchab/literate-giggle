@@ -40,6 +40,24 @@ export const goliathToadCards: Record<Card["id"], Card> = {
 				scriptId: "swallow",
 				target: "anchor",
 			},
+			{
+				type: "apply_status",
+				status: {
+					type: "swallowed",
+					amount: 3,
+					duration: -1,
+				},
+				target: "anchor",
+			},
+			{
+				type: "apply_status",
+				status: {
+					type: "digesting",
+					amount: 12,
+					duration: -1,
+				},
+				target: "self",
+			},
 		],
 	},
 	[cardId("belly_flop")]: {

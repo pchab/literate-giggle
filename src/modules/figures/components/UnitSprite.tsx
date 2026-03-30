@@ -10,10 +10,11 @@ import type { BattleUnit } from "@/modules/figures/domain/figures.type";
 import { getBlockFromStatuses } from "../helpers/figures.helpers";
 
 export function UnitSprite({
-	unitInCell: { id, statuses, currentHp, maxHp, spriteBase, stance, size = 1 }, // Default size to 1
+	unitInCell, // Default size to 1
 }: {
 	unitInCell: BattleUnit;
 }) {
+	const { id, statuses, currentHp, spriteBase, stance, size = 1 } = unitInCell;
 	const currentBlock = getBlockFromStatuses(statuses);
 	const { texts, isHit } = useCombatText(currentHp, currentBlock);
 	const { aiIntents } = useBattleStore(
@@ -80,7 +81,7 @@ export function UnitSprite({
 			</motion.div>
 
 			{/* HealthBar stays at the bottom center of the whole multi-tile block */}
-			<HealthBar currentHp={currentHp} maxHp={maxHp} statuses={statuses} />
+			<HealthBar unit={unitInCell} />
 		</div>
 	);
 }

@@ -20,8 +20,6 @@ export type CellHighlight = {
 	allyTargets: GridPosition[];
 	enemyTargets: GridPosition[];
 	cellTargets: GridPosition[];
-	projectedMoves: Record<BattleUnit["id"], GridPosition>;
-	projectedCasualties: string[];
 };
 
 export function useCellHighlight(): CellHighlight {
@@ -52,8 +50,6 @@ export function useCellHighlight(): CellHighlight {
 		allyTargets: [],
 		enemyTargets: [],
 		cellTargets: [],
-		projectedMoves: {},
-		projectedCasualties: [],
 	};
 
 	const heroes = units.filter(isHero);
@@ -164,7 +160,5 @@ export function useCellHighlight(): CellHighlight {
 			playRequirement === "requires_entity"
 				? (intent.dangerZone ?? [])
 				: [],
-		projectedMoves: intent.projectedMoves ?? {},
-		projectedCasualties: intent.projectedCasualties ?? [],
 	};
 }

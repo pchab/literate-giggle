@@ -4,7 +4,10 @@ import type {
 	GridPosition,
 	SurfaceData,
 } from "@/modules/battle/domain/grid.type";
-import type { Intent } from "@/modules/battle/domain/intent.type";
+import type {
+	Intent,
+	ShadowStateDiff,
+} from "@/modules/battle/domain/intent.type";
 import type { Vfx } from "@/modules/battle/domain/vfx.type";
 import type { Encounter } from "@/modules/campaign/domain/encounters.type";
 import type { AnchorTarget, Card } from "@/modules/cards/domain/cards.type";
@@ -45,6 +48,7 @@ export type BattleState = {
 
 	aiIntents: Record<BattleUnit["id"], Intent>;
 	playerIntent: Intent | null;
+	shadowStateDiff: ShadowStateDiff;
 
 	xpEarned: number;
 };
@@ -73,17 +77,25 @@ type BattleAction = {
 const initialState: BattleState = {
 	encounterId: null,
 	units: [],
-	aiIntents: {},
 	activeHeroCard: null,
 	activeMoveHeroId: null,
 	hoveredHeroCard: null,
 	hoveredCell: null,
 	usedMovesThisTurn: {},
 	usedCardsThisTurn: {},
-	currentVfx: {},
-	xpEarned: 0,
 	surfaces: {},
+	currentVfx: {},
+
+	aiIntents: {},
 	playerIntent: null,
+	shadowStateDiff: {
+		projectedMoves: {},
+		projectedCasualties: [],
+		projectedDamage: {},
+		projectedHealing: {},
+	},
+
+	xpEarned: 0,
 };
 
 export type BattleStoreServerAction = (

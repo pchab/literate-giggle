@@ -1,40 +1,157 @@
 import { motion } from "framer-motion";
+import { useBattleStore } from "@/modules/battle/store/battle.store";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
-import { getBlockFromStatuses } from "@/modules/figures/helpers/figures.helpers";
+import { isUnitInTile } from "../helpers/grid.helpers";
 
 export default function HealthBar({
-	currentHp,
-	maxHp,
-	statuses = [],
+	unit: { id, currentHp, maxHp, statuses = [], size = 1 },
 }: {
-	currentHp: BattleUnit["currentHp"];
-	maxHp: BattleUnit["maxHp"];
-	statuses?: BattleUnit["statuses"];
+	unit: BattleUnit;
 }) {
-	const hpPercent = Math.max(0, Math.min(100, (currentHp / maxHp) * 100));
-	const currentBlock = getBlockFromStatuses(statuses);
-	const currentPoison = statuses.find((s) => s.type === "poison")?.amount ?? 0;
+	// ==========================================
+	// SMART SUBSCRIPTIONS
+	// ==========================================
+	const projectedDamage = useBattleStore(
+		({ units, hoveredCell, shadowStateDiff: { projectedDamage } }) => {
+			const playerDmg = projectedDamage[id];
+			if (playerDmg) return playerDmg;
+
+			if (hoveredCell) {
+				const hoveredUnit = units.find(isUnitInTile(hoveredCell));
+				if (hoveredUnit && projectedDamage) {
+					return projectedDamage[id] ?? 0;
+				}
+			}
+			return 0;
+		},
+	);
+
+	const projectedHealing = useBattleStore(
+		({ units, hoveredCell, shadowStateDiff: { projectedHealing } }) => {
+			const playerHeal = projectedHealing[id];
+			if (playerHeal) return playerHeal;
+
+			if (hoveredCell) {
+				const hoveredUnit = units.find(isUnitInTile(hoveredCell));
+				if (hoveredUnit && projectedHealing) {
+					return projectedHealing[id] ?? 0;
+				}
+			}
+			return 0;
+		},
+	);
+
+	// ==========================================
+	// STATUS AGGREGATION
+	// ==========================================
+	const totalBlock = statuses
+		.filter((s) => s.type === "block")
+		.reduce((sum, s) => sum + s.amount, 0);
+
+	const totalPoison = statuses
+		.filter((s) => s.type === "poison")
+		.reduce((sum, s) => sum + s.amount, 0);
+
+	// ==========================================
+	// HP PERCENTAGE MATH (Left to Right Visual Order)
+	// ==========================================
+	const dmgLoss = Math.min(currentHp, projectedDamage);
+	const healGain = Math.min(maxHp - currentHp, projectedHealing);
+	const netHp = currentHp - dmgLoss + healGain;
+
+	// Poison eats from the very right edge of whatever the final HP is
+	const poisonLoss = Math.min(netHp, totalPoison);
+
+	// Calculate the safe segments
+	const safeHp = Math.max(
+		0,
+		currentHp - dmgLoss - Math.max(0, poisonLoss - healGain),
+	);
+	const safeHeal = Math.max(0, healGain - poisonLoss);
+
+	// Convert to percentages
+	const safePercent = Math.max(0, (safeHp / maxHp) * 100);
+	const healPercent = Math.max(0, (safeHeal / maxHp) * 100);
+	const poisonPercent = Math.max(0, (poisonLoss / maxHp) * 100);
+	const dmgPercent = Math.max(0, (dmgLoss / maxHp) * 100);
+
+	const imminentDeath = safeHp <= 0 && currentHp > 0 && healGain === 0;
 
 	return (
-		<div className="absolute -bottom-2 w-14 flex flex-col items-center pointer-events-none z-20">
-			<div className="w-full h-1.5 bg-zinc-950 border border-zinc-700/80 rounded-sm overflow-hidden shadow-lg relative">
-				<motion.div
-					className="h-full bg-red-600 origin-left"
-					initial={{ width: `${hpPercent}%` }}
-					animate={{ width: `${hpPercent}%` }}
-					transition={{ type: "spring", bounce: 0, duration: 0.5 }}
-				/>
+		<div
+			className="absolute -bottom-2 flex flex-col items-center pointer-events-none z-20"
+			style={{ width: `${size * 3.5}rem` }}
+		>
+			<div className="w-full h-1.5 bg-zinc-950 border border-zinc-700/80 rounded-sm overflow-hidden shadow-lg relative flex">
+				{/* 1. Safe Portion (Red) */}
+				{safePercent > 0 && (
+					<motion.div
+						className="h-full bg-red-600 origin-left"
+						initial={{ width: `${safePercent}%` }}
+						animate={{ width: `${safePercent}%` }}
+						transition={{ type: "spring", bounce: 0, duration: 0.5 }}
+					/>
+				)}
+
+				{/* 2. Projected Healing Portion (Flashing Green) */}
+				{healPercent > 0 && (
+					<motion.div
+						className="h-full bg-emerald-500 origin-left"
+						initial={{ width: `${healPercent}%` }}
+						animate={{ width: `${healPercent}%`, opacity: [0.6, 1, 0.6] }}
+						transition={{
+							width: { type: "spring", bounce: 0, duration: 0.5 },
+							opacity: { repeat: Infinity, duration: 1.5, ease: "easeInOut" },
+						}}
+					/>
+				)}
+
+				{/* 3. Threatened Poison Portion (Purple) */}
+				{poisonPercent > 0 && (
+					<motion.div
+						className={`h-full origin-left ${imminentDeath && dmgPercent === 0 ? "bg-purple-500" : "bg-purple-700/90"}`}
+						initial={{ width: `${poisonPercent}%` }}
+						animate={{ width: `${poisonPercent}%` }}
+						transition={{ type: "spring", bounce: 0, duration: 0.5 }}
+					/>
+				)}
+
+				{/* 4. Projected Damage Portion (Flashing Orange) */}
+				{dmgPercent > 0 && (
+					<motion.div
+						className="h-full bg-orange-500 origin-left"
+						initial={{ width: `${dmgPercent}%` }}
+						animate={{ width: `${dmgPercent}%`, opacity: [1, 0.5, 1] }}
+						transition={{
+							width: { type: "spring", bounce: 0, duration: 0.5 },
+							opacity: { repeat: Infinity, duration: 1.5, ease: "easeInOut" },
+						}}
+					/>
+				)}
 			</div>
 
 			<span className="text-[9px] font-bold text-zinc-300 mt-px drop-shadow-md flex items-center justify-center gap-1">
 				<span>
 					{currentHp}/{maxHp}
 				</span>
-				{currentBlock > 0 && (
-					<span className="text-blue-300">🛡️{currentBlock}</span>
+				{totalBlock > 0 && <span className="text-blue-300">🛡️{totalBlock}</span>}
+
+				{/* Text Popups */}
+				{projectedDamage > 0 && (
+					<span className="text-orange-400">-{projectedDamage}</span>
 				)}
-				{currentPoison > 0 && (
-					<span className="text-purple-400">☠️{currentPoison}</span>
+				{projectedHealing > 0 && (
+					<span className="text-emerald-400">+{healGain}</span>
+				)}
+
+				{totalPoison > 0 && (
+					<span
+						className={`flex items-center gap-0.5 ${
+							totalPoison >= netHp ? "text-purple-300" : "text-purple-400"
+						}`}
+					>
+						☠️{totalPoison}
+					</span>
 				)}
 			</span>
 		</div>
