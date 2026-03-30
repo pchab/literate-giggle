@@ -5,16 +5,16 @@ import { getCellId } from "../grid.helpers";
 import type { EffectResolverParams } from "./effect.resolvers";
 
 export const resolveSurfaceEffect =
-	(get: StoreGet, set: StoreSet) =>
+	(_: StoreGet, set: StoreSet) =>
 	(effect: CreateSurfaceEffect) =>
 	<C extends BattleUnit>({ patternCells }: EffectResolverParams<C>) => {
-		const currentSurfaces = get().surfaces;
-
 		const newSurfaces = patternCells?.reduce((surfaces, cell) => {
 			const cellId = getCellId(cell);
 			Object.assign(surfaces, {
 				[cellId]: {
-					position: cell,
+					id: cellId,
+					gridPosition: cell,
+					size: effect.size ?? { cols: 1, rows: 1 },
 					type: effect.surfaceType,
 					duration: effect.duration,
 					damage: effect.damage,
@@ -24,9 +24,12 @@ export const resolveSurfaceEffect =
 				},
 			});
 			return surfaces;
-		}, currentSurfaces);
+		}, {});
 
-		set(() => ({
-			surfaces: newSurfaces,
+		set(({ surfaces: currentSurfaces }) => ({
+			surfaces: {
+				...currentSurfaces,
+				...newSurfaces,
+			},
 		}));
 	};

@@ -8,7 +8,6 @@ export const smugglerCrate: UnitBlueprint = {
 	baseMove: 0,
 	baseDef: 0,
 	xpReward: 0,
-	size: 1,
 	intentPool: [],
-	onDeath: cardId("spill_acid"),
+	onDeath: cardId("acid_flask_explosion"),
 };

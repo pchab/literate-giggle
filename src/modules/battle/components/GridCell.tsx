@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useShallow } from "zustand/shallow";
 import type { GridPosition } from "@/modules/battle/domain/grid.type";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
@@ -48,19 +47,17 @@ export function GridCell({
 	highlight = "default",
 	onClick,
 }: GridCellProps) {
-	const { setHoveredCell, currentVfx, setVfx, surfaces } = useBattleStore(
+	const { setHoveredCell, currentVfx, setVfx } = useBattleStore(
 		useShallow((state) => ({
 			setHoveredCell: state.setHoveredCell,
 			currentVfx: state.currentVfx,
 			setVfx: state.setVfx,
-			surfaces: state.surfaces,
 		})),
 	);
 
 	const baseClasses =
 		"w-grid h-grid relative flex items-center justify-center transition-colors duration-300";
 	const stateClasses = highlightClassMapping[highlight];
-	const surface = surfaces[cell.id];
 
 	const hasAnchorUnit = unitsInCell.some(
 		(u) => u.gridPosition.col === cell.col && u.gridPosition.row === cell.row,
@@ -80,17 +77,6 @@ export function GridCell({
 
 			{/* --- PROJECTED LANDING HIGHLIGHT --- */}
 			<ProjectedLandingIndicator cellId={cell.id} />
-
-			{surface && (
-				<div className="absolute inset-4 z-0 pointer-events-none flex items-center justify-center">
-					<Image
-						src={surface.spriteBase}
-						alt={surface.type}
-						fill
-						className="rounded mix-blend-screen"
-					/>
-				</div>
-			)}
 
 			{unitsInCell.map((unit) => {
 				const isAnchorTile =

@@ -12,17 +12,38 @@ export function getCellId(pos: GridPosition): string {
 }
 
 // --- 1. BOUNDING BOX LOGIC ---
-export function isUnitInTile<T extends BattleUnit>(tile: GridPosition) {
-	return (figure: T) => {
-		const size = figure.size ?? 1;
+export function isUnitInTile<T extends BoundingBox>(tile: GridPosition) {
+	return (entity: T) => {
+		const size = entity.size ?? { cols: 1, rows: 1 };
 		return (
-			tile.col >= figure.gridPosition.col &&
-			tile.col < figure.gridPosition.col + size &&
-			tile.row >= figure.gridPosition.row &&
-			tile.row < figure.gridPosition.row + size
+			tile.col >= entity.gridPosition.col &&
+			tile.col < entity.gridPosition.col + size.cols &&
+			tile.row >= entity.gridPosition.row &&
+			tile.row < entity.gridPosition.row + size.rows
 		);
 	};
 }
+
+export const doBoundingBoxesIntersect = (
+	box1: BoundingBox,
+	box2: BoundingBox,
+): boolean => {
+	const s1 = box1.size ?? { cols: 1, rows: 1 };
+	const s2 = box2.size ?? { cols: 1, rows: 1 };
+
+	const b1Right = box1.gridPosition.col + s1.cols - 1;
+	const b1Bottom = box1.gridPosition.row + s1.rows - 1;
+
+	const b2Right = box2.gridPosition.col + s2.cols - 1;
+	const b2Bottom = box2.gridPosition.row + s2.rows - 1;
+
+	return !(
+		box2.gridPosition.col > b1Right ||
+		b2Right < box1.gridPosition.col ||
+		box2.gridPosition.row > b1Bottom ||
+		b2Bottom < box1.gridPosition.row
+	);
+};
 
 export const isTileOccupied =
 	<T extends BattleUnit>(figures: T[]) =>
@@ -38,14 +59,14 @@ export const isTileEmpty =
 
 // --- 2. CLEARANCE LOGIC (For Giant Pathfinding) ---
 export const canUnitFit = <C extends BattleUnit, T extends BattleUnit>({
-	unit: { id: ignoreUnitId, size = 1, gridPosition },
+	unit: { id: ignoreUnitId, size = { cols: 1, rows: 1 }, gridPosition },
 	figures,
 }: {
 	unit: C;
 	figures: T[];
 }): boolean => {
-	for (let r = 0; r < size; r++) {
-		for (let c = 0; c < size; c++) {
+	for (let r = 0; r < size.rows; r++) {
+		for (let c = 0; c < size.cols; c++) {
 			const checkPos = { row: gridPosition.row + r, col: gridPosition.col + c };
 			if (!isTileInBounds(checkPos)) return false;
 
@@ -73,22 +94,22 @@ export const getDistanceToBoundingBox = <
 	caster: C;
 	target: T;
 }): number => {
-	const sizeC = caster.size ?? 1;
-	const sizeT = target.size ?? 1;
+	const sizeC = caster.size ?? { cols: 1, rows: 1 };
+	const sizeT = target.size ?? { cols: 1, rows: 1 };
 
 	const dCol = Math.max(
 		0,
 		Math.max(
-			caster.gridPosition.col - (target.gridPosition.col + sizeT - 1),
-			target.gridPosition.col - (caster.gridPosition.col + sizeC - 1),
+			caster.gridPosition.col - (target.gridPosition.col + sizeT.cols - 1),
+			target.gridPosition.col - (caster.gridPosition.col + sizeC.cols - 1),
 		),
 	);
 
 	const dRow = Math.max(
 		0,
 		Math.max(
-			caster.gridPosition.row - (target.gridPosition.row + sizeT - 1),
-			target.gridPosition.row - (caster.gridPosition.row + sizeC - 1),
+			caster.gridPosition.row - (target.gridPosition.row + sizeT.rows - 1),
+			target.gridPosition.row - (caster.gridPosition.row + sizeC.rows - 1),
 		),
 	);
 
@@ -140,13 +161,12 @@ export const calculateReachableCells = <T extends BattleUnit>({
 				{ row: current.pos.row + 1, col: current.pos.col },
 				{ row: current.pos.row, col: current.pos.col - 1 },
 				{ row: current.pos.row, col: current.pos.col + 1 },
-			]; // bounds check is now handled inside canUnitFit
+			];
 
 			for (const next of neighbors) {
 				const key = `${next.row},${next.col}`;
 				if (!visited.has(key)) {
 					visited.add(key);
-					// Check if the entire bounding box fits at the next position
 					if (
 						canUnitFit({ unit: { ...movingUnit, gridPosition: next }, figures })
 					) {
@@ -258,21 +278,30 @@ export function filterGridByAttackPattern({
 	const pattern = card.aoePattern || [{ col: 0, row: 0 }];
 	if (!targetPos) return pattern;
 
+	const size = targetPos.size ?? { cols: 1, rows: 1 };
+
+	// 1. Calculate the true center of the target's bounding box
+	const targetCenter = {
+		col: targetPos.gridPosition.col + (size.cols - 1) / 2,
+		row: targetPos.gridPosition.row + (size.rows - 1) / 2,
+	};
+
+	// 2. Rotate the pattern using the center of mass
 	const rotatedPattern = rotatePattern({
 		pattern,
 		originPos,
-		targetPos: targetPos.gridPosition,
+		targetPos: targetCenter as GridPosition,
 	});
 
-	const size = targetPos.size ?? 1;
 	const expandedPattern: GridPosition[] = [];
 
+	// 3. Dynamic Bounding-Box Expansion
 	for (const p of rotatedPattern) {
-		const colStart = p.col < 0 ? p.col : p.col > 0 ? p.col + size - 1 : 0;
-		const colEnd = p.col === 0 ? size - 1 : colStart;
+		const colStart = p.col < 0 ? p.col : p.col > 0 ? p.col + size.cols - 1 : 0;
+		const colEnd = p.col === 0 ? size.cols - 1 : colStart;
 
-		const rowStart = p.row < 0 ? p.row : p.row > 0 ? p.row + size - 1 : 0;
-		const rowEnd = p.row === 0 ? size - 1 : rowStart;
+		const rowStart = p.row < 0 ? p.row : p.row > 0 ? p.row + size.rows - 1 : 0;
+		const rowEnd = p.row === 0 ? size.rows - 1 : rowStart;
 
 		for (let c = colStart; c <= colEnd; c++) {
 			for (let r = rowStart; r <= rowEnd; r++) {
@@ -284,7 +313,7 @@ export function filterGridByAttackPattern({
 		}
 	}
 
-	return expandedPattern;
+	return expandedPattern.filter(isTileInBounds);
 }
 
 export const getClosestOriginTile = ({
@@ -294,14 +323,17 @@ export const getClosestOriginTile = ({
 	caster: BattleUnit;
 	anchorTarget: AnchorTarget;
 }): GridPosition => {
-	const { gridPosition, size = 1 } = caster;
-	if (size === 1 || !anchorTarget) return gridPosition;
+	const size = caster.size ?? { cols: 1, rows: 1 };
+	const { gridPosition } = caster;
+
+	if ((size.cols === 1 && size.rows === 1) || !anchorTarget)
+		return gridPosition;
 
 	let closestTile = gridPosition;
 	let minDistance = Infinity;
 
-	for (let r = 0; r < size; r++) {
-		for (let c = 0; c < size; c++) {
+	for (let r = 0; r < size.rows; r++) {
+		for (let c = 0; c < size.cols; c++) {
 			const currentTile = {
 				row: gridPosition.row + r,
 				col: gridPosition.col + c,

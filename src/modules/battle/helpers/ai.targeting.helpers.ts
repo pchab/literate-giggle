@@ -62,7 +62,7 @@ export function getAnchorTarget<C extends BattleUnit, T extends BoundingBox>({
 		if (possibleSpawns.length === 0) return null;
 		const chosenSpawn =
 			possibleSpawns[Math.floor(Math.random() * possibleSpawns.length)];
-		return { gridPosition: chosenSpawn, size: 1 };
+		return { gridPosition: chosenSpawn, size: { cols: 1, rows: 1 } };
 	}
 
 	const actualTarget =
@@ -74,7 +74,7 @@ export function getAnchorTarget<C extends BattleUnit, T extends BoundingBox>({
 
 	return {
 		gridPosition: actualTarget.gridPosition,
-		size: actualTarget.size ?? 1,
+		size: actualTarget.size ?? { cols: 1, rows: 1 },
 	};
 }
 

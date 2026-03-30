@@ -9,12 +9,15 @@ import { useBattleStore } from "@/modules/battle/store/battle.store";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
 import { getBlockFromStatuses } from "../helpers/figures.helpers";
 
-export function UnitSprite({
-	unitInCell, // Default size to 1
-}: {
-	unitInCell: BattleUnit;
-}) {
-	const { id, statuses, currentHp, spriteBase, stance, size = 1 } = unitInCell;
+export function UnitSprite({ unitInCell }: { unitInCell: BattleUnit }) {
+	const {
+		id,
+		statuses,
+		currentHp,
+		spriteBase,
+		stance,
+		size = { cols: 1, rows: 1 },
+	} = unitInCell;
 	const currentBlock = getBlockFromStatuses(statuses);
 	const { texts, isHit } = useCombatText(currentHp, currentBlock);
 	const { aiIntents } = useBattleStore(
@@ -30,8 +33,8 @@ export function UnitSprite({
 
 	// Dynamically calculate width/height to span multiple tiles, including the gap-1 (4px)
 	const wrapperStyle = {
-		width: `calc((var(--width-grid) * ${size}) + (4px * ${size - 1}))`,
-		height: `calc((var(--height-grid) * ${size}) + (4px * ${size - 1}))`,
+		width: `calc((var(--width-grid) * ${size.cols}) + (4px * ${size.cols - 1}))`,
+		height: `calc((var(--height-grid) * ${size.rows}) + (4px * ${size.rows - 1}))`,
 	};
 
 	return (

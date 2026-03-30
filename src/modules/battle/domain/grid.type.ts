@@ -8,8 +8,12 @@ export type GridPosition = {
 export type SurfaceType = "TRAP" | "ACID" | "SPECIAL";
 
 export type SurfaceData = {
-	position: GridPosition;
+	id: string;
 	type: SurfaceType;
+
+	gridPosition: GridPosition;
+	size?: { cols: number; rows: number };
+
 	duration: number;
 	damage?: number;
 	spriteBase: string;
@@ -19,5 +23,5 @@ export type SurfaceData = {
 
 export type BoundingBox = {
 	gridPosition: GridPosition;
-	size?: number;
+	size?: { cols: number; rows: number };
 };

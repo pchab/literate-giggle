@@ -1,34 +1,8 @@
-import type { SurfaceData } from "@/modules/battle/domain/grid.type";
 import { GRID_BOUNDS, getCellId } from "@/modules/battle/helpers/grid.helpers";
 import { giantToad } from "@/modules/figures/data/monsters/giant-toad";
 import { smugglerCrate } from "@/modules/figures/data/summons/smugglersCrate";
 import type { Encounter } from "../../domain/encounters.type";
 import { QUEST_3_IRONHOLD_SUMP } from "./sewerContamination.definitions";
-
-const baseAcidSurface: Omit<SurfaceData, "position"> = {
-	spriteBase: "/surfaces/acid.webp",
-	type: "ACID",
-	damage: 2,
-	duration: -1,
-};
-const generateSewerArena = (): Record<string, SurfaceData> => {
-	const surfaces: Record<string, SurfaceData> = {};
-
-	for (let row = 0; row < GRID_BOUNDS.rows; row++) {
-		const mainCol = 3;
-		const offsetCol = 2;
-
-		surfaces[getCellId({ col: mainCol, row })] = {
-			position: { col: mainCol, row },
-			...baseAcidSurface,
-		};
-		surfaces[getCellId({ col: offsetCol, row })] = {
-			position: { col: offsetCol, row },
-			...baseAcidSurface,
-		};
-	}
-	return surfaces;
-};
 
 export const sewerContaminationEncounters: Record<string, Encounter> = {
 	[QUEST_3_IRONHOLD_SUMP.encounters.giant_toad]: {
@@ -44,29 +18,39 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 			{
 				...smugglerCrate,
 				id: "crate_1",
-				gridPosition: { col: 1, row: 3 },
+				gridPosition: { col: 4, row: 0 },
 				allegiance: "NEUTRAL",
 			},
 			{
 				...smugglerCrate,
 				id: "crate_2",
-				gridPosition: { col: 1, row: 4 },
-				allegiance: "NEUTRAL",
-			},
-			{
-				...smugglerCrate,
-				id: "crate_3",
-				gridPosition: { col: 5, row: 3 },
+				gridPosition: { col: 5, row: 0 },
 				allegiance: "NEUTRAL",
 			},
 			{
 				...smugglerCrate,
 				id: "crate_4",
-				gridPosition: { col: 5, row: 4 },
+				gridPosition: { col: 0, row: 6 },
+				allegiance: "NEUTRAL",
+			},
+			{
+				...smugglerCrate,
+				id: "crate_3",
+				gridPosition: { col: 1, row: 6 },
 				allegiance: "NEUTRAL",
 			},
 		],
-		surfaces: generateSewerArena(),
+		surfaces: {
+			[getCellId({ col: 0, row: 2 })]: {
+				id: getCellId({ col: 0, row: 2 }),
+				spriteBase: "/surfaces/sewers_stream.webp",
+				type: "ACID",
+				damage: 1,
+				duration: -1,
+				gridPosition: { col: 0, row: 2 },
+				size: { cols: GRID_BOUNDS.cols, rows: 3 },
+			},
+		},
 		onWinSceneId: QUEST_3_IRONHOLD_SUMP.scenes.victory,
 	},
 };

@@ -1,4 +1,7 @@
-import type { GridPosition } from "@/modules/battle/domain/grid.type";
+import type {
+	BoundingBox,
+	SurfaceType,
+} from "@/modules/battle/domain/grid.type";
 import type { Card, Hand, HeroCard } from "@/modules/cards/domain/cards.type";
 import type { HeroClass } from "@/modules/figures/domain/heroClass.types";
 import type { Status, StatusType } from "./status.type";
@@ -27,13 +30,14 @@ export interface Figure {
 	baseDef: number;
 	baseMove: number;
 	immunities?: StatusType[];
+	surfaceImmunities?: SurfaceType[];
 	onDeath?: Card["id"];
-	size?: number;
+	size?: BoundingBox["size"];
 }
 
 export interface BattleUnit extends Figure {
 	currentHp: number;
-	gridPosition: GridPosition;
+	gridPosition: BoundingBox["gridPosition"];
 	statuses: Status[];
 	stance: UnitStance;
 	isDeathRattle?: boolean;

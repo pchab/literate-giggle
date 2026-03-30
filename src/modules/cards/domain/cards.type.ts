@@ -83,6 +83,7 @@ export type ApplyStatusEffect = {
 export type CreateSurfaceEffect = {
 	type: "create_surface";
 	target: EffectTarget;
+	size?: BoundingBox["size"];
 	surfaceType: SurfaceType;
 	duration: number;
 	damage?: number;

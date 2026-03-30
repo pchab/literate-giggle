@@ -162,7 +162,6 @@ export const applyCombatUpdate =
 		// ==========================================
 		const isDead = currentUnit.currentHp <= 0;
 		const toRemove = isDead && !currentUnit.isDeathRattle;
-
 		if (toRemove) {
 			updateUnitState(
 				get,

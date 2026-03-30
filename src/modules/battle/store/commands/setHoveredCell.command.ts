@@ -22,7 +22,7 @@ export const setHoveredCell =
 		const cardContext = activeHeroCard || hoveredHeroCard;
 		if (!cardContext) return;
 
-		const anchorTarget = { gridPosition: cell, size: 1 };
+		const anchorTarget = { gridPosition: cell, size: { cols: 1, rows: 1 } };
 
 		const newPlayerIntent = {
 			cardId: cardContext.card.id,

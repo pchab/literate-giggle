@@ -4,7 +4,7 @@ import type { BattleUnit } from "@/modules/figures/domain/figures.type";
 import { isUnitInTile } from "../helpers/grid.helpers";
 
 export default function HealthBar({
-	unit: { id, currentHp, maxHp, statuses = [], size = 1 },
+	unit: { id, currentHp, maxHp, statuses = [], size = { cols: 1, rows: 1 } },
 }: {
 	unit: BattleUnit;
 }) {
@@ -80,7 +80,7 @@ export default function HealthBar({
 	return (
 		<div
 			className="absolute -bottom-2 flex flex-col items-center pointer-events-none z-20"
-			style={{ width: `${size * 3.5}rem` }}
+			style={{ width: `${size.rows * 3.5}rem` }}
 		>
 			<div className="w-full h-1.5 bg-zinc-950 border border-zinc-700/80 rounded-sm overflow-hidden shadow-lg relative flex">
 				{/* 1. Safe Portion (Red) */}

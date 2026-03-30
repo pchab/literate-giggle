@@ -52,7 +52,6 @@ export const handleAICardIntent =
 			card,
 			units,
 		);
-
 		if (!reachableTarget || !moveDest) return;
 
 		// ==========================================
@@ -103,7 +102,7 @@ export const handleAICardIntent =
 		// 2. PREPARE THE ATTACK
 		// ==========================================
 		// Guard: Did they die to an Acid Trap during the walk?
-		if (!movedUnit || movedUnit.currentHp <= 0) {
+		if (!movedUnit || (movedUnit.currentHp <= 0 && !movedUnit.isDeathRattle)) {
 			return;
 		}
 

@@ -4,20 +4,34 @@ import type {
 } from "@/modules/cards/domain/cards.type";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
 import type { Status } from "@/modules/figures/domain/status.type";
-import { isHeroId, isSummon } from "@/modules/figures/helpers/figures.helpers";
+import {
+	isHeroId,
+	isMonsterId,
+	isSummon,
+} from "@/modules/figures/helpers/figures.helpers";
 import type { SurfaceType } from "../../domain/grid.type";
 import type { VfxType } from "../../domain/vfx.type";
 import type { StoreGet, StoreSet } from "../../store/battle.store";
-import { getCellId, getLineOfSightPath, isUnitInTile } from "../grid.helpers";
+import {
+	doBoundingBoxesIntersect,
+	getCellId,
+	getLineOfSightPath,
+	isUnitInTile,
+} from "../grid.helpers";
 import { applyCombatUpdate } from "../state.helpers";
 import { statusRegistry } from "../status.helpers";
 
 export const areEnemies = (u1: BattleUnit) => (u2: BattleUnit) => {
-	const u1IsPlayer =
-		isHeroId(u1.id) || (isSummon(u1) && u1.allegiance === "PLAYER");
-	const u2IsPlayer =
-		isHeroId(u2.id) || (isSummon(u2) && u2.allegiance === "PLAYER");
-	return u1IsPlayer !== u2IsPlayer;
+	const getAllegiance = (u: BattleUnit) => {
+		if (isHeroId(u.id)) return "PLAYER";
+		if (isMonsterId(u.id)) return "ENEMY";
+		return isSummon(u) && u.allegiance;
+	};
+
+	const a1 = getAllegiance(u1);
+	const a2 = getAllegiance(u2);
+
+	return a1 !== a2;
 };
 
 export function resolveTargets<T extends BattleUnit>(
@@ -28,7 +42,7 @@ export function resolveTargets<T extends BattleUnit>(
 	patternCells?: { col: number; row: number }[],
 ): T["id"][] {
 	const aliveFigures = currentFigures.filter((f) => f.currentHp > 0);
-
+	console.log({ targetType, anchorTarget, patternCells });
 	if (targetType === "self") {
 		return [caster.id];
 	}
@@ -122,30 +136,27 @@ export const tickStatusesAndSurfaces =
 				.filter((status) => status.duration > 0 || status.duration === -1);
 
 			// --- B. Evaluate Surfaces Under the Unit ---
-			const size = figure.size ?? 1;
 			const processedSurfaceTypes = new Set<SurfaceType>();
 
-			for (let r = 0; r < size; r++) {
-				for (let c = 0; c < size; c++) {
-					const cellId = getCellId({
-						col: figure.gridPosition.col + c,
-						row: figure.gridPosition.row + r,
-					});
+			// Iterate through all actual surfaces on the board
+			for (const surface of Object.values(nextSurfaces)) {
+				// Check for physical overlap between the unit and the surface
+				if (!doBoundingBoxesIntersect(figure, surface)) continue;
+				// --- IMMUNITY CHECK ---
+				if (figure.surfaceImmunities?.includes(surface.type)) continue;
 
-					const surface = nextSurfaces[cellId];
-					if (!surface) continue;
+				// Prevent double-dipping damage if standing on two overlapping acid puddles
+				if (processedSurfaceTypes.has(surface.type)) continue;
+				processedSurfaceTypes.add(surface.type);
 
-					if (processedSurfaceTypes.has(surface.type)) continue;
-					processedSurfaceTypes.add(surface.type);
+				if (surface.damage) totalDamage += surface.damage;
+				if (surface.status) newStatuses.push(surface.status);
 
-					if (surface.damage) totalDamage += surface.damage;
-					if (surface.status) newStatuses.push(surface.status);
-
-					if (surface.charges !== undefined) {
-						surface.charges -= 1;
-						if (surface.charges <= 0) {
-							surface.duration = 0;
-						}
+				// Handle trap spring/charge degradation
+				if (surface.charges !== undefined) {
+					surface.charges -= 1;
+					if (surface.charges <= 0) {
+						surface.duration = 0;
 					}
 				}
 			}
@@ -188,7 +199,7 @@ export const tickStatusesAndSurfaces =
 			if (surface.duration !== -1) {
 				surface.duration -= 1;
 			}
-			if (surface.duration <= 0) {
+			if (surface.duration === 0) {
 				delete nextSurfaces[cellId];
 			}
 		}

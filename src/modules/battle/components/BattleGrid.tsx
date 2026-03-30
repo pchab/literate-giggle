@@ -14,9 +14,10 @@ import { useCellHighlight } from "../hooks/useCellHighlight";
 import { useBattleStore } from "../store/battle.store";
 import { GridCell, type Highlight } from "./GridCell";
 import MovePrediction from "./MovePrediction";
+import { SurfacesOverlay } from "./SurfaceOverlay";
 
-const cells = Array.from({ length: GRID_BOUNDS.rows }, (_, col) => {
-	return Array.from({ length: GRID_BOUNDS.cols }, (_, row) => {
+const cells = Array.from({ length: GRID_BOUNDS.rows }, (_, row) => {
+	return Array.from({ length: GRID_BOUNDS.cols }, (_, col) => {
 		return { id: getCellId({ col, row }), col, row };
 	});
 }).flat();
@@ -146,6 +147,7 @@ export function BattleGrid({ encounterId }: { encounterId: Encounter["id"] }) {
 					/>
 				);
 			})}
+			<SurfacesOverlay />
 			{/* --- SVG OVERLAY FOR PROJECTED MOVES --- */}
 			<MovePrediction />
 		</div>

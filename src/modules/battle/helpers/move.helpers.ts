@@ -3,10 +3,11 @@ import {
 	UnitStance,
 } from "@/modules/figures/domain/figures.type";
 import { sleep } from "@/modules/shared/helpers/sleep";
-import type { GridPosition } from "../domain/grid.type";
+import type { GridPosition, SurfaceType } from "../domain/grid.type";
 import type { StoreGet, StoreSet } from "../store/battle.store";
 import {
 	canUnitFit,
+	doBoundingBoxesIntersect,
 	getCellId,
 	getDistanceToBoundingBox,
 } from "./grid.helpers";
@@ -34,7 +35,6 @@ export function moveBattleUnit(
 		const refreshUnit = () => findUnit(get)<T>(currentUnit.id);
 
 		if (!forcedMove) {
-			// 1. Visual Update: Set moving animation
 			await updateUnitState(
 				get,
 				set,
@@ -81,47 +81,57 @@ export function moveBattleUnit(
 				await sleep(stepDelayMs);
 			}
 
-			// 3. Combat Math: Did we step on something awful?
+			// ==========================================
+			// 3. COMBAT MATH: Environmental Hazards
+			// ==========================================
 			const { surfaces: draftSurfaces } = get();
-			const stepCellId = getCellId(step);
-			const steppedOnSurface = draftSurfaces[stepCellId];
+			const processedSurfaceTypes = new Set<SurfaceType>(); // PREVENTS DOUBLE DIPPING!
+			let surfacesChanged = false;
+			const nextSurfaces = { ...draftSurfaces };
 
-			if (steppedOnSurface) {
-				if (steppedOnSurface.damage || steppedOnSurface.status) {
+			for (const surface of Object.values(draftSurfaces)) {
+				if (!doBoundingBoxesIntersect(currentUnit, surface)) continue;
+				if (currentUnit.surfaceImmunities?.includes(surface.type)) continue;
+
+				// Ensure we only take damage from a surface type once per step
+				if (processedSurfaceTypes.has(surface.type)) continue;
+				processedSurfaceTypes.add(surface.type);
+
+				if (surface.damage || surface.status) {
 					await applyCombatUpdate(
 						get,
 						set,
 						isSimulation,
 					)(currentUnit.id, {
-						damageTaken: steppedOnSurface.damage,
-						newStatuses: steppedOnSurface.status
-							? [steppedOnSurface.status]
-							: undefined,
+						damageTaken: surface.damage,
+						newStatuses: surface.status ? [surface.status] : undefined,
 					});
 				}
 
-				set((prev) => {
-					const nextSurfaces = { ...prev.surfaces };
-					const targetSurface = nextSurfaces[stepCellId];
-					if (targetSurface && targetSurface.charges !== undefined) {
-						targetSurface.charges -= 1;
-						if (targetSurface.charges <= 0) {
-							delete nextSurfaces[stepCellId];
-						}
+				// Batch surface degradation
+				const targetSurface = nextSurfaces[surface.id];
+				if (targetSurface && targetSurface.charges !== undefined) {
+					targetSurface.charges -= 1;
+					surfacesChanged = true;
+					if (targetSurface.charges <= 0) {
+						delete nextSurfaces[surface.id];
 					}
-					return { ...prev, surfaces: nextSurfaces };
-				});
-
-				const freshUnit = refreshUnit();
-				if (!freshUnit || freshUnit.currentHp <= 0) {
-					return freshUnit;
 				}
+			}
 
-				currentUnit = freshUnit;
+			if (surfacesChanged) {
+				set((prev) => ({ ...prev, surfaces: nextSurfaces }));
+			}
 
-				if (currentUnit.statuses.some((s) => s.type === "rooted")) {
-					break;
-				}
+			const freshUnit = refreshUnit();
+			if (!freshUnit || freshUnit.currentHp <= 0) {
+				return freshUnit;
+			}
+
+			currentUnit = freshUnit;
+
+			if (currentUnit.statuses.some((s) => s.type === "rooted")) {
+				break;
 			}
 		}
 
@@ -175,6 +185,7 @@ export const calculateExactPath = <C extends BattleUnit, T extends BattleUnit>({
 			caster: { ...movingUnit, gridPosition: currentPos },
 			target,
 		});
+
 		if (distToTarget >= minRange && distToTarget <= maxRange) {
 			validDestination = currentPos;
 			break;
@@ -188,17 +199,13 @@ export const calculateExactPath = <C extends BattleUnit, T extends BattleUnit>({
 		];
 
 		for (const next of neighbors) {
-			const isTargetTile =
-				next.row === targetPos.row && next.col === targetPos.col;
-
+			// STRICT COLLISION CHECK: You must fit here to path here. Period.
 			const fits = canUnitFit({
 				unit: { ...movingUnit, gridPosition: next },
 				figures,
 			});
 
-			if (!fits && !(isTargetTile && minRange === 0)) {
-				continue;
-			}
+			if (!fits) continue;
 
 			const key = getCellId(next);
 			if (!cameFrom.has(key)) {
