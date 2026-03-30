@@ -41,6 +41,11 @@ export const archerCards: Record<Card["id"], Card> = {
 				surfaceType: "ACID",
 				duration: 2,
 				spriteBase: "/surfaces/acid.webp",
+				status: {
+					type: "vulnerable",
+					amount: 2,
+					duration: 2,
+				},
 			},
 		],
 	},

@@ -108,6 +108,11 @@ export const hoboCards: Record<Card["id"], Card> = {
 				type: "create_surface",
 				target: "anchor",
 				surfaceType: "ACID",
+				status: {
+					type: "vulnerable",
+					amount: 2,
+					duration: 2,
+				},
 				duration: 3,
 				spriteBase: "/surfaces/acid.webp",
 			},

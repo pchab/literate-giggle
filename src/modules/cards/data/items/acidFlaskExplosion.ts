@@ -24,7 +24,7 @@ export const acidFlaskExplosionCard: Card = {
 			duration: 3,
 			spriteBase: "/surfaces/acid.webp",
 			status: {
-				type: "poison",
+				type: "vulnerable",
 				amount: 2,
 				duration: 2,
 			},
