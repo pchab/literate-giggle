@@ -28,6 +28,8 @@ const tailwindGridCols = [
 	"grid-cols-3",
 	"grid-cols-4",
 	"grid-cols-5",
+	"grid-cols-6",
+	"grid-cols-7",
 ];
 
 export function BattleGrid({ encounterId }: { encounterId: Encounter["id"] }) {

@@ -75,13 +75,14 @@ export type SummonEffect = {
 
 export type ApplyStatusEffect = {
 	type: "apply_status";
-	status: Status;
 	target: EffectTarget;
+	status: Status;
 	projectile?: VfxType;
 };
 
 export type CreateSurfaceEffect = {
 	type: "create_surface";
+	target: EffectTarget;
 	surfaceType: SurfaceType;
 	duration: number;
 	damage?: number;

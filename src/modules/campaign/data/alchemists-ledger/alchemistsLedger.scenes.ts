@@ -1,5 +1,6 @@
 import type { Scene } from "@/modules/campaign/domain/scenes.type";
 import { mapNodeId } from "@/modules/world/domain/map.types";
+import { QUEST_3_IRONHOLD_SUMP } from "../sewer-contamination/sewerContamination.definitions";
 import { THE_ALCHEMISTS_LEDGER as ALCHEMIST } from "./alchemistsLedger.definitions";
 
 export const alchemistScenes: Record<string, Scene> = {
@@ -164,6 +165,11 @@ export const alchemistScenes: Record<string, Scene> = {
 					As you search the wreckage, you spot something humming at the bottom of a broken vat. It is a jagged, glowing green stone that seems to melt the very wood it rests upon.`,
 				onNext: [
 					{ type: "COMPLETE_QUEST", questId: ALCHEMIST.id },
+					{
+						type: "ADVANCE_QUEST",
+						questId: QUEST_3_IRONHOLD_SUMP.id,
+						newStepId: QUEST_3_IRONHOLD_SUMP.steps.investigate,
+					},
 					{ type: "REWARD_EVO_RUNE", evoRune: "rune_acid" },
 					{ type: "END_SCENE" },
 				],

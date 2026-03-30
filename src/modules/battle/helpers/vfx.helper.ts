@@ -22,7 +22,7 @@ export function getVfxForEffect<T extends BattleUnit>(
 			break;
 		case "apply_status":
 			targets.forEach((position) => {
-				if (["perma_shield", "temp_block"].includes(effect.status.type)) {
+				if (effect.status.type === "block") {
 					vfx[getCellId(position)] = { type: "BLOCK" };
 				}
 				if (effect.status.type === "poison") {

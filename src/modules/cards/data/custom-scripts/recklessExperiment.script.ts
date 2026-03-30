@@ -13,6 +13,7 @@ import {
 	isUnitInTile,
 } from "@/modules/battle/helpers/grid.helpers";
 import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
+import { goblinShaman } from "@/modules/figures/data/monsters/goblin.data";
 import type { AIBattleUnit } from "@/modules/figures/domain/figures.type";
 import { cardId } from "../../helpers/cards.helper";
 import { hoboCards } from "../heroes/hoboCards.data";
@@ -29,11 +30,24 @@ export const recklessExperiment =
 			[cardId("spawn_vial")]: spawnVialCard,
 			[cardId("kick_vial")]: kickVialCard,
 		} = alchemistLedgerCards;
+		const ironClub = hoboCards[cardId("iron_club")];
 
-		const { heroes } = get();
+		const { heroes, monsters } = get();
 		const activeHeroes = heroes.filter((h) => h.currentHp > 0);
 
 		if (activeHeroes.length === 0) return;
+
+		const shaman = monsters.find(({ name }) => name === goblinShaman.name);
+		if (!shaman) {
+			await handleAICardIntent(
+				get,
+				set,
+				isSimulation,
+			)({
+				attackerId: caster.id,
+				card: ironClub,
+			});
+		}
 
 		// --- GRID BOUNDS ---
 		const isBorder = ({ col, row }: GridPosition) =>
@@ -163,7 +177,6 @@ export const recklessExperiment =
 				});
 			}
 		} else {
-			const ironClub = hoboCards[cardId("iron_club")];
 			await handleAICardIntent(
 				get,
 				set,

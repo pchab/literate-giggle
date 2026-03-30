@@ -5,13 +5,13 @@ import {
 import { sleep } from "@/modules/shared/helpers/sleep";
 import type { GridPosition } from "../domain/grid.type";
 import type { StoreGet, StoreSet } from "../store/battle.store";
-import { applySurfaceEffect } from "./effects/effect.helpers";
 import {
 	canUnitFit,
 	getCellId,
 	getDistanceToBoundingBox,
 } from "./grid.helpers";
-import { updateBattleUnitState } from "./state.helpers";
+import { applyCombatUpdate, updateUnitState } from "./state.helpers";
+import { statusRegistry } from "./status.helpers";
 
 export function moveBattleUnit(
 	get: StoreGet,
@@ -28,55 +28,121 @@ export function moveBattleUnit(
 		path: GridPosition[];
 		forcedMove?: boolean;
 		stepDelayMs?: number;
-	}): Promise<T> => {
+	}): Promise<T | undefined> => {
 		let currentUnit = movingUnit;
+
+		const refreshUnit = (): T | undefined => {
+			const state = get();
+			return (state.heroes.find((h) => h.id === currentUnit.id) ||
+				state.monsters.find((m) => m.id === currentUnit.id) ||
+				state.summons.find((s) => s.id === currentUnit.id)) as T | undefined;
+		};
+
 		if (!forcedMove) {
-			currentUnit = { ...movingUnit, stance: UnitStance.MOVING };
-			await updateBattleUnitState(get, set, isSimulation)(currentUnit);
+			// 1. Visual Update: Set moving animation
+			await updateUnitState(
+				get,
+				set,
+				isSimulation,
+			)(currentUnit.id, {
+				stance: UnitStance.MOVING,
+			});
+			currentUnit = refreshUnit() || currentUnit;
 		}
 
 		for (const step of path) {
-			currentUnit = { ...currentUnit, gridPosition: step };
+			// ==========================================
+			// 1. ASK THE REGISTRY FOR PERMISSION TO MOVE
+			// ==========================================
+			let canTakeStep = true;
+			for (const status of currentUnit.statuses) {
+				const hook = statusRegistry[status.type]?.onBeforeMove;
+				if (hook) {
+					const result = await hook(
+						get,
+						set,
+						isSimulation,
+					)({ unit: currentUnit, nextStep: step });
+					if (!result.canMove) {
+						canTakeStep = false;
+					}
+				}
+			}
+			if (!canTakeStep) break;
 
-			await updateBattleUnitState(get, set, isSimulation)(currentUnit);
-			await sleep(stepDelayMs);
+			// ==========================================
+			// 2. VISUAL UPDATE: Move to next tile
+			// ==========================================
+			await updateUnitState(
+				get,
+				set,
+				isSimulation,
+			)(currentUnit.id, {
+				gridPosition: step,
+			});
+			currentUnit = refreshUnit() || currentUnit;
 
+			if (!isSimulation && stepDelayMs > 0) {
+				await sleep(stepDelayMs);
+			}
+
+			// 3. Combat Math: Did we step on something awful?
 			const { surfaces: draftSurfaces } = get();
 			const stepCellId = getCellId(step);
 			const steppedOnSurface = draftSurfaces[stepCellId];
 
 			if (steppedOnSurface) {
-				const { surface: newSurface, unit: surfaceUpdatedUnit } =
-					applySurfaceEffect({
-						unit: currentUnit,
-						surface: steppedOnSurface,
+				if (steppedOnSurface.damage || steppedOnSurface.status) {
+					await applyCombatUpdate(
+						get,
+						set,
+						isSimulation,
+					)(currentUnit, {
+						damageTaken: steppedOnSurface.damage,
+						newStatuses: steppedOnSurface.status
+							? [steppedOnSurface.status]
+							: undefined,
 					});
+				}
 
-				currentUnit = surfaceUpdatedUnit;
 				set((prev) => {
 					const nextSurfaces = { ...prev.surfaces };
-					if (newSurface.charges === 0) {
-						delete nextSurfaces[stepCellId];
-					} else {
-						nextSurfaces[stepCellId] = newSurface;
+					const targetSurface = nextSurfaces[stepCellId];
+					if (targetSurface && targetSurface.charges !== undefined) {
+						targetSurface.charges -= 1;
+						if (targetSurface.charges <= 0) {
+							delete nextSurfaces[stepCellId];
+						}
 					}
 					return { ...prev, surfaces: nextSurfaces };
 				});
 
-				await updateBattleUnitState(get, set, isSimulation)(currentUnit);
+				// 4. Consequence check: Did the surface kill us or root us?
+				const freshUnit = refreshUnit();
+				if (!freshUnit || freshUnit.currentHp <= 0) {
+					return freshUnit;
+				}
 
-				if (
-					currentUnit.currentHp <= 0 ||
-					newSurface.status?.type === "rooted"
-				) {
+				currentUnit = freshUnit;
+
+				if (currentUnit.statuses.some((s) => s.type === "rooted")) {
 					break;
 				}
 			}
 		}
-		if (!forcedMove) {
-			currentUnit = { ...currentUnit, stance: UnitStance.IDLE };
-			await updateBattleUnitState(get, set, isSimulation)(currentUnit);
+
+		if (!forcedMove && currentUnit) {
+			// 5. Visual Update: Back to idle stance
+			await updateUnitState(
+				get,
+				set,
+				isSimulation,
+			)(currentUnit.id, {
+				stance: UnitStance.IDLE,
+			});
+			currentUnit = refreshUnit() || currentUnit;
 		}
+
 		return currentUnit;
 	};
 }

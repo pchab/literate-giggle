@@ -17,9 +17,10 @@ import { isSummon } from "@/modules/figures/helpers/figures.helpers";
 import { sleep } from "@/modules/shared/helpers/sleep";
 import type { BoundingBox, GridPosition } from "../domain/grid.type";
 import { getActualTarget, getIdealTarget } from "./ai.move.helpers";
+import { resolveTargets } from "./effects/effect.helpers";
 import { resolvers } from "./effects/effect.resolvers";
 import { calculateExactPath, moveBattleUnit } from "./move.helpers";
-import { updateBattleUnitState } from "./state.helpers";
+import { updateUnitState } from "./state.helpers";
 
 export type TargetResolver = <C extends AIBattleUnit>(
 	aiFigure: C,
@@ -86,20 +87,6 @@ function getAnchorTarget<C extends BattleUnit, T extends BoundingBox>({
 		size: actualTarget.size ?? 1,
 	};
 }
-
-const updateAIUnitStance =
-	(get: StoreGet, set: StoreSet, isSimulation = false) =>
-	(unitId: BattleUnit["id"], wait: number = isSimulation ? 0 : 300) =>
-	async (stance: UnitStance) => {
-		const freshAIUnit = [...get().monsters, ...get().summons].find(
-			({ id }) => id === unitId,
-		);
-		if (!freshAIUnit) return;
-		const newUnit = { ...freshAIUnit, stance };
-		await sleep(wait);
-		await updateBattleUnitState(get, set, isSimulation)(newUnit);
-		return newUnit;
-	};
 
 export const handleAICardIntent =
 	(get: StoreGet, set: StoreSet, isSimulation = false) =>
@@ -229,21 +216,40 @@ export const handleAICardIntent =
 		// ==========================================
 		// 3. RESOLVE EFFECTS
 		// ==========================================
-		const changeStance = await updateAIUnitStance(
+		await updateUnitState(
 			get,
 			set,
 			isSimulation,
-		)(attackerId);
-		const attackingUnit = await changeStance(UnitStance.ATTACKING);
-		if (!attackingUnit) return;
+		)(attackerId, {
+			stance: UnitStance.ATTACKING,
+		});
+		await sleep(isSimulation ? 0 : 200);
 
-		for (const effect of card.effects) {
+		const lockedTargets = card.effects.map((effect) =>
+			resolveTargets(
+				effect.target,
+				anchorTarget,
+				movedUnit,
+				allFigures,
+				targetedCells,
+			),
+		);
+
+		for (let i = 0; i < card.effects.length; i++) {
+			const effect = card.effects[i];
 			await resolvers(effect)(get, set, isSimulation)({
 				anchorTarget,
-				caster: attackingUnit,
+				caster: movedUnit,
 				patternCells: targetedCells,
+				targetIds: lockedTargets[i],
 			});
 		}
 
-		await changeStance(UnitStance.IDLE);
+		await updateUnitState(
+			get,
+			set,
+			isSimulation,
+		)(attackerId, {
+			stance: UnitStance.IDLE,
+		});
 	};

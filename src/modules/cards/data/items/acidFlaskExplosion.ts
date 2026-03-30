@@ -19,6 +19,7 @@ export const acidFlaskExplosionCard: Card = {
 		},
 		{
 			type: "create_surface",
+			target: "anchor",
 			surfaceType: "ACID",
 			duration: 3,
 			spriteBase: "/surfaces/acid.webp",

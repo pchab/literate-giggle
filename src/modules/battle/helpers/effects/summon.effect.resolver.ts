@@ -33,7 +33,6 @@ export const resolveSummonEffect =
 		caster,
 	}: EffectResolverParams<T>): void => {
 		const allegiance = getCasterFaction(caster) === "HERO" ? "PLAYER" : "ENEMY";
-
 		if (anchorTarget) {
 			const blueprint = summonLibrary[effect.blueprintId];
 			set(({ summons }) => ({

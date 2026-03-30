@@ -35,6 +35,11 @@ export const goliathToadCards: Record<Card["id"], Card> = {
 				pushDirection: "towards",
 				target: "anchor",
 			},
+			{
+				type: "custom_script",
+				scriptId: "swallow",
+				target: "anchor",
+			},
 		],
 	},
 	[cardId("belly_flop")]: {

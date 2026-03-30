@@ -1,9 +1,7 @@
 import type { AnchorTarget } from "@/modules/cards/domain/cards.type";
-import {
-	type BattleHero,
-	UnitStance,
-} from "@/modules/figures/domain/figures.type";
+import { UnitStance } from "@/modules/figures/domain/figures.type";
 import type { GridPosition } from "../../domain/grid.type";
+import { resolveTargets } from "../../helpers/effects/effect.helpers";
 import { resolvers } from "../../helpers/effects/effect.resolvers";
 import {
 	filterGridByAttackPattern,
@@ -14,20 +12,10 @@ import {
 } from "../../helpers/grid.helpers";
 import {
 	calculateStateDiff,
-	updateBattleUnitState,
+	updateUnitState,
 } from "../../helpers/state.helpers";
 import type { ActiveCardContext, StoreGet, StoreSet } from "../battle.store";
 import { calculateAIIntents } from "./calculateAIIntents.command";
-
-const updateHeroStance =
-	(get: StoreGet, set: StoreSet, isSimulation = false) =>
-	(heroId: BattleHero["id"]) =>
-	(stance: UnitStance) => {
-		const freshHero = [...get().heroes].find(({ id }) => id === heroId);
-		if (!freshHero) return;
-		updateBattleUnitState(get, set, isSimulation)({ ...freshHero, stance });
-		return freshHero;
-	};
 
 export const resolveCard =
 	(get: StoreGet, set: StoreSet, isSimulation = false) =>
@@ -94,15 +82,26 @@ export const resolveCard =
 			},
 		}));
 
-		// --- 3. RESOLVE EFFECTS WITH PATTERN ---
-		for (const effect of card.effects) {
+		// --- 3. PRE-RESOLVE TARGETS ---
+		const lockedTargets = card.effects.map((effect) =>
+			resolveTargets(effect.target, anchorTarget, hero, allUnits, patternCells),
+		);
+
+		// --- 4. RESOLVE EFFECTS WITH PATTERN ---
+		for (let i = 0; i < card.effects.length; i++) {
+			const effect = card.effects[i];
 			await resolvers(effect)(get, set, isSimulation)({
 				anchorTarget: actualTarget,
 				caster: hero,
 				patternCells,
+				targetIds: lockedTargets[i],
 			});
 		}
-		updateHeroStance(get, set, isSimulation)(unitId)(UnitStance.IDLE);
+		updateUnitState(
+			get,
+			set,
+			isSimulation,
+		)(unitId, { stance: UnitStance.IDLE });
 
 		const xpEarnedThisTurn = calculateStateDiff(
 			get().monsters,

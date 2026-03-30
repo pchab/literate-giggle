@@ -75,7 +75,7 @@ export const fighterCards: Record<Card["id"], Card> = {
 			{
 				type: "apply_status",
 				status: {
-					type: "temp_block",
+					type: "block",
 					amount: 4,
 					duration: 1,
 				},

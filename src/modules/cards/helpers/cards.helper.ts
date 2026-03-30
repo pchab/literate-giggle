@@ -17,10 +17,8 @@ export function cloneCard(card: Card): Card {
 
 export function formatStatusEffect({ status }: ApplyStatusEffect): string {
 	switch (status.type) {
-		case "temp_block":
-			return `🛡️ Gain ${status.amount} temporary block for ${status.duration} turn(s).`;
-		case "perma_shield":
-			return `🛡️ Gain ${status.amount} permanent shield.`;
+		case "block":
+			return `🛡️ Gain ${status.amount} block${status.duration > 0 ? ` for ${status.duration} turn(s).` : ""}`;
 		case "poison":
 			return `☠️ Apply ${status.amount} poison for ${status.duration} turn(s).`;
 		case "rooted":
@@ -149,19 +147,14 @@ export function getStatusEffectText({ status }: ApplyStatusEffect): {
 } {
 	let icon = "";
 	let statusName = "";
-	let durationText =
+	const durationText =
 		status.duration !== -1 ? ` for ${status.duration} turn(s)` : "";
 
 	// Determine the visual flavor based on the specific status
 	switch (status.type) {
-		case "temp_block":
+		case "block":
 			icon = "🛡️";
-			statusName = "Temporary Block";
-			break;
-		case "perma_shield":
-			icon = "🔮"; // Or ✨ for Arcane Shield
-			statusName = "Permanent Shield";
-			durationText = ""; // Perma shield doesn't decay
+			statusName = "Block";
 			break;
 		case "poison":
 			icon = "☠️";

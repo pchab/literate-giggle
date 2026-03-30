@@ -13,7 +13,7 @@ export const ironholdCards: Record<Card["id"], Card> = {
 		effects: [
 			{
 				type: "apply_status",
-				status: { type: "temp_block", amount: 3, duration: 1 },
+				status: { type: "block", amount: 3, duration: 1 },
 				target: "all_allies",
 			},
 		],
@@ -47,7 +47,7 @@ export const ironholdCards: Record<Card["id"], Card> = {
 		effects: [
 			{
 				type: "apply_status",
-				status: { type: "temp_block", amount: 4, duration: 1 },
+				status: { type: "block", amount: 4, duration: 1 },
 				target: "self",
 			},
 		],

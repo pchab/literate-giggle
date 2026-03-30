@@ -90,7 +90,7 @@ export const monsterCardLibrary: Record<Card["id"], Card> = {
 			{
 				type: "apply_status",
 				status: {
-					type: "temp_block",
+					type: "block",
 					amount: 5,
 					duration: 1,
 				},

@@ -37,6 +37,7 @@ export const archerCards: Record<Card["id"], Card> = {
 			{ type: "damage", amount: 4, target: "anchor", projectile: "ARROW" },
 			{
 				type: "create_surface",
+				target: "anchor",
 				surfaceType: "ACID",
 				duration: 2,
 				spriteBase: "/surfaces/acid.webp",
@@ -52,6 +53,7 @@ export const archerCards: Record<Card["id"], Card> = {
 		effects: [
 			{
 				type: "create_surface",
+				target: "anchor",
 				surfaceType: "TRAP",
 				duration: -1,
 				damage: 3,

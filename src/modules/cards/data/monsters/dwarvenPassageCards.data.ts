@@ -36,7 +36,7 @@ export const dwarvenPassageCards: Record<Card["id"], Card> = {
 		effects: [
 			{
 				type: "apply_status",
-				status: { type: "temp_block", amount: 6, duration: 2 },
+				status: { type: "block", amount: 6, duration: 2 },
 				target: "anchor",
 			},
 		],

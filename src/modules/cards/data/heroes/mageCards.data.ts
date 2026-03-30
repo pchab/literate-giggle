@@ -53,8 +53,8 @@ export const mageCards: Record<Card["id"], Card> = {
 			{
 				type: "apply_status",
 				status: {
-					type: "perma_shield",
-					duration: 999,
+					type: "block",
+					duration: -1,
 					amount: 2,
 				},
 				target: "anchor",

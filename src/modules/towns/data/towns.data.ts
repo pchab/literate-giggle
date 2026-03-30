@@ -1,3 +1,4 @@
+import { QUEST_3_IRONHOLD_SUMP } from "@/modules/campaign/data/sewer-contamination/sewerContamination.definitions";
 import { sceneId } from "@/modules/campaign/domain/scenes.type";
 import type { TownData } from "../domain/towns.type";
 import { townId, townLocationId } from "../domain/towns.type";
@@ -34,6 +35,23 @@ export const TOWN_DB: Record<TownData["id"], TownData> = {
 				type: "SCENE",
 				defaultSceneId: sceneId("access_denied_throne_room"),
 				position: { x: 65, y: 30 },
+			},
+			{
+				id: townLocationId("sewers"),
+				name: "Sewer Grate",
+				type: "SCENE",
+				icon: "mutagen_warning",
+				position: { x: 66, y: 68 },
+
+				unlockCondition: [
+					{ type: "QUEST_ACTIVE", questId: QUEST_3_IRONHOLD_SUMP.id },
+				],
+
+				hideCondition: [
+					{ type: "QUEST_COMPLETED", questId: QUEST_3_IRONHOLD_SUMP.id },
+				],
+
+				defaultSceneId: sceneId("ironhold_sump_intro"),
 			},
 		],
 	},

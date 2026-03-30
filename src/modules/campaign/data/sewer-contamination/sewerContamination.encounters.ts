@@ -1,10 +1,10 @@
 import { giantToad } from "@/modules/figures/data/monsters/giant-toad";
 import type { Encounter } from "../../domain/encounters.type";
-import { SEWER_CONTAMINATION } from "./sewerContamination.definitions";
+import { QUEST_3_IRONHOLD_SUMP } from "./sewerContamination.definitions";
 
 export const sewerContaminationEncounters: Record<string, Encounter> = {
-	[SEWER_CONTAMINATION.encounters.giant_toad]: {
-		id: SEWER_CONTAMINATION.encounters.giant_toad,
+	[QUEST_3_IRONHOLD_SUMP.encounters.giant_toad]: {
+		id: QUEST_3_IRONHOLD_SUMP.encounters.giant_toad,
 		name: "Giant Toad",
 		generateMonsters: () => [
 			{

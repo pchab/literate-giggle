@@ -106,6 +106,7 @@ export const hoboCards: Record<Card["id"], Card> = {
 		effects: [
 			{
 				type: "create_surface",
+				target: "anchor",
 				surfaceType: "ACID",
 				duration: 3,
 				spriteBase: "/surfaces/acid.webp",
@@ -167,7 +168,7 @@ export const hoboCards: Record<Card["id"], Card> = {
 			{
 				type: "apply_status",
 				status: {
-					type: "temp_block",
+					type: "block",
 					amount: 1,
 					duration: 1,
 				},

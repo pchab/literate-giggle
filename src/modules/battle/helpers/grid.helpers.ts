@@ -3,8 +3,8 @@ import type { BattleUnit } from "../../figures/domain/figures.type";
 import type { BoundingBox, GridPosition } from "../domain/grid.type";
 
 export const GRID_BOUNDS = {
-	rows: 5,
-	cols: 5,
+	rows: 7,
+	cols: 7,
 };
 
 export function getCellId(pos: GridPosition): string {
@@ -43,7 +43,6 @@ export const canUnitFit = <C extends BattleUnit, T extends BattleUnit>({
 }: {
 	unit: C;
 	figures: T[];
-	ignoreUnitId?: string;
 }): boolean => {
 	for (let r = 0; r < size; r++) {
 		for (let c = 0; c < size; c++) {

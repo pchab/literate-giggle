@@ -7,8 +7,7 @@ import {
 	isUnitInTile,
 } from "../grid.helpers";
 import { moveBattleUnit } from "../move.helpers";
-import { updateBattleUnitState } from "../state.helpers";
-import { applyDamageToEntity, resolveTargets } from "./effect.helpers";
+import { applyCombatUpdate } from "../state.helpers";
 import type { EffectResolverParams } from "./effect.resolvers";
 
 export const resolvePushEffect =
@@ -17,18 +16,10 @@ export const resolvePushEffect =
 	async <C extends BattleUnit>({
 		anchorTarget,
 		caster,
-		patternCells,
+		targetIds,
 	}: EffectResolverParams<C>) => {
 		const { heroes, monsters, summons } = get();
 		let currentFigures = [...heroes, ...monsters, ...summons];
-
-		const targets = resolveTargets(
-			effect.target,
-			anchorTarget,
-			caster,
-			currentFigures,
-			patternCells,
-		);
 
 		const { col: cX, row: cY } = getClosestOriginTile({
 			caster,
@@ -109,22 +100,26 @@ export const resolvePushEffect =
 			// ==========================================
 			if (isCrushed) {
 				if (effect.collisionDamage > 0) {
-					entity = applyDamageToEntity(entity, effect.collisionDamage * 2);
-					updateBattleUnitState(get, set, isSimulation)(entity);
+					// Send the combat intents directly to the pipeline!
+					await applyCombatUpdate(
+						get,
+						set,
+						isSimulation,
+					)(entity.id, { damageTaken: effect.collisionDamage * 2 });
 
 					if (crushObstacleA) {
-						const updatedA = applyDamageToEntity(
-							crushObstacleA,
-							effect.collisionDamage,
-						);
-						updateBattleUnitState(get, set, isSimulation)(updatedA);
+						await applyCombatUpdate(
+							get,
+							set,
+							isSimulation,
+						)(crushObstacleA.id, { damageTaken: effect.collisionDamage });
 					}
 					if (crushObstacleB) {
-						const updatedB = applyDamageToEntity(
-							crushObstacleB,
-							effect.collisionDamage,
-						);
-						updateBattleUnitState(get, set, isSimulation)(updatedB);
+						await applyCombatUpdate(
+							get,
+							set,
+							isSimulation,
+						)(crushObstacleB.id, { damageTaken: effect.collisionDamage });
 					}
 				}
 				return;
@@ -160,7 +155,7 @@ export const resolvePushEffect =
 			// 5. ANIMATE MOVEMENT
 			// ==========================================
 			if (pushPath.length > 0) {
-				entity = await moveBattleUnit(
+				const movedEntity = await moveBattleUnit(
 					get,
 					set,
 					isSimulation,
@@ -170,6 +165,10 @@ export const resolvePushEffect =
 					stepDelayMs: isSimulation ? 0 : 100,
 					forcedMove: true,
 				});
+
+				// Guard: If they died to a surface during the push, stop processing!
+				if (!movedEntity || movedEntity.currentHp <= 0) return;
+				entity = movedEntity;
 			}
 
 			// ==========================================
@@ -179,23 +178,26 @@ export const resolvePushEffect =
 			if (stoppedShort || collidedWith) {
 				if (effect.collisionDamage > 0 && entity.currentHp > 0) {
 					// Damage the pushed unit
-					entity = applyDamageToEntity(entity, effect.collisionDamage);
-					updateBattleUnitState(get, set, isSimulation)(entity);
+					await applyCombatUpdate(
+						get,
+						set,
+						isSimulation,
+					)(entity.id, { damageTaken: effect.collisionDamage });
 
 					// Damage the obstacle it hit
 					if (collidedWith) {
-						const updatedObstacle = applyDamageToEntity(
-							collidedWith,
-							effect.collisionDamage,
-						);
-						updateBattleUnitState(get, set, isSimulation)(updatedObstacle);
+						await applyCombatUpdate(
+							get,
+							set,
+							isSimulation,
+						)(collidedWith.id, { damageTaken: effect.collisionDamage });
 					}
 				}
 			}
 		};
 
 		// Execute sequentially to prevent concurrent grid state clobbering
-		for (const targetId of targets) {
+		for (const targetId of targetIds) {
 			await processPush(targetId);
 		}
 	};

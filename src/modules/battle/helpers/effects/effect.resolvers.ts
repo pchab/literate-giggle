@@ -15,6 +15,7 @@ export interface EffectResolverParams<C extends BattleUnit> {
 	anchorTarget: AnchorTarget;
 	caster: C;
 	patternCells?: { col: number; row: number }[];
+	targetIds: BattleUnit["id"][];
 }
 
 export type EffectResolver = <C extends BattleUnit, E extends CardEffect>(

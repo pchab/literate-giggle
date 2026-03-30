@@ -11,7 +11,7 @@ export const giantToad: UnitBlueprint = {
 	size: 2,
 	intentPool: [
 		// { cardId: cardId("giant_chomp"), weight: 4 },
-		// { cardId: cardId("tongue_lash"), weight: 3 },
-		{ cardId: cardId("belly_flop"), weight: 3 },
+		{ cardId: cardId("tongue_lash"), weight: 3 },
+		// { cardId: cardId("belly_flop"), weight: 3 },
 	],
 };

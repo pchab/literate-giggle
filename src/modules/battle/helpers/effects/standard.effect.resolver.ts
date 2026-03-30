@@ -9,9 +9,12 @@ import type { GridPosition } from "../../domain/grid.type";
 import type { VfxType } from "../../domain/vfx.type";
 import type { StoreGet, StoreSet } from "../../store/battle.store";
 import { getCellId } from "../grid.helpers";
-import { findUnit, updateBattleUnitState } from "../state.helpers";
+import {
+	applyCombatUpdate,
+	type CombatUpdate,
+	findUnit,
+} from "../state.helpers";
 import { getVfxForEffect } from "../vfx.helper";
-import { applyEffectToEntity, resolveTargets } from "./effect.helpers";
 import type { EffectResolverParams } from "./effect.resolvers";
 
 const animateProjectile =
@@ -69,18 +72,10 @@ export const resolveStandardEffect =
 	async <C extends BattleUnit>({
 		anchorTarget,
 		caster,
-		patternCells,
+		targetIds,
 	}: EffectResolverParams<C>): Promise<void> => {
-		const { heroes, monsters, summons } = get();
-		const figures = [...heroes, ...monsters, ...summons];
-		const targets = resolveTargets<BattleUnit>(
-			effect.target,
-			anchorTarget,
-			caster,
-			figures,
-			patternCells,
-		);
 		const targetPositions: GridPosition[] = [];
+
 		if (anchorTarget && effect.projectile && !isSimulation) {
 			await animateProjectile(get, set)(
 				effect.projectile,
@@ -89,13 +84,25 @@ export const resolveStandardEffect =
 			);
 		}
 
-		for (const targetId of targets) {
+		for (const targetId of targetIds) {
 			const target = findUnit(get)(targetId);
-			if (!target) continue;
+			if (!target || target.currentHp <= 0) continue;
 
-			const updatedEntity = applyEffectToEntity({ entity: target, effect });
-			targetPositions.push(updatedEntity.gridPosition);
-			await updateBattleUnitState(get, set, isSimulation)(updatedEntity);
+			targetPositions.push(target.gridPosition);
+
+			const combatUpdate: CombatUpdate = {};
+
+			if (effect.type === "damage") {
+				combatUpdate.damageTaken = effect.amount;
+			} else if (effect.type === "heal") {
+				combatUpdate.healingReceived = effect.amount;
+			} else if (effect.type === "apply_status") {
+				if (!target.immunities?.includes(effect.status.type)) {
+					combatUpdate.newStatuses = [effect.status];
+				}
+			}
+
+			await applyCombatUpdate(get, set, isSimulation)(targetId, combatUpdate);
 		}
 
 		set((prev) => {

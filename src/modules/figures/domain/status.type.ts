@@ -1,10 +1,11 @@
 export type StatusType =
-	| "temp_block"
-	| "perma_shield"
+	| "block"
 	| "poison"
 	| "rooted"
 	| "vulnerable"
-	| "regen";
+	| "regen"
+	| "swallowed"
+	| "digesting";
 
 export interface Status {
 	type: StatusType;

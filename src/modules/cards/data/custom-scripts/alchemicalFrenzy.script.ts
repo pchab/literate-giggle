@@ -6,6 +6,7 @@ import {
 import type { EffectResolverParams } from "@/modules/battle/helpers/effects/effect.resolvers";
 import {
 	calculateReachableCells,
+	GRID_BOUNDS,
 	getDistanceToBoundingBox,
 	getLineOfSightPath,
 	isTileEmpty,
@@ -20,10 +21,9 @@ import { alchemistLedgerCards } from "../monsters/alchemistLedgerCards.data";
 export const getBarnabyStateScore = (
 	fakeGet: StoreGet,
 	realGet: StoreGet,
-	casterId: string,
 ): number => {
-	const { heroes: oldHeroes, monsters: oldMonsters } = realGet();
-	const { heroes: newHeroes, monsters: newMonsters } = fakeGet();
+	const { heroes: oldHeroes } = realGet();
+	const { heroes: newHeroes } = fakeGet();
 
 	let score = 0;
 
@@ -32,21 +32,6 @@ export const getBarnabyStateScore = (
 		if (newHero) {
 			const hpDiff = oldHero.currentHp - Math.max(0, newHero.currentHp);
 			score += hpDiff * 10;
-		}
-	}
-
-	const newBarnaby = newMonsters.find((m) => m.id === casterId);
-	const oldBarnaby = oldMonsters.find((m) => m.id === casterId);
-
-	if (newBarnaby && oldBarnaby) {
-		const hpDiff = oldBarnaby.currentHp - Math.max(0, newBarnaby.currentHp);
-		score -= hpDiff * 2;
-
-		const gotVulnerable = newBarnaby.statuses?.some(
-			(s) => s.type === "vulnerable",
-		);
-		if (gotVulnerable) {
-			score -= 50;
 		}
 	}
 
@@ -88,8 +73,8 @@ export const alchemicalFrenzy =
 				const dy = Math.sign(row - startPos.row);
 
 				const path = getLineOfSightPath(startPos, {
-					col: startPos.col + 5 * dx,
-					row: startPos.row + 5 * dy,
+					col: startPos.col + GRID_BOUNDS.cols * dx,
+					row: startPos.row + GRID_BOUNDS.rows * dy,
 				}).filter(isTileInBounds);
 				const targetPos = path[path.length - 1];
 
@@ -118,7 +103,7 @@ export const alchemicalFrenzy =
 					getAnchor: anchorResolver,
 				});
 
-				const score = getBarnabyStateScore(fakeGet, get, caster.id);
+				const score = getBarnabyStateScore(fakeGet, get);
 				const finalScore =
 					score -
 					getDistanceToBoundingBox({

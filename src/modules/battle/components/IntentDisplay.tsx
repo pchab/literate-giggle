@@ -11,10 +11,7 @@ export default function IntentDisplay({ intent }: { intent: Intent }) {
 
 	card.effects.forEach((effect) => {
 		if (effect.type === "damage") totalDamage += effect.amount;
-		if (
-			effect.type === "apply_status" &&
-			["temp_block", "perma_shield"].includes(effect.status.type)
-		) {
+		if (effect.type === "apply_status" && effect.status.type === "block") {
 			totalBlock += effect.status.amount;
 		}
 		if (effect.type === "heal") totalHeal += effect.amount;

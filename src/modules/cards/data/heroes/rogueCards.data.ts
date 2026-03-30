@@ -35,6 +35,7 @@ export const rogueCards: Record<Card["id"], Card> = {
 			{ type: "damage", amount: 4, target: "anchor" },
 			{
 				type: "create_surface",
+				target: "anchor",
 				surfaceType: "ACID",
 				duration: 2,
 				spriteBase: "/surfaces/acid.webp",

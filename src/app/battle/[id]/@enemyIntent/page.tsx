@@ -95,9 +95,7 @@ export default function EnemyIntentSidebar() {
 								</span>
 							)}
 							{aiUnit.statuses
-								.filter(
-									(s) => s.type !== "temp_block" && s.type !== "perma_shield",
-								)
+								.filter((s) => s.type !== "block")
 								.map((status, idx) => (
 									<span
 										key={idx}

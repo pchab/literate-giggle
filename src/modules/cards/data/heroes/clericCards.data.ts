@@ -57,7 +57,7 @@ export const clericCards: Record<Card["id"], Card> = {
 		effects: [
 			{
 				type: "apply_status",
-				status: { type: "perma_shield", amount: 4, duration: 999 },
+				status: { type: "block", amount: 4, duration: -1 },
 				target: "anchor",
 			},
 		],

@@ -44,7 +44,7 @@ export function isSummon(entity: BattleUnit): entity is Summon {
 
 export function getBlockFromStatuses(statuses: BattleHero["statuses"]): number {
 	return statuses.reduce((block, status) => {
-		if (["temp_block", "perma_shield"].includes(status.type)) {
+		if (status.type === "block") {
 			return block + status.amount;
 		}
 		return block;
