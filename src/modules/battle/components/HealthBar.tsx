@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
+import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
-import { isUnitInTile } from "../helpers/grid.helpers";
 
 export default function HealthBar({
 	unit: { id, currentHp, maxHp, statuses = [], size = { cols: 1, rows: 1 } },
@@ -11,35 +11,15 @@ export default function HealthBar({
 	// ==========================================
 	// SMART SUBSCRIPTIONS
 	// ==========================================
-	const projectedDamage = useBattleStore(
-		({ units, hoveredCell, shadowStateDiff: { projectedDamage } }) => {
-			const playerDmg = projectedDamage[id];
-			if (playerDmg) return playerDmg;
-
-			if (hoveredCell) {
-				const hoveredUnit = units.find(isUnitInTile(hoveredCell));
-				if (hoveredUnit && projectedDamage) {
-					return projectedDamage[id] ?? 0;
-				}
-			}
-			return 0;
-		},
+	const { projectedDamage, projectedHealing } = useBattleStore(
+		useShallow((state) => ({
+			projectedDamage: state.shadowStateDiff.projectedDamage,
+			projectedHealing: state.shadowStateDiff.projectedHealing,
+		})),
 	);
 
-	const projectedHealing = useBattleStore(
-		({ units, hoveredCell, shadowStateDiff: { projectedHealing } }) => {
-			const playerHeal = projectedHealing[id];
-			if (playerHeal) return playerHeal;
-
-			if (hoveredCell) {
-				const hoveredUnit = units.find(isUnitInTile(hoveredCell));
-				if (hoveredUnit && projectedHealing) {
-					return projectedHealing[id] ?? 0;
-				}
-			}
-			return 0;
-		},
-	);
+	const projectedDamageForUnit = projectedDamage[id] ?? 0;
+	const projectedHealingForUnit = projectedHealing[id] ?? 0;
 
 	// ==========================================
 	// STATUS AGGREGATION
@@ -55,8 +35,8 @@ export default function HealthBar({
 	// ==========================================
 	// HP PERCENTAGE MATH (Left to Right Visual Order)
 	// ==========================================
-	const dmgLoss = Math.min(currentHp, projectedDamage);
-	const healGain = Math.min(maxHp - currentHp, projectedHealing);
+	const dmgLoss = Math.min(currentHp, projectedDamageForUnit);
+	const healGain = Math.min(maxHp - currentHp, projectedHealingForUnit);
 	const netHp = currentHp - dmgLoss + healGain;
 
 	// Poison eats from the very right edge of whatever the final HP is
@@ -137,10 +117,10 @@ export default function HealthBar({
 				{totalBlock > 0 && <span className="text-blue-300">🛡️{totalBlock}</span>}
 
 				{/* Text Popups */}
-				{projectedDamage > 0 && (
-					<span className="text-orange-400">-{projectedDamage}</span>
+				{projectedDamageForUnit > 0 && (
+					<span className="text-orange-400">-{projectedDamageForUnit}</span>
 				)}
-				{projectedHealing > 0 && (
+				{projectedHealingForUnit > 0 && (
 					<span className="text-emerald-400">+{healGain}</span>
 				)}
 
