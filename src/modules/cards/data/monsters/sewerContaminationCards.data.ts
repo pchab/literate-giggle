@@ -63,10 +63,10 @@ export const goliathToadCards: Record<Card["id"], Card> = {
 	[cardId("belly_flop")]: {
 		id: cardId("belly_flop"),
 		name: "Belly Flop",
-		range: 0,
+		range: 1,
 		image: "/cards/belly_flop.webp",
 		playRequirement: "no_target",
-		aiTargetPreference: "self",
+		aiTargetPreference: "closest",
 		aoePattern: adjacentPattern,
 		effects: [
 			{ type: "damage", amount: 4, target: "anchor" },
