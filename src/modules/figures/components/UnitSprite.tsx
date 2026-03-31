@@ -84,7 +84,7 @@ export function UnitSprite({ unitInCell }: { unitInCell: BattleUnit }) {
 			</motion.div>
 
 			{/* HealthBar stays at the bottom center of the whole multi-tile block */}
-			<HealthBar unit={unitInCell} />
+			<HealthBar unitId={unitInCell.id} />
 		</div>
 	);
 }

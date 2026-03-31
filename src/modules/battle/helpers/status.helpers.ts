@@ -16,6 +16,7 @@ export type StatusRegistryHooks = {
 		isSimulation: boolean,
 	) => <T extends BattleUnit>(params: {
 		unit: T;
+		isTrueDamage?: boolean;
 		damageTaken: number;
 	}) => Promise<{ unit: T; damageTaken: number }>;
 
@@ -61,67 +62,69 @@ export const statusRegistry: Record<StatusType, StatusRegistryHooks> = {
 	vulnerable: {
 		onBeforeDamage:
 			() =>
-			async ({ unit, damageTaken }) => {
-				return { unit, damageTaken: damageTaken + 2 };
-			},
+				async ({ unit, damageTaken, isTrueDamage }) => {
+					if (isTrueDamage) return { unit, damageTaken };
+					return { unit, damageTaken: damageTaken + 2 };
+				},
 	},
 
 	block: {
 		onBeforeDamage:
 			() =>
-			async ({ unit, damageTaken }) => {
-				let remainingDamage = damageTaken;
+				async ({ unit, damageTaken, isTrueDamage }) => {
+					if (isTrueDamage) return { unit, damageTaken };
+					let remainingDamage = damageTaken;
 
-				const blocks = unit.statuses.filter((s) => s.type === "block");
-				const otherStatuses = unit.statuses.filter((s) => s.type !== "block");
+					const blocks = unit.statuses.filter((s) => s.type === "block");
+					const otherStatuses = unit.statuses.filter((s) => s.type !== "block");
 
-				blocks.sort((a, b) => {
-					const durA =
-						a.duration === -1 ? Number.POSITIVE_INFINITY : a.duration;
-					const durB =
-						b.duration === -1 ? Number.POSITIVE_INFINITY : b.duration;
-					return durA - durB;
-				});
+					blocks.sort((a, b) => {
+						const durA =
+							a.duration === -1 ? Number.POSITIVE_INFINITY : a.duration;
+						const durB =
+							b.duration === -1 ? Number.POSITIVE_INFINITY : b.duration;
+						return durA - durB;
+					});
 
-				const nextBlocks: typeof unit.statuses = [];
+					const nextBlocks: typeof unit.statuses = [];
 
-				for (const block of blocks) {
-					if (remainingDamage > 0) {
-						if (block.amount <= remainingDamage) {
-							remainingDamage -= block.amount;
+					for (const block of blocks) {
+						if (remainingDamage > 0) {
+							if (block.amount <= remainingDamage) {
+								remainingDamage -= block.amount;
+							} else {
+								nextBlocks.push({
+									...block,
+									amount: block.amount - remainingDamage,
+								});
+								remainingDamage = 0;
+							}
 						} else {
-							nextBlocks.push({
-								...block,
-								amount: block.amount - remainingDamage,
-							});
-							remainingDamage = 0;
+							nextBlocks.push(block);
 						}
-					} else {
-						nextBlocks.push(block);
 					}
-				}
 
-				return {
-					unit: { ...unit, statuses: [...otherStatuses, ...nextBlocks] },
-					damageTaken: remainingDamage,
-				};
-			},
+					return {
+						unit: { ...unit, statuses: [...otherStatuses, ...nextBlocks] },
+						damageTaken: remainingDamage,
+					};
+				},
 	},
 
 	poison: {
 		onTick:
 			() =>
-			async ({ status }) => {
-				return { damageTaken: status.amount, vfxType: "POISON" };
-			},
+				async ({ status }) => {
+					return { damageTaken: status.amount, isTrueDamage: true, vfxType: "POISON" };
+				},
 	},
 
 	regen: {
 		onTick:
 			() =>
-			async ({ status }) => {
-				return { healingReceived: status.amount, vfxType: "HEAL" };
-			},
+				async ({ status }) => {
+					return { healingReceived: status.amount, vfxType: "HEAL" };
+				},
 	},
 
 	rooted: {
@@ -133,9 +136,9 @@ export const statusRegistry: Record<StatusType, StatusRegistryHooks> = {
 	swallowed: {
 		onTick:
 			() =>
-			async ({ status }) => {
-				return { damageTaken: status.amount, vfxType: "POISON" };
-			},
+				async ({ status }) => {
+					return { damageTaken: status.amount, vfxType: "POISON" };
+				},
 		onBeforeMove: () => async () => {
 			return { canMove: false };
 		},
@@ -144,37 +147,37 @@ export const statusRegistry: Record<StatusType, StatusRegistryHooks> = {
 	digesting: {
 		onAfterDamage:
 			(get, set, isSimulation) =>
-			async ({ unit, hpLost }) => {
-				const digestingStatus = unit.statuses.find(
-					(s) => s.type === "digesting",
-				);
-				if (!digestingStatus) return { unit };
-
-				const remainingAmount = digestingStatus.amount - hpLost;
-
-				if (remainingAmount > 0) {
-					const nextStatuses = unit.statuses.map((s) =>
-						s.type === "digesting" ? { ...s, amount: remainingAmount } : s,
+				async ({ unit, hpLost }) => {
+					const digestingStatus = unit.statuses.find(
+						(s) => s.type === "digesting",
 					);
-					return { unit: { ...unit, statuses: nextStatuses } };
-				}
+					if (!digestingStatus) return { unit };
 
-				// --- THE THRESHOLD IS BROKEN! REGURGITATE! ---
-				const toadNextStatuses = unit.statuses.filter(
-					(s) => s.type !== "digesting",
-				);
-				const updatedToad = { ...unit, statuses: toadNextStatuses };
+					const remainingAmount = digestingStatus.amount - hpLost;
 
-				await triggerRegurgitation(get, set, isSimulation, updatedToad);
+					if (remainingAmount > 0) {
+						const nextStatuses = unit.statuses.map((s) =>
+							s.type === "digesting" ? { ...s, amount: remainingAmount } : s,
+						);
+						return { unit: { ...unit, statuses: nextStatuses } };
+					}
 
-				return { unit: updatedToad };
-			},
+					// --- THE THRESHOLD IS BROKEN! REGURGITATE! ---
+					const toadNextStatuses = unit.statuses.filter(
+						(s) => s.type !== "digesting",
+					);
+					const updatedToad = { ...unit, statuses: toadNextStatuses };
+
+					await triggerRegurgitation(get, set, isSimulation, updatedToad);
+
+					return { unit: updatedToad };
+				},
 
 		onDeath:
 			(get, set, isSimulation) =>
-			async ({ unit }) => {
-				await triggerRegurgitation(get, set, isSimulation, unit);
-				return { unit };
-			},
+				async ({ unit }) => {
+					await triggerRegurgitation(get, set, isSimulation, unit);
+					return { unit };
+				},
 	},
 };

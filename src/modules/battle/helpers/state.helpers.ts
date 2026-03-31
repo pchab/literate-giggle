@@ -10,9 +10,9 @@ import { statusRegistry } from "./status.helpers";
 
 export const findUnit =
 	(get: StoreGet) =>
-	<T extends BattleUnit>(unitId: T["id"]): T | undefined => {
-		return get().units.find((u) => u.id === unitId) as T | undefined;
-	};
+		<T extends BattleUnit>(unitId: T["id"]): T | undefined => {
+			return get().units.find((u) => u.id === unitId) as T | undefined;
+		};
 
 export function updateUnitState<T extends BattleUnit>(
 	_: StoreGet,
@@ -74,6 +74,7 @@ export const calculateStateDiff = (
 
 export type CombatUpdate = {
 	damageTaken?: number;
+	isTrueDamage?: boolean;
 	healingReceived?: number;
 	newStatuses?: Status[];
 	replaceStatuses?: Status[];
@@ -81,123 +82,122 @@ export type CombatUpdate = {
 
 export const applyCombatUpdate =
 	(get: StoreGet, set: StoreSet, isSimulation = false) =>
-	async <T extends BattleUnit>(
-		initialUnitId: T["id"],
-		update: CombatUpdate,
-	): Promise<void> => {
-		const maybeUnit = findUnit(get)(initialUnitId);
-		if (!maybeUnit) {
-			return;
-		}
-		let currentUnit = maybeUnit;
-		let pendingDamage = update.damageTaken ?? 0;
-		const baseStatuses = update.replaceStatuses
-			? [...update.replaceStatuses]
-			: [...currentUnit.statuses];
-		currentUnit.statuses = baseStatuses;
+		async <T extends BattleUnit>(
+			initialUnitId: T["id"],
+			update: CombatUpdate,
+		): Promise<void> => {
+			const maybeUnit = findUnit(get)(initialUnitId);
+			if (!maybeUnit) return;
 
-		// ==========================================
-		// PHASE 1: ON BEFORE DAMAGE (Modify the Math)
-		// ==========================================
-		if (pendingDamage > 0) {
-			for (const status of currentUnit.statuses) {
-				const hook = statusRegistry[status.type]?.onBeforeDamage;
-				if (hook) {
-					const { unit, damageTaken } = await hook(
-						get,
-						set,
-						isSimulation,
-					)({
-						unit: currentUnit,
-						damageTaken: pendingDamage,
-					});
-					currentUnit = unit;
-					pendingDamage = damageTaken;
+			let currentUnit = maybeUnit;
+			let pendingDamage = update.damageTaken ?? 0;
+			const baseStatuses = update.replaceStatuses
+				? [...update.replaceStatuses]
+				: [...currentUnit.statuses];
+			currentUnit.statuses = baseStatuses;
+
+			// ==========================================
+			// PHASE 1: ON BEFORE DAMAGE (Modify the Math)
+			// ==========================================
+			if (pendingDamage > 0) {
+				for (const status of currentUnit.statuses) {
+					const hook = statusRegistry[status.type]?.onBeforeDamage;
+					if (hook) {
+						const { unit, damageTaken } = await hook(get, set, isSimulation)({
+							unit: currentUnit,
+							damageTaken: pendingDamage,
+							isTrueDamage: update.isTrueDamage, // <--- Let hooks know!
+						});
+						currentUnit = unit;
+						pendingDamage = damageTaken;
+					}
 				}
 			}
-		}
 
-		// ==========================================
-		// PHASE 2: CORE MATH (HP & Status Stacking)
-		// ==========================================
-		const startingHp = currentUnit.currentHp;
+			// ==========================================
+			// PHASE 2: CORE MATH (HP & Status Stacking)
+			// ==========================================
+			const startingHp = currentUnit.currentHp;
 
-		if (pendingDamage > 0)
-			currentUnit.currentHp = Math.max(
-				0,
-				currentUnit.currentHp - pendingDamage,
-			);
-		if (update.healingReceived)
-			currentUnit.currentHp = Math.min(
-				currentUnit.maxHp,
-				currentUnit.currentHp + update.healingReceived,
-			);
-		if (update.newStatuses)
-			currentUnit.statuses = [...baseStatuses, ...update.newStatuses];
+			if (pendingDamage > 0) {
+				const finalDamage = update.isTrueDamage
+					? pendingDamage
+					: Math.max(pendingDamage - currentUnit.baseDef, 0);
 
-		const actualHpLost = startingHp - currentUnit.currentHp;
+				currentUnit.currentHp = Math.max(0, currentUnit.currentHp - finalDamage);
+			}
 
-		// ==========================================
-		// PHASE 3: ON AFTER DAMAGE (Reactions)
-		// ==========================================
-		if (actualHpLost > 0) {
-			for (const status of currentUnit.statuses) {
-				const hook = statusRegistry[status.type]?.onAfterDamage;
-				if (hook) {
-					const result = await hook(
-						get,
-						set,
-						isSimulation,
-					)({
-						unit: currentUnit,
-						hpLost: actualHpLost,
-					});
-					currentUnit = result.unit;
+			if (update.healingReceived)
+				currentUnit.currentHp = Math.min(
+					currentUnit.maxHp,
+					currentUnit.currentHp + update.healingReceived,
+				);
+			if (update.newStatuses)
+				currentUnit.statuses = [...baseStatuses, ...update.newStatuses];
+
+			const actualHpLost = startingHp - currentUnit.currentHp;
+
+			// ==========================================
+			// PHASE 3: ON AFTER DAMAGE (Reactions)
+			// ==========================================
+			if (actualHpLost > 0) {
+				for (const status of currentUnit.statuses) {
+					const hook = statusRegistry[status.type]?.onAfterDamage;
+					if (hook) {
+						const result = await hook(
+							get,
+							set,
+							isSimulation,
+						)({
+							unit: currentUnit,
+							hpLost: actualHpLost,
+						});
+						currentUnit = result.unit;
+					}
 				}
 			}
-		}
 
-		// ==========================================
-		// PHASE 4: ON DEATH
-		// ==========================================
-		const isDead = currentUnit.currentHp <= 0;
-		const toRemove = isDead && !currentUnit.isDeathRattle;
-		if (toRemove) {
-			updateUnitState(
-				get,
-				set,
-				isSimulation,
-			)(currentUnit.id, { isDeathRattle: true });
-			for (const status of currentUnit.statuses) {
-				const hook = statusRegistry[status.type]?.onDeath;
-				if (hook) {
-					const result = await hook(
-						get,
-						set,
-						isSimulation,
-					)({ unit: currentUnit });
-					currentUnit = result.unit;
-				}
-			}
-			if (currentUnit.onDeath) {
-				const onDeathCard = cardLibrary[currentUnit.onDeath];
-				await handleAICardIntent(
+			// ==========================================
+			// PHASE 4: ON DEATH
+			// ==========================================
+			const isDead = currentUnit.currentHp <= 0;
+			const toRemove = isDead && !currentUnit.isDeathRattle;
+			if (toRemove) {
+				updateUnitState(
 					get,
 					set,
 					isSimulation,
-				)({
-					attackerId: currentUnit.id,
-					card: onDeathCard,
-				});
+				)(currentUnit.id, { isDeathRattle: true });
+				for (const status of currentUnit.statuses) {
+					const hook = statusRegistry[status.type]?.onDeath;
+					if (hook) {
+						const result = await hook(
+							get,
+							set,
+							isSimulation,
+						)({ unit: currentUnit });
+						currentUnit = result.unit;
+					}
+				}
+				if (currentUnit.onDeath) {
+					const onDeathCard = cardLibrary[currentUnit.onDeath];
+					await handleAICardIntent(
+						get,
+						set,
+						isSimulation,
+					)({
+						attackerId: currentUnit.id,
+						card: onDeathCard,
+					});
+				}
 			}
-		}
 
-		// ==========================================
-		// 3. ONE-LINER STORE COMMIT
-		// ==========================================
-		set(({ units }) => ({
-			units: toRemove
-				? units.filter((u) => u.id !== currentUnit.id)
-				: units.map((u) => (u.id === currentUnit.id ? currentUnit : u)),
-		}));
-	};
+			// ==========================================
+			// 3. ONE-LINER STORE COMMIT
+			// ==========================================
+			set(({ units }) => ({
+				units: toRemove
+					? units.filter((u) => u.id !== currentUnit.id)
+					: units.map((u) => (u.id === currentUnit.id ? currentUnit : u)),
+			}));
+		};

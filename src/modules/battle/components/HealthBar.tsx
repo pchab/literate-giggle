@@ -3,24 +3,25 @@ import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
 
-export default function HealthBar({
-	unit: { id, currentHp, maxHp, statuses = [], size = { cols: 1, rows: 1 } },
-}: {
-	unit: BattleUnit;
-}) {
+export default function HealthBar({ unitId }: { unitId: BattleUnit["id"] }) {
 	// ==========================================
 	// SMART SUBSCRIPTIONS
 	// ==========================================
-	const { projectedDamage, projectedHealing } = useBattleStore(
+	const { units, projectedDamage, projectedHealing } = useBattleStore(
 		useShallow((state) => ({
+			units: state.units,
 			projectedDamage:
-				(state.aiStateDiff.projectedDamage[id] ?? 0) +
-				(state.playerStateDiff.projectedDamage[id] ?? 0),
+				(state.aiStateDiff.projectedDamage[unitId] ?? 0) +
+				(state.playerStateDiff.projectedDamage[unitId] ?? 0),
 			projectedHealing:
-				(state.aiStateDiff.projectedHealing[id] ?? 0) +
-				(state.playerStateDiff.projectedHealing[id] ?? 0),
+				(state.aiStateDiff.projectedHealing[unitId] ?? 0) +
+				(state.playerStateDiff.projectedHealing[unitId] ?? 0),
 		})),
 	);
+
+	const unit = units.find((u) => u.id === unitId);
+	if (!unit) return null;
+	const { currentHp, maxHp, statuses = [], size = { cols: 1, rows: 1 } } = unit;
 
 	// ==========================================
 	// STATUS AGGREGATION
