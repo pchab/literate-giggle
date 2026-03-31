@@ -1,37 +1,20 @@
-import type { EffectResolverParams } from "@/modules/battle/helpers/effects/effect.resolvers";
-import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
+import type { EffectResolver } from "@/modules/battle/helpers/effects/effect.resolvers";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
+import type { CustomScriptEffect } from "../domain/cards.type";
 import { alchemicalFrenzy } from "./custom-scripts/alchemicalFrenzy.script";
 import { recklessExperiment } from "./custom-scripts/recklessExperiment.script";
 import { swallow } from "./custom-scripts/swallow.script";
 import { trapdoorSpawn } from "./custom-scripts/trapDoorSpawn.script";
 import { volatileTransmutation } from "./custom-scripts/volatileTransmutation.script";
 
-type CustomScriptEffectResolver<T extends BattleUnit, P> = (
-	get: StoreGet,
-	set: StoreSet,
-	isSimulation: boolean,
-) => (params: EffectResolverParams<T>, payload: P) => Promise<void>;
-
 export const customScriptRegistry: Record<
 	string,
-	CustomScriptEffectResolver<BattleUnit, unknown>
+	// biome-ignore lint/suspicious/noExplicitAny: generic payload for custom scripts, can be typed more strictly in script files
+	EffectResolver<BattleUnit, CustomScriptEffect<any>>
 > = {
-	trapdoor_spawn: trapdoorSpawn as CustomScriptEffectResolver<
-		BattleUnit,
-		unknown
-	>,
-	reckless_experiment: recklessExperiment as CustomScriptEffectResolver<
-		BattleUnit,
-		unknown
-	>,
-	volatile_transmutation: volatileTransmutation as CustomScriptEffectResolver<
-		BattleUnit,
-		unknown
-	>,
-	alchemical_frenzy: alchemicalFrenzy as CustomScriptEffectResolver<
-		BattleUnit,
-		unknown
-	>,
-	swallow: swallow as CustomScriptEffectResolver<BattleUnit, unknown>,
+	trapdoor_spawn: trapdoorSpawn,
+	reckless_experiment: recklessExperiment,
+	volatile_transmutation: volatileTransmutation,
+	alchemical_frenzy: alchemicalFrenzy,
+	swallow: swallow,
 };

@@ -11,7 +11,7 @@ import { shelves } from "./shelves";
 
 export const summonLibrary: Record<string, UnitBlueprint> = {
 	[summonId("barrel")]: barrel,
-	[summonId("ice-wall")]: iceWall,
+	[summonId("ice_wall")]: iceWall,
 	[summonId("rat")]: rat,
 	[summonId("skeleton")]: skeleton,
 	[summonId("briar-wolf")]: briarWolf,

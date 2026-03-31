@@ -1,6 +1,9 @@
 import type { Card } from "@/modules/cards/domain/cards.type";
 import { isSummon } from "@/modules/figures/helpers/figures.helpers";
-import type { AIBattleUnit, BattleUnit } from "../../figures/domain/figures.type";
+import type {
+	AIBattleUnit,
+	BattleUnit,
+} from "../../figures/domain/figures.type";
 import type { GridPosition } from "../domain/grid.type";
 import type { TargetResolver } from "./ai.targeting.helpers";
 import { areEnemies } from "./effects/effect.helpers";
@@ -18,7 +21,7 @@ import { calculateExactPath } from "./move.helpers";
 // ==========================================
 // STEP 1: TARGET EVALUATOR (The "Who")
 // ==========================================
-export function getPrioritizedTargets<C extends AIBattleUnit, T extends BattleUnit>(
+function getPrioritizedTargets<C extends AIBattleUnit, T extends BattleUnit>(
 	aiFigure: C,
 	card: Card,
 	figures: T[],
@@ -36,7 +39,9 @@ export function getPrioritizedTargets<C extends AIBattleUnit, T extends BattleUn
 			validTargets = aliveFigures.filter(areEnemies(aiFigure));
 			break;
 		case "requires_entity":
-			validTargets = aliveFigures.filter((f) => !(isSummon(f) && f.allegiance === "NEUTRAL"));
+			validTargets = aliveFigures.filter(
+				(f) => !(isSummon(f) && f.allegiance === "NEUTRAL"),
+			);
 			break;
 		default:
 			validTargets = aliveFigures;
@@ -72,7 +77,9 @@ const calculateFiringSpot = <C extends AIBattleUnit, T extends BattleUnit>(
 ): GridPosition | null => {
 	if (monster.baseMove === 0) return monster.gridPosition;
 
-	const canTargetSelf = ["requires_entity", "requires_ally"].includes(card.playRequirement);
+	const canTargetSelf = ["requires_entity", "requires_ally"].includes(
+		card.playRequirement,
+	);
 	const minRange = canTargetSelf ? 0 : 1;
 	const hardObstacles = figures.filter(areEnemies(monster));
 
@@ -101,14 +108,25 @@ const calculateFiringSpot = <C extends AIBattleUnit, T extends BattleUnit>(
 				return possibleSpawns.length > 0;
 			}
 
-			return isTargetInRange({ card, minRange, attacker: { ...monster, gridPosition: cell }, target: targetFigure });
+			return isTargetInRange({
+				card,
+				minRange,
+				attacker: { ...monster, gridPosition: cell },
+				target: targetFigure,
+			});
 		});
 
 		if (firingSpots.length > 0) {
 			// Pick the spot furthest away from the target
 			firingSpots.sort((a, b) => {
-				const distA = getDistanceToBoundingBox({ caster: { ...monster, gridPosition: a }, target: targetFigure });
-				const distB = getDistanceToBoundingBox({ caster: { ...monster, gridPosition: b }, target: targetFigure });
+				const distA = getDistanceToBoundingBox({
+					caster: { ...monster, gridPosition: a },
+					target: targetFigure,
+				});
+				const distB = getDistanceToBoundingBox({
+					caster: { ...monster, gridPosition: b },
+					target: targetFigure,
+				});
 				return distB - distA;
 			});
 			return firingSpots[0];
@@ -117,7 +135,10 @@ const calculateFiringSpot = <C extends AIBattleUnit, T extends BattleUnit>(
 	}
 
 	// --- AGGRESSIVE LOGIC ---
-	const distance = getDistanceToBoundingBox({ caster: monster, target: targetFigure });
+	const distance = getDistanceToBoundingBox({
+		caster: monster,
+		target: targetFigure,
+	});
 	if (distance >= minRange && distance <= card.range) {
 		return monster.gridPosition;
 	}
@@ -135,7 +156,9 @@ const calculateFiringSpot = <C extends AIBattleUnit, T extends BattleUnit>(
 	let stepsToTake = Math.min(monster.baseMove, fullPath.length);
 	while (stepsToTake > 0) {
 		const candidateDest = fullPath[stepsToTake - 1];
-		if (canUnitFit({ unit: { ...monster, gridPosition: candidateDest }, figures })) {
+		if (
+			canUnitFit({ unit: { ...monster, gridPosition: candidateDest }, figures })
+		) {
 			return candidateDest;
 		}
 		stepsToTake--;
@@ -155,7 +178,7 @@ export const getIdealTarget: TargetResolver = <C extends AIBattleUnit>(
 	// --- FAST PATH: SELF ---
 	if (card.aiTargetPreference === "self") {
 		return {
-			intendedTarget: { gridPosition: aiFigure.gridPosition, size: aiFigure.size },
+			intendedTarget: aiFigure,
 			moveDest: aiFigure.gridPosition,
 			canHit: true,
 		};
@@ -167,9 +190,17 @@ export const getIdealTarget: TargetResolver = <C extends AIBattleUnit>(
 		if (target) {
 			const moveDest = calculateFiringSpot(aiFigure, target, card, figures);
 			return {
-				intendedTarget: { gridPosition: target.gridPosition, size: target.size },
+				intendedTarget: target,
 				moveDest,
-				canHit: Boolean(moveDest && isTargetInRange({ card, minRange: 1, attacker: { ...aiFigure, gridPosition: moveDest }, target })),
+				canHit: Boolean(
+					moveDest &&
+						isTargetInRange({
+							card,
+							minRange: 1,
+							attacker: { ...aiFigure, gridPosition: moveDest },
+							target,
+						}),
+				),
 			};
 		}
 	}
@@ -196,7 +227,10 @@ export const getIdealTarget: TargetResolver = <C extends AIBattleUnit>(
 
 				if (possibleSpawns.length > 0) {
 					return {
-						intendedTarget: { gridPosition: possibleSpawns[0], size: { cols: 1, rows: 1 } },
+						intendedTarget: {
+							gridPosition: possibleSpawns[0],
+							size: { cols: 1, rows: 1 },
+						},
 						moveDest,
 						canHit: true,
 					};
@@ -205,7 +239,11 @@ export const getIdealTarget: TargetResolver = <C extends AIBattleUnit>(
 			}
 
 			// Handle Standard Target Cast
-			const minRange = ["requires_entity", "requires_ally"].includes(card.playRequirement) ? 0 : 1;
+			const minRange = ["requires_entity", "requires_ally"].includes(
+				card.playRequirement,
+			)
+				? 0
+				: 1;
 			const canHit = isTargetInRange({
 				card,
 				minRange,
@@ -215,9 +253,9 @@ export const getIdealTarget: TargetResolver = <C extends AIBattleUnit>(
 
 			if (canHit) {
 				return {
-					intendedTarget: { gridPosition: focalTarget.gridPosition, size: focalTarget.size },
+					intendedTarget: focalTarget,
 					moveDest,
-					canHit: true
+					canHit: true,
 				};
 			}
 
@@ -230,13 +268,18 @@ export const getIdealTarget: TargetResolver = <C extends AIBattleUnit>(
 
 	// --- FALLBACK ---
 	return {
-		intendedTarget: fallbackTarget ? { gridPosition: fallbackTarget.gridPosition, size: fallbackTarget.size } : null,
+		intendedTarget: fallbackTarget,
 		moveDest: fallbackMove,
 		canHit: false,
 	};
 };
 
-function isTargetInRange<C extends BattleUnit, T extends BattleUnit>({ card, minRange, attacker, target }: {
+function isTargetInRange<C extends BattleUnit, T extends BattleUnit>({
+	card,
+	minRange,
+	attacker,
+	target,
+}: {
 	card: Card;
 	minRange: number;
 	attacker: C;

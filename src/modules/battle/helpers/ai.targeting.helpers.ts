@@ -4,10 +4,7 @@ import type {
 	BattleUnit,
 } from "@/modules/figures/domain/figures.type";
 import type { GridPosition } from "../domain/grid.type";
-import {
-	getLineOfSightPath,
-	isUnitInTile,
-} from "./grid.helpers";
+import { getLineOfSightPath, isUnitInTile } from "./grid.helpers";
 
 export type TargetResolver = <C extends AIBattleUnit>(
 	aiFigure: C,
@@ -52,12 +49,11 @@ export function getAnchorTarget<C extends BattleUnit>({
 		return intendedTarget;
 	}
 
-	const actualTarget =
-		getActualTarget({
-			attacker,
-			intendedTargetPos: intendedTarget.gridPosition,
-			figures: obstacles,
-		});
+	const actualTarget = getActualTarget({
+		attacker,
+		intendedTargetPos: intendedTarget.gridPosition,
+		figures: obstacles,
+	});
 
 	if (actualTarget) {
 		return {
@@ -69,7 +65,7 @@ export function getAnchorTarget<C extends BattleUnit>({
 	return intendedTarget;
 }
 
-export function getActualTarget<C extends BattleUnit, T extends BattleUnit>({
+function getActualTarget<C extends BattleUnit, T extends BattleUnit>({
 	attacker,
 	intendedTargetPos,
 	figures,

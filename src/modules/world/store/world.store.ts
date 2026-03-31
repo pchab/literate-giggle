@@ -33,7 +33,7 @@ export interface WorldState {
 	evolutionRunesInventory: EvolutionRuneId[];
 }
 
-export interface WorldAction {
+interface WorldAction {
 	initializeRoster: () => void;
 	setPhase: (phase: GamePhase) => void;
 	stageBattleRewards: (remainingHp: Record<string, number>) => void;

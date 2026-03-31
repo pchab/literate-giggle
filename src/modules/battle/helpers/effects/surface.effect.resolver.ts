@@ -1,13 +1,15 @@
 import type { CreateSurfaceEffect } from "@/modules/cards/domain/cards.type";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
-import type { StoreGet, StoreSet } from "../../store/battle.store";
 import { getCellId } from "../grid.helpers";
-import type { EffectResolverParams } from "./effect.resolvers";
+import type { EffectResolver } from "./effect.resolvers";
 
-export const resolveSurfaceEffect =
-	(_: StoreGet, set: StoreSet) =>
-	(effect: CreateSurfaceEffect) =>
-	<C extends BattleUnit>({ patternCells }: EffectResolverParams<C>) => {
+export const resolveSurfaceEffect: EffectResolver<
+	BattleUnit,
+	CreateSurfaceEffect
+> =
+	(_, set) =>
+	(effect) =>
+	async ({ patternCells }) => {
 		const newSurfaces = patternCells?.reduce((surfaces, cell) => {
 			const cellId = getCellId(cell);
 			Object.assign(surfaces, {

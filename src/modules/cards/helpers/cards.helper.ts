@@ -11,11 +11,7 @@ export function cardId(id: string): Card["id"] {
 	return `card-${id}` as Card["id"];
 }
 
-export function cloneCard(card: Card): Card {
-	return Object.assign({}, card);
-}
-
-export function formatStatusEffect({ status }: ApplyStatusEffect): string {
+function formatStatusEffect({ status }: ApplyStatusEffect): string {
 	switch (status.type) {
 		case "block":
 			return `🛡️ Gain ${status.amount} block${status.duration > 0 ? ` for ${status.duration} turn(s).` : ""}`;
@@ -138,39 +134,4 @@ export function getComputedCard(instance: HeroCard): Card {
 		range: range + (instance.powerRunes.bonusRange || 0),
 		effects: computedEffects,
 	};
-}
-
-export function getStatusEffectText({ status }: ApplyStatusEffect): {
-	icon: string;
-	statusName: string;
-	durationText: string;
-} {
-	let icon = "";
-	let statusName = "";
-	const durationText =
-		status.duration !== -1 ? ` for ${status.duration} turn(s)` : "";
-
-	// Determine the visual flavor based on the specific status
-	switch (status.type) {
-		case "block":
-			icon = "🛡️";
-			statusName = "Block";
-			break;
-		case "poison":
-			icon = "☠️";
-			statusName = "Poison";
-			break;
-		case "rooted":
-			icon = "🌱";
-			statusName = "Rooted";
-			break;
-		case "vulnerable":
-			icon = "💔";
-			statusName = "Vulnerable";
-			break;
-		default:
-			icon = "✨";
-			statusName = "Status";
-	}
-	return { icon, statusName, durationText };
 }

@@ -29,159 +29,159 @@ import { updateUnitState } from "./state.helpers";
 
 export const handleAICardIntent =
 	(get: StoreGet, set: StoreSet, isSimulation = false) =>
-		async ({
-			attackerId,
+	async ({
+		attackerId,
+		card,
+		getTarget = getIdealTarget,
+		getAnchor = getAnchorTarget,
+	}: {
+		attackerId: BattleUnit["id"];
+		card: Card;
+		getTarget?: TargetResolver;
+		getAnchor?: AnchorResolver;
+	}) => {
+		const { units } = get(); // Unified array!
+		const initialAttacker = units.find((u) => u.id === attackerId) as
+			| AIBattleUnit
+			| undefined;
+
+		if (!initialAttacker) return;
+
+		const { intendedTarget, moveDest } = getTarget(
+			initialAttacker,
 			card,
-			getTarget = getIdealTarget,
-			getAnchor = getAnchorTarget,
-		}: {
-			attackerId: BattleUnit["id"];
-			card: Card;
-			getTarget?: TargetResolver;
-			getAnchor?: AnchorResolver;
-		}) => {
-			const { units } = get(); // Unified array!
-			const initialAttacker = units.find((u) => u.id === attackerId) as
-				| AIBattleUnit
-				| undefined;
+			units,
+		);
+		if (!intendedTarget || !moveDest) return;
 
-			if (!initialAttacker) return;
+		// ==========================================
+		// 1. ANIMATE THE WALK
+		// ==========================================
+		const isNeutral =
+			isSummon(initialAttacker) && initialAttacker.allegiance === "NEUTRAL";
+		const isPlayerAligned =
+			isSummon(initialAttacker) && initialAttacker.allegiance === "PLAYER";
 
-			const { intendedTarget, moveDest } = getTarget(
-				initialAttacker,
-				card,
-				units,
-			);
-			if (!intendedTarget || !moveDest) return;
+		const blockingFigures = units.filter((f) => {
+			if (f.id === initialAttacker.id) return false;
+			if (isNeutral) return true;
 
-			// ==========================================
-			// 1. ANIMATE THE WALK
-			// ==========================================
-			const isNeutral =
-				isSummon(initialAttacker) && initialAttacker.allegiance === "NEUTRAL";
-			const isPlayerAligned =
-				isSummon(initialAttacker) && initialAttacker.allegiance === "PLAYER";
+			if (isPlayerAligned) {
+				return isMonster(f) || (isSummon(f) && f.allegiance !== "PLAYER");
+			}
 
-			const blockingFigures = units.filter((f) => {
-				if (f.id === initialAttacker.id) return false;
-				if (isNeutral) return true;
+			return isHero(f) || (isSummon(f) && f.allegiance !== "ENEMY");
+		});
 
-				if (isPlayerAligned) {
-					return isMonster(f) || (isSummon(f) && f.allegiance !== "PLAYER");
+		const path = calculateExactPath({
+			movingUnit: initialAttacker,
+			targetPos: moveDest,
+			figures: blockingFigures,
+		});
+
+		const movedUnit = await moveBattleUnit(
+			get,
+			set,
+			isSimulation,
+		)({
+			movingUnit: initialAttacker,
+			path,
+		});
+
+		if (isSimulation) {
+			set(({ aiIntents, ...prev }) => {
+				const unitIntent = aiIntents[initialAttacker.id];
+				if (unitIntent) {
+					unitIntent.intendedMove = path;
 				}
-
-				return isHero(f) || (isSummon(f) && f.allegiance !== "ENEMY");
+				return { aiIntents, ...prev };
 			});
+		}
 
-			const path = calculateExactPath({
-				movingUnit: initialAttacker,
-				targetPos: moveDest,
-				figures: blockingFigures,
+		// ==========================================
+		// 2. PREPARE THE ATTACK
+		// ==========================================
+		if (!movedUnit || (movedUnit.currentHp <= 0 && !movedUnit.isDeathRattle)) {
+			return;
+		}
+
+		const distanceToTarget = getDistanceToBoundingBox({
+			caster: movedUnit,
+			target: intendedTarget,
+		});
+
+		if (card.aiTargetPreference !== "self" && distanceToTarget > card.range) {
+			return;
+		}
+
+		const postMoveUnits = get().units;
+
+		const anchorTarget = getAnchor({
+			attacker: movedUnit,
+			card,
+			intendedTarget,
+			obstacles: postMoveUnits,
+		});
+
+		const attackOrigin = getClosestOriginTile({
+			caster: movedUnit,
+			anchorTarget,
+		});
+
+		const targetedCells = filterGridByAttackPattern({
+			card,
+			targetPos: anchorTarget,
+			originPos: attackOrigin,
+		});
+
+		if (isSimulation) {
+			set(({ aiIntents, ...prev }) => {
+				const unitIntent = aiIntents[initialAttacker.id];
+				if (unitIntent) {
+					unitIntent.dangerZone = targetedCells;
+					unitIntent.target = anchorTarget;
+				}
+				return { aiIntents, ...prev };
 			});
+		}
 
-			const movedUnit = await moveBattleUnit(
-				get,
-				set,
-				isSimulation,
-			)({
-				movingUnit: initialAttacker,
-				path,
-			});
+		// ==========================================
+		// 3. RESOLVE EFFECTS
+		// ==========================================
+		await updateUnitState(
+			get,
+			set,
+			isSimulation,
+		)(attackerId, {
+			stance: UnitStance.ATTACKING,
+		});
+		await sleep(isSimulation ? 0 : 200);
 
-			if (isSimulation) {
-				set(({ aiIntents, ...prev }) => {
-					const unitIntent = aiIntents[initialAttacker.id];
-					if (unitIntent) {
-						unitIntent.intendedMove = path;
-					}
-					return { aiIntents, ...prev };
-				});
-			}
-
-			// ==========================================
-			// 2. PREPARE THE ATTACK
-			// ==========================================
-			if (!movedUnit || (movedUnit.currentHp <= 0 && !movedUnit.isDeathRattle)) {
-				return;
-			}
-
-			const distanceToTarget = getDistanceToBoundingBox({
-				caster: movedUnit,
-				target: intendedTarget,
-			});
-
-			if (card.aiTargetPreference !== "self" && distanceToTarget > card.range) {
-				return;
-			}
-
-			const postMoveUnits = get().units;
-
-			const anchorTarget = getAnchor({
-				attacker: movedUnit,
-				card,
-				intendedTarget,
-				obstacles: postMoveUnits,
-			});
-
-			const attackOrigin = getClosestOriginTile({
-				caster: movedUnit,
+		const lockedTargets = card.effects.map((effect) =>
+			resolveTargets(
+				effect.target,
 				anchorTarget,
+				movedUnit,
+				postMoveUnits,
+				targetedCells,
+			),
+		);
+
+		for (let i = 0; i < card.effects.length; i++) {
+			const effect = card.effects[i];
+			await resolvers(get, set, isSimulation)(effect)({
+				anchorTarget,
+				caster: movedUnit,
+				patternCells: targetedCells,
+				targetIds: lockedTargets[i],
 			});
+		}
 
-			const targetedCells = filterGridByAttackPattern({
-				card,
-				targetPos: anchorTarget,
-				originPos: attackOrigin,
-			});
-
-			if (isSimulation) {
-				set(({ aiIntents, ...prev }) => {
-					const unitIntent = aiIntents[initialAttacker.id];
-					if (unitIntent) {
-						unitIntent.dangerZone = targetedCells;
-						unitIntent.target = anchorTarget;
-					}
-					return { aiIntents, ...prev };
-				});
-			}
-
-			// ==========================================
-			// 3. RESOLVE EFFECTS
-			// ==========================================
-			await updateUnitState(
-				get,
-				set,
-				isSimulation,
-			)(attackerId, {
-				stance: UnitStance.ATTACKING,
-			});
-			await sleep(isSimulation ? 0 : 200);
-
-			const lockedTargets = card.effects.map((effect) =>
-				resolveTargets(
-					effect.target,
-					anchorTarget,
-					movedUnit,
-					postMoveUnits,
-					targetedCells,
-				),
-			);
-
-			for (let i = 0; i < card.effects.length; i++) {
-				const effect = card.effects[i];
-				await resolvers(effect)(get, set, isSimulation)({
-					anchorTarget,
-					caster: movedUnit,
-					patternCells: targetedCells,
-					targetIds: lockedTargets[i],
-				});
-			}
-
-			await updateUnitState(
-				get,
-				set,
-				isSimulation,
-			)(attackerId, {
-				stance: UnitStance.IDLE,
-			});
-		};
+		await updateUnitState(
+			get,
+			set,
+			isSimulation,
+		)(attackerId, {
+			stance: UnitStance.IDLE,
+		});
+	};

@@ -53,12 +53,6 @@ export type HealEffect = {
 	projectile?: VfxType;
 };
 
-export type BlockEffect = {
-	type: "block";
-	amount: number;
-	target: EffectTarget;
-};
-
 export type PushEffect = {
 	type: "push";
 	distance: number;
@@ -92,11 +86,11 @@ export type CreateSurfaceEffect = {
 	charges?: number;
 };
 
-export type CustomScriptEffect = {
+export type CustomScriptEffect<P> = {
 	type: "custom_script";
 	scriptId: string;
 	target: EffectTarget;
-	payload?: Record<string, unknown>; // Flexible config for the script
+	payload: P;
 };
 
 export type CardEffect =
@@ -107,7 +101,7 @@ export type CardEffect =
 	| SummonEffect
 	| ApplyStatusEffect
 	| CreateSurfaceEffect
-	| CustomScriptEffect;
+	| CustomScriptEffect<unknown>;
 
 export type Card = {
 	id: string & { readonly __brand: "CardId" };

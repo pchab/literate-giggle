@@ -29,7 +29,7 @@ interface CampaignActions {
 	setFlag: (flagId: string) => void;
 }
 
-export const initialState: CampaignState = {
+const initialState: CampaignState = {
 	activeQuests: {
 		[RAT_IN_THE_CELLAR.id]: RAT_IN_THE_CELLAR.steps.tavern_meeting,
 	},

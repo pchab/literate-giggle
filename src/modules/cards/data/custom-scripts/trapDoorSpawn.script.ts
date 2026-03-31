@@ -1,12 +1,11 @@
 import type { Intent } from "@/modules/battle/domain/intent.type";
 import { handleAICardIntent } from "@/modules/battle/helpers/ai.actions.helpers";
-import type { EffectResolverParams } from "@/modules/battle/helpers/effects/effect.resolvers";
+import type { EffectResolver } from "@/modules/battle/helpers/effects/effect.resolvers";
 import {
 	getCellId,
 	isTileEmpty,
 	isTileInBounds,
 } from "@/modules/battle/helpers/grid.helpers";
-import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
 import { summonLibrary } from "@/modules/figures/data/summons/summons.data";
 import {
 	type BattleUnit,
@@ -15,15 +14,17 @@ import {
 } from "@/modules/figures/domain/figures.type";
 import { summonId } from "@/modules/figures/helpers/figures.helpers";
 import { sleep } from "@/modules/shared/helpers/sleep";
+import type { CustomScriptEffect } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
 import { monsterCardLibrary } from "../monsters/monsterCards.data";
 
-export const trapdoorSpawn =
-	<C extends BattleUnit>(get: StoreGet, set: StoreSet, isSimulation = false) =>
-	async (
-		{ caster }: EffectResolverParams<C>,
-		payload: { spawnCount: number; blueprintId: Summon["id"] },
-	) => {
+export const trapdoorSpawn: EffectResolver<
+	BattleUnit,
+	CustomScriptEffect<{ spawnCount: number; blueprintId: Summon["id"] }>
+> =
+	(get, set, isSimulation = false) =>
+	({ payload }) =>
+	async ({ caster }) => {
 		const { units, surfaces } = get();
 
 		const targetPos = { col: 2, row: 2 };

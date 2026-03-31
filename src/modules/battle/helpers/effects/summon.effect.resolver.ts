@@ -10,8 +10,7 @@ import {
 	isSummon,
 	summonId,
 } from "@/modules/figures/helpers/figures.helpers";
-import type { StoreGet, StoreSet } from "../../store/battle.store";
-import type { EffectResolverParams } from "./effect.resolvers";
+import type { EffectResolver } from "./effect.resolvers";
 
 type CasterFaction = "HERO" | "MONSTER";
 
@@ -25,13 +24,10 @@ function getCasterFaction<T extends BattleUnit>(caster: T): CasterFaction {
 	return "HERO";
 }
 
-export const resolveSummonEffect =
-	(_: StoreGet, set: StoreSet) =>
-	(effect: SummonEffect) =>
-	<T extends BattleUnit>({
-		anchorTarget,
-		caster,
-	}: EffectResolverParams<T>): void => {
+export const resolveSummonEffect: EffectResolver<BattleUnit, SummonEffect> =
+	(_, set) =>
+	(effect) =>
+	async ({ anchorTarget, caster }) => {
 		const allegiance = getCasterFaction(caster) === "HERO" ? "PLAYER" : "ENEMY";
 		if (anchorTarget) {
 			const blueprint = summonLibrary[effect.blueprintId];

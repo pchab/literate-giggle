@@ -15,7 +15,7 @@ import {
 	findUnit,
 } from "../state.helpers";
 import { getVfxForEffect } from "../vfx.helper";
-import type { EffectResolverParams } from "./effect.resolvers";
+import type { EffectResolver } from "./effect.resolvers";
 
 const animateProjectile =
 	(_: StoreGet, set: StoreSet) =>
@@ -66,14 +66,13 @@ const animateProjectile =
 		});
 	};
 
-export const resolveStandardEffect =
-	(get: StoreGet, set: StoreSet, isSimulation = false) =>
-	(effect: DamageEffect | HealEffect | ApplyStatusEffect) =>
-	async <C extends BattleUnit>({
-		anchorTarget,
-		caster,
-		targetIds,
-	}: EffectResolverParams<C>): Promise<void> => {
+export const resolveStandardEffect: EffectResolver<
+	BattleUnit,
+	DamageEffect | HealEffect | ApplyStatusEffect
+> =
+	(get, set, isSimulation = false) =>
+	(effect) =>
+	async ({ anchorTarget, caster, targetIds }) => {
 		const targetPositions: GridPosition[] = [];
 
 		if (anchorTarget && effect.projectile && !isSimulation) {

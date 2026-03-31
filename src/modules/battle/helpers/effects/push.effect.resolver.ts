@@ -1,6 +1,5 @@
 import type { PushEffect } from "@/modules/cards/domain/cards.type";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
-import type { StoreGet, StoreSet } from "../../store/battle.store";
 import {
 	getClosestOriginTile,
 	isTileInBounds,
@@ -8,16 +7,12 @@ import {
 } from "../grid.helpers";
 import { moveBattleUnit } from "../move.helpers";
 import { applyCombatUpdate } from "../state.helpers";
-import type { EffectResolverParams } from "./effect.resolvers";
+import type { EffectResolver } from "./effect.resolvers";
 
-export const resolvePushEffect =
-	(get: StoreGet, set: StoreSet, isSimulation = false) =>
-	(effect: PushEffect) =>
-	async <C extends BattleUnit>({
-		anchorTarget,
-		caster,
-		targetIds,
-	}: EffectResolverParams<C>) => {
+export const resolvePushEffect: EffectResolver<BattleUnit, PushEffect> =
+	(get, set, isSimulation = false) =>
+	(effect) =>
+	async ({ anchorTarget, caster, targetIds }) => {
 		// --- 1. USE THE UNIFIED ARRAY ---
 		let currentFigures = get().units;
 

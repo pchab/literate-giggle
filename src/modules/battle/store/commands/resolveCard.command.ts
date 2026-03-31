@@ -96,7 +96,7 @@ export const resolveCard =
 		// --- 4. RESOLVE EFFECTS WITH PATTERN ---
 		for (let i = 0; i < card.effects.length; i++) {
 			const effect = card.effects[i];
-			await resolvers(effect)(get, set, isSimulation)({
+			await resolvers(get, set, isSimulation)(effect)({
 				anchorTarget: actualTarget,
 				caster: hero,
 				patternCells,

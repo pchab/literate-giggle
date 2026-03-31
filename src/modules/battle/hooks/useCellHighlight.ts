@@ -14,7 +14,7 @@ import { isHero } from "@/modules/figures/helpers/figures.helpers";
 import type { Intent } from "../domain/intent.type";
 import { areEnemies } from "../helpers/effects/effect.helpers";
 
-export type CellHighlight = {
+type CellHighlight = {
 	activeUnit?: BattleUnit["id"];
 	moveCells: GridPosition[];
 	allyTargets: GridPosition[];

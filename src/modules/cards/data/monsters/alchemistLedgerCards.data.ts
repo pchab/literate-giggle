@@ -15,6 +15,7 @@ export const alchemistLedgerCards: Record<Card["id"], Card> = {
 				type: "custom_script",
 				scriptId: "volatile_transmutation",
 				target: "self",
+				payload: undefined,
 			},
 		],
 	},
@@ -52,6 +53,7 @@ export const alchemistLedgerCards: Record<Card["id"], Card> = {
 				type: "custom_script",
 				scriptId: "reckless_experiment",
 				target: "self",
+				payload: undefined,
 			},
 		],
 	},
@@ -94,7 +96,12 @@ export const alchemistLedgerCards: Record<Card["id"], Card> = {
 		aiTargetPreference: "self",
 		playRequirement: "no_target",
 		effects: [
-			{ type: "custom_script", scriptId: "alchemical_frenzy", target: "self" },
+			{
+				type: "custom_script",
+				scriptId: "alchemical_frenzy",
+				target: "self",
+				payload: undefined,
+			},
 		],
 	},
 	[cardId("reckless_charge")]: {

@@ -39,6 +39,7 @@ export const goliathToadCards: Record<Card["id"], Card> = {
 				type: "custom_script",
 				scriptId: "swallow",
 				target: "anchor",
+				payload: undefined,
 			},
 			{
 				type: "apply_status",

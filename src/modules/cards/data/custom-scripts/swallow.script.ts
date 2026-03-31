@@ -1,5 +1,5 @@
 import { handleAICardIntent } from "@/modules/battle/helpers/ai.actions.helpers";
-import type { EffectResolverParams } from "@/modules/battle/helpers/effects/effect.resolvers";
+import type { EffectResolver } from "@/modules/battle/helpers/effects/effect.resolvers";
 import {
 	calculateAttackableCells,
 	isTileInBounds,
@@ -11,11 +11,11 @@ import {
 } from "@/modules/battle/helpers/state.helpers";
 import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
 import {
-	type AIBattleUnit,
 	type BattleUnit,
 	UnitStance,
 } from "@/modules/figures/domain/figures.type";
 import { sleep } from "@/modules/shared/helpers/sleep";
+import type { CustomScriptEffect } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
 import { goliathToadCards } from "../monsters/sewerContaminationCards.data";
 
@@ -87,13 +87,10 @@ export async function triggerRegurgitation(
 	});
 }
 
-export const swallow =
-	<C extends AIBattleUnit>(
-		get: StoreGet,
-		set: StoreSet,
-		isSimulation = false,
-	) =>
-	async ({ caster, targetIds }: EffectResolverParams<C>) => {
+export const swallow: EffectResolver<BattleUnit, CustomScriptEffect<void>> =
+	(get, set, isSimulation = false) =>
+	(_) =>
+	async ({ caster, targetIds }) => {
 		// GUARD 1: Is the toad already full?
 		if (caster.statuses.some((s) => s.type === "digesting")) {
 			const card = goliathToadCards[cardId("giant_chomp")];

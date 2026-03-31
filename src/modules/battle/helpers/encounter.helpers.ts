@@ -4,7 +4,7 @@ import { isHero, isMonster } from "@/modules/figures/helpers/figures.helpers";
 import type { BattleState, StoreGet, StoreSet } from "../store/battle.store";
 import { calculateStateDiff } from "./state.helpers";
 
-export const evaluateEncounterStatus = (get: StoreGet, set: StoreSet) => {
+const evaluateEncounterStatus = (get: StoreGet, set: StoreSet) => {
 	const state = get();
 	if (state.battleStatus !== "ONGOING" || !state.encounterId) return;
 
