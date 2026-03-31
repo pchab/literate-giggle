@@ -122,10 +122,10 @@ export default function MovePrediction() {
 				return (
 					<line
 						key={unitId}
-						y1={startX}
-						x1={startY}
-						y2={endX}
-						x2={endY}
+						y1={startY}
+						x1={startX}
+						y2={endY}
+						x2={endX}
 						stroke={strokeColor}
 						strokeWidth="3"
 						strokeDasharray="6 4"

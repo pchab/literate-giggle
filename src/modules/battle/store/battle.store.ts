@@ -26,14 +26,13 @@ import { selectActiveMoveHero } from "./commands/selectActiveMoveHero.command";
 import { selectCard } from "./commands/selectCard.command";
 import { setHoveredCell } from "./commands/setHoveredCell.command";
 
+export type BattleStatus = "ONGOING" | "VICTORY" | "DEFEAT";
 export type ActiveCardContext = {
 	unitId: BattleHero["id"];
 	card: Card;
 };
 
 export type BattleState = {
-	encounterId: Encounter["id"] | null;
-
 	units: BattleUnit[];
 	surfaces: Record<string, SurfaceData>;
 
@@ -51,6 +50,8 @@ export type BattleState = {
 	shadowStateDiff: ShadowStateDiff;
 
 	xpEarned: number;
+	encounterId: Encounter["id"] | null;
+	battleStatus: BattleStatus;
 };
 
 type BattleAction = {
@@ -75,7 +76,6 @@ type BattleAction = {
 };
 
 const initialState: BattleState = {
-	encounterId: null,
 	units: [],
 	activeHeroCard: null,
 	activeMoveHeroId: null,
@@ -96,6 +96,8 @@ const initialState: BattleState = {
 	},
 
 	xpEarned: 0,
+	encounterId: null,
+	battleStatus: "ONGOING",
 };
 
 export type BattleStoreServerAction = (

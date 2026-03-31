@@ -1,8 +1,9 @@
 import { cardLibrary } from "@/modules/cards/data/cards.data";
-import { isHero, isMonster } from "@/modules/figures/helpers/figures.helpers";
+import { isHero } from "@/modules/figures/helpers/figures.helpers";
 import { sleep } from "@/modules/shared/helpers/sleep";
 import { handleAICardIntent } from "../../helpers/ai.actions.helpers";
 import { tickStatusesAndSurfaces } from "../../helpers/effects/effect.helpers";
+import { finalizeAction } from "../../helpers/encounter.helpers";
 import { calculateStateDiff } from "../../helpers/state.helpers";
 import type { StoreGet, StoreSet } from "../battle.store";
 import { calculateAIIntents } from "./calculateAIIntents.command";
@@ -52,24 +53,11 @@ export const resolveAIActions = async (
 
 		if (isSimulation) {
 			const previousFigures = units;
-			const { units: simulatedUnits, aiIntents: currentAiIntents } = get();
-
-			const { projectedMoves, projectedCasualties } = calculateStateDiff(
-				simulatedUnits,
-				previousFigures,
-			);
-			const unitIntent = currentAiIntents[aiFigure.id];
+			const { units: simulatedUnits } = get();
 
 			set((state) => ({
 				...state,
-				aiIntents: {
-					...currentAiIntents,
-					[aiFigure.id]: {
-						...unitIntent,
-						projectedMoves,
-						projectedCasualties,
-					},
-				},
+				shadowStateDiff: calculateStateDiff(simulatedUnits, previousFigures),
 			}));
 		}
 	}
@@ -82,17 +70,6 @@ export const resolveAIActions = async (
 
 	await tickStatusesAndSurfaces(get, set, isSimulation)(heroes);
 
-	const draftMonsters = draftUnits.filter(isMonster);
-	const currentMonsters = get().units.filter(isMonster);
-
-	const xpEarnedThisTurn = calculateStateDiff(
-		currentMonsters,
-		draftMonsters,
-	).projectedCasualties.reduce((xp, monsterId) => {
-		const monster = draftMonsters.find(({ id }) => id === monsterId);
-		return xp + (monster?.xpReward ?? 0);
-	}, 0);
-
 	set(({ units, xpEarned, ...prev }) => {
 		const survivingUnits = units.filter((u) => u.currentHp > 0);
 
@@ -101,11 +78,11 @@ export const resolveAIActions = async (
 			units: survivingUnits,
 			usedMovesThisTurn: {},
 			usedCardsThisTurn: {},
-			xpEarned: xpEarned + xpEarnedThisTurn,
 		};
 	});
 
 	if (!isSimulation) {
 		await calculateAIIntents(get, set)({});
+		finalizeAction(get, set, draftUnits);
 	}
 };

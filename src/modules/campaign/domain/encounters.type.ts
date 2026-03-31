@@ -2,6 +2,7 @@ import type {
 	GridPosition,
 	SurfaceData,
 } from "@/modules/battle/domain/grid.type";
+import type { BattleState } from "@/modules/battle/store/battle.store";
 import type {
 	Allegiance,
 	UnitBlueprint,
@@ -17,6 +18,10 @@ export interface Encounter {
 		allegiance: Allegiance;
 	})[];
 	surfaces?: Record<string, SurfaceData>;
+
+	checkLoss?: (state: BattleState) => boolean;
+	checkWin?: (state: BattleState) => boolean;
+
 	onWinSceneId?: Scene["id"];
 	onLoseSceneId?: Scene["id"];
 }

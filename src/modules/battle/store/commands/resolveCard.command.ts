@@ -4,6 +4,7 @@ import { isMonster } from "@/modules/figures/helpers/figures.helpers";
 import type { GridPosition } from "../../domain/grid.type";
 import { resolveTargets } from "../../helpers/effects/effect.helpers";
 import { resolvers } from "../../helpers/effects/effect.resolvers";
+import { finalizeAction } from "../../helpers/encounter.helpers";
 import {
 	filterGridByAttackPattern,
 	getClosestOriginTile,
@@ -11,10 +12,7 @@ import {
 	getLineOfSightPath,
 	isUnitInTile,
 } from "../../helpers/grid.helpers";
-import {
-	calculateStateDiff,
-	updateUnitState,
-} from "../../helpers/state.helpers";
+import { updateUnitState } from "../../helpers/state.helpers";
 import type { ActiveCardContext, StoreGet, StoreSet } from "../battle.store";
 import { calculateAIIntents } from "./calculateAIIntents.command";
 
@@ -115,18 +113,6 @@ export const resolveCard =
 		});
 
 		// --- 5. CLEAN UP & XP ---
-		const currentUnits = get().units;
-		const draftMonsters = draftUnits.filter(isMonster);
-		const currentMonsters = currentUnits.filter(isMonster);
-
-		const xpEarnedThisTurn = calculateStateDiff(
-			currentMonsters,
-			draftMonsters,
-		).projectedCasualties.reduce(
-			(xp, monsterId) =>
-				xp + (draftMonsters.find(({ id }) => id === monsterId)?.xpReward ?? 0),
-			0,
-		);
 
 		set(
 			({ units, usedCardsThisTurn, usedMovesThisTurn, xpEarned, ...prev }) => {
@@ -138,12 +124,13 @@ export const resolveCard =
 					units: survivingUnits,
 					usedCardsThisTurn: { ...usedCardsThisTurn, [hero.id]: card },
 					usedMovesThisTurn: { ...usedMovesThisTurn, [hero.id]: 99 },
-					xpEarned: xpEarned + xpEarnedThisTurn,
 				};
 			},
 		);
 
 		if (!isSimulation) {
 			await calculateAIIntents(get, set)();
+			const draftMonsters = draftUnits.filter(isMonster);
+			finalizeAction(get, set, draftMonsters);
 		}
 	};

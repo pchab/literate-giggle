@@ -45,47 +45,48 @@ const bluePrintToSummon = (
 
 export const initBattle =
 	(get: StoreGet, set: StoreSet) =>
-	async (roster: Hero[], encounterId: Encounter["id"]) => {
-		const encounter = ENCOUNTER_DB[encounterId];
+		async (roster: Hero[], encounterId: Encounter["id"]) => {
+			const encounter = ENCOUNTER_DB[encounterId];
 
-		if (!encounter) {
-			console.error(`Encounter ${encounterId} not found!`);
-			return;
-		}
-		const {
-			generateMonsters,
-			generateSummons = () => [],
-			surfaces = {},
-		} = encounter;
-
-		const freshMonsters = generateMonsters().map(bluePrintToMonster);
-		const freshSummons = generateSummons().map(bluePrintToSummon);
-
-		const battleRoster: BattleHero[] = roster.map((hero, index) => {
-			const [card1, card2, card3] = hero.selectedCards
-				.filter((c) => !!c)
-				.map(getComputedCard);
-			if (!card1) {
-				throw new Error(`Error instanciating card ${hero.selectedCards[0]}`);
+			if (!encounter) {
+				console.error(`Encounter ${encounterId} not found!`);
+				return;
 			}
-			return {
-				...hero,
-				stance: UnitStance.IDLE,
-				gridPosition: startingGridPosition[index],
-				statuses: [],
-				hand: [card1, card2, card3],
-			};
-		});
-		set(() => ({
-			encounterId,
-			units: [...battleRoster, ...freshMonsters, ...freshSummons],
-			surfaces,
-			activeHeroCard: null,
-			activeMoveHeroId: null,
-			usedCardsThisTurn: {},
-			usedMovesThisTurn: {},
-			hoveredCell: null,
-			xpEarned: 0,
-		}));
-		await calculateAIIntents(get, set)({});
-	};
+			const {
+				generateMonsters,
+				generateSummons = () => [],
+				surfaces = {},
+			} = encounter;
+
+			const freshMonsters = generateMonsters().map(bluePrintToMonster);
+			const freshSummons = generateSummons().map(bluePrintToSummon);
+
+			const battleRoster: BattleHero[] = roster.map((hero, index) => {
+				const [card1, card2, card3] = hero.selectedCards
+					.filter((c) => !!c)
+					.map(getComputedCard);
+				if (!card1) {
+					throw new Error(`Error instanciating card ${hero.selectedCards[0]}`);
+				}
+				return {
+					...hero,
+					stance: UnitStance.IDLE,
+					gridPosition: startingGridPosition[index],
+					statuses: [],
+					hand: [card1, card2, card3],
+				};
+			});
+			set(() => ({
+				encounterId,
+				units: [...battleRoster, ...freshMonsters, ...freshSummons],
+				surfaces,
+				activeHeroCard: null,
+				activeMoveHeroId: null,
+				usedCardsThisTurn: {},
+				usedMovesThisTurn: {},
+				hoveredCell: null,
+				xpEarned: 0,
+				battleStatus: "ONGOING",
+			}));
+			await calculateAIIntents(get, set)({});
+		};
