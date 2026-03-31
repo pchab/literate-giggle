@@ -62,6 +62,7 @@ export const ironholdSumpScenes: Record<string, Scene> = {
 			},
 			"step-smugglers": {
 				text: "If the Black Fangs get their hands on that mutagen, they'll build an army of unstoppable thugs. You leave the sewers and track the wagon tracks toward the coast.",
+				backgroundImage: "/scenes/smugglers_tracks.webp",
 				choices: [
 					{
 						label: "Begin Quest: The Smuggler's Den",
@@ -80,6 +81,7 @@ export const ironholdSumpScenes: Record<string, Scene> = {
 			},
 			"step-riverbend": {
 				text: "The syndicate will have to wait. You sprint out of the sewers, hoping to reach the village before they draw water from the wells. The smugglers slip away into the shadows.",
+				backgroundImage: "/scenes/road_to_riverbend.webp",
 				choices: [
 					{
 						label: "Begin Quest: Riverbend Quarantine",
