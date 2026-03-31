@@ -19,98 +19,100 @@ import type { EffectResolverParams } from "./effect.resolvers";
 
 const animateProjectile =
 	(_: StoreGet, set: StoreSet) =>
-	async (
-		projectile: VfxType,
-		originPos: GridPosition,
-		targetPos: GridPosition,
-	) => {
-		const projectileId = crypto.randomUUID();
+		async (
+			projectile: VfxType,
+			originPos: GridPosition,
+			targetPos: GridPosition,
+		) => {
+			const projectileId = crypto.randomUUID();
 
-		const dx = targetPos.col - originPos.col;
-		const dy = targetPos.row - originPos.row;
-		const angle = Math.atan2(dx, dy) * (180 / Math.PI);
+			const dx = targetPos.col - originPos.col;
+			const dy = targetPos.row - originPos.row;
+			const angle = Math.atan2(dy, dx) * (180 / Math.PI);
 
-		set((prev) => ({
-			currentVfx: {
-				...prev.currentVfx,
-				[getCellId(originPos)]: {
+			set((prev) => ({
+				currentVfx: {
+					...prev.currentVfx,
+					[getCellId(originPos)]: {
+						type: projectile,
+						id: projectileId,
+						angle,
+					},
+				},
+			}));
+
+			await sleep(100);
+
+			set((prev) => {
+				const nextVfx = { ...prev.currentVfx };
+				delete nextVfx[getCellId(originPos)];
+
+				nextVfx[getCellId(targetPos)] = {
 					type: projectile,
 					id: projectileId,
 					angle,
-				},
-			},
-		}));
+				};
+				return { currentVfx: nextVfx };
+			});
 
-		await sleep(100);
+			await sleep(300);
 
-		set((prev) => {
-			const nextVfx = { ...prev.currentVfx };
-			delete nextVfx[getCellId(originPos)];
-
-			nextVfx[getCellId(targetPos)] = {
-				type: projectile,
-				id: projectileId,
-				angle,
-			};
-			return { currentVfx: nextVfx };
-		});
-
-		await sleep(300);
-
-		set((prev) => {
-			const nextVfx = { ...prev.currentVfx };
-			if (nextVfx[getCellId(targetPos)]?.id === projectileId) {
-				delete nextVfx[getCellId(targetPos)];
-			}
-			return { currentVfx: nextVfx };
-		});
-	};
+			set((prev) => {
+				const nextVfx = { ...prev.currentVfx };
+				if (nextVfx[getCellId(targetPos)]?.id === projectileId) {
+					delete nextVfx[getCellId(targetPos)];
+				}
+				return { currentVfx: nextVfx };
+			});
+		};
 
 export const resolveStandardEffect =
 	(get: StoreGet, set: StoreSet, isSimulation = false) =>
-	(effect: DamageEffect | HealEffect | ApplyStatusEffect) =>
-	async <C extends BattleUnit>({
-		anchorTarget,
-		caster,
-		targetIds,
-	}: EffectResolverParams<C>): Promise<void> => {
-		const targetPositions: GridPosition[] = [];
+		(effect: DamageEffect | HealEffect | ApplyStatusEffect) =>
+			async <C extends BattleUnit>({
+				anchorTarget,
+				caster,
+				targetIds,
+			}: EffectResolverParams<C>): Promise<void> => {
+				const targetPositions: GridPosition[] = [];
 
-		if (anchorTarget && effect.projectile && !isSimulation) {
-			await animateProjectile(get, set)(
-				effect.projectile,
-				caster.gridPosition,
-				anchorTarget.gridPosition,
-			);
-		}
-
-		for (const targetId of targetIds) {
-			const target = findUnit(get)(targetId);
-			if (!target || target.currentHp <= 0) continue;
-
-			targetPositions.push(target.gridPosition);
-
-			const combatUpdate: CombatUpdate = {};
-
-			if (effect.type === "damage") {
-				combatUpdate.damageTaken = effect.amount;
-			} else if (effect.type === "heal") {
-				combatUpdate.healingReceived = effect.amount;
-			} else if (effect.type === "apply_status") {
-				if (!target.immunities?.includes(effect.status.type)) {
-					combatUpdate.newStatuses = [effect.status];
+				if (anchorTarget && effect.projectile && !isSimulation) {
+					await animateProjectile(get, set)(
+						effect.projectile,
+						caster.gridPosition,
+						anchorTarget.gridPosition,
+					);
 				}
-			}
 
-			await applyCombatUpdate(get, set, isSimulation)(targetId, combatUpdate);
-		}
+				for (const targetId of targetIds) {
+					const target = findUnit(get)(targetId);
+					if (!target || target.currentHp <= 0) continue;
 
-		set((prev) => {
-			const newVfx = getVfxForEffect(effect, targetPositions);
+					targetPositions.push(target.gridPosition);
 
-			return {
-				...prev,
-				currentVfx: { ...prev.currentVfx, ...newVfx },
+					const combatUpdate: CombatUpdate = {};
+
+					if (effect.type === "damage") {
+						combatUpdate.damageTaken = effect.amount;
+					} else if (effect.type === "heal") {
+						combatUpdate.healingReceived = effect.amount;
+					} else if (effect.type === "apply_status") {
+						if (!target.immunities?.includes(effect.status.type)) {
+							combatUpdate.newStatuses = [effect.status];
+						}
+					}
+
+					await applyCombatUpdate(get, set, isSimulation)(targetId, combatUpdate);
+				}
+
+				if (!isSimulation) {
+					set((prev) => {
+						const newVfx = getVfxForEffect(effect, targetPositions);
+
+						return {
+							...prev,
+							currentVfx: { ...prev.currentVfx, ...newVfx },
+						};
+					});
+				}
 			};
-		});
-	};

@@ -66,7 +66,7 @@ export const goliathToadCards: Record<Card["id"], Card> = {
 		range: 0,
 		image: "/cards/belly_flop.webp",
 		playRequirement: "no_target",
-		aiTargetPreference: "closest",
+		aiTargetPreference: "self",
 		aoePattern: adjacentPattern,
 		effects: [
 			{ type: "damage", amount: 4, target: "anchor" },

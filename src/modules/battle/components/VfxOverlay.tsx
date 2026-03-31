@@ -68,9 +68,12 @@ const VfxMapping: Record<NonNullable<VfxType>, ReactElement> = {
 		</motion.div>
 	),
 	ARROW: (
-		<div className="w-8 h-1 bg-zinc-400 relative">
-			<div className="absolute -right-1 -bottom-0.5 border-y-4 border-y-transparent border-l-8 border-l-zinc-300" />
-		</div>
+		<motion.div
+			className="w-8 h-1 bg-zinc-400 relative"
+			transition={{ duration: 0.9 }}
+		>
+			<div className="absolute -right-1 -top-0.5 border-y-4 border-l-8 border-y-transparent border-r-zinc-300" />
+		</motion.div>
 	),
 	FIREBALL: (
 		<div className="w-8 h-8 bg-orange-500 rounded-full shadow-[0_0_20px_rgba(249,115,22,1)] flex items-center justify-end">

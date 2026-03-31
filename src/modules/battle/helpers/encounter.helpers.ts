@@ -68,6 +68,12 @@ export const finalizeAction = (
 		...state,
 		units: survivingUnits,
 		xpEarned: xpEarned + xpEarnedThisStep,
+		shadowStateDiff: {
+			projectedMoves: {},
+			projectedCasualties: [],
+			projectedDamage: {},
+			projectedHealing: {},
+		},
 	}));
 
 	// 4. Check if the battle is over

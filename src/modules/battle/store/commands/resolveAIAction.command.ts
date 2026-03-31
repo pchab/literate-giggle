@@ -78,12 +78,6 @@ export const resolveAIActions = async (
 			units: survivingUnits,
 			usedMovesThisTurn: {},
 			usedCardsThisTurn: {},
-			shadowStateDiff: {
-				projectedMoves: {},
-				projectedCasualties: [],
-				projectedDamage: {},
-				projectedHealing: {},
-			},
 		};
 	});
 
