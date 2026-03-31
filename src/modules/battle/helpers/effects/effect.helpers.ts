@@ -93,117 +93,117 @@ export function resolveTargets<T extends BattleUnit>(
 
 export const tickStatusesAndSurfaces =
 	(get: StoreGet, set: StoreSet, isSimulation = false) =>
-		async <T extends BattleUnit>(figures: T[]): Promise<void> => {
-			const { surfaces } = get();
-			const nextSurfaces = { ...surfaces };
+	async <T extends BattleUnit>(figures: T[]): Promise<void> => {
+		const { surfaces } = get();
+		const nextSurfaces = { ...surfaces };
 
-			// ==========================================
-			// 1. TICK FIGURES & APPLY SURFACES
-			// ==========================================
-			for (const figure of figures) {
-				if (figure.currentHp <= 0) continue;
+		// ==========================================
+		// 1. TICK FIGURES & APPLY SURFACES
+		// ==========================================
+		for (const figure of figures) {
+			if (figure.currentHp <= 0) continue;
 
-				let totalDamage = 0;
-				let totalHealing = 0;
-				const newStatuses: Status[] = [];
-				const tickVfxTypes: VfxType[] = [];
+			let totalDamage = 0;
+			let totalHealing = 0;
+			const newStatuses: Status[] = [];
+			const tickVfxTypes: VfxType[] = [];
 
-				// --- A. Evaluate EXISTING Statuses via Registry ---
-				for (const status of figure.statuses) {
-					const hook = statusRegistry[status.type]?.onTick;
-					if (hook) {
-						const result = await hook(
-							get,
-							set,
-							isSimulation,
-						)({ unit: figure, status });
-						if (result) {
-							if (result.damageTaken) totalDamage += result.damageTaken;
-							if (result.healingReceived) totalHealing += result.healingReceived;
-							if (result.newStatuses) newStatuses.push(...result.newStatuses);
-							if (result.vfxType) tickVfxTypes.push(result.vfxType);
-						}
-					}
-				}
-
-				// Calculate age-down for durations
-				const agedStatuses = figure.statuses
-					.map((status) => ({
-						...status,
-						duration: status.duration === -1 ? -1 : status.duration - 1,
-					}))
-					.filter((status) => status.duration > 0 || status.duration === -1);
-
-				// --- B. Evaluate Surfaces Under the Unit ---
-				const processedSurfaceTypes = new Set<SurfaceType>();
-
-				// Iterate through all actual surfaces on the board
-				for (const surface of Object.values(nextSurfaces)) {
-					// Check for physical overlap between the unit and the surface
-					if (!doBoundingBoxesIntersect(figure, surface)) continue;
-					// --- IMMUNITY CHECK ---
-					if (figure.surfaceImmunities?.includes(surface.type)) continue;
-
-					// Prevent double-dipping damage if standing on two overlapping acid puddles
-					if (processedSurfaceTypes.has(surface.type)) continue;
-					processedSurfaceTypes.add(surface.type);
-
-					if (surface.damage) totalDamage += surface.damage;
-					if (surface.status) newStatuses.push(surface.status);
-
-					// Handle trap spring/charge degradation
-					if (surface.charges !== undefined) {
-						surface.charges -= 1;
-						if (surface.charges <= 0) {
-							surface.duration = 0;
-						}
-					}
-				}
-
-				// --- C. Apply the Combined Combat update ---
-				if (
-					totalDamage > 0 ||
-					totalHealing > 0 ||
-					newStatuses.length > 0 ||
-					figure.statuses.length > 0
-				) {
-					await applyCombatUpdate(
+			// --- A. Evaluate EXISTING Statuses via Registry ---
+			for (const status of figure.statuses) {
+				const hook = statusRegistry[status.type]?.onTick;
+				if (hook) {
+					const result = await hook(
 						get,
 						set,
 						isSimulation,
-					)(figure.id, {
-						damageTaken: totalDamage,
-						healingReceived: totalHealing,
-						newStatuses: newStatuses,
-						replaceStatuses: agedStatuses,
-					});
-				}
-
-				// --- D. Trigger VFX ---
-				if (!isSimulation && tickVfxTypes.length > 0) {
-					const anchorCellId = getCellId(figure.gridPosition);
-					set(({ currentVfx }) => {
-						const nextVfx = { ...currentVfx };
-						nextVfx[anchorCellId] = { type: tickVfxTypes[0] };
-						return { currentVfx: nextVfx };
-					});
+					)({ unit: figure, status });
+					if (result) {
+						if (result.damageTaken) totalDamage += result.damageTaken;
+						if (result.healingReceived) totalHealing += result.healingReceived;
+						if (result.newStatuses) newStatuses.push(...result.newStatuses);
+						if (result.vfxType) tickVfxTypes.push(result.vfxType);
+					}
 				}
 			}
 
-			// ==========================================
-			// 2. TICK SURFACES DURATION & CLEANUP
-			// ==========================================
-			for (const cellId in nextSurfaces) {
-				const surface = nextSurfaces[cellId];
-				if (surface.duration !== -1) {
-					surface.duration -= 1;
-				}
-				if (surface.duration === 0) {
-					delete nextSurfaces[cellId];
+			// Calculate age-down for durations
+			const agedStatuses = figure.statuses
+				.map((status) => ({
+					...status,
+					duration: status.duration === -1 ? -1 : status.duration - 1,
+				}))
+				.filter((status) => status.duration > 0 || status.duration === -1);
+
+			// --- B. Evaluate Surfaces Under the Unit ---
+			const processedSurfaceTypes = new Set<SurfaceType>();
+
+			// Iterate through all actual surfaces on the board
+			for (const surface of Object.values(nextSurfaces)) {
+				// Check for physical overlap between the unit and the surface
+				if (!doBoundingBoxesIntersect(figure, surface)) continue;
+				// --- IMMUNITY CHECK ---
+				if (figure.surfaceImmunities?.includes(surface.type)) continue;
+
+				// Prevent double-dipping damage if standing on two overlapping acid puddles
+				if (processedSurfaceTypes.has(surface.type)) continue;
+				processedSurfaceTypes.add(surface.type);
+
+				if (surface.damage) totalDamage += surface.damage;
+				if (surface.status) newStatuses.push(surface.status);
+
+				// Handle trap spring/charge degradation
+				if (surface.charges !== undefined) {
+					surface.charges -= 1;
+					if (surface.charges <= 0) {
+						surface.duration = 0;
+					}
 				}
 			}
 
-			if (!isSimulation) {
-				set(() => ({ surfaces: nextSurfaces }));
+			// --- C. Apply the Combined Combat update ---
+			if (
+				totalDamage > 0 ||
+				totalHealing > 0 ||
+				newStatuses.length > 0 ||
+				figure.statuses.length > 0
+			) {
+				await applyCombatUpdate(
+					get,
+					set,
+					isSimulation,
+				)(figure.id, {
+					damageTaken: totalDamage,
+					healingReceived: totalHealing,
+					newStatuses: newStatuses,
+					replaceStatuses: agedStatuses,
+				});
 			}
-		};
+
+			// --- D. Trigger VFX ---
+			if (!isSimulation && tickVfxTypes.length > 0) {
+				const anchorCellId = getCellId(figure.gridPosition);
+				set(({ currentVfx }) => {
+					const nextVfx = { ...currentVfx };
+					nextVfx[anchorCellId] = { type: tickVfxTypes[0] };
+					return { currentVfx: nextVfx };
+				});
+			}
+		}
+
+		// ==========================================
+		// 2. TICK SURFACES DURATION & CLEANUP
+		// ==========================================
+		for (const cellId in nextSurfaces) {
+			const surface = nextSurfaces[cellId];
+			if (surface.duration !== -1) {
+				surface.duration -= 1;
+			}
+			if (surface.duration === 0) {
+				delete nextSurfaces[cellId];
+			}
+		}
+
+		if (!isSimulation) {
+			set(() => ({ surfaces: nextSurfaces }));
+		}
+	};

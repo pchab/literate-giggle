@@ -6,6 +6,7 @@ import type {
 import { isMonster, isSummon } from "@/modules/figures/helpers/figures.helpers";
 import type { Intent } from "../../domain/intent.type";
 import { getSimulationState } from "../../helpers/simulation.helper";
+import { calculateStateDiff } from "../../helpers/state.helpers";
 import type { StoreGet, StoreSet } from "../battle.store";
 import { resolveAIActions } from "./resolveAIAction.command";
 
@@ -65,10 +66,12 @@ export const calculateAIIntents =
 		}));
 
 		await resolveAIActions(fakeGet, fakeSet, true);
-		const simulatedAiIntents = fakeGet().aiIntents;
 
+		const { units: simulatedUnits, aiIntents: simulatedAiIntents } = fakeGet();
+		const previousFigures = units;
 		set((prev) => ({
 			...prev,
+			aiStateDiff: calculateStateDiff(simulatedUnits, previousFigures),
 			aiIntents: simulatedAiIntents,
 		}));
 	};

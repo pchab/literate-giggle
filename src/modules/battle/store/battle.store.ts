@@ -46,8 +46,9 @@ export type BattleState = {
 	currentVfx: Record<string, Vfx>; // key is cell id
 
 	aiIntents: Record<BattleUnit["id"], Intent>;
+	aiStateDiff: ShadowStateDiff;
 	playerIntent: Intent | null;
-	shadowStateDiff: ShadowStateDiff;
+	playerStateDiff: ShadowStateDiff;
 
 	xpEarned: number;
 	encounterId: Encounter["id"] | null;
@@ -87,8 +88,14 @@ const initialState: BattleState = {
 	currentVfx: {},
 
 	aiIntents: {},
+	aiStateDiff: {
+		projectedMoves: {},
+		projectedCasualties: [],
+		projectedDamage: {},
+		projectedHealing: {},
+	},
 	playerIntent: null,
-	shadowStateDiff: {
+	playerStateDiff: {
 		projectedMoves: {},
 		projectedCasualties: [],
 		projectedDamage: {},

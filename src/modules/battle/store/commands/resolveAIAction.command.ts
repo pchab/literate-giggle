@@ -4,7 +4,6 @@ import { sleep } from "@/modules/shared/helpers/sleep";
 import { handleAICardIntent } from "../../helpers/ai.actions.helpers";
 import { tickStatusesAndSurfaces } from "../../helpers/effects/effect.helpers";
 import { finalizeAction } from "../../helpers/encounter.helpers";
-import { calculateStateDiff } from "../../helpers/state.helpers";
 import type { StoreGet, StoreSet } from "../battle.store";
 import { calculateAIIntents } from "./calculateAIIntents.command";
 
@@ -50,16 +49,6 @@ export const resolveAIActions = async (
 			attackerId: freshAIFigure.id,
 			card: cardToPlay,
 		});
-
-		if (isSimulation) {
-			const previousFigures = units;
-			const { units: simulatedUnits } = get();
-
-			set((state) => ({
-				...state,
-				shadowStateDiff: calculateStateDiff(simulatedUnits, previousFigures),
-			}));
-		}
 	}
 
 	// ============================================
@@ -82,7 +71,7 @@ export const resolveAIActions = async (
 	});
 
 	if (!isSimulation) {
-		await calculateAIIntents(get, set)({});
 		finalizeAction(get, set, draftUnits);
+		await calculateAIIntents(get, set)({});
 	}
 };

@@ -3,7 +3,16 @@ import { isUnitInTile } from "../helpers/grid.helpers";
 
 export function ProjectedCasualtyIcon({ unitId }: { unitId: string }) {
 	const isDying = useBattleStore(
-		({ units, hoveredCell, shadowStateDiff: { projectedCasualties } }) => {
+		({
+			units,
+			hoveredCell,
+			aiStateDiff: { projectedCasualties: aiProjectedCasualties },
+			playerStateDiff: { projectedCasualties: playerProjectedCasualties },
+		}) => {
+			const projectedCasualties = [
+				...aiProjectedCasualties,
+				...playerProjectedCasualties,
+			];
 			if (projectedCasualties.includes(unitId)) return true;
 
 			if (hoveredCell) {

@@ -18,12 +18,19 @@ export default function MovePrediction() {
 	const { units, projectedMoves, activeUnitId, activeUnitPath } =
 		useBattleStore(
 			useShallow(
-				({ units, playerIntent, aiIntents, hoveredCell, shadowStateDiff }) => {
+				({
+					units,
+					playerIntent,
+					aiIntents,
+					hoveredCell,
+					aiStateDiff,
+					playerStateDiff,
+				}) => {
 					// 1. Player Intent
 					if (playerIntent) {
 						return {
 							units: units,
-							projectedMoves: shadowStateDiff.projectedMoves,
+							projectedMoves: playerStateDiff.projectedMoves,
 							activeUnitId: playerIntent.figureId,
 							activeUnitPath: playerIntent.intendedMove ?? EMPTY_PATH,
 						};
@@ -37,7 +44,7 @@ export default function MovePrediction() {
 							const intent = aiIntents[hoveredUnit.id];
 							return {
 								units: units,
-								projectedMoves: shadowStateDiff.projectedMoves,
+								projectedMoves: aiStateDiff.projectedMoves,
 								activeUnitId: intent.figureId,
 								activeUnitPath: intent.intendedMove ?? EMPTY_PATH,
 							};
@@ -55,6 +62,7 @@ export default function MovePrediction() {
 			),
 		);
 
+	console.log("Projected Moves:", projectedMoves);
 	const moveEntries: [string, GridPosition][] = Object.entries(
 		projectedMoves ?? EMPTY_MOVES,
 	);

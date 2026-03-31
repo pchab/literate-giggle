@@ -9,7 +9,7 @@ export const setHoveredCell =
 		set(() => ({
 			hoveredCell: cell,
 			playerIntent: null,
-			shadowStateDiff: {
+			playerStateDiff: {
 				projectedMoves: {},
 				projectedCasualties: [],
 				projectedDamage: {},
@@ -56,7 +56,7 @@ export const setHoveredCell =
 
 		// 5. Extract and commit diff
 		const { units: shadowUnits, playerIntent: simulatedIntent } = fakeGet();
-		const shadowStateDiff = calculateStateDiff(shadowUnits, units);
+		const playerStateDiff = calculateStateDiff(shadowUnits, units);
 
 		set((prev) => ({
 			...prev,
@@ -64,6 +64,6 @@ export const setHoveredCell =
 				...newPlayerIntent,
 				...simulatedIntent,
 			},
-			shadowStateDiff,
+			playerStateDiff,
 		}));
 	};

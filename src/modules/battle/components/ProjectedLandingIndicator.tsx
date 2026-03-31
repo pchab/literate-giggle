@@ -7,9 +7,14 @@ const checkMoves =
 
 export function ProjectedLandingIndicator({ cellId }: { cellId: string }) {
 	const isLanding = useBattleStore(
-		({ units, hoveredCell, shadowStateDiff: { projectedMoves } }) => {
+		({
+			units,
+			hoveredCell,
+			aiStateDiff: { projectedMoves: aiProjectedMoves },
+			playerStateDiff: { projectedMoves: playerProjectedMoves },
+		}) => {
 			const CheckMovesInCell = checkMoves(cellId);
-
+			const projectedMoves = { ...aiProjectedMoves, ...playerProjectedMoves };
 			if (CheckMovesInCell(projectedMoves)) return true;
 
 			if (hoveredCell) {

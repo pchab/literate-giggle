@@ -13,13 +13,14 @@ export default function HealthBar({
 	// ==========================================
 	const { projectedDamage, projectedHealing } = useBattleStore(
 		useShallow((state) => ({
-			projectedDamage: state.shadowStateDiff.projectedDamage,
-			projectedHealing: state.shadowStateDiff.projectedHealing,
+			projectedDamage:
+				(state.aiStateDiff.projectedDamage[id] ?? 0) +
+				(state.playerStateDiff.projectedDamage[id] ?? 0),
+			projectedHealing:
+				(state.aiStateDiff.projectedHealing[id] ?? 0) +
+				(state.playerStateDiff.projectedHealing[id] ?? 0),
 		})),
 	);
-
-	const projectedDamageForUnit = projectedDamage[id] ?? 0;
-	const projectedHealingForUnit = projectedHealing[id] ?? 0;
 
 	// ==========================================
 	// STATUS AGGREGATION
@@ -35,8 +36,8 @@ export default function HealthBar({
 	// ==========================================
 	// HP PERCENTAGE MATH (Left to Right Visual Order)
 	// ==========================================
-	const dmgLoss = Math.min(currentHp, projectedDamageForUnit);
-	const healGain = Math.min(maxHp - currentHp, projectedHealingForUnit);
+	const dmgLoss = Math.min(currentHp, projectedDamage);
+	const healGain = Math.min(maxHp - currentHp, projectedHealing);
 	const netHp = currentHp - dmgLoss + healGain;
 
 	// Poison eats from the very right edge of whatever the final HP is
@@ -117,10 +118,10 @@ export default function HealthBar({
 				{totalBlock > 0 && <span className="text-blue-300">🛡️{totalBlock}</span>}
 
 				{/* Text Popups */}
-				{projectedDamageForUnit > 0 && (
-					<span className="text-orange-400">-{projectedDamageForUnit}</span>
+				{projectedDamage > 0 && (
+					<span className="text-orange-400">-{projectedDamage}</span>
 				)}
-				{projectedHealingForUnit > 0 && (
+				{projectedHealing > 0 && (
 					<span className="text-emerald-400">+{healGain}</span>
 				)}
 

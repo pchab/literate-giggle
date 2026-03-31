@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { BattleCard } from "@/modules/cards/components/BattleCard";
