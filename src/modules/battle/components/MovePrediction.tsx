@@ -62,7 +62,6 @@ export default function MovePrediction() {
 			),
 		);
 
-	console.log("Projected Moves:", projectedMoves);
 	const moveEntries: [string, GridPosition][] = Object.entries(
 		projectedMoves ?? EMPTY_MOVES,
 	);

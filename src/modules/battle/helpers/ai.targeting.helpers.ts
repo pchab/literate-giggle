@@ -3,12 +3,9 @@ import type {
 	AIBattleUnit,
 	BattleUnit,
 } from "@/modules/figures/domain/figures.type";
-import type { BoundingBox, GridPosition } from "../domain/grid.type";
+import type { GridPosition } from "../domain/grid.type";
 import {
-	calculateAttackableCells,
 	getLineOfSightPath,
-	isTileEmpty,
-	isTileInBounds,
 	isUnitInTile,
 } from "./grid.helpers";
 
@@ -17,65 +14,59 @@ export type TargetResolver = <C extends AIBattleUnit>(
 	card: Card,
 	figures: BattleUnit[],
 ) => {
-	reachableTarget: BoundingBox | null;
+	intendedTarget: AnchorTarget | null;
 	moveDest: GridPosition | null;
 	canHit: boolean;
 };
 
 export type AnchorResolver = ({
-	attacker: { gridPosition },
+	attacker,
 	card,
-	reachableTarget,
+	intendedTarget,
 	obstacles,
 }: {
 	attacker: AIBattleUnit;
 	card: Card;
-	reachableTarget: BoundingBox;
+	intendedTarget: AnchorTarget;
 	obstacles: BattleUnit[];
 }) => AnchorTarget;
 
-export function getAnchorTarget<C extends BattleUnit, T extends BoundingBox>({
+export function getAnchorTarget<C extends BattleUnit>({
 	attacker,
 	card,
-	reachableTarget,
+	intendedTarget,
 	obstacles,
 }: {
 	attacker: C;
 	card: Card;
-	reachableTarget: T;
+	intendedTarget: AnchorTarget;
 	obstacles: BattleUnit[];
 }): AnchorTarget {
 	const { gridPosition, size } = attacker;
-	if (card.playRequirement === "no_target") {
+
+	if (!intendedTarget || card.playRequirement === "no_target") {
 		return { gridPosition, size };
 	}
 
 	if (card.playRequirement === "requires_empty_cell") {
-		const possibleSpawns = calculateAttackableCells({
-			attacker,
-			rangeValue: card.range,
-			canTargetSelf: false,
-		})
-			.filter(isTileInBounds)
-			.filter(isTileEmpty(obstacles));
-
-		if (possibleSpawns.length === 0) return null;
-		const chosenSpawn =
-			possibleSpawns[Math.floor(Math.random() * possibleSpawns.length)];
-		return { gridPosition: chosenSpawn, size: { cols: 1, rows: 1 } };
+		return intendedTarget;
 	}
 
 	const actualTarget =
 		getActualTarget({
 			attacker,
-			intendedTargetPos: reachableTarget.gridPosition,
+			intendedTargetPos: intendedTarget.gridPosition,
 			figures: obstacles,
-		}) ?? reachableTarget;
+		});
 
-	return {
-		gridPosition: actualTarget.gridPosition,
-		size: actualTarget.size ?? { cols: 1, rows: 1 },
-	};
+	if (actualTarget) {
+		return {
+			gridPosition: actualTarget.gridPosition,
+			size: actualTarget.size ?? { cols: 1, rows: 1 },
+		};
+	}
+
+	return intendedTarget;
 }
 
 export function getActualTarget<C extends BattleUnit, T extends BattleUnit>({

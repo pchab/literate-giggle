@@ -50,67 +50,67 @@ export const volatileTransmutation =
 		set: StoreSet,
 		isSimulation = false,
 	) =>
-	async ({ caster }: EffectResolverParams<C>) => {
-		const { units } = get();
-		const volatileBoltCard = alchemistLedgerCards[cardId("volatile_bolt")];
+		async ({ caster }: EffectResolverParams<C>) => {
+			const { units } = get();
+			const volatileBoltCard = alchemistLedgerCards[cardId("volatile_bolt")];
 
-		const availableFlasks = units.filter(
-			(s) => s.name === acidFlask.name && s.currentHp > 0,
-		);
-		const heroes = units.filter(isHero);
+			const availableFlasks = units.filter(
+				(s) => s.name === acidFlask.name && s.currentHp > 0,
+			);
+			const heroes = units.filter(isHero);
 
-		if (availableFlasks.length > 0) {
-			// --- SHADOW STATE: SCORING THE FLASKS ---
-			const bestTarget = (
-				await Promise.all(
-					[...availableFlasks, ...heroes].map(async (target) => {
-						const { fakeGet, fakeSet } = getSimulationState(get);
-						const shadowTarget: TargetResolver = () => ({
-							reachableTarget: target,
-							moveDest: caster.gridPosition,
-							canHit: true,
-						});
-						await handleAICardIntent(
-							fakeGet,
-							fakeSet,
-							true,
-						)({
-							attackerId: caster.id,
-							card: volatileBoltCard,
-							getTarget: shadowTarget,
-						});
-						const bonusScore = isSummonId(target.id) ? 20 : 0;
-						const score = getStateScore(fakeGet, get) + bonusScore;
-						return {
-							target,
-							score,
-						};
-					}),
-				)
-			).sort(({ score: scoreA }, { score: scoreB }) => scoreB - scoreA)[0]
-				.target;
+			if (availableFlasks.length > 0) {
+				// --- SHADOW STATE: SCORING THE FLASKS ---
+				const bestTarget = (
+					await Promise.all(
+						[...availableFlasks, ...heroes].map(async (target) => {
+							const { fakeGet, fakeSet } = getSimulationState(get);
+							const shadowTarget: TargetResolver = () => ({
+								intendedTarget: target,
+								moveDest: caster.gridPosition,
+								canHit: true,
+							});
+							await handleAICardIntent(
+								fakeGet,
+								fakeSet,
+								true,
+							)({
+								attackerId: caster.id,
+								card: volatileBoltCard,
+								getTarget: shadowTarget,
+							});
+							const bonusScore = isSummonId(target.id) ? 20 : 0;
+							const score = getStateScore(fakeGet, get) + bonusScore;
+							return {
+								target,
+								score,
+							};
+						}),
+					)
+				).sort(({ score: scoreA }, { score: scoreB }) => scoreB - scoreA)[0]
+					.target;
 
-			// --- EXECUTION VIA ADAPTER ---
-			const targetFlask: TargetResolver = () => ({
-				reachableTarget: bestTarget,
-				moveDest: caster.gridPosition,
-				canHit: true,
-			});
+				// --- EXECUTION VIA ADAPTER ---
+				const targetFlask: TargetResolver = () => ({
+					intendedTarget: bestTarget,
+					moveDest: caster.gridPosition,
+					canHit: true,
+				});
 
-			await handleAICardIntent(
-				get,
-				set,
-				isSimulation,
-			)({
-				attackerId: caster.id,
-				card: volatileBoltCard,
-				getTarget: targetFlask,
-			});
-		} else {
-			await handleAICardIntent(
-				get,
-				set,
-				isSimulation,
-			)({ attackerId: caster.id, card: volatileBoltCard });
-		}
-	};
+				await handleAICardIntent(
+					get,
+					set,
+					isSimulation,
+				)({
+					attackerId: caster.id,
+					card: volatileBoltCard,
+					getTarget: targetFlask,
+				});
+			} else {
+				await handleAICardIntent(
+					get,
+					set,
+					isSimulation,
+				)({ attackerId: caster.id, card: volatileBoltCard });
+			}
+		};

@@ -1,12 +1,6 @@
-import type {
-	AITargetPreference,
-	Card,
-} from "@/modules/cards/domain/cards.type";
+import type { Card } from "@/modules/cards/domain/cards.type";
 import { isSummon } from "@/modules/figures/helpers/figures.helpers";
-import type {
-	AIBattleUnit,
-	BattleUnit,
-} from "../../figures/domain/figures.type";
+import type { AIBattleUnit, BattleUnit } from "../../figures/domain/figures.type";
 import type { GridPosition } from "../domain/grid.type";
 import type { TargetResolver } from "./ai.targeting.helpers";
 import { areEnemies } from "./effects/effect.helpers";
@@ -21,31 +15,68 @@ import {
 } from "./grid.helpers";
 import { calculateExactPath } from "./move.helpers";
 
-function isGridPosition(
-	targetPref: AITargetPreference,
-): targetPref is GridPosition {
-	return typeof targetPref !== "string";
+// ==========================================
+// STEP 1: TARGET EVALUATOR (The "Who")
+// ==========================================
+export function getPrioritizedTargets<C extends AIBattleUnit, T extends BattleUnit>(
+	aiFigure: C,
+	card: Card,
+	figures: T[],
+): T[] {
+	const aliveFigures = figures.filter((f) => f.currentHp > 0);
+	let validTargets: T[] = [];
+
+	// 1. Filter by Play Requirement
+	switch (card.playRequirement) {
+		case "requires_ally":
+			validTargets = aliveFigures.filter((f) => !areEnemies(aiFigure)(f));
+			break;
+		case "requires_enemy":
+		case "requires_empty_cell": // For summons, enemies act as focal points to run from or approach
+			validTargets = aliveFigures.filter(areEnemies(aiFigure));
+			break;
+		case "requires_entity":
+			validTargets = aliveFigures.filter((f) => !(isSummon(f) && f.allegiance === "NEUTRAL"));
+			break;
+		default:
+			validTargets = aliveFigures;
+	}
+
+	// 2. Sort by AI Preference
+	return validTargets.sort((a, b) => {
+		switch (card.aiTargetPreference) {
+			case "lowestDef":
+				return a.baseDef - b.baseDef;
+			case "lowestHp":
+				return a.currentHp - b.currentHp;
+			case "random":
+				return Math.random() - 0.5;
+			default:
+				// Default is "Closest" or "Away" (both rely on distance, "Away" just reverses the walk logic later)
+				return (
+					getDistanceToBoundingBox({ caster: aiFigure, target: a }) -
+					getDistanceToBoundingBox({ caster: aiFigure, target: b })
+				);
+		}
+	});
 }
 
-const calculateAIMove = <C extends AIBattleUnit, T extends BattleUnit>(
+// ==========================================
+// STEP 2: MOVEMENT CALCULATOR (The "How")
+// ==========================================
+const calculateFiringSpot = <C extends AIBattleUnit, T extends BattleUnit>(
 	monster: C,
 	targetFigure: T,
 	card: Card,
 	figures: T[],
 ): GridPosition | null => {
-	if (monster.baseMove === 0) {
-		return monster.gridPosition;
-	}
+	if (monster.baseMove === 0) return monster.gridPosition;
 
-	const canTargetSelf = ["requires_entity", "requires_ally"].includes(
-		card.playRequirement,
-	);
+	const canTargetSelf = ["requires_entity", "requires_ally"].includes(card.playRequirement);
 	const minRange = canTargetSelf ? 0 : 1;
 	const hardObstacles = figures.filter(areEnemies(monster));
 
-	// ==========================================
-	// 1. COWARD / KITING LOGIC ("away")
-	// ==========================================
+	// --- KITING LOGIC ("away") ---
 	if (card.aiTargetPreference === "away") {
 		const reachable = calculateReachableCells({
 			movingUnit: monster,
@@ -58,6 +89,7 @@ const calculateAIMove = <C extends AIBattleUnit, T extends BattleUnit>(
 		);
 
 		const firingSpots = validStops.filter((cell) => {
+			// If it's a summon, just ensure there's at least one valid empty tile to cast on from here
 			if (card.playRequirement === "requires_empty_cell") {
 				const possibleSpawns = calculateAttackableCells({
 					attacker: { ...monster, gridPosition: cell },
@@ -66,43 +98,26 @@ const calculateAIMove = <C extends AIBattleUnit, T extends BattleUnit>(
 				})
 					.filter(isTileInBounds)
 					.filter(isTileEmpty(figures));
-
 				return possibleSpawns.length > 0;
 			}
 
-			return isTargetInRange({
-				card,
-				minRange,
-				attacker: { ...monster, gridPosition: cell },
-				target: targetFigure,
-			});
+			return isTargetInRange({ card, minRange, attacker: { ...monster, gridPosition: cell }, target: targetFigure });
 		});
 
 		if (firingSpots.length > 0) {
+			// Pick the spot furthest away from the target
 			firingSpots.sort((a, b) => {
-				const distA = getDistanceToBoundingBox({
-					caster: { ...monster, gridPosition: a },
-					target: targetFigure,
-				});
-				const distB = getDistanceToBoundingBox({
-					caster: { ...monster, gridPosition: b },
-					target: targetFigure,
-				});
+				const distA = getDistanceToBoundingBox({ caster: { ...monster, gridPosition: a }, target: targetFigure });
+				const distB = getDistanceToBoundingBox({ caster: { ...monster, gridPosition: b }, target: targetFigure });
 				return distB - distA;
 			});
-
 			return firingSpots[0];
 		}
+		return null;
 	}
 
-	// ==========================================
-	// 2. STANDARD / AGGRESSIVE LOGIC
-	// ==========================================
-	const distance = getDistanceToBoundingBox({
-		caster: monster,
-		target: targetFigure,
-	});
-
+	// --- AGGRESSIVE LOGIC ---
+	const distance = getDistanceToBoundingBox({ caster: monster, target: targetFigure });
 	if (distance >= minRange && distance <= card.range) {
 		return monster.gridPosition;
 	}
@@ -118,13 +133,9 @@ const calculateAIMove = <C extends AIBattleUnit, T extends BattleUnit>(
 	if (fullPath.length === 0) return null;
 
 	let stepsToTake = Math.min(monster.baseMove, fullPath.length);
-
 	while (stepsToTake > 0) {
 		const candidateDest = fullPath[stepsToTake - 1];
-
-		if (
-			canUnitFit({ unit: { ...monster, gridPosition: candidateDest }, figures })
-		) {
+		if (canUnitFit({ unit: { ...monster, gridPosition: candidateDest }, figures })) {
 			return candidateDest;
 		}
 		stepsToTake--;
@@ -133,135 +144,99 @@ const calculateAIMove = <C extends AIBattleUnit, T extends BattleUnit>(
 	return monster.gridPosition;
 };
 
+// ==========================================
+// STEP 3: THE ORCHESTRATOR
+// ==========================================
 export const getIdealTarget: TargetResolver = <C extends AIBattleUnit>(
 	aiFigure: C,
 	card: Card,
 	figures: BattleUnit[],
 ) => {
+	// --- FAST PATH: SELF ---
 	if (card.aiTargetPreference === "self") {
 		return {
-			reachableTarget: aiFigure,
+			intendedTarget: { gridPosition: aiFigure.gridPosition, size: aiFigure.size },
 			moveDest: aiFigure.gridPosition,
 			canHit: true,
 		};
 	}
 
-	if (card.aiTargetPreference && isGridPosition(card.aiTargetPreference)) {
+	// --- FAST PATH: SPECIFIC GRID OVERRIDE ---
+	if (card.aiTargetPreference && typeof card.aiTargetPreference !== "string") {
 		const target = figures.find(isUnitInTile(card.aiTargetPreference));
 		if (target) {
-			const moveDest = calculateAIMove(aiFigure, target, card, figures);
+			const moveDest = calculateFiringSpot(aiFigure, target, card, figures);
 			return {
-				reachableTarget: target,
+				intendedTarget: { gridPosition: target.gridPosition, size: target.size },
 				moveDest,
-				canHit: Boolean(
-					moveDest &&
-						isTargetInRange({
-							card,
-							minRange: 1,
-							attacker: {
-								...aiFigure,
-								gridPosition: moveDest,
-							},
-							target,
-						}),
-				),
+				canHit: Boolean(moveDest && isTargetInRange({ card, minRange: 1, attacker: { ...aiFigure, gridPosition: moveDest }, target })),
 			};
 		}
 	}
 
-	const targetsAllies = card.playRequirement === "requires_ally";
-	const targetsAny = card.playRequirement === "requires_entity";
-	const aliveOthers = figures.filter((f) => f.currentHp > 0);
+	// --- STANDARD PIPELINE ---
+	const targetQueue = getPrioritizedTargets(aiFigure, card, figures);
 
-	const validTargetsToEvaluate = aliveOthers.filter((f) => {
-		if (targetsAny) return true;
-		if (isSummon(f) && f.allegiance === "NEUTRAL") return false;
-		return targetsAllies ? !areEnemies(aiFigure)(f) : areEnemies(aiFigure)(f);
-	});
+	let fallbackMove: GridPosition | null = null;
+	let fallbackTarget: BattleUnit | null = null;
 
-	const orderedTargets = getOrderedTargets<C, BattleUnit>(
-		aiFigure,
-		card,
-		validTargetsToEvaluate,
-	);
-
-	let fallbackMove: {
-		reachableTarget: BattleUnit;
-		moveDest: GridPosition;
-		canHit: boolean;
-	} | null = null;
-
-	for (const target of orderedTargets) {
-		const moveDest = calculateAIMove(aiFigure, target, card, figures);
+	for (const focalTarget of targetQueue) {
+		const moveDest = calculateFiringSpot(aiFigure, focalTarget, card, figures);
 
 		if (moveDest) {
-			const minRange = targetsAllies || targetsAny ? 0 : 1;
+			// Handle the Empty Cell / Terrain Cast
+			if (card.playRequirement === "requires_empty_cell") {
+				const possibleSpawns = calculateAttackableCells({
+					attacker: { ...aiFigure, gridPosition: moveDest },
+					rangeValue: card.range,
+					canTargetSelf: false,
+				})
+					.filter(isTileInBounds)
+					.filter(isTileEmpty(figures));
+
+				if (possibleSpawns.length > 0) {
+					return {
+						intendedTarget: { gridPosition: possibleSpawns[0], size: { cols: 1, rows: 1 } },
+						moveDest,
+						canHit: true,
+					};
+				}
+				continue; // Try next focal point
+			}
+
+			// Handle Standard Target Cast
+			const minRange = ["requires_entity", "requires_ally"].includes(card.playRequirement) ? 0 : 1;
 			const canHit = isTargetInRange({
 				card,
 				minRange,
-				attacker: {
-					...aiFigure,
-					gridPosition: moveDest,
-				},
-				target,
+				attacker: { ...aiFigure, gridPosition: moveDest },
+				target: focalTarget,
 			});
 
 			if (canHit) {
-				return { reachableTarget: target, moveDest, canHit: true };
+				return {
+					intendedTarget: { gridPosition: focalTarget.gridPosition, size: focalTarget.size },
+					moveDest,
+					canHit: true
+				};
 			}
 
 			if (!fallbackMove) {
-				fallbackMove = { reachableTarget: target, moveDest, canHit: false };
+				fallbackMove = moveDest;
+				fallbackTarget = focalTarget;
 			}
 		}
 	}
 
-	return (
-		fallbackMove ?? {
-			reachableTarget: null,
-			moveDest: null,
-			canHit: false,
-		}
-	);
+	// --- FALLBACK ---
+	return {
+		intendedTarget: fallbackTarget ? { gridPosition: fallbackTarget.gridPosition, size: fallbackTarget.size } : null,
+		moveDest: fallbackMove,
+		canHit: false,
+	};
 };
 
-export function getOrderedTargets<C extends AIBattleUnit, T extends BattleUnit>(
-	aiFigure: C,
-	card: Card,
-	targets: T[],
-): T[] {
-	const sortFunction = (figureA: T, figureB: T) => {
-		switch (card.aiTargetPreference) {
-			case "lowestDef":
-				return figureA.baseDef - figureB.baseDef;
-			case "lowestHp":
-				return figureA.currentHp - figureB.currentHp;
-			case "random":
-				return Math.random() - 0.5;
-			default:
-				return (
-					getDistanceToBoundingBox({
-						caster: aiFigure,
-						target: figureA,
-					}) -
-					getDistanceToBoundingBox({
-						caster: aiFigure,
-						target: figureB,
-					})
-				);
-		}
-	};
-	return [...targets]
-		.filter(({ currentHp }) => currentHp > 0)
-		.sort(sortFunction);
-}
-
-function isTargetInRange<C extends BattleUnit, T extends BattleUnit>({
-	card,
-	minRange,
-	attacker,
-	target,
-}: {
+function isTargetInRange<C extends BattleUnit, T extends BattleUnit>({ card, minRange, attacker, target }: {
 	card: Card;
 	minRange: number;
 	attacker: C;
