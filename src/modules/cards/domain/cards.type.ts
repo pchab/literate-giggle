@@ -61,6 +61,13 @@ export type PushEffect = {
 	pushDirection?: "away" | "sideways" | "towards";
 };
 
+export type ChargeEffect = {
+	type: "charge";
+	distance: number;
+	collisionDamage: number;
+	target: "anchor";
+};
+
 export type SummonEffect = {
 	type: "summon";
 	blueprintId: Summon["id"];
@@ -98,6 +105,7 @@ export type CardEffect =
 	| DamageEffect
 	| HealEffect
 	| PushEffect
+	| ChargeEffect
 	| SummonEffect
 	| ApplyStatusEffect
 	| CreateSurfaceEffect
