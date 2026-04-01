@@ -19,7 +19,7 @@ import { calculateAIIntents } from "./calculateAIIntents.command";
 export const resolveCard =
 	(get: StoreGet, set: StoreSet, isSimulation = false) =>
 	async (anchorTarget: AnchorTarget, cardContext: ActiveCardContext) => {
-		const { units: draftUnits } = get();
+		const { units: draftUnits, gridSize } = get();
 		const { unitId, card } = cardContext;
 
 		const hero = draftUnits.find((u) => u.id === unitId);
@@ -65,6 +65,7 @@ export const resolveCard =
 			card,
 			originPos: attackOrigin,
 			targetPos: actualTarget,
+			gridSize,
 		});
 
 		const firePath = anchorTarget

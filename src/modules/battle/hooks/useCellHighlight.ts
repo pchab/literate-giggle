@@ -24,6 +24,7 @@ type CellHighlight = {
 
 export function useCellHighlight(): CellHighlight {
 	const {
+		gridSize,
 		units,
 		aiIntents,
 		activeHeroCard,
@@ -34,6 +35,7 @@ export function useCellHighlight(): CellHighlight {
 		usedMovesThisTurn,
 	} = useBattleStore(
 		useShallow((state) => ({
+			gridSize: state.gridSize,
 			units: state.units,
 			aiIntents: state.aiIntents,
 			activeHeroCard: state.activeHeroCard,
@@ -75,6 +77,7 @@ export function useCellHighlight(): CellHighlight {
 			movingUnit: { ...hero, baseMove: remainingMove },
 			blockingFigures: oppositeFaction,
 			canTargetSelf: false,
+			gridSize,
 		}).filter(isTileEmpty(units));
 
 		return {
@@ -103,6 +106,7 @@ export function useCellHighlight(): CellHighlight {
 				attacker: hero,
 				rangeValue: range,
 				canTargetSelf: false,
+				gridSize,
 			});
 
 			if (playRequirement === "requires_empty_cell") {

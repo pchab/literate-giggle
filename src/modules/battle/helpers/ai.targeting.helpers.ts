@@ -4,12 +4,12 @@ import type {
 	BattleUnit,
 } from "@/modules/figures/domain/figures.type";
 import type { GridPosition } from "../domain/grid.type";
+import type { StoreGet } from "../store/battle.store";
 import { getLineOfSightPath, isUnitInTile } from "./grid.helpers";
 
-export type TargetResolver = <C extends AIBattleUnit>(
+export type TargetResolver = (get: StoreGet) => <C extends AIBattleUnit>(
 	aiFigure: C,
 	card: Card,
-	figures: BattleUnit[],
 ) => {
 	intendedTarget: AnchorTarget | null;
 	moveDest: GridPosition | null;

@@ -3,7 +3,7 @@
 import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import type { GridPosition } from "../domain/grid.type";
-import { GRID_BOUNDS, isUnitInTile } from "../helpers/grid.helpers";
+import { isUnitInTile } from "../helpers/grid.helpers";
 
 // ==========================================
 // STABLE REFERENCES
@@ -15,10 +15,11 @@ export default function MovePrediction() {
 	// ==========================================
 	// SMART DUAL-INTENT SUBSCRIPTION
 	// ==========================================
-	const { units, projectedMoves, activeUnitId, activeUnitPath } =
+	const { gridSize, units, projectedMoves, activeUnitId, activeUnitPath } =
 		useBattleStore(
 			useShallow(
 				({
+					gridSize,
 					units,
 					playerIntent,
 					aiIntents,
@@ -29,7 +30,8 @@ export default function MovePrediction() {
 					// 1. Player Intent
 					if (playerIntent) {
 						return {
-							units: units,
+							gridSize,
+							units,
 							projectedMoves: playerStateDiff.projectedMoves,
 							activeUnitId: playerIntent.figureId,
 							activeUnitPath: playerIntent.intendedMove ?? EMPTY_PATH,
@@ -43,7 +45,8 @@ export default function MovePrediction() {
 						if (hoveredUnit && aiIntents[hoveredUnit.id]) {
 							const intent = aiIntents[hoveredUnit.id];
 							return {
-								units: units,
+								gridSize,
+								units,
 								projectedMoves: aiStateDiff.projectedMoves,
 								activeUnitId: intent.figureId,
 								activeUnitPath: intent.intendedMove ?? EMPTY_PATH,
@@ -53,6 +56,7 @@ export default function MovePrediction() {
 
 					// Fallback
 					return {
+						gridSize,
 						units,
 						projectedMoves: EMPTY_MOVES,
 						activeUnitId: null,
@@ -116,10 +120,10 @@ export default function MovePrediction() {
 				if (start.col === end.col && start.row === end.row) return null;
 
 				// FIXED AXIS MATH: Cols = X axis, Rows = Y axis
-				const startX = `${((start.col + 0.5) / GRID_BOUNDS.cols) * 100}%`;
-				const startY = `${((start.row + 0.5) / GRID_BOUNDS.rows) * 100}%`;
-				const endX = `${((end.col + 0.5) / GRID_BOUNDS.cols) * 100}%`;
-				const endY = `${((end.row + 0.5) / GRID_BOUNDS.rows) * 100}%`;
+				const startX = `${((start.col + 0.5) / gridSize.cols) * 100}%`;
+				const startY = `${((start.row + 0.5) / gridSize.rows) * 100}%`;
+				const endX = `${((end.col + 0.5) / gridSize.cols) * 100}%`;
+				const endY = `${((end.row + 0.5) / gridSize.rows) * 100}%`;
 
 				const strokeColor = isActiveUnit ? "#ef4444" : "#3b82f6";
 				const markerEnd = isActiveUnit

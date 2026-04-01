@@ -6,7 +6,6 @@ import type {
 import type { EffectResolver } from "@/modules/battle/helpers/effects/effect.resolvers";
 import {
 	calculateReachableCells,
-	GRID_BOUNDS,
 	getDistanceToBoundingBox,
 	getLineOfSightPath,
 	isTileEmpty,
@@ -44,7 +43,7 @@ export const alchemicalFrenzy: EffectResolver<
 	(get, set, isSimulation = false) =>
 	(_) =>
 	async ({ caster }) => {
-		const { units } = get();
+		const { units, gridSize } = get();
 		const activeHeroes = units.filter(isHero).filter((h) => h.currentHp > 0);
 
 		if (activeHeroes.length === 0) return;
@@ -55,6 +54,7 @@ export const alchemicalFrenzy: EffectResolver<
 			movingUnit: caster,
 			blockingFigures: activeHeroes,
 			canTargetSelf: true,
+			gridSize,
 		}).filter(isTileEmpty(units));
 
 		reachableCells.push(caster.gridPosition);
@@ -82,9 +82,9 @@ export const alchemicalFrenzy: EffectResolver<
 				const dy = Math.sign(dRow);
 
 				const path = getLineOfSightPath(startPos, {
-					col: startPos.col + GRID_BOUNDS.cols * dx,
-					row: startPos.row + GRID_BOUNDS.rows * dy,
-				}).filter(isTileInBounds);
+					col: startPos.col + gridSize.cols * dx,
+					row: startPos.row + gridSize.rows * dy,
+				}).filter(isTileInBounds(gridSize));
 
 				const targetPos = path[path.length - 1];
 
@@ -96,7 +96,7 @@ export const alchemicalFrenzy: EffectResolver<
 					),
 				}));
 
-				const targetResolver: TargetResolver = () => ({
+				const targetResolver: TargetResolver = () => () => ({
 					intendedTarget: { gridPosition: targetPos },
 					moveDest: startPos,
 					canHit: true,
@@ -137,7 +137,7 @@ export const alchemicalFrenzy: EffectResolver<
 		// ==========================================
 		// EXECUTE THE OPTIMAL TIMELINE
 		// ==========================================
-		const finalTargetResolver: TargetResolver = () => ({
+		const finalTargetResolver: TargetResolver = () => () => ({
 			intendedTarget: { gridPosition: bestTargetPos },
 			moveDest: bestStartPos,
 			canHit: true,

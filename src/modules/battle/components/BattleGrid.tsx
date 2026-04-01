@@ -1,11 +1,7 @@
 "use client";
 
 import { useShallow } from "zustand/shallow";
-import {
-	GRID_BOUNDS,
-	getCellId,
-	isUnitInTile,
-} from "@/modules/battle/helpers/grid.helpers";
+import { getCellId, isUnitInTile } from "@/modules/battle/helpers/grid.helpers";
 import type { Encounter } from "@/modules/campaign/domain/encounters.type";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
 import { isHero, isHeroId } from "@/modules/figures/helpers/figures.helpers";
@@ -16,11 +12,12 @@ import { GridCell, type Highlight } from "./GridCell";
 import MovePrediction from "./MovePrediction";
 import { SurfacesOverlay } from "./SurfaceOverlay";
 
-const cells = Array.from({ length: GRID_BOUNDS.rows }, (_, row) => {
-	return Array.from({ length: GRID_BOUNDS.cols }, (_, col) => {
-		return { id: getCellId({ col, row }), col, row };
-	});
-}).flat();
+const getCells = (gridSize: { rows: number; cols: number }) =>
+	Array.from({ length: gridSize.rows }, (_, row) => {
+		return Array.from({ length: gridSize.cols }, (_, col) => {
+			return { id: getCellId({ col, row }), col, row };
+		});
+	}).flat();
 
 const tailwindGridCols = [
 	"grid-cols-0",
@@ -37,6 +34,7 @@ export function BattleGrid({ encounterId }: { encounterId: Encounter["id"] }) {
 	useBattleTurns(encounterId);
 	const cellHighlight = useCellHighlight();
 	const {
+		gridSize,
 		units,
 		activeHeroCard,
 		activeMoveHeroId,
@@ -48,6 +46,7 @@ export function BattleGrid({ encounterId }: { encounterId: Encounter["id"] }) {
 		cancelCard,
 	} = useBattleStore(
 		useShallow((state) => ({
+			gridSize: state.gridSize,
 			units: state.units,
 			activeHeroCard: state.activeHeroCard,
 			activeMoveHeroId: state.activeMoveHeroId,
@@ -93,11 +92,11 @@ export function BattleGrid({ encounterId }: { encounterId: Encounter["id"] }) {
 
 	return (
 		<div
-			className={`grid ${tailwindGridCols[GRID_BOUNDS.cols]} gap-1 p-1 bg-zinc-900/80 rounded-lg border border-zinc-800 relative`}
+			className={`grid ${tailwindGridCols[gridSize.cols]} gap-1 p-1 bg-zinc-900/80 rounded-lg border border-zinc-800 relative`}
 			onMouseLeave={() => setHoveredCell(null)}
 			role="toolbar"
 		>
-			{cells.map((cell) => {
+			{getCells(gridSize).map((cell) => {
 				const unitsInCell = units.filter(isUnitInTile(cell));
 				const hasUnitInCell = unitsInCell.length > 0;
 				const unitInCell = unitsInCell[0];

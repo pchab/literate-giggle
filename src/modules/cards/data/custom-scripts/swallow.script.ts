@@ -25,7 +25,7 @@ export async function triggerRegurgitation(
 	isSimulation: boolean,
 	toad: BattleUnit,
 ) {
-	const allUnits = get().units;
+	const { units: allUnits, gridSize } = get();
 
 	const swallowedHero = allUnits.find(
 		(h) => h.currentHp > 0 && h.statuses.some((s) => s.type === "swallowed"),
@@ -35,10 +35,11 @@ export async function triggerRegurgitation(
 	const perimeterTiles = calculateAttackableCells({
 		attacker: toad,
 		rangeValue: 1,
+		gridSize,
 	});
 	let spitTile = toad.gridPosition;
 	for (const tile of perimeterTiles) {
-		if (!isTileInBounds(tile)) continue;
+		if (!isTileInBounds(gridSize)(tile)) continue;
 
 		const isOccupied = allUnits.some(
 			(f) => f.currentHp > 0 && isUnitInTile(tile)(f),

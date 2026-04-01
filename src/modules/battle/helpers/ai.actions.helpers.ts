@@ -40,18 +40,14 @@ export const handleAICardIntent =
 		getTarget?: TargetResolver;
 		getAnchor?: AnchorResolver;
 	}) => {
-		const { units } = get(); // Unified array!
+		const { units, gridSize } = get(); // Unified array!
 		const initialAttacker = units.find((u) => u.id === attackerId) as
 			| AIBattleUnit
 			| undefined;
 
 		if (!initialAttacker) return;
 
-		const { intendedTarget, moveDest } = getTarget(
-			initialAttacker,
-			card,
-			units,
-		);
+		const { intendedTarget, moveDest } = getTarget(get)(initialAttacker, card);
 		if (!intendedTarget || !moveDest) return;
 
 		// ==========================================
@@ -77,6 +73,7 @@ export const handleAICardIntent =
 			movingUnit: initialAttacker,
 			targetPos: moveDest,
 			figures: blockingFigures,
+			gridSize,
 		});
 
 		const movedUnit = await moveBattleUnit(
@@ -132,6 +129,7 @@ export const handleAICardIntent =
 			card,
 			targetPos: anchorTarget,
 			originPos: attackOrigin,
+			gridSize,
 		});
 
 		if (isSimulation) {

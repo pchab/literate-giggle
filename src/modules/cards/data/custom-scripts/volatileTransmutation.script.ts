@@ -66,7 +66,7 @@ export const volatileTransmutation: EffectResolver<
 				await Promise.all(
 					[...availableFlasks, ...heroes].map(async (target) => {
 						const { fakeGet, fakeSet } = getSimulationState(get);
-						const shadowTarget: TargetResolver = () => ({
+						const shadowTarget: TargetResolver = () => () => ({
 							intendedTarget: target,
 							moveDest: caster.gridPosition,
 							canHit: true,
@@ -92,7 +92,7 @@ export const volatileTransmutation: EffectResolver<
 				.target;
 
 			// --- EXECUTION VIA ADAPTER ---
-			const targetFlask: TargetResolver = () => ({
+			const targetFlask: TargetResolver = () => () => ({
 				intendedTarget: bestTarget,
 				moveDest: caster.gridPosition,
 				canHit: true,

@@ -1,18 +1,23 @@
 "use client";
 
 import Image from "next/image";
-import { GRID_BOUNDS } from "@/modules/battle/helpers/grid.helpers";
+import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 
 export function SurfacesOverlay() {
-	const surfaces = useBattleStore((state) => state.surfaces);
+	const { surfaces, gridSize } = useBattleStore(
+		useShallow((state) => ({
+			surfaces: state.surfaces,
+			gridSize: state.gridSize,
+		})),
+	);
 
 	return (
 		<div
 			className="absolute inset-0 grid gap-1 p-1 pointer-events-none z-5"
 			style={{
-				gridTemplateColumns: `repeat(${GRID_BOUNDS.cols}, minmax(0, 1fr))`,
-				gridTemplateRows: `repeat(${GRID_BOUNDS.rows}, minmax(0, 1fr))`,
+				gridTemplateColumns: `repeat(${gridSize.cols}, minmax(0, 1fr))`,
+				gridTemplateRows: `repeat(${gridSize.rows}, minmax(0, 1fr))`,
 			}}
 		>
 			{Object.values(surfaces).map((surface) => {

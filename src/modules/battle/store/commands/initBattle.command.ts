@@ -11,6 +11,7 @@ import {
 	UnitStance,
 } from "@/modules/figures/domain/figures.type";
 import { monsterId, summonId } from "@/modules/figures/helpers/figures.helpers";
+import { sleep } from "@/modules/shared/helpers/sleep";
 import { ENCOUNTER_DB } from "../../../campaign/data/encounters.data";
 import type { GridPosition } from "../../domain/grid.type";
 import { calculateAIIntents } from "./calculateAIIntents.command";
@@ -87,6 +88,8 @@ export const initBattle =
 			hoveredCell: null,
 			xpEarned: 0,
 			battleStatus: "ONGOING",
+			gridSize: encounter.gridSize || { cols: 5, rows: 5 },
 		}));
+		await sleep(100);
 		await calculateAIIntents(get, set)({});
 	};

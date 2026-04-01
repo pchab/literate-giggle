@@ -156,12 +156,14 @@ export const calculateExactPath = <C extends BattleUnit, T extends BattleUnit>({
 	figures,
 	minRange = 0,
 	maxRange = 0,
+	gridSize,
 }: {
 	movingUnit: C;
 	targetPos: GridPosition;
 	figures: T[];
 	minRange?: number;
 	maxRange?: number;
+	gridSize: { rows: number; cols: number };
 }): GridPosition[] => {
 	const startPos = movingUnit.gridPosition;
 	const target = { gridPosition: targetPos };
@@ -203,6 +205,7 @@ export const calculateExactPath = <C extends BattleUnit, T extends BattleUnit>({
 			const fits = canUnitFit({
 				unit: { ...movingUnit, gridPosition: next },
 				figures,
+				gridSize,
 			});
 
 			if (!fits) continue;

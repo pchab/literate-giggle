@@ -1,8 +1,10 @@
-import { GRID_BOUNDS, getCellId } from "@/modules/battle/helpers/grid.helpers";
+import { getCellId } from "@/modules/battle/helpers/grid.helpers";
 import { giantToad } from "@/modules/figures/data/monsters/giant-toad";
 import { smugglerCrate } from "@/modules/figures/data/summons/smugglersCrate";
 import type { Encounter } from "../../domain/encounters.type";
 import { QUEST_3_IRONHOLD_SUMP } from "./sewerContamination.definitions";
+
+const sewerBounds = { cols: 7, rows: 7 };
 
 export const sewerContaminationEncounters: Record<string, Encounter> = {
 	[QUEST_3_IRONHOLD_SUMP.encounters.giant_toad]: {
@@ -48,9 +50,10 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 				damage: 1,
 				duration: -1,
 				gridPosition: { col: 0, row: 2 },
-				size: { cols: GRID_BOUNDS.cols, rows: 3 },
+				size: { cols: sewerBounds.cols, rows: 3 },
 			},
 		},
 		onWinSceneId: QUEST_3_IRONHOLD_SUMP.scenes.victory,
+		gridSize: sewerBounds,
 	},
 };

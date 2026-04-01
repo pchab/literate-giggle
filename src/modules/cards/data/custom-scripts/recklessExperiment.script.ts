@@ -6,7 +6,6 @@ import type {
 } from "@/modules/battle/helpers/ai.targeting.helpers";
 import type { EffectResolver } from "@/modules/battle/helpers/effects/effect.resolvers";
 import {
-	GRID_BOUNDS,
 	getDistanceToBoundingBox,
 	isTileEmpty,
 	isTileInBounds,
@@ -33,7 +32,7 @@ export const recklessExperiment: EffectResolver<
 		} = alchemistLedgerCards;
 		const ironClub = hoboCards[cardId("iron_club")];
 
-		const { units } = get();
+		const { units, gridSize } = get();
 		const activeHeroes = units.filter(isHero).filter((h) => h.currentHp > 0);
 
 		if (activeHeroes.length === 0) return;
@@ -52,7 +51,7 @@ export const recklessExperiment: EffectResolver<
 
 		// --- GRID BOUNDS ---
 		const isBorder = ({ col, row }: GridPosition) =>
-			col === GRID_BOUNDS.cols - 1 || row === GRID_BOUNDS.rows - 1;
+			col === gridSize.cols - 1 || row === gridSize.rows - 1;
 
 		// --- STEP 1: SPAWN VIAL TOWARDS CLOSEST HERO ---
 		// Find the closest hero from the new position
@@ -85,7 +84,10 @@ export const recklessExperiment: EffectResolver<
 			for (let i = 0; i < pushDistance; i++) {
 				const nextPos = { col: currentX + dx, row: currentY + dy };
 
-				if (!isTileInBounds(nextPos) || !isTileEmpty(currentUnits)(nextPos)) {
+				if (
+					!isTileInBounds(gridSize)(nextPos) ||
+					!isTileEmpty(currentUnits)(nextPos)
+				) {
 					break;
 				}
 				currentX = nextPos.col;
@@ -108,7 +110,7 @@ export const recklessExperiment: EffectResolver<
 			}))
 			.filter(
 				(pos) =>
-					isTileInBounds(pos) &&
+					isTileInBounds(gridSize)(pos) &&
 					isTileEmpty(currentUnits)(pos) &&
 					!isBorder(pos),
 			);
@@ -160,7 +162,7 @@ export const recklessExperiment: EffectResolver<
 			const targetToKick = get().units.find(isUnitInTile(spawnTile));
 
 			if (targetToKick) {
-				const targetAdjacentUnit: TargetResolver = () => ({
+				const targetAdjacentUnit: TargetResolver = () => () => ({
 					intendedTarget: targetToKick,
 					moveDest: caster.gridPosition,
 					canHit: true,

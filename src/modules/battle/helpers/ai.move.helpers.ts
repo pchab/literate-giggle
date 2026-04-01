@@ -74,6 +74,7 @@ const calculateFiringSpot = <C extends AIBattleUnit, T extends BattleUnit>(
 	targetFigure: T,
 	card: Card,
 	figures: T[],
+	gridSize: { cols: number; rows: number },
 ): GridPosition | null => {
 	if (monster.baseMove === 0) return monster.gridPosition;
 
@@ -89,10 +90,15 @@ const calculateFiringSpot = <C extends AIBattleUnit, T extends BattleUnit>(
 			movingUnit: monster,
 			blockingFigures: hardObstacles,
 			canTargetSelf: true,
+			gridSize,
 		});
 
 		const validStops = reachable.filter((cell) =>
-			canUnitFit({ unit: { ...monster, gridPosition: cell }, figures }),
+			canUnitFit({
+				unit: { ...monster, gridPosition: cell },
+				figures,
+				gridSize,
+			}),
 		);
 
 		const firingSpots = validStops.filter((cell) => {
@@ -102,8 +108,9 @@ const calculateFiringSpot = <C extends AIBattleUnit, T extends BattleUnit>(
 					attacker: { ...monster, gridPosition: cell },
 					rangeValue: card.range,
 					canTargetSelf: false,
+					gridSize,
 				})
-					.filter(isTileInBounds)
+					.filter(isTileInBounds(gridSize))
 					.filter(isTileEmpty(figures));
 				return possibleSpawns.length > 0;
 			}
@@ -149,6 +156,7 @@ const calculateFiringSpot = <C extends AIBattleUnit, T extends BattleUnit>(
 		figures: hardObstacles,
 		minRange,
 		maxRange: card.range,
+		gridSize,
 	});
 
 	if (fullPath.length === 0) return null;
@@ -157,7 +165,11 @@ const calculateFiringSpot = <C extends AIBattleUnit, T extends BattleUnit>(
 	while (stepsToTake > 0) {
 		const candidateDest = fullPath[stepsToTake - 1];
 		if (
-			canUnitFit({ unit: { ...monster, gridPosition: candidateDest }, figures })
+			canUnitFit({
+				unit: { ...monster, gridPosition: candidateDest },
+				figures,
+				gridSize,
+			})
 		) {
 			return candidateDest;
 		}
@@ -170,109 +182,124 @@ const calculateFiringSpot = <C extends AIBattleUnit, T extends BattleUnit>(
 // ==========================================
 // STEP 3: THE ORCHESTRATOR
 // ==========================================
-export const getIdealTarget: TargetResolver = <C extends AIBattleUnit>(
-	aiFigure: C,
-	card: Card,
-	figures: BattleUnit[],
-) => {
-	// --- FAST PATH: SELF ---
-	if (card.aiTargetPreference === "self") {
-		return {
-			intendedTarget: aiFigure,
-			moveDest: aiFigure.gridPosition,
-			canHit: true,
-		};
-	}
-
-	// --- FAST PATH: SPECIFIC GRID OVERRIDE ---
-	if (card.aiTargetPreference && typeof card.aiTargetPreference !== "string") {
-		const target = figures.find(isUnitInTile(card.aiTargetPreference));
-		if (target) {
-			const moveDest = calculateFiringSpot(aiFigure, target, card, figures);
+export const getIdealTarget: TargetResolver =
+	(get) =>
+	<C extends AIBattleUnit>(aiFigure: C, card: Card) => {
+		const { units, gridSize } = get();
+		// --- FAST PATH: SELF ---
+		if (card.aiTargetPreference === "self") {
 			return {
-				intendedTarget: target,
-				moveDest,
-				canHit: Boolean(
-					moveDest &&
-						isTargetInRange({
-							card,
-							minRange: 1,
-							attacker: { ...aiFigure, gridPosition: moveDest },
-							target,
-						}),
-				),
+				intendedTarget: aiFigure,
+				moveDest: aiFigure.gridPosition,
+				canHit: true,
 			};
 		}
-	}
 
-	// --- STANDARD PIPELINE ---
-	const targetQueue = getPrioritizedTargets(aiFigure, card, figures);
+		// --- FAST PATH: SPECIFIC GRID OVERRIDE ---
+		if (
+			card.aiTargetPreference &&
+			typeof card.aiTargetPreference !== "string"
+		) {
+			const target = units.find(isUnitInTile(card.aiTargetPreference));
+			if (target) {
+				const moveDest = calculateFiringSpot(
+					aiFigure,
+					target,
+					card,
+					units,
+					gridSize,
+				);
+				return {
+					intendedTarget: target,
+					moveDest,
+					canHit: Boolean(
+						moveDest &&
+							isTargetInRange({
+								card,
+								minRange: 1,
+								attacker: { ...aiFigure, gridPosition: moveDest },
+								target,
+							}),
+					),
+				};
+			}
+		}
 
-	let fallbackMove: GridPosition | null = null;
-	let fallbackTarget: BattleUnit | null = null;
+		// --- STANDARD PIPELINE ---
+		const targetQueue = getPrioritizedTargets(aiFigure, card, units);
 
-	for (const focalTarget of targetQueue) {
-		const moveDest = calculateFiringSpot(aiFigure, focalTarget, card, figures);
+		let fallbackMove: GridPosition | null = null;
+		let fallbackTarget: BattleUnit | null = null;
 
-		if (moveDest) {
-			// Handle the Empty Cell / Terrain Cast
-			if (card.playRequirement === "requires_empty_cell") {
-				const possibleSpawns = calculateAttackableCells({
+		for (const focalTarget of targetQueue) {
+			const moveDest = calculateFiringSpot(
+				aiFigure,
+				focalTarget,
+				card,
+				units,
+				gridSize,
+			);
+
+			if (moveDest) {
+				// Handle the Empty Cell / Terrain Cast
+				if (card.playRequirement === "requires_empty_cell") {
+					const possibleSpawns = calculateAttackableCells({
+						attacker: { ...aiFigure, gridPosition: moveDest },
+						rangeValue: card.range,
+						canTargetSelf: false,
+						gridSize,
+					})
+						.filter(isTileInBounds(gridSize))
+						.filter(isTileEmpty(units));
+
+					if (possibleSpawns.length > 0) {
+						return {
+							intendedTarget: {
+								gridPosition: possibleSpawns[0],
+								size: { cols: 1, rows: 1 },
+							},
+							moveDest,
+							canHit: true,
+						};
+					}
+					continue; // Try next focal point
+				}
+
+				// Handle Standard Target Cast
+				const minRange = ["requires_entity", "requires_ally"].includes(
+					card.playRequirement,
+				)
+					? 0
+					: 1;
+				const canHit = isTargetInRange({
+					card,
+					minRange,
 					attacker: { ...aiFigure, gridPosition: moveDest },
-					rangeValue: card.range,
-					canTargetSelf: false,
-				})
-					.filter(isTileInBounds)
-					.filter(isTileEmpty(figures));
+					target: focalTarget,
+				});
 
-				if (possibleSpawns.length > 0) {
+				if (canHit) {
 					return {
-						intendedTarget: {
-							gridPosition: possibleSpawns[0],
-							size: { cols: 1, rows: 1 },
-						},
+						intendedTarget: focalTarget,
 						moveDest,
 						canHit: true,
 					};
 				}
-				continue; // Try next focal point
-			}
 
-			// Handle Standard Target Cast
-			const minRange = ["requires_entity", "requires_ally"].includes(
-				card.playRequirement,
-			)
-				? 0
-				: 1;
-			const canHit = isTargetInRange({
-				card,
-				minRange,
-				attacker: { ...aiFigure, gridPosition: moveDest },
-				target: focalTarget,
-			});
-
-			if (canHit) {
-				return {
-					intendedTarget: focalTarget,
-					moveDest,
-					canHit: true,
-				};
-			}
-
-			if (!fallbackMove) {
-				fallbackMove = moveDest;
-				fallbackTarget = focalTarget;
+				if (!fallbackMove) {
+					fallbackMove = moveDest;
+					fallbackTarget = focalTarget;
+				}
 			}
 		}
-	}
 
-	// --- FALLBACK ---
-	return {
-		intendedTarget: fallbackTarget,
-		moveDest: fallbackMove,
-		canHit: false,
+		// --- FALLBACK ---
+		return {
+			intendedTarget: fallbackTarget,
+			moveDest: fallbackMove,
+			canHit: false,
+		};
 	};
-};
 
 function isTargetInRange<C extends BattleUnit, T extends BattleUnit>({
 	card,

@@ -1,5 +1,3 @@
-import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
 import type {
 	GridPosition,
 	SurfaceData,
@@ -16,6 +14,8 @@ import type {
 	BattleUnit,
 	Hero,
 } from "@/modules/figures/domain/figures.type";
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 import { cancelCard } from "./commands/cancelCard.command";
 import { endTurn } from "./commands/endTurn.command";
 import { initBattle } from "./commands/initBattle.command";
@@ -52,6 +52,7 @@ export type BattleState = {
 
 	xpEarned: number;
 	encounterId: Encounter["id"] | null;
+	gridSize: { cols: number; rows: number };
 	battleStatus: BattleStatus;
 };
 
@@ -104,6 +105,7 @@ const initialState: BattleState = {
 
 	xpEarned: 0,
 	encounterId: null,
+	gridSize: { cols: 8, rows: 8 },
 	battleStatus: "ONGOING",
 };
 
@@ -150,6 +152,8 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 				usedCardsThisTurn: state.usedCardsThisTurn,
 				xpEarned: state.xpEarned,
 				surfaces: state.surfaces,
+				gridSize: state.gridSize,
+				battleStatus: state.battleStatus,
 			}),
 		},
 	),

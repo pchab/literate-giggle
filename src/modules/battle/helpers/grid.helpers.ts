@@ -2,11 +2,6 @@ import type { AnchorTarget, Card } from "@/modules/cards/domain/cards.type";
 import type { BattleUnit } from "../../figures/domain/figures.type";
 import type { BoundingBox, GridPosition } from "../domain/grid.type";
 
-export const GRID_BOUNDS = {
-	rows: 7,
-	cols: 7,
-};
-
 export function getCellId(pos: GridPosition): string {
 	return `${pos.row}-${pos.col}`;
 }
@@ -61,14 +56,16 @@ export const isTileEmpty =
 export const canUnitFit = <C extends BattleUnit, T extends BattleUnit>({
 	unit: { id: ignoreUnitId, size = { cols: 1, rows: 1 }, gridPosition },
 	figures,
+	gridSize,
 }: {
 	unit: C;
 	figures: T[];
+	gridSize: { cols: number; rows: number };
 }): boolean => {
 	for (let r = 0; r < size.rows; r++) {
 		for (let c = 0; c < size.cols; c++) {
 			const checkPos = { row: gridPosition.row + r, col: gridPosition.col + c };
-			if (!isTileInBounds(checkPos)) return false;
+			if (!isTileInBounds(gridSize)(checkPos)) return false;
 
 			const occupant = figures.find(
 				(f) => f.currentHp > 0 && isUnitInTile(checkPos)(f),
@@ -116,24 +113,27 @@ export const getDistanceToBoundingBox = <
 	return dCol + dRow;
 };
 
-export const isTileInBounds = (pos: GridPosition) => {
-	return (
-		pos.row >= 0 &&
-		pos.row < GRID_BOUNDS.rows &&
-		pos.col >= 0 &&
-		pos.col < GRID_BOUNDS.cols
-	);
-};
+export const isTileInBounds =
+	(gridSize: { rows: number; cols: number }) => (pos: GridPosition) => {
+		return (
+			pos.row >= 0 &&
+			pos.row < gridSize.rows &&
+			pos.col >= 0 &&
+			pos.col < gridSize.cols
+		);
+	};
 
 // --- 4. PATHFINDING ---
 export const calculateReachableCells = <T extends BattleUnit>({
 	movingUnit,
 	blockingFigures: figures,
 	canTargetSelf = false,
+	gridSize,
 }: {
 	movingUnit: BattleUnit;
 	blockingFigures: T[];
 	canTargetSelf: boolean;
+	gridSize: { cols: number; rows: number };
 }): GridPosition[] => {
 	const { baseMove: moveValue, gridPosition: startPos } = movingUnit;
 	if (moveValue <= 0) return [];
@@ -168,7 +168,11 @@ export const calculateReachableCells = <T extends BattleUnit>({
 				if (!visited.has(key)) {
 					visited.add(key);
 					if (
-						canUnitFit({ unit: { ...movingUnit, gridPosition: next }, figures })
+						canUnitFit({
+							unit: { ...movingUnit, gridPosition: next },
+							figures,
+							gridSize,
+						})
 					) {
 						queue.push({ pos: next, dist: current.dist + 1 });
 					}
@@ -184,15 +188,17 @@ export const calculateAttackableCells = ({
 	attacker,
 	rangeValue,
 	canTargetSelf = false,
+	gridSize,
 }: {
 	attacker: BattleUnit;
 	rangeValue: number;
 	canTargetSelf?: boolean;
+	gridSize: { cols: number; rows: number };
 }): GridPosition[] => {
 	const attackable: GridPosition[] = [];
 
-	for (let row = 0; row < GRID_BOUNDS.rows; row++) {
-		for (let col = 0; col < GRID_BOUNDS.cols; col++) {
+	for (let row = 0; row < gridSize.rows; row++) {
+		for (let col = 0; col < gridSize.cols; col++) {
 			const target = { gridPosition: { row, col } };
 
 			const distance = getDistanceToBoundingBox({ caster: attacker, target });
@@ -270,10 +276,12 @@ export function filterGridByAttackPattern({
 	card,
 	targetPos,
 	originPos,
+	gridSize,
 }: {
 	card: Card;
 	targetPos: AnchorTarget;
 	originPos: GridPosition;
+	gridSize: { cols: number; rows: number };
 }): GridPosition[] {
 	const pattern = card.aoePattern || [{ col: 0, row: 0 }];
 	if (!targetPos) return pattern;
@@ -313,7 +321,7 @@ export function filterGridByAttackPattern({
 		}
 	}
 
-	return expandedPattern.filter(isTileInBounds);
+	return expandedPattern.filter(isTileInBounds(gridSize));
 }
 
 export const getClosestOriginTile = ({

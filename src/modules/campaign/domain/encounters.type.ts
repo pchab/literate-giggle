@@ -24,6 +24,7 @@ export interface Encounter {
 
 	onWinSceneId?: Scene["id"];
 	onLoseSceneId?: Scene["id"];
+	gridSize?: { cols: number; rows: number };
 }
 
 export function encounterId(id: string): Encounter["id"] {

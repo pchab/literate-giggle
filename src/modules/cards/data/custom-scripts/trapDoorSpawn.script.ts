@@ -25,7 +25,7 @@ export const trapdoorSpawn: EffectResolver<
 	(get, set, isSimulation = false) =>
 	({ payload }) =>
 	async ({ caster }) => {
-		const { units, surfaces } = get();
+		const { units, surfaces, gridSize } = get();
 
 		const targetPos = { col: 2, row: 2 };
 		const isBlocked = !isTileEmpty(units)(targetPos);
@@ -77,7 +77,7 @@ export const trapdoorSpawn: EffectResolver<
 		];
 
 		const validSpawns = neighbors
-			.filter(isTileInBounds)
+			.filter(isTileInBounds(gridSize))
 			.filter(isTileEmpty(units));
 
 		const spawnAmount = payload.spawnCount;

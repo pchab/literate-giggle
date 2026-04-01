@@ -13,6 +13,7 @@ export const resolvePushEffect: EffectResolver<BattleUnit, PushEffect> =
 	(get, set, isSimulation = false) =>
 	(effect) =>
 	async ({ anchorTarget, caster, targetIds }) => {
+		const { gridSize } = get();
 		// --- 1. USE THE UNIFIED ARRAY ---
 		let currentFigures = get().units;
 
@@ -65,8 +66,8 @@ export const resolvePushEffect: EffectResolver<BattleUnit, PushEffect> =
 				crushObstacleA = getObstacleAt(posA.col, posA.row) || null;
 				crushObstacleB = getObstacleAt(posB.col, posB.row) || null;
 
-				const aBlocked = !isTileInBounds(posA) || !!crushObstacleA;
-				const bBlocked = !isTileInBounds(posB) || !!crushObstacleB;
+				const aBlocked = !isTileInBounds(gridSize)(posA) || !!crushObstacleA;
+				const bBlocked = !isTileInBounds(gridSize)(posB) || !!crushObstacleB;
 
 				if (aBlocked && bBlocked) {
 					isCrushed = true;
@@ -133,7 +134,7 @@ export const resolvePushEffect: EffectResolver<BattleUnit, PushEffect> =
 				const nextPos = { col: currentX + dx, row: currentY + dy };
 				const obstacle = getObstacleAt(nextPos.col, nextPos.row);
 
-				if (!isTileInBounds(nextPos) || obstacle) {
+				if (!isTileInBounds(gridSize)(nextPos) || obstacle) {
 					collidedWith = obstacle || null;
 					break;
 				}
