@@ -111,14 +111,11 @@ export const alchemistLedgerCards: Record<Card["id"], Card> = {
 		image: "/cards/reckless_charge.webp",
 		playRequirement: "no_target",
 		effects: [
-			{ type: "move", target: "self" },
-			{ type: "damage", amount: 6, target: "path" },
 			{
-				type: "push",
+				type: "charge",
 				distance: 2,
 				collisionDamage: 2,
-				target: "path",
-				pushDirection: "sideways",
+				target: "anchor",
 			},
 		],
 	},

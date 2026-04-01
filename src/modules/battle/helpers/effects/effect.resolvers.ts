@@ -5,6 +5,7 @@ import type {
 } from "@/modules/cards/domain/cards.type";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
 import type { StoreGet, StoreSet } from "../../store/battle.store";
+import { resolveChargeEffect } from "./charge.effect.resolver";
 import { resolveMoveEffect } from "./move.effect.resolver";
 import { resolvePushEffect } from "./push.effect.resolver";
 import { resolveStandardEffect } from "./standard.effect.resolver";
@@ -42,6 +43,8 @@ export const resolvers: EffectResolver<BattleUnit, CardEffect> =
 				return resolveSummonEffect(get, set, isSimulation)(effect);
 			case "push":
 				return resolvePushEffect(get, set, isSimulation)(effect);
+			case "charge":
+				return resolveChargeEffect(get, set, isSimulation)(effect);
 			case "custom_script": {
 				const script = customScriptRegistry[effect.scriptId];
 				if (!script) {

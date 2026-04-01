@@ -28,11 +28,16 @@ const getBarnabyStateScore = (fakeGet: StoreGet, realGet: StoreGet): number => {
 	let score = 0;
 	for (const oldHero of oldHeroes) {
 		const newHero = newHeroes.find((h) => h.id === oldHero.id);
-		if (newHero) {
-			const hpDiff = oldHero.currentHp - Math.max(0, newHero.currentHp);
-			score += hpDiff * 10;
+		const newHp = newHero ? Math.max(0, newHero.currentHp) : 0;
+
+		const hpDiff = oldHero.currentHp - newHp;
+		score += hpDiff;
+
+		if (!newHero || newHp === 0) {
+			score += 50; // Barnaby loves a good murder
 		}
 	}
+
 	return score;
 };
 
@@ -116,18 +121,15 @@ export const alchemicalFrenzy: EffectResolver<
 					getTarget: targetResolver,
 					getAnchor: anchorResolver,
 				});
-
-				const score = getBarnabyStateScore(fakeGet, get);
 				const distancePenalty =
 					getDistanceToBoundingBox({
 						caster,
 						target: { gridPosition: startPos },
 					}) * 0.1;
 
-				const finalScore = score - distancePenalty;
-
-				if (finalScore > bestScore) {
-					bestScore = finalScore;
+				const score = getBarnabyStateScore(fakeGet, get) - distancePenalty;
+				if (score > bestScore) {
+					bestScore = score;
 					bestStartPos = startPos;
 					bestTargetPos = targetPos;
 				}
