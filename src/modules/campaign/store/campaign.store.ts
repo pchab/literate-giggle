@@ -1,8 +1,8 @@
-import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
 import type { Quest, QuestStep } from "@/modules/campaign/domain/quests.type";
 import type { Scene } from "@/modules/campaign/domain/scenes.type";
 import type { MapNode } from "@/modules/world/domain/map.types";
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 import { RAT_IN_THE_CELLAR } from "../data/rats-in-the-cellar/ratsInTheCellar.definitions";
 import advanceQuest from "./commands/advanceQuest.command";
 import completeQuest from "./commands/completeQuest.command";
@@ -57,7 +57,7 @@ export const useCampaignStore = create<CampaignState & CampaignActions>()(
 		}),
 		{
 			name: "alpha-campaign-state",
-			storage: createJSONStorage(() => sessionStorage),
+			storage: createJSONStorage(() => localStorage),
 		},
 	),
 );

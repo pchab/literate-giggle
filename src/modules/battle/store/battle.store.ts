@@ -143,7 +143,7 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 		}),
 		{
 			name: "alpha-battle-state",
-			storage: createJSONStorage(() => sessionStorage),
+			storage: createJSONStorage(() => localStorage),
 			partialize: (state) => ({
 				encounterId: state.encounterId,
 				units: state.units,

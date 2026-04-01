@@ -1,0 +1,553 @@
+{
+  "state": {
+    "aiIntents": {
+      "monster-0ec552dd-08ad-4bb1-b9da-7d440367193c": {
+        "cardId": "card-alchemical_frenzy",
+        "dangerZone": [
+          {
+            "col": 0,
+            "row": 0
+          }
+        ],
+        "figureId": "monster-0ec552dd-08ad-4bb1-b9da-7d440367193c",
+        "intendedMove": [],
+        "target": {
+          "gridPosition": {
+            "col": 0,
+            "row": 0
+          }
+        }
+      }
+    },
+    "battleStatus": "ONGOING",
+    "encounterId": "encounter-mutated_barnaby",
+    "gridSize": {
+      "cols": 5,
+      "rows": 5
+    },
+    "surfaces": {},
+    "units": [
+      {
+        "baseDef": 0,
+        "baseMove": 2,
+        "currentHp": 19,
+        "currentLevel": 4,
+        "currentXp": 28,
+        "deck": [
+          {
+            "baseCardId": "card-arcane_shot",
+            "instanceId": "card-hero-6d88cd4c-fc92-4f0c-906f-310050b895cd-card-club",
+            "powerRunes": {
+              "bonusDamage": 7,
+              "bonusRange": 1
+            }
+          },
+          {
+            "baseCardId": "card-bandage",
+            "instanceId": "card-hero-6d88cd4c-fc92-4f0c-906f-310050b895cd-card-bandage",
+            "powerRunes": {}
+          },
+          {
+            "baseCardId": "card-shove",
+            "instanceId": "card-hero-6d88cd4c-fc92-4f0c-906f-310050b895cd-card-shove",
+            "powerRunes": {}
+          },
+          {
+            "baseCardId": "card-arcane_shield",
+            "instanceId": "card-hero-6d88cd4c-fc92-4f0c-906f-310050b895cd-card-arcane_shield",
+            "powerRunes": {}
+          }
+        ],
+        "gridPosition": {
+          "col": 1,
+          "row": 0
+        },
+        "hand": [
+          {
+            "effects": [
+              {
+                "amount": 10,
+                "projectile": "ARROW",
+                "target": "anchor",
+                "type": "damage"
+              }
+            ],
+            "id": "card-hero-6d88cd4c-fc92-4f0c-906f-310050b895cd-card-club",
+            "image": "/cards/arcane_shot.webp",
+            "name": "Arcane Shot",
+            "playRequirement": "requires_enemy",
+            "range": 3
+          },
+          {
+            "effects": [
+              {
+                "collisionDamage": 1,
+                "distance": 1,
+                "target": "anchor",
+                "type": "push"
+              }
+            ],
+            "id": "card-hero-6d88cd4c-fc92-4f0c-906f-310050b895cd-card-shove",
+            "image": "/cards/shove.webp",
+            "name": "Shove",
+            "playRequirement": "requires_entity",
+            "range": 1
+          },
+          {
+            "effects": [
+              {
+                "status": {
+                  "amount": 2,
+                  "duration": -1,
+                  "type": "block"
+                },
+                "target": "anchor",
+                "type": "apply_status"
+              }
+            ],
+            "id": "card-hero-6d88cd4c-fc92-4f0c-906f-310050b895cd-card-arcane_shield",
+            "image": "/cards/arcane_shield.webp",
+            "name": "Arcane Shield",
+            "playRequirement": "requires_ally",
+            "range": 2
+          }
+        ],
+        "heroClass": "MAGE",
+        "id": "hero-6d88cd4c-fc92-4f0c-906f-310050b895cd",
+        "maxHp": 19,
+        "name": "Anselus",
+        "passives": [],
+        "selectedCards": [
+          {
+            "baseCardId": "card-arcane_shot",
+            "instanceId": "card-hero-6d88cd4c-fc92-4f0c-906f-310050b895cd-card-club",
+            "powerRunes": {
+              "bonusDamage": 7,
+              "bonusRange": 1
+            }
+          },
+          {
+            "baseCardId": "card-shove",
+            "instanceId": "card-hero-6d88cd4c-fc92-4f0c-906f-310050b895cd-card-shove",
+            "powerRunes": {}
+          },
+          {
+            "baseCardId": "card-arcane_shield",
+            "instanceId": "card-hero-6d88cd4c-fc92-4f0c-906f-310050b895cd-card-arcane_shield",
+            "powerRunes": {}
+          }
+        ],
+        "spriteBase": "heroes/mage",
+        "stance": 0,
+        "statuses": []
+      },
+      {
+        "baseDef": 0,
+        "baseMove": 3,
+        "currentHp": 19,
+        "currentLevel": 4,
+        "currentXp": 28,
+        "deck": [
+          {
+            "baseCardId": "card-dagger",
+            "instanceId": "card-hero-ae8c6b20-e958-4115-9db9-f236a8d71589-card-club",
+            "powerRunes": {
+              "bonusDamage": 1
+            }
+          },
+          {
+            "baseCardId": "card-bandage",
+            "instanceId": "card-hero-ae8c6b20-e958-4115-9db9-f236a8d71589-card-bandage",
+            "powerRunes": {}
+          },
+          {
+            "baseCardId": "card-shove",
+            "instanceId": "card-hero-ae8c6b20-e958-4115-9db9-f236a8d71589-card-shove",
+            "powerRunes": {
+              "bonusPushCollision": 3,
+              "bonusPushDistance": 2
+            }
+          },
+          {
+            "baseCardId": "card-poison_shiv",
+            "instanceId": "card-hero-ae8c6b20-e958-4115-9db9-f236a8d71589-card-poison_shiv",
+            "powerRunes": {
+              "bonusStatusAmount": {
+                "poison": 2
+              }
+            }
+          }
+        ],
+        "gridPosition": {
+          "col": 1,
+          "row": 1
+        },
+        "hand": [
+          {
+            "effects": [
+              {
+                "amount": 5,
+                "target": "anchor",
+                "type": "damage"
+              }
+            ],
+            "id": "card-hero-ae8c6b20-e958-4115-9db9-f236a8d71589-card-club",
+            "image": "/cards/dagger.webp",
+            "name": "Dagger",
+            "playRequirement": "requires_enemy",
+            "range": 1
+          },
+          {
+            "effects": [
+              {
+                "collisionDamage": 4,
+                "distance": 3,
+                "target": "anchor",
+                "type": "push"
+              }
+            ],
+            "id": "card-hero-ae8c6b20-e958-4115-9db9-f236a8d71589-card-shove",
+            "image": "/cards/shove.webp",
+            "name": "Shove",
+            "playRequirement": "requires_entity",
+            "range": 1
+          },
+          {
+            "effects": [
+              {
+                "status": {
+                  "amount": 4,
+                  "duration": 2,
+                  "type": "poison"
+                },
+                "target": "anchor",
+                "type": "apply_status"
+              }
+            ],
+            "id": "card-hero-ae8c6b20-e958-4115-9db9-f236a8d71589-card-poison_shiv",
+            "image": "/cards/poison_shiv.webp",
+            "name": "Poison Shiv",
+            "playRequirement": "requires_enemy",
+            "range": 1
+          }
+        ],
+        "heroClass": "ROGUE",
+        "id": "hero-ae8c6b20-e958-4115-9db9-f236a8d71589",
+        "maxHp": 19,
+        "name": "Willet",
+        "passives": [],
+        "selectedCards": [
+          {
+            "baseCardId": "card-dagger",
+            "instanceId": "card-hero-ae8c6b20-e958-4115-9db9-f236a8d71589-card-club",
+            "powerRunes": {
+              "bonusDamage": 1
+            }
+          },
+          {
+            "baseCardId": "card-shove",
+            "instanceId": "card-hero-ae8c6b20-e958-4115-9db9-f236a8d71589-card-shove",
+            "powerRunes": {
+              "bonusPushCollision": 3,
+              "bonusPushDistance": 2
+            }
+          },
+          {
+            "baseCardId": "card-poison_shiv",
+            "instanceId": "card-hero-ae8c6b20-e958-4115-9db9-f236a8d71589-card-poison_shiv",
+            "powerRunes": {
+              "bonusStatusAmount": {
+                "poison": 2
+              }
+            }
+          }
+        ],
+        "spriteBase": "heroes/rogue",
+        "stance": 0,
+        "statuses": []
+      },
+      {
+        "baseDef": 1,
+        "baseMove": 2,
+        "currentHp": 20,
+        "currentLevel": 4,
+        "currentXp": 28,
+        "deck": [
+          {
+            "baseCardId": "card-iron_mace",
+            "instanceId": "card-hero-4aab48ed-0b5e-475f-b62e-fbc670764965-card-club",
+            "powerRunes": {}
+          },
+          {
+            "baseCardId": "card-bandage",
+            "instanceId": "card-hero-4aab48ed-0b5e-475f-b62e-fbc670764965-card-bandage",
+            "powerRunes": {
+              "bonusHeal": 5
+            }
+          },
+          {
+            "baseCardId": "card-shove",
+            "instanceId": "card-hero-4aab48ed-0b5e-475f-b62e-fbc670764965-card-shove",
+            "powerRunes": {}
+          },
+          {
+            "baseCardId": "card-divine_aegis",
+            "instanceId": "card-hero-4aab48ed-0b5e-475f-b62e-fbc670764965-card-divine_aegis",
+            "powerRunes": {
+              "bonusRange": 1,
+              "bonusStatusAmount": {
+                "block": 2
+              }
+            }
+          }
+        ],
+        "gridPosition": {
+          "col": 1,
+          "row": 2
+        },
+        "hand": [
+          {
+            "effects": [
+              {
+                "amount": 4,
+                "target": "anchor",
+                "type": "damage",
+                "vfx": "BLUNT"
+              }
+            ],
+            "id": "card-hero-4aab48ed-0b5e-475f-b62e-fbc670764965-card-club",
+            "image": "/cards/iron_mace.webp",
+            "name": "Iron Mace",
+            "playRequirement": "requires_enemy",
+            "range": 1
+          },
+          {
+            "effects": [
+              {
+                "amount": 6,
+                "target": "anchor",
+                "type": "heal"
+              }
+            ],
+            "id": "card-hero-4aab48ed-0b5e-475f-b62e-fbc670764965-card-bandage",
+            "image": "/cards/bandage.webp",
+            "name": "Bandage",
+            "playRequirement": "requires_ally",
+            "range": 1
+          },
+          {
+            "effects": [
+              {
+                "status": {
+                  "amount": 6,
+                  "duration": -1,
+                  "type": "block"
+                },
+                "target": "anchor",
+                "type": "apply_status"
+              }
+            ],
+            "id": "card-hero-4aab48ed-0b5e-475f-b62e-fbc670764965-card-divine_aegis",
+            "image": "/cards/divine_aegis.webp",
+            "name": "Divine Aegis",
+            "playRequirement": "requires_ally",
+            "range": 3
+          }
+        ],
+        "heroClass": "CLERIC",
+        "id": "hero-4aab48ed-0b5e-475f-b62e-fbc670764965",
+        "maxHp": 20,
+        "name": "Gabrien",
+        "passives": [],
+        "selectedCards": [
+          {
+            "baseCardId": "card-iron_mace",
+            "instanceId": "card-hero-4aab48ed-0b5e-475f-b62e-fbc670764965-card-club",
+            "powerRunes": {}
+          },
+          {
+            "baseCardId": "card-bandage",
+            "instanceId": "card-hero-4aab48ed-0b5e-475f-b62e-fbc670764965-card-bandage",
+            "powerRunes": {
+              "bonusHeal": 5
+            }
+          },
+          {
+            "baseCardId": "card-divine_aegis",
+            "instanceId": "card-hero-4aab48ed-0b5e-475f-b62e-fbc670764965-card-divine_aegis",
+            "powerRunes": {
+              "bonusRange": 1,
+              "bonusStatusAmount": {
+                "block": 2
+              }
+            }
+          }
+        ],
+        "spriteBase": "heroes/cleric",
+        "stance": 0,
+        "statuses": []
+      },
+      {
+        "baseDef": 6,
+        "baseMove": 2,
+        "currentHp": 40,
+        "gridPosition": {
+          "col": 3,
+          "row": 3
+        },
+        "id": "monster-0ec552dd-08ad-4bb1-b9da-7d440367193c",
+        "intentPool": [
+          {
+            "cardId": "card-alchemical_frenzy",
+            "weight": 1
+          }
+        ],
+        "maxHp": 40,
+        "name": "Alchemist Barnaby",
+        "spriteBase": "monsters/merchant",
+        "stance": 0,
+        "statuses": [],
+        "xpReward": 50
+      },
+      {
+        "allegiance": "NEUTRAL",
+        "baseDef": 1,
+        "baseMove": 0,
+        "currentHp": 5,
+        "gridPosition": {
+          "col": 0,
+          "row": 2
+        },
+        "id": "summon-88209d4d-22cb-48b2-b0de-e0141ff659b5",
+        "immunities": [
+          "poison"
+        ],
+        "intentPool": [],
+        "maxHp": 5,
+        "name": "Shelves",
+        "onDeath": "card-spawn_vial",
+        "spriteBase": "summons/shelves",
+        "stance": 0,
+        "statuses": [],
+        "xpReward": 0
+      },
+      {
+        "allegiance": "NEUTRAL",
+        "baseDef": 1,
+        "baseMove": 0,
+        "currentHp": 5,
+        "gridPosition": {
+          "col": 0,
+          "row": 3
+        },
+        "id": "summon-06746893-8aa0-447c-96dc-4fb0c7c58713",
+        "immunities": [
+          "poison"
+        ],
+        "intentPool": [],
+        "maxHp": 5,
+        "name": "Shelves",
+        "onDeath": "card-spawn_vial",
+        "spriteBase": "summons/shelves",
+        "stance": 0,
+        "statuses": [],
+        "xpReward": 0
+      },
+      {
+        "allegiance": "NEUTRAL",
+        "baseDef": 1,
+        "baseMove": 0,
+        "currentHp": 5,
+        "gridPosition": {
+          "col": 0,
+          "row": 4
+        },
+        "id": "summon-9f576a55-cf95-4fd0-b784-14908eacf68d",
+        "immunities": [
+          "poison"
+        ],
+        "intentPool": [],
+        "maxHp": 5,
+        "name": "Shelves",
+        "onDeath": "card-spawn_vial",
+        "spriteBase": "summons/shelves",
+        "stance": 0,
+        "statuses": [],
+        "xpReward": 0
+      },
+      {
+        "allegiance": "NEUTRAL",
+        "baseDef": 1,
+        "baseMove": 0,
+        "currentHp": 5,
+        "gridPosition": {
+          "col": 2,
+          "row": 0
+        },
+        "id": "summon-2e2cf9ca-cb33-4718-bdf8-9eb256a74e02",
+        "immunities": [
+          "poison"
+        ],
+        "intentPool": [],
+        "maxHp": 5,
+        "name": "Shelves",
+        "onDeath": "card-spawn_vial",
+        "spriteBase": "summons/shelves",
+        "stance": 0,
+        "statuses": [],
+        "xpReward": 0
+      },
+      {
+        "allegiance": "NEUTRAL",
+        "baseDef": 1,
+        "baseMove": 0,
+        "currentHp": 5,
+        "gridPosition": {
+          "col": 3,
+          "row": 0
+        },
+        "id": "summon-92073630-f77a-4f02-90ae-bb59d9130115",
+        "immunities": [
+          "poison"
+        ],
+        "intentPool": [],
+        "maxHp": 5,
+        "name": "Shelves",
+        "onDeath": "card-spawn_vial",
+        "spriteBase": "summons/shelves",
+        "stance": 0,
+        "statuses": [],
+        "xpReward": 0
+      },
+      {
+        "allegiance": "NEUTRAL",
+        "baseDef": 1,
+        "baseMove": 0,
+        "currentHp": 5,
+        "gridPosition": {
+          "col": 4,
+          "row": 0
+        },
+        "id": "summon-6e13e927-7161-4dce-a9aa-d7897deffd41",
+        "immunities": [
+          "poison"
+        ],
+        "intentPool": [],
+        "maxHp": 5,
+        "name": "Shelves",
+        "onDeath": "card-spawn_vial",
+        "spriteBase": "summons/shelves",
+        "stance": 0,
+        "statuses": [],
+        "xpReward": 0
+      }
+    ],
+    "usedCardsThisTurn": {},
+    "usedMovesThisTurn": {
+      "hero-4aab48ed-0b5e-475f-b62e-fbc670764965": 1,
+      "hero-ae8c6b20-e958-4115-9db9-f236a8d71589": 1
+    },
+    "xpEarned": 0
+  },
+  "version": 0
+}

@@ -1,0 +1,190 @@
+{
+  "state": {
+    "currentNodeId": "northern_road",
+    "currentVfx": {},
+    "evolutionRunesInventory": [
+      "rune_pestilence"
+    ],
+    "pendingPowerRunes": [],
+    "pendingPromotions": [],
+    "phase": "MAP",
+    "roster": [
+      {
+        "baseDef": 0,
+        "baseMove": 2,
+        "currentHp": 15,
+        "currentLevel": 1,
+        "currentXp": 18,
+        "deck": [
+          {
+            "baseCardId": "card-arcane_shot",
+            "instanceId": "card-hero-6d88cd4c-fc92-4f0c-906f-310050b895cd-card-club",
+            "powerRunes": {
+              "bonusDamage": 5
+            }
+          },
+          {
+            "baseCardId": "card-bandage",
+            "instanceId": "card-hero-6d88cd4c-fc92-4f0c-906f-310050b895cd-card-bandage",
+            "powerRunes": {}
+          },
+          {
+            "baseCardId": "card-shove",
+            "instanceId": "card-hero-6d88cd4c-fc92-4f0c-906f-310050b895cd-card-shove",
+            "powerRunes": {}
+          },
+          {
+            "baseCardId": "card-arcane_shield",
+            "instanceId": "card-hero-6d88cd4c-fc92-4f0c-906f-310050b895cd-card-arcane_shield",
+            "powerRunes": {}
+          }
+        ],
+        "heroClass": "MAGE",
+        "id": "hero-6d88cd4c-fc92-4f0c-906f-310050b895cd",
+        "maxHp": 16,
+        "name": "Anselus",
+        "passives": [],
+        "selectedCards": [
+          {
+            "baseCardId": "card-arcane_shot",
+            "instanceId": "card-hero-6d88cd4c-fc92-4f0c-906f-310050b895cd-card-club",
+            "powerRunes": {
+              "bonusDamage": 5
+            }
+          },
+          {
+            "baseCardId": "card-shove",
+            "instanceId": "card-hero-6d88cd4c-fc92-4f0c-906f-310050b895cd-card-shove",
+            "powerRunes": {}
+          },
+          {
+            "baseCardId": "card-arcane_shield",
+            "instanceId": "card-hero-6d88cd4c-fc92-4f0c-906f-310050b895cd-card-arcane_shield",
+            "powerRunes": {}
+          }
+        ],
+        "spriteBase": "heroes/mage"
+      },
+      {
+        "baseDef": 0,
+        "baseMove": 3,
+        "currentHp": 16,
+        "currentLevel": 1,
+        "currentXp": 18,
+        "deck": [
+          {
+            "baseCardId": "card-dagger",
+            "instanceId": "card-hero-ae8c6b20-e958-4115-9db9-f236a8d71589-card-club",
+            "powerRunes": {
+              "bonusDamage": 1
+            }
+          },
+          {
+            "baseCardId": "card-bandage",
+            "instanceId": "card-hero-ae8c6b20-e958-4115-9db9-f236a8d71589-card-bandage",
+            "powerRunes": {}
+          },
+          {
+            "baseCardId": "card-shove",
+            "instanceId": "card-hero-ae8c6b20-e958-4115-9db9-f236a8d71589-card-shove",
+            "powerRunes": {
+              "bonusPushCollision": 2,
+              "bonusPushDistance": 2
+            }
+          },
+          {
+            "baseCardId": "card-poison_shiv",
+            "instanceId": "card-hero-ae8c6b20-e958-4115-9db9-f236a8d71589-card-poison_shiv",
+            "powerRunes": {}
+          }
+        ],
+        "heroClass": "ROGUE",
+        "id": "hero-ae8c6b20-e958-4115-9db9-f236a8d71589",
+        "maxHp": 16,
+        "name": "Willet",
+        "passives": [],
+        "selectedCards": [
+          {
+            "baseCardId": "card-dagger",
+            "instanceId": "card-hero-ae8c6b20-e958-4115-9db9-f236a8d71589-card-club",
+            "powerRunes": {
+              "bonusDamage": 1
+            }
+          },
+          {
+            "baseCardId": "card-shove",
+            "instanceId": "card-hero-ae8c6b20-e958-4115-9db9-f236a8d71589-card-shove",
+            "powerRunes": {
+              "bonusPushCollision": 2,
+              "bonusPushDistance": 2
+            }
+          },
+          {
+            "baseCardId": "card-poison_shiv",
+            "instanceId": "card-hero-ae8c6b20-e958-4115-9db9-f236a8d71589-card-poison_shiv",
+            "powerRunes": {}
+          }
+        ],
+        "spriteBase": "heroes/rogue"
+      },
+      {
+        "baseDef": 1,
+        "baseMove": 2,
+        "currentHp": 15,
+        "currentLevel": 1,
+        "currentXp": 18,
+        "deck": [
+          {
+            "baseCardId": "card-iron_mace",
+            "instanceId": "card-hero-4aab48ed-0b5e-475f-b62e-fbc670764965-card-club",
+            "powerRunes": {}
+          },
+          {
+            "baseCardId": "card-bandage",
+            "instanceId": "card-hero-4aab48ed-0b5e-475f-b62e-fbc670764965-card-bandage",
+            "powerRunes": {
+              "bonusHeal": 5
+            }
+          },
+          {
+            "baseCardId": "card-shove",
+            "instanceId": "card-hero-4aab48ed-0b5e-475f-b62e-fbc670764965-card-shove",
+            "powerRunes": {}
+          },
+          {
+            "baseCardId": "card-divine_aegis",
+            "instanceId": "card-hero-4aab48ed-0b5e-475f-b62e-fbc670764965-card-divine_aegis",
+            "powerRunes": {}
+          }
+        ],
+        "heroClass": "CLERIC",
+        "id": "hero-4aab48ed-0b5e-475f-b62e-fbc670764965",
+        "maxHp": 17,
+        "name": "Gabrien",
+        "passives": [],
+        "selectedCards": [
+          {
+            "baseCardId": "card-iron_mace",
+            "instanceId": "card-hero-4aab48ed-0b5e-475f-b62e-fbc670764965-card-club",
+            "powerRunes": {}
+          },
+          {
+            "baseCardId": "card-bandage",
+            "instanceId": "card-hero-4aab48ed-0b5e-475f-b62e-fbc670764965-card-bandage",
+            "powerRunes": {
+              "bonusHeal": 5
+            }
+          },
+          {
+            "baseCardId": "card-divine_aegis",
+            "instanceId": "card-hero-4aab48ed-0b5e-475f-b62e-fbc670764965-card-divine_aegis",
+            "powerRunes": {}
+          }
+        ],
+        "spriteBase": "heroes/cleric"
+      }
+    ],
+    "unlockedQuestsQueue": []
+  },
+  "version": 0
+}
