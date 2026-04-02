@@ -80,4 +80,28 @@ export const goliathToadCards: Record<Card["id"], Card> = {
 			},
 		],
 	},
+	[cardId("panic_run")]: {
+		id: cardId("panic_run"),
+		name: "Panic Run",
+		image: "/cards/panic_run.webp",
+		range: 1,
+		playRequirement: "requires_empty_cell",
+		aiTargetPreference: { col: 11, row: 4 },
+		effects: [], // No combat effects needed! The AI will just walk and end turn.
+	},
+	[cardId("cower")]: {
+		id: cardId("cower"),
+		name: "Cower",
+		image: "/cards/cower.webp",
+		range: 0,
+		playRequirement: "no_target",
+		aiTargetPreference: "self",
+		effects: [
+			{
+				type: "apply_status",
+				status: { type: "block", amount: 1, duration: 1 },
+				target: "self",
+			},
+		],
+	},
 };

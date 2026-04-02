@@ -243,7 +243,6 @@ export const getIdealTarget: TargetResolver =
 
 		// --- STANDARD PIPELINE ---
 		const targetQueue = getPrioritizedTargets(aiUnit, card, units);
-		console.log({ targetQueue });
 
 		let fallbackMove: GridPosition | null = null;
 		let fallbackTarget: BattleUnit | null = null;

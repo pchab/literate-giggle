@@ -145,7 +145,6 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 
 		checkLoss: ({ units }: BattleState) => {
 			// 1. Did the heroes wipe?
-			console.log({ units });
 			const heroesAlive = units.filter((u) => isHero(u)).length > 0;
 			if (!heroesAlive) return true;
 

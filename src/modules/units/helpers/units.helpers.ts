@@ -4,6 +4,8 @@ import type {
 	Hero,
 	Monster,
 	Summon,
+	UnitBlueprint,
+	UnitSpriteVariant,
 } from "../domain/units.type";
 
 export function heroId(numericOrUuid: string | number): Hero["id"] {
@@ -49,4 +51,12 @@ export function getBlockFromStatuses(statuses: BattleHero["statuses"]): number {
 		}
 		return block;
 	}, 0);
+}
+
+export function getVariantFromBlueprint({
+	availableVariants,
+}: UnitBlueprint): UnitSpriteVariant {
+	return availableVariants
+		? availableVariants[Math.floor(Math.random() * availableVariants.length)]
+		: "default";
 }

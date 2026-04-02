@@ -2,6 +2,7 @@ import type { SummonEffect } from "@/modules/cards/domain/cards.type";
 import { summonLibrary } from "@/modules/units/data/summons/summons.data";
 import { type BattleUnit, UnitStance } from "@/modules/units/domain/units.type";
 import {
+	getVariantFromBlueprint,
 	isHeroId,
 	isMonsterId,
 	isSummon,
@@ -34,11 +35,7 @@ export const resolveSummonEffect: EffectResolver<BattleUnit, SummonEffect> =
 					{
 						id: summonId(Date.now()),
 						...blueprint,
-						variant: blueprint.availableVariants
-							? blueprint.availableVariants[
-									Math.floor(Math.random() * blueprint.availableVariants.length)
-								]
-							: "default",
+						variant: getVariantFromBlueprint(blueprint),
 						stance: UnitStance.IDLE,
 						currentHp: blueprint.maxHp,
 						statuses: [],

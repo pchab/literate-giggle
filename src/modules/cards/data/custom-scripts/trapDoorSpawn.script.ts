@@ -13,7 +13,10 @@ import {
 	type Summon,
 	UnitStance,
 } from "@/modules/units/domain/units.type";
-import { summonId } from "@/modules/units/helpers/units.helpers";
+import {
+	getVariantFromBlueprint,
+	summonId,
+} from "@/modules/units/helpers/units.helpers";
 import type { CustomScriptEffect } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
 import { monsterCardLibrary } from "../monsters/monsterCards.data";
@@ -89,10 +92,7 @@ export const trapdoorSpawn: EffectResolver<
 		const newRats: Summon[] = spawnTiles.map((pos, index) => ({
 			id: summonId(`trap-door-rat-${Date.now()}-${index}`),
 			...blueprint,
-			variant:
-				blueprint.availableVariants?.[
-					Math.floor(Math.random() * blueprint.availableVariants.length)
-				] || "default",
+			variant: getVariantFromBlueprint(blueprint),
 			stance: UnitStance.IDLE,
 			currentHp: blueprint.maxHp,
 			statuses: [],

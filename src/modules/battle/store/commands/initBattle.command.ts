@@ -11,7 +11,11 @@ import {
 	type UnitBlueprint,
 	UnitStance,
 } from "@/modules/units/domain/units.type";
-import { monsterId, summonId } from "@/modules/units/helpers/units.helpers";
+import {
+	getVariantFromBlueprint,
+	monsterId,
+	summonId,
+} from "@/modules/units/helpers/units.helpers";
 import { ENCOUNTER_DB } from "../../../campaign/data/encounters.data";
 import type { GridPosition } from "../../domain/grid.type";
 import { calculateAIIntents } from "./calculateAIIntents.command";
@@ -26,6 +30,7 @@ const bluePrintToMonster = (
 	blueprint: UnitBlueprint & { gridPosition: GridPosition },
 ): Monster => ({
 	...blueprint,
+	variant: getVariantFromBlueprint(blueprint),
 	id: monsterId(crypto.randomUUID()),
 	currentHp: blueprint.maxHp,
 	statuses: [],
@@ -38,6 +43,7 @@ const bluePrintToSummon = (
 	},
 ): Summon => ({
 	...blueprint,
+	variant: getVariantFromBlueprint(blueprint),
 	id: summonId(crypto.randomUUID()),
 	currentHp: blueprint.maxHp,
 	statuses: [],
