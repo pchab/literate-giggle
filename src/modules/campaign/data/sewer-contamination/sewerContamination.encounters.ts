@@ -63,11 +63,39 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 		generateMonsters: () => [
 			{
 				...giantToad,
-				gridPosition: { col: 4, row: 5 },
+				gridPosition: { col: 9, row: 5 },
 			},
 		],
 		generateSummons: () => [],
-		surfaces: {},
+		surfaces: {
+			[getCellId({ col: 5, row: 0 })]: {
+				id: getCellId({ col: 5, row: 0 }),
+				spriteBase: "/surfaces/river_1.webp",
+				type: "HAZARD",
+				damage: 999,
+				duration: -1,
+				gridPosition: { col: 5, row: 0 },
+				size: { cols: 2, rows: 3 },
+			},
+			[getCellId({ col: 5, row: 3 })]: {
+				id: getCellId({ col: 5, row: 3 }),
+				spriteBase: "/surfaces/bridge.webp",
+				type: "TERRAIN",
+				damage: 0,
+				duration: -1,
+				gridPosition: { col: 5, row: 3 },
+				size: { cols: 2, rows: 2 },
+			},
+			[getCellId({ col: 5, row: 5 })]: {
+				id: getCellId({ col: 5, row: 5 }),
+				spriteBase: "/surfaces/river_2.webp",
+				type: "HAZARD",
+				damage: 999,
+				duration: -1,
+				gridPosition: { col: 5, row: 5 },
+				size: { cols: 2, rows: 3 },
+			},
+		},
 		gridSize: villageBounds,
 	},
 };
