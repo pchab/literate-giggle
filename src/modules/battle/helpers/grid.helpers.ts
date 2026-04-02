@@ -1,4 +1,4 @@
-import type { BattleUnit } from "../../figures/domain/figures.type";
+import type { BattleUnit } from "../../units/domain/units.type";
 import type {
 	BoundingBox,
 	GridPosition,
@@ -16,7 +16,9 @@ export const isTileSafe = (
 	surfaces?: Record<string, SurfaceData>,
 ): boolean => {
 	if (!surfaces) return true;
-	const surface = surfaces[getCellId(cell)];
+	const surface = Object.values(surfaces).find((s) =>
+		doBoundingBoxesIntersect(s, { gridPosition: cell }),
+	); // surfaces are bounding box !
 	if (!surface) return true;
 
 	if (surface.status) {
@@ -65,16 +67,14 @@ export const doBoundingBoxesIntersect = (
 };
 
 export const isTileOccupied =
-	<T extends BattleUnit>(figures: T[]) =>
+	<T extends BattleUnit>(units: T[]) =>
 	(tile: GridPosition) =>
-		figures.some(
-			(figure) => figure.currentHp > 0 && isUnitInTile(tile)(figure),
-		);
+		units.some((unit) => unit.currentHp > 0 && isUnitInTile(tile)(unit));
 
 export const isTileEmpty =
-	<T extends BattleUnit>(figures: T[]) =>
+	<T extends BattleUnit>(units: T[]) =>
 	(tile: GridPosition) =>
-		!isTileOccupied(figures)(tile);
+		!isTileOccupied(units)(tile);
 
 // --- 3. CLEARANCE LOGIC (For Giant Pathfinding) ---
 export const canUnitFit = <C extends BattleUnit, T extends BattleUnit>({

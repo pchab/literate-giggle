@@ -5,17 +5,17 @@ import {
 } from "@/modules/battle/helpers/grid.helpers";
 import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
 import type { Card } from "@/modules/cards/domain/cards.type";
+import { sleep } from "@/modules/shared/helpers/sleep";
 import {
 	type AIBattleUnit,
 	type BattleUnit,
 	UnitStance,
-} from "@/modules/figures/domain/figures.type";
+} from "@/modules/units/domain/units.type";
 import {
 	isHero,
 	isMonster,
 	isSummon,
-} from "@/modules/figures/helpers/figures.helpers";
-import { sleep } from "@/modules/shared/helpers/sleep";
+} from "@/modules/units/helpers/units.helpers";
 import { singleTargetPattern } from "../data/attackPattern.data";
 import { getIdealTarget } from "./ai.move.helpers";
 import {
@@ -59,7 +59,7 @@ export const handleAICardIntent =
 		const isPlayerAligned =
 			isSummon(initialAttacker) && initialAttacker.allegiance === "PLAYER";
 
-		const blockingFigures = units.filter((f) => {
+		const blockingUnits = units.filter((f) => {
 			if (f.id === initialAttacker.id) return false;
 			if (isNeutral) return true;
 
@@ -73,7 +73,7 @@ export const handleAICardIntent =
 		const path = calculateExactPath({
 			movingUnit: initialAttacker,
 			targetPos: moveDest,
-			units: blockingFigures,
+			units: blockingUnits,
 			gridSize,
 		});
 

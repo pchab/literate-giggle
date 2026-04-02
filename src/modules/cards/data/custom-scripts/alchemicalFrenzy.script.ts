@@ -15,8 +15,8 @@ import {
 } from "@/modules/battle/helpers/move.helpers";
 import { getSimulationState } from "@/modules/battle/helpers/simulation.helper";
 import type { StoreGet } from "@/modules/battle/store/battle.store";
-import type { BattleUnit } from "@/modules/figures/domain/figures.type";
-import { isHero } from "@/modules/figures/helpers/figures.helpers";
+import type { BattleUnit } from "@/modules/units/domain/units.type";
+import { isHero } from "@/modules/units/helpers/units.helpers";
 import type { CustomScriptEffect } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
 import { alchemistLedgerCards } from "../monsters/alchemistLedgerCards.data";
@@ -59,7 +59,7 @@ export const alchemicalFrenzy: EffectResolver<
 
 		const reachableCells = calculateReachableCells({
 			movingUnit: caster,
-			blockingFigures: activeHeroes,
+			blockingUnits: activeHeroes,
 			canTargetSelf: true,
 			gridSize,
 		}).filter(isTileEmpty(units));

@@ -1,11 +1,11 @@
 import { cardLibrary } from "@/modules/cards/data/cards.data";
 import type { Card } from "@/modules/cards/domain/cards.type";
 import { createHeroCard } from "@/modules/cards/helpers/cards.helper";
-import { CLASS_REGISTRY } from "@/modules/figures/data/heroClass.data";
-import type { Hero } from "@/modules/figures/domain/figures.type";
-import { applyLevelUpTriggers } from "@/modules/figures/helpers/levelUpEffects.helper";
+import { CLASS_REGISTRY } from "@/modules/units/data/heroClass.data";
+import type { Hero } from "@/modules/units/domain/units.type";
+import { applyLevelUpTriggers } from "@/modules/units/helpers/levelUpEffects.helper";
 import type { WorldStoreServerAction } from "@/modules/world/store/world.store";
-import type { HeroClass } from "../../../figures/domain/heroClass.types";
+import type { HeroClass } from "../../../units/domain/heroClass.types";
 
 export function resolvePendingPromotion(
 	heroId: Hero["id"],

@@ -1,6 +1,6 @@
 import { cardLibrary } from "@/modules/cards/data/cards.data";
-import type { BattleUnit } from "@/modules/figures/domain/figures.type";
-import type { Status } from "@/modules/figures/domain/status.type";
+import type { Status } from "@/modules/units/domain/status.type";
+import type { BattleUnit } from "@/modules/units/domain/units.type";
 import type { GridPosition } from "../domain/grid.type";
 import type { ShadowStateDiff } from "../domain/intent.type";
 import type { StoreGet, StoreSet } from "../store/battle.store";
@@ -30,16 +30,16 @@ export function updateUnitState<T extends BattleUnit>(
 }
 
 export const calculateStateDiff = (
-	shadowFigures: BattleUnit[],
-	realFigures: BattleUnit[],
+	shadowUnits: BattleUnit[],
+	realUnits: BattleUnit[],
 ): ShadowStateDiff => {
 	const projectedMoves: Record<BattleUnit["id"], GridPosition> = {};
 	const projectedCasualties: BattleUnit["id"][] = [];
 	const projectedDamage: Record<BattleUnit["id"], number> = {};
-	const projectedHealing: Record<BattleUnit["id"], number> = {}; // NEW
+	const projectedHealing: Record<BattleUnit["id"], number> = {};
 
-	realFigures.forEach((realUnit) => {
-		const shadowUnit = shadowFigures.find((f) => f.id === realUnit.id);
+	realUnits.forEach((realUnit) => {
+		const shadowUnit = shadowUnits.find((f) => f.id === realUnit.id);
 
 		if (!shadowUnit) {
 			projectedCasualties.push(realUnit.id);

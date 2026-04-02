@@ -1,5 +1,5 @@
 import type { AnchorTarget, Card } from "@/modules/cards/domain/cards.type";
-import type { BattleUnit } from "@/modules/figures/domain/figures.type";
+import type { BattleUnit } from "@/modules/units/domain/units.type";
 import type { GridPosition } from "./grid.type";
 
 export type ShadowStateDiff = {
@@ -11,7 +11,7 @@ export type ShadowStateDiff = {
 
 export type Intent = {
 	cardId: Card["id"];
-	figureId: BattleUnit["id"];
+	unitId: BattleUnit["id"];
 	target?: AnchorTarget;
 	intendedMove?: GridPosition[];
 	dangerZone?: GridPosition[];

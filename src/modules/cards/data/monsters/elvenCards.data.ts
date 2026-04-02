@@ -2,7 +2,7 @@ import {
 	cleavePattern,
 	crossPattern,
 } from "@/modules/battle/data/attackPattern.data";
-import { summonId } from "@/modules/figures/helpers/figures.helpers";
+import { summonId } from "@/modules/units/helpers/units.helpers";
 import type { Card } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
 

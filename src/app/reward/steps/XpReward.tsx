@@ -1,8 +1,8 @@
 import { m } from "motion/react";
 import { BattleCard } from "@/modules/cards/components/BattleCard";
 import { getComputedCard } from "@/modules/cards/helpers/cards.helper";
-import { CLASS_REGISTRY } from "@/modules/figures/data/heroClass.data";
-import type { Hero } from "@/modules/figures/domain/figures.type";
+import { CLASS_REGISTRY } from "@/modules/units/data/heroClass.data";
+import type { Hero } from "@/modules/units/domain/units.type";
 
 export default function XpReward({
 	hero,

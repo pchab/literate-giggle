@@ -26,7 +26,7 @@ export const setHoveredCell =
 
 		const newPlayerIntent = {
 			cardId: cardContext.card.id,
-			figureId: cardContext.unitId,
+			unitId: cardContext.unitId,
 			target: anchorTarget,
 		};
 

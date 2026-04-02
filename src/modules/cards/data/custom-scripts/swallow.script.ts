@@ -10,11 +10,8 @@ import {
 	updateUnitState,
 } from "@/modules/battle/helpers/state.helpers";
 import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
-import {
-	type BattleUnit,
-	UnitStance,
-} from "@/modules/figures/domain/figures.type";
 import { sleep } from "@/modules/shared/helpers/sleep";
+import { type BattleUnit, UnitStance } from "@/modules/units/domain/units.type";
 import type { CustomScriptEffect } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
 import { goliathToadCards } from "../monsters/sewerContaminationCards.data";

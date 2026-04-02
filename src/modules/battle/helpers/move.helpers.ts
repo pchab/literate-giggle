@@ -1,8 +1,5 @@
-import {
-	type BattleUnit,
-	UnitStance,
-} from "@/modules/figures/domain/figures.type";
 import { sleep } from "@/modules/shared/helpers/sleep";
+import { type BattleUnit, UnitStance } from "@/modules/units/domain/units.type";
 import type {
 	GridPosition,
 	SurfaceData,
@@ -238,13 +235,13 @@ export const calculateExactPath = <C extends BattleUnit, T extends BattleUnit>({
 
 export const calculateReachableCells = <T extends BattleUnit>({
 	movingUnit,
-	blockingFigures: units,
+	blockingUnits: units,
 	canTargetSelf = false,
 	gridSize,
 	surfaces,
 }: {
 	movingUnit: BattleUnit;
-	blockingFigures: T[];
+	blockingUnits: T[];
 	canTargetSelf: boolean;
 	gridSize: { cols: number; rows: number };
 	surfaces?: Record<string, SurfaceData>;

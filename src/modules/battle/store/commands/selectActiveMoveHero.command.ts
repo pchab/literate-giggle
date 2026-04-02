@@ -1,5 +1,5 @@
 import type { BattleStoreServerAction } from "@/modules/battle/store/battle.store";
-import type { Hero } from "../../../figures/domain/figures.type";
+import type { Hero } from "@/modules/units/domain/units.type";
 
 export function selectActiveMoveHero(
 	heroId: Hero["id"] | null,

@@ -33,7 +33,7 @@ export default function MovePrediction() {
 							gridSize,
 							units,
 							projectedMoves: playerStateDiff.projectedMoves,
-							activeUnitId: playerIntent.figureId,
+							activeUnitId: playerIntent.unitId,
 							activeUnitPath: playerIntent.intendedMove ?? EMPTY_PATH,
 						};
 					}
@@ -48,7 +48,7 @@ export default function MovePrediction() {
 								gridSize,
 								units,
 								projectedMoves: aiStateDiff.projectedMoves,
-								activeUnitId: intent.figureId,
+								activeUnitId: intent.unitId,
 								activeUnitPath: intent.intendedMove ?? EMPTY_PATH,
 							};
 						}

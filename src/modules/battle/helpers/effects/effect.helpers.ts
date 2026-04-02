@@ -2,13 +2,13 @@ import type {
 	AnchorTarget,
 	EffectTarget,
 } from "@/modules/cards/domain/cards.type";
-import type { BattleUnit } from "@/modules/figures/domain/figures.type";
-import type { Status } from "@/modules/figures/domain/status.type";
+import type { Status } from "@/modules/units/domain/status.type";
+import type { BattleUnit } from "@/modules/units/domain/units.type";
 import {
 	isHeroId,
 	isMonsterId,
 	isSummon,
-} from "@/modules/figures/helpers/figures.helpers";
+} from "@/modules/units/helpers/units.helpers";
 import type { SurfaceType } from "../../domain/grid.type";
 import type { VfxType } from "../../domain/vfx.type";
 import type { StoreGet, StoreSet } from "../../store/battle.store";
@@ -21,27 +21,24 @@ import { getLineOfSightPath } from "../move.helpers";
 import { applyCombatUpdate } from "../state.helpers";
 import { statusRegistry } from "../status.helpers";
 
+export const getAllegiance = (u: BattleUnit) => {
+	if (isHeroId(u.id)) return "PLAYER";
+	if (isMonsterId(u.id)) return "ENEMY";
+	return (isSummon(u) && u.allegiance) || "NEUTRAL";
+};
+
 export const areEnemies = (u1: BattleUnit) => (u2: BattleUnit) => {
-	const getAllegiance = (u: BattleUnit) => {
-		if (isHeroId(u.id)) return "PLAYER";
-		if (isMonsterId(u.id)) return "ENEMY";
-		return isSummon(u) && u.allegiance;
-	};
-
-	const a1 = getAllegiance(u1);
-	const a2 = getAllegiance(u2);
-
-	return a1 !== a2;
+	return getAllegiance(u1) !== getAllegiance(u2);
 };
 
 export function resolveTargets<T extends BattleUnit>(
 	targetType: EffectTarget,
 	anchorTarget: AnchorTarget,
 	caster: BattleUnit,
-	currentFigures: T[],
+	currentUnits: T[],
 	patternCells?: { col: number; row: number }[],
 ): T["id"][] {
-	const aliveFigures = currentFigures.filter((f) => f.currentHp > 0);
+	const aliveUnits = currentUnits.filter((f) => f.currentHp > 0);
 	if (targetType === "self") {
 		return [caster.id];
 	}
@@ -51,24 +48,24 @@ export function resolveTargets<T extends BattleUnit>(
 			const hitIds = patternCells.reduce(
 				(targets, cell) =>
 					targets.concat(
-						aliveFigures.filter(isUnitInTile(cell)).map(({ id }) => id),
+						aliveUnits.filter(isUnitInTile(cell)).map(({ id }) => id),
 					),
 				[] as BattleUnit["id"][],
 			);
 			return Array.from(new Set(hitIds));
 		}
 
-		return aliveFigures
+		return aliveUnits
 			.filter(isUnitInTile(anchorTarget.gridPosition))
 			.map((f) => f.id);
 	}
 
 	if (targetType === "all_enemies") {
-		return aliveFigures.filter(areEnemies(caster)).map((f) => f.id);
+		return aliveUnits.filter(areEnemies(caster)).map((f) => f.id);
 	}
 
 	if (targetType === "all_allies") {
-		return aliveFigures.filter((f) => !areEnemies(caster)(f)).map((f) => f.id);
+		return aliveUnits.filter((f) => !areEnemies(caster)(f)).map((f) => f.id);
 	}
 
 	if (targetType === "path" && anchorTarget) {
@@ -79,7 +76,7 @@ export function resolveTargets<T extends BattleUnit>(
 			.reduce(
 				(targets, cell) =>
 					targets.concat(
-						aliveFigures.filter(isUnitInTile(cell)).map(({ id }) => id),
+						aliveUnits.filter(isUnitInTile(cell)).map(({ id }) => id),
 					),
 				[] as BattleUnit["id"][],
 			)
@@ -93,17 +90,17 @@ export function resolveTargets<T extends BattleUnit>(
 
 export const tickStatusesAndSurfaces =
 	(get: StoreGet, set: StoreSet, isSimulation = false) =>
-	async <T extends BattleUnit>(figures: T[]): Promise<void> => {
+	async <T extends BattleUnit>(units: T[]): Promise<void> => {
 		const { surfaces } = get();
 		const nextSurfaces = Object.fromEntries(
 			Object.entries(surfaces).map(([id, surface]) => [id, { ...surface }]),
 		);
 
 		// ==========================================
-		// 1. TICK FIGURES & APPLY SURFACES
+		// 1. TICK UNITS & APPLY SURFACES
 		// ==========================================
-		for (const figure of figures) {
-			if (figure.currentHp <= 0) continue;
+		for (const unit of units) {
+			if (unit.currentHp <= 0) continue;
 
 			let totalDamage = 0;
 			let totalHealing = 0;
@@ -111,14 +108,10 @@ export const tickStatusesAndSurfaces =
 			const tickVfxTypes: VfxType[] = [];
 
 			// --- A. Evaluate EXISTING Statuses via Registry ---
-			for (const status of figure.statuses) {
+			for (const status of unit.statuses) {
 				const hook = statusRegistry[status.type]?.onTick;
 				if (hook) {
-					const result = await hook(
-						get,
-						set,
-						isSimulation,
-					)({ unit: figure, status });
+					const result = await hook(get, set, isSimulation)({ unit, status });
 					if (result) {
 						if (result.damageTaken) totalDamage += result.damageTaken;
 						if (result.healingReceived) totalHealing += result.healingReceived;
@@ -129,7 +122,7 @@ export const tickStatusesAndSurfaces =
 			}
 
 			// Calculate age-down for durations
-			const agedStatuses = figure.statuses
+			const agedStatuses = unit.statuses
 				.map((status) => ({
 					...status,
 					duration: status.duration === -1 ? -1 : status.duration - 1,
@@ -140,8 +133,8 @@ export const tickStatusesAndSurfaces =
 			const processedSurfaceTypes = new Set<SurfaceType>();
 
 			for (const surface of Object.values(nextSurfaces)) {
-				if (!doBoundingBoxesIntersect(figure, surface)) continue;
-				if (figure.surfaceImmunities?.includes(surface.type)) continue;
+				if (!doBoundingBoxesIntersect(unit, surface)) continue;
+				if (unit.surfaceImmunities?.includes(surface.type)) continue;
 				if (processedSurfaceTypes.has(surface.type)) continue;
 
 				processedSurfaceTypes.add(surface.type);
@@ -162,13 +155,13 @@ export const tickStatusesAndSurfaces =
 				totalDamage > 0 ||
 				totalHealing > 0 ||
 				newStatuses.length > 0 ||
-				figure.statuses.length > 0
+				unit.statuses.length > 0
 			) {
 				await applyCombatUpdate(
 					get,
 					set,
 					isSimulation,
-				)(figure.id, {
+				)(unit.id, {
 					damageTaken: totalDamage,
 					isTrueDamage: true,
 					healingReceived: totalHealing,
@@ -179,7 +172,7 @@ export const tickStatusesAndSurfaces =
 
 			// --- D. Trigger VFX ---
 			if (!isSimulation && tickVfxTypes.length > 0) {
-				const anchorCellId = getCellId(figure.gridPosition);
+				const anchorCellId = getCellId(unit.gridPosition);
 				set(({ currentVfx }) => {
 					const nextVfx = { ...currentVfx };
 					nextVfx[anchorCellId] = { type: tickVfxTypes[0] };

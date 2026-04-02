@@ -2,8 +2,8 @@ import { cardLibrary } from "@/modules/cards/data/cards.data";
 import type {
 	AIBattleUnit,
 	BattleUnit,
-} from "@/modules/figures/domain/figures.type";
-import { isMonster, isSummon } from "@/modules/figures/helpers/figures.helpers";
+} from "@/modules/units/domain/units.type";
+import { isMonster, isSummon } from "@/modules/units/helpers/units.helpers";
 import type { Intent } from "../../domain/intent.type";
 import { getSimulationState } from "../../helpers/simulation.helper";
 import { calculateStateDiff } from "../../helpers/state.helpers";
@@ -21,7 +21,7 @@ export const calculateAIIntents =
 	): Promise<void> => {
 		const { units } = get();
 
-		const aiFigures = units
+		const aiUnits = units
 			.filter(isAiBattleUnit)
 			.filter((f) => f.currentHp > 0 && (f.intentPool?.length ?? 0) > 0);
 
@@ -29,18 +29,18 @@ export const calculateAIIntents =
 
 		const baselineIntents: Record<string, Intent> = {};
 
-		for (const aiFigure of aiFigures) {
-			let selectedCardId = existingIntents[aiFigure.id]?.cardId;
+		for (const aiunit of aiUnits) {
+			let selectedCardId = existingIntents[aiunit.id]?.cardId;
 
 			if (!selectedCardId) {
-				const totalWeight = aiFigure.intentPool.reduce(
+				const totalWeight = aiunit.intentPool.reduce(
 					(sum, intent) => sum + intent.weight,
 					0,
 				);
 				let randomNum = Math.random() * totalWeight;
-				selectedCardId = aiFigure.intentPool[0].cardId;
+				selectedCardId = aiunit.intentPool[0].cardId;
 
-				for (const intent of aiFigure.intentPool) {
+				for (const intent of aiunit.intentPool) {
 					randomNum -= intent.weight;
 					if (randomNum <= 0) {
 						selectedCardId = intent.cardId;
@@ -50,8 +50,8 @@ export const calculateAIIntents =
 			}
 
 			if (cardLibrary[selectedCardId]) {
-				baselineIntents[aiFigure.id] = {
-					figureId: aiFigure.id,
+				baselineIntents[aiunit.id] = {
+					unitId: aiunit.id,
 					cardId: selectedCardId,
 				};
 			}
@@ -68,10 +68,10 @@ export const calculateAIIntents =
 		await resolveAIActions(fakeGet, fakeSet, true);
 
 		const { units: simulatedUnits, aiIntents: simulatedAiIntents } = fakeGet();
-		const previousFigures = units;
+		const previousUnits = units;
 		set((prev) => ({
 			...prev,
-			aiStateDiff: calculateStateDiff(simulatedUnits, previousFigures),
+			aiStateDiff: calculateStateDiff(simulatedUnits, previousUnits),
 			aiIntents: simulatedAiIntents,
 		}));
 	};

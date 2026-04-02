@@ -1,7 +1,7 @@
 import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
 import { triggerRegurgitation } from "@/modules/cards/data/custom-scripts/swallow.script";
-import type { BattleUnit } from "@/modules/figures/domain/figures.type";
-import type { Status, StatusType } from "@/modules/figures/domain/status.type";
+import type { Status, StatusType } from "@/modules/units/domain/status.type";
+import type { BattleUnit } from "@/modules/units/domain/units.type";
 import type { GridPosition } from "../domain/grid.type";
 import type { VfxType } from "../domain/vfx.type";
 import type { CombatUpdate } from "./state.helpers";

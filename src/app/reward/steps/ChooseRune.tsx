@@ -3,8 +3,8 @@ import { useState } from "react";
 import { BattleCard } from "@/modules/cards/components/BattleCard";
 import { CardTooltip } from "@/modules/cards/components/CardTooltip";
 import type { Card, HeroCard } from "@/modules/cards/domain/cards.type";
-import type { Hero } from "@/modules/figures/domain/figures.type";
-import type { RuneDraftOption } from "@/modules/figures/domain/heroClass.types";
+import type { RuneDraftOption } from "@/modules/units/domain/heroClass.types";
+import type { Hero } from "@/modules/units/domain/units.type";
 import {
 	getExistingRuneCount,
 	isCardCompatibleWithRune,

@@ -1,6 +1,6 @@
 import type { AnchorTarget } from "@/modules/cards/domain/cards.type";
-import { UnitStance } from "@/modules/figures/domain/figures.type";
-import { isMonster } from "@/modules/figures/helpers/figures.helpers";
+import { UnitStance } from "@/modules/units/domain/units.type";
+import { isMonster } from "@/modules/units/helpers/units.helpers";
 import { singleTargetPattern } from "../../data/attackPattern.data";
 import type { GridPosition } from "../../domain/grid.type";
 import { resolveTargets } from "../../helpers/effects/effect.helpers";
@@ -76,7 +76,7 @@ export const resolveCard =
 		set((state) => ({
 			...state,
 			playerIntent: {
-				figureId: hero.id,
+				unitId: hero.id,
 				target: actualTarget,
 				cardId: card.id,
 				intendedMove: firePath,

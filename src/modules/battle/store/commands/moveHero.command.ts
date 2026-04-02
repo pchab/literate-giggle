@@ -1,6 +1,6 @@
 import type { GridPosition } from "@/modules/battle/domain/grid.type";
 import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
-import { isHeroId } from "@/modules/figures/helpers/figures.helpers";
+import { isHeroId } from "@/modules/units/helpers/units.helpers";
 import { areEnemies } from "../../helpers/effects/effect.helpers";
 import { getDistanceToBoundingBox } from "../../helpers/grid.helpers";
 import { calculateExactPath, moveBattleUnit } from "../../helpers/move.helpers";
@@ -50,12 +50,12 @@ export function moveHero(newPosition: GridPosition) {
 			return {};
 		}
 
-		const allBlockingFigures = units.filter(areEnemies(hero));
+		const allBlockingUnits = units.filter(areEnemies(hero));
 
 		const path = calculateExactPath({
 			movingUnit: hero,
 			targetPos: newPosition,
-			units: allBlockingFigures,
+			units: allBlockingUnits,
 			gridSize,
 		});
 

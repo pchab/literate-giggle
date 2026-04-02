@@ -1,4 +1,4 @@
-import type { RuneDraftOption } from "@/modules/figures/domain/heroClass.types";
+import type { RuneDraftOption } from "@/modules/units/domain/heroClass.types";
 import type { HeroCard } from "../domain/cards.type";
 
 export function addPowerRune(rune: RuneDraftOption, card: HeroCard) {

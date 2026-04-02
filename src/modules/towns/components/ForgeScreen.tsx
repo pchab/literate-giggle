@@ -10,10 +10,10 @@ import {
 	type EvolutionRuneId,
 } from "@/modules/cards/data/evolutionRecipes.data";
 import { getComputedCard } from "@/modules/cards/helpers/cards.helper";
-import { CLASS_REGISTRY } from "@/modules/figures/data/heroClass.data";
-import type { Hero } from "@/modules/figures/domain/figures.type";
 import { RetroButton } from "@/modules/shared/components/RetroButton";
 import { RetroPanel } from "@/modules/shared/components/RetroPanel";
+import { CLASS_REGISTRY } from "@/modules/units/data/heroClass.data";
+import type { Hero } from "@/modules/units/domain/units.type";
 import { useWorldStore } from "@/modules/world/store/world.store";
 
 export function ForgeScreen({ onClose }: { onClose: () => void }) {

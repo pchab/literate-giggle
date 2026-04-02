@@ -1,15 +1,12 @@
 import type { SummonEffect } from "@/modules/cards/domain/cards.type";
-import { summonLibrary } from "@/modules/figures/data/summons/summons.data";
-import {
-	type BattleUnit,
-	UnitStance,
-} from "@/modules/figures/domain/figures.type";
+import { summonLibrary } from "@/modules/units/data/summons/summons.data";
+import { type BattleUnit, UnitStance } from "@/modules/units/domain/units.type";
 import {
 	isHeroId,
 	isMonsterId,
 	isSummon,
 	summonId,
-} from "@/modules/figures/helpers/figures.helpers";
+} from "@/modules/units/helpers/units.helpers";
 import type { EffectResolver } from "./effect.resolvers";
 
 type CasterFaction = "HERO" | "MONSTER";
@@ -37,6 +34,11 @@ export const resolveSummonEffect: EffectResolver<BattleUnit, SummonEffect> =
 					{
 						id: summonId(Date.now()),
 						...blueprint,
+						variant: blueprint.availableVariants
+							? blueprint.availableVariants[
+									Math.floor(Math.random() * blueprint.availableVariants.length)
+								]
+							: "default",
 						stance: UnitStance.IDLE,
 						currentHp: blueprint.maxHp,
 						statuses: [],

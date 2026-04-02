@@ -1,6 +1,7 @@
 import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
 import type { Encounter } from "@/modules/campaign/domain/encounters.type";
 import { getComputedCard } from "@/modules/cards/helpers/cards.helper";
+import { sleep } from "@/modules/shared/helpers/sleep";
 import {
 	type Allegiance,
 	type BattleHero,
@@ -9,9 +10,8 @@ import {
 	type Summon,
 	type UnitBlueprint,
 	UnitStance,
-} from "@/modules/figures/domain/figures.type";
-import { monsterId, summonId } from "@/modules/figures/helpers/figures.helpers";
-import { sleep } from "@/modules/shared/helpers/sleep";
+} from "@/modules/units/domain/units.type";
+import { monsterId, summonId } from "@/modules/units/helpers/units.helpers";
 import { ENCOUNTER_DB } from "../../../campaign/data/encounters.data";
 import type { GridPosition } from "../../domain/grid.type";
 import { calculateAIIntents } from "./calculateAIIntents.command";

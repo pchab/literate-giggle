@@ -1,3 +1,5 @@
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 import type {
 	GridPosition,
 	SurfaceData,
@@ -13,9 +15,7 @@ import type {
 	BattleHero,
 	BattleUnit,
 	Hero,
-} from "@/modules/figures/domain/figures.type";
-import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+} from "@/modules/units/domain/units.type";
 import { cancelCard } from "./commands/cancelCard.command";
 import { endTurn } from "./commands/endTurn.command";
 import { initBattle } from "./commands/initBattle.command";

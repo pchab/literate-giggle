@@ -3,7 +3,7 @@ import {
 	type EvolutionRuneId,
 } from "@/modules/cards/data/evolutionRecipes.data";
 import type { Card } from "@/modules/cards/domain/cards.type";
-import type { Hero } from "@/modules/figures/domain/figures.type";
+import type { Hero } from "@/modules/units/domain/units.type";
 import type { WorldState } from "../world.store";
 
 export function forgeEvolution(

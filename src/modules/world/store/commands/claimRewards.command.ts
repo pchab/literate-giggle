@@ -1,9 +1,9 @@
 import type { HeroCard } from "@/modules/cards/domain/cards.type";
 import { addPowerRune } from "@/modules/cards/helpers/heroCards.helper";
-import { CLASS_REGISTRY } from "@/modules/figures/data/heroClass.data";
-import type { Hero } from "@/modules/figures/domain/figures.type";
-import type { RuneDraftOption } from "@/modules/figures/domain/heroClass.types";
-import { applyLevelUpTriggers } from "@/modules/figures/helpers/levelUpEffects.helper";
+import { CLASS_REGISTRY } from "@/modules/units/data/heroClass.data";
+import type { RuneDraftOption } from "@/modules/units/domain/heroClass.types";
+import type { Hero } from "@/modules/units/domain/units.type";
+import { applyLevelUpTriggers } from "@/modules/units/helpers/levelUpEffects.helper";
 import type { WorldStoreServerAction } from "@/modules/world/store/world.store";
 
 export function claimRewards(

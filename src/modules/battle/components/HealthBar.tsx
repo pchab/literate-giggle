@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
-import type { BattleUnit } from "@/modules/figures/domain/figures.type";
+import type { BattleUnit } from "@/modules/units/domain/units.type";
 
 export default function HealthBar({ unitId }: { unitId: BattleUnit["id"] }) {
 	// ==========================================

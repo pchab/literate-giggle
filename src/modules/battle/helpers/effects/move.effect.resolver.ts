@@ -1,5 +1,5 @@
 import type { MoveEffect } from "@/modules/cards/domain/cards.type";
-import type { BattleUnit } from "@/modules/figures/domain/figures.type";
+import type { BattleUnit } from "@/modules/units/domain/units.type";
 import { getLineOfSightPath, moveBattleUnit } from "../move.helpers";
 import type { EffectResolver } from "./effect.resolvers";
 

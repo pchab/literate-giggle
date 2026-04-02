@@ -6,7 +6,7 @@ import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { BattleCard } from "@/modules/cards/components/BattleCard";
 import { CardTooltip } from "@/modules/cards/components/CardTooltip";
 import { cardLibrary } from "@/modules/cards/data/cards.data";
-import type { AIBattleUnit } from "@/modules/figures/domain/figures.type";
+import type { AIBattleUnit } from "@/modules/units/domain/units.type";
 
 export default function EnemyIntentSidebar({
 	aiUnit,

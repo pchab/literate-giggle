@@ -11,9 +11,9 @@ import {
 	isTileInBounds,
 	isUnitInTile,
 } from "@/modules/battle/helpers/grid.helpers";
-import { goblinShaman } from "@/modules/figures/data/monsters/goblin.data";
-import type { BattleUnit } from "@/modules/figures/domain/figures.type";
-import { isHero } from "@/modules/figures/helpers/figures.helpers";
+import { goblinShaman } from "@/modules/units/data/monsters/goblin.data";
+import type { BattleUnit } from "@/modules/units/domain/units.type";
+import { isHero } from "@/modules/units/helpers/units.helpers";
 import type { CustomScriptEffect } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
 import { hoboCards } from "../heroes/hoboCards.data";

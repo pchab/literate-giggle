@@ -1,8 +1,11 @@
 import { getCellId } from "@/modules/battle/helpers/grid.helpers";
 import type { BattleState } from "@/modules/battle/store/battle.store";
-import { giantToad } from "@/modules/figures/data/monsters/giant-toad";
-import { smugglerCrate } from "@/modules/figures/data/summons/smugglersCrate";
-import { isHero, isSummon } from "@/modules/figures/helpers/figures.helpers";
+import { giantToad } from "@/modules/units/data/monsters/giant-toad";
+import { zombie } from "@/modules/units/data/monsters/zombie";
+import { smugglerCrate } from "@/modules/units/data/summons/smugglersCrate";
+import { villager } from "@/modules/units/data/summons/villager";
+import { well } from "@/modules/units/data/summons/well";
+import { isHero, isSummon } from "@/modules/units/helpers/units.helpers";
 import type { Encounter } from "../../domain/encounters.type";
 import { QUEST_3_IRONHOLD_SUMP } from "./sewerContamination.definitions";
 
@@ -65,27 +68,41 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 		id: QUEST_3_IRONHOLD_SUMP.encounters.riverbend_village,
 		name: "Riverbend Village",
 		generateMonsters: () => [
-			{
-				...giantToad,
-				gridPosition: { col: 9, row: 5 },
-			},
+			{ ...zombie, gridPosition: { col: 9, row: 0 } },
+			{ ...zombie, gridPosition: { col: 10, row: 1 } },
+			{ ...zombie, gridPosition: { col: 10, row: 5 } },
+			{ ...zombie, gridPosition: { col: 9, row: 6 } },
+
+			// The Pursuers (Spawning behind the villagers)
+			{ ...zombie, gridPosition: { col: 0, row: 3 } },
+			{ ...zombie, gridPosition: { col: 0, row: 4 } },
 		],
 		generateSummons: () => [
-			// {
-			// 	...villagerBlueprint,
-			// 	gridPosition: { col: 2, row: 2 },
-			// 	allegiance: "NEUTRAL",
-			// },
-			// {
-			// 	...villagerBlueprint,
-			// 	gridPosition: { col: 2, row: 5 },
-			// 	allegiance: "NEUTRAL",
-			// },
-			// {
-			// 	...villagerBlueprint,
-			// 	gridPosition: { col: 3, row: 3 },
-			// 	allegiance: "NEUTRAL",
-			// },
+			{
+				...villager,
+				gridPosition: { col: 2, row: 5 },
+				allegiance: "PLAYER",
+			},
+			{
+				...villager,
+				gridPosition: { col: 2, row: 6 },
+				allegiance: "PLAYER",
+			},
+			{
+				...villager,
+				gridPosition: { col: 3, row: 6 },
+				allegiance: "PLAYER",
+			},
+			{
+				...villager,
+				gridPosition: { col: 1, row: 6 },
+				allegiance: "PLAYER",
+			},
+			{
+				...well,
+				gridPosition: { col: 8, row: 2 },
+				allegiance: "NEUTRAL",
+			},
 		],
 		surfaces: {
 			[getCellId({ col: 5, row: 0 })]: {
@@ -116,8 +133,8 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 				size: { cols: 2, rows: 3 },
 			},
 		},
-		checkWin: (state: BattleState) => {
-			const safeVillagers = state.units.filter(
+		checkWin: ({ units }: BattleState) => {
+			const safeVillagers = units.filter(
 				(u) =>
 					isSummon(u) &&
 					u.allegiance === "NEUTRAL" &&
@@ -126,14 +143,15 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 			return safeVillagers.length >= REQUIRED_SURVIVORS;
 		},
 
-		checkLoss: (state: BattleState) => {
+		checkLoss: ({ units }: BattleState) => {
 			// 1. Did the heroes wipe?
-			const heroesAlive = state.units.filter((u) => isHero(u)).length > 0;
+			console.log({ units });
+			const heroesAlive = units.filter((u) => isHero(u)).length > 0;
 			if (!heroesAlive) return true;
 
 			// 2. Did too many villagers fall in the river or get eaten?
-			const livingVillagers = state.units.filter(
-				(u) => isSummon(u) && u.allegiance === "NEUTRAL",
+			const livingVillagers = units.filter(
+				(u) => u.name === villager.name && u.currentHp > 0,
 			).length;
 			if (livingVillagers < REQUIRED_SURVIVORS) return true;
 

@@ -3,13 +3,13 @@ import type { TargetResolver } from "@/modules/battle/helpers/ai.targeting.helpe
 import type { EffectResolver } from "@/modules/battle/helpers/effects/effect.resolvers";
 import { getSimulationState } from "@/modules/battle/helpers/simulation.helper";
 import type { StoreGet } from "@/modules/battle/store/battle.store";
-import { acidFlask } from "@/modules/figures/data/summons/acidFlask";
-import type { BattleUnit } from "@/modules/figures/domain/figures.type";
+import { acidFlask } from "@/modules/units/data/summons/acidFlask";
+import type { BattleUnit } from "@/modules/units/domain/units.type";
 import {
 	isHero,
 	isMonster,
 	isSummonId,
-} from "@/modules/figures/helpers/figures.helpers";
+} from "@/modules/units/helpers/units.helpers";
 import type { CustomScriptEffect } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
 import { alchemistLedgerCards } from "../monsters/alchemistLedgerCards.data";

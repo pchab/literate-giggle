@@ -1,8 +1,8 @@
 import { initialDeck } from "@/modules/cards/data/cards.data";
 import type { HeroCard } from "@/modules/cards/domain/cards.type";
 import { createHeroCard } from "@/modules/cards/helpers/cards.helper";
-import { baseHeroStats } from "@/modules/figures/data/heroes/baseHeroStats";
-import { heroId } from "@/modules/figures/helpers/figures.helpers";
+import { baseHeroStats } from "@/modules/units/data/heroes/baseHeroStats";
+import { heroId } from "@/modules/units/helpers/units.helpers";
 import {
 	initialWorldState,
 	type WorldStoreServerAction,
@@ -23,6 +23,7 @@ export function initializeRoster(): WorldStoreServerAction {
 					id: startingIds[0],
 					name: "Anselus",
 					...baseHeroStats,
+					variant: "default",
 					currentHp: baseHeroStats.maxHp,
 					deck: [...initialDeck].map(createHeroCard(startingIds[0])),
 					selectedCards: [...initialDeck].map(
@@ -33,6 +34,7 @@ export function initializeRoster(): WorldStoreServerAction {
 					id: startingIds[1],
 					name: "Willet",
 					...baseHeroStats,
+					variant: "variant_ruby",
 					currentHp: baseHeroStats.maxHp,
 					deck: [...initialDeck].map(createHeroCard(startingIds[1])),
 					selectedCards: [...initialDeck].map(
@@ -43,6 +45,7 @@ export function initializeRoster(): WorldStoreServerAction {
 					id: startingIds[2],
 					name: "Gabrien",
 					...baseHeroStats,
+					variant: "variant_emerald",
 					currentHp: baseHeroStats.maxHp,
 					deck: [...initialDeck].map(createHeroCard(startingIds[2])),
 					selectedCards: [...initialDeck].map(

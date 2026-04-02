@@ -1,8 +1,8 @@
 "use client";
 
 import { useBattleStore } from "@/modules/battle/store/battle.store";
-import { HeroCard } from "@/modules/figures/components/HeroCard";
-import { isHero } from "@/modules/figures/helpers/figures.helpers";
+import { HeroCard } from "@/modules/units/components/HeroCard";
+import { isHero } from "@/modules/units/helpers/units.helpers";
 
 export default function PartySidebar() {
 	const units = useBattleStore((state) => state.units);

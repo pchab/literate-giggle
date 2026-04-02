@@ -3,7 +3,7 @@ import type {
 	AnchorTarget,
 	CardEffect,
 } from "@/modules/cards/domain/cards.type";
-import type { BattleUnit } from "@/modules/figures/domain/figures.type";
+import type { BattleUnit } from "@/modules/units/domain/units.type";
 import type { StoreGet, StoreSet } from "../../store/battle.store";
 import { resolveChargeEffect } from "./charge.effect.resolver";
 import { resolveMoveEffect } from "./move.effect.resolver";

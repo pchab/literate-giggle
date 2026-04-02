@@ -1,6 +1,6 @@
 import type { Card, CardEffect } from "@/modules/cards/domain/cards.type";
-import type { Hero } from "@/modules/figures/domain/figures.type";
-import type { RuneDraftOption } from "@/modules/figures/domain/heroClass.types";
+import type { RuneDraftOption } from "@/modules/units/domain/heroClass.types";
+import type { Hero } from "@/modules/units/domain/units.type";
 
 const runeTypeToCardEffectType: Record<string, CardEffect["type"]> = {
 	bonusDamage: "damage",

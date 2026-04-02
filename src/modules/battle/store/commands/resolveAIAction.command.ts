@@ -1,6 +1,6 @@
 import { cardLibrary } from "@/modules/cards/data/cards.data";
-import { isHero } from "@/modules/figures/helpers/figures.helpers";
 import { sleep } from "@/modules/shared/helpers/sleep";
+import { isHero } from "@/modules/units/helpers/units.helpers";
 import { handleAICardIntent } from "../../helpers/ai.actions.helpers";
 import { tickStatusesAndSurfaces } from "../../helpers/effects/effect.helpers";
 import { finalizeAction } from "../../helpers/encounter.helpers";
@@ -16,26 +16,26 @@ export const resolveAIActions = async (
 	// 1. START OF AI TURN (Tick AI statuses)
 	// ==========================================
 	const { units: draftUnits } = get();
-	const draftAIFigures = draftUnits.filter((u) => !isHero(u));
+	const draftAIUnits = draftUnits.filter((u) => !isHero(u));
 
-	await tickStatusesAndSurfaces(get, set, isSimulation)(draftAIFigures);
+	await tickStatusesAndSurfaces(get, set, isSimulation)(draftAIUnits);
 	await sleep(isSimulation ? 0 : 200);
 
 	// ==========================================
 	// 2. EXECUTE ACTIONS
 	// ==========================================
 	const stateAfterTick = get();
-	const allAIFigures = stateAfterTick.units.filter(
+	const allAIUnits = stateAfterTick.units.filter(
 		(u) => !isHero(u) && u.currentHp > 0,
 	);
 
-	for (const aiFigure of allAIFigures) {
+	for (const aiUnit of allAIUnits) {
 		const { units, aiIntents } = get();
 
-		const freshAIFigure = units.find((u) => u.id === aiFigure.id);
-		if (!freshAIFigure || freshAIFigure.currentHp <= 0) continue;
+		const freshAIunit = units.find((u) => u.id === aiUnit.id);
+		if (!freshAIunit || freshAIunit.currentHp <= 0) continue;
 
-		const intent = aiIntents[freshAIFigure.id];
+		const intent = aiIntents[freshAIunit.id];
 		if (!intent) continue;
 
 		const cardToPlay = cardLibrary[intent.cardId];
@@ -46,7 +46,7 @@ export const resolveAIActions = async (
 			set,
 			isSimulation,
 		)({
-			attackerId: freshAIFigure.id,
+			attackerId: freshAIunit.id,
 			card: cardToPlay,
 		});
 	}

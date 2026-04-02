@@ -1,7 +1,7 @@
-import { archer } from "@/modules/figures/data/monsters/archer.data";
-import { bat } from "@/modules/figures/data/monsters/bat.data";
-import { necromancer } from "@/modules/figures/data/monsters/necromancer.data";
-import { skeleton } from "@/modules/figures/data/monsters/skeleton.data";
+import { archer } from "@/modules/units/data/monsters/archer.data";
+import { bat } from "@/modules/units/data/monsters/bat.data";
+import { necromancer } from "@/modules/units/data/monsters/necromancer.data";
+import { skeleton } from "@/modules/units/data/monsters/skeleton.data";
 import { type Encounter, encounterId } from "../../domain/encounters.type";
 
 export const NECROMANCER_ENCOUNTER_DB: Record<string, Encounter> = {

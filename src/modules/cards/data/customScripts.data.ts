@@ -1,5 +1,5 @@
 import type { EffectResolver } from "@/modules/battle/helpers/effects/effect.resolvers";
-import type { BattleUnit } from "@/modules/figures/domain/figures.type";
+import type { BattleUnit } from "@/modules/units/domain/units.type";
 import type { CustomScriptEffect } from "../domain/cards.type";
 import { alchemicalFrenzy } from "./custom-scripts/alchemicalFrenzy.script";
 import { recklessExperiment } from "./custom-scripts/recklessExperiment.script";

@@ -1,7 +1,7 @@
 import {
 	golem_overseer,
 	stone_elemental,
-} from "@/modules/figures/data/monsters/golem.data";
+} from "@/modules/units/data/monsters/golem.data";
 import { type Encounter, encounterId } from "../../domain/encounters.type";
 
 export const DWARVEN_PASSAGE_ENCOUNTER_DB: Record<string, Encounter> = {

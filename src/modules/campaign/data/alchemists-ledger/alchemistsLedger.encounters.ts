@@ -1,10 +1,10 @@
 import { cardId } from "@/modules/cards/helpers/cards.helper";
-import { crazedAlchemist } from "@/modules/figures/data/monsters/alchemist";
+import { crazedAlchemist } from "@/modules/units/data/monsters/alchemist";
 import {
 	goblin,
 	goblinShaman,
-} from "@/modules/figures/data/monsters/goblin.data";
-import { shelves } from "@/modules/figures/data/summons/shelves";
+} from "@/modules/units/data/monsters/goblin.data";
+import { shelves } from "@/modules/units/data/summons/shelves";
 import type { Encounter } from "../../domain/encounters.type";
 import { THE_ALCHEMISTS_LEDGER } from "./alchemistsLedger.definitions";
 

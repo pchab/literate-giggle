@@ -1,5 +1,5 @@
 import type { CardEffect } from "@/modules/cards/domain/cards.type";
-import type { BattleUnit } from "@/modules/figures/domain/figures.type";
+import type { BattleUnit } from "@/modules/units/domain/units.type";
 import type { Vfx } from "../domain/vfx.type";
 import { getCellId } from "./grid.helpers";
 

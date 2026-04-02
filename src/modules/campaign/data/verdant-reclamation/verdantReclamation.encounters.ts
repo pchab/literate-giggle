@@ -1,11 +1,11 @@
-import { archdruid } from "@/modules/figures/data/monsters/archdruid";
-import { beastMaster } from "@/modules/figures/data/monsters/beast-master";
-import { briarWolf } from "@/modules/figures/data/monsters/briar-wolf";
-import { elvenCommander } from "@/modules/figures/data/monsters/elven-commander.data";
-import { elvenWeaver } from "@/modules/figures/data/monsters/elven-weaver";
-import { humanKing } from "@/modules/figures/data/monsters/human-king";
-import { humanSoldier } from "@/modules/figures/data/monsters/human-soldier";
-import { treant_bruiser } from "@/modules/figures/data/monsters/treant.data";
+import { archdruid } from "@/modules/units/data/monsters/archdruid";
+import { beastMaster } from "@/modules/units/data/monsters/beast-master";
+import { briarWolf } from "@/modules/units/data/monsters/briar-wolf";
+import { elvenCommander } from "@/modules/units/data/monsters/elven-commander.data";
+import { elvenWeaver } from "@/modules/units/data/monsters/elven-weaver";
+import { humanKing } from "@/modules/units/data/monsters/human-king";
+import { humanSoldier } from "@/modules/units/data/monsters/human-soldier";
+import { treant_bruiser } from "@/modules/units/data/monsters/treant.data";
 import { type Encounter, encounterId } from "../../domain/encounters.type";
 import { sceneId } from "../../domain/scenes.type";
 

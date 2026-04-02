@@ -1,5 +1,5 @@
 import type { CreateSurfaceEffect } from "@/modules/cards/domain/cards.type";
-import type { BattleUnit } from "@/modules/figures/domain/figures.type";
+import type { BattleUnit } from "@/modules/units/domain/units.type";
 import { getCellId } from "../grid.helpers";
 import type { EffectResolver } from "./effect.resolvers";
 

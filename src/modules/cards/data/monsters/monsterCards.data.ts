@@ -1,4 +1,4 @@
-import { summonId } from "@/modules/figures/helpers/figures.helpers";
+import { summonId } from "@/modules/units/helpers/units.helpers";
 import type { Card } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
 import { elvenCards } from "./elvenCards.data";

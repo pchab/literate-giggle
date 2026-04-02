@@ -1,19 +1,15 @@
 import type { Card } from "@/modules/cards/domain/cards.type";
-import { isSummon } from "@/modules/figures/helpers/figures.helpers";
-import type {
-	AIBattleUnit,
-	BattleUnit,
-} from "../../figures/domain/figures.type";
-import type { GridPosition } from "../domain/grid.type";
+import { isSummon } from "@/modules/units/helpers/units.helpers";
+import type { AIBattleUnit, BattleUnit } from "../../units/domain/units.type";
+import type { BoundingBox, GridPosition } from "../domain/grid.type";
 import type { StoreGet } from "../store/battle.store";
 import type { TargetResolver } from "./ai.targeting.helpers";
-import { areEnemies } from "./effects/effect.helpers";
+import { areEnemies, getAllegiance } from "./effects/effect.helpers";
 import {
 	canUnitFit,
 	getDistanceToBoundingBox,
 	isTileEmpty,
 	isTileInBounds,
-	isUnitInTile,
 } from "./grid.helpers";
 import {
 	calculateAttackableCells,
@@ -25,33 +21,54 @@ import {
 // STEP 1: TARGET EVALUATOR (The "Who")
 // ==========================================
 function getPrioritizedTargets<C extends AIBattleUnit, T extends BattleUnit>(
-	aiFigure: C,
+	aiUnit: C,
 	card: Card,
-	figures: T[],
+	units: T[],
 ): T[] {
-	const aliveFigures = figures.filter((f) => f.currentHp > 0);
+	const aliveUnits = units.filter((f) => f.currentHp > 0);
+	const nonNeutralUnits = units.filter(
+		(u) => !isSummon(u) || u.allegiance !== "NEUTRAL",
+	);
 	let validTargets: T[] = [];
 
 	// 1. Filter by Play Requirement
 	switch (card.playRequirement) {
 		case "requires_ally":
-			validTargets = aliveFigures.filter((f) => !areEnemies(aiFigure)(f));
+			validTargets = nonNeutralUnits.filter((f) => !areEnemies(aiUnit)(f));
 			break;
 		case "requires_enemy":
+			validTargets = nonNeutralUnits.filter(areEnemies(aiUnit));
+			break;
 		case "requires_empty_cell":
-			validTargets = aliveFigures.filter(areEnemies(aiFigure));
+			validTargets = aliveUnits.filter(areEnemies(aiUnit));
 			break;
 		case "requires_entity":
-			validTargets = aliveFigures.filter(
+			validTargets = aliveUnits.filter(
 				(f) => !(isSummon(f) && f.allegiance === "NEUTRAL"),
 			);
 			break;
 		default:
-			validTargets = aliveFigures;
+			validTargets = aliveUnits;
 	}
+
+	// Determine what this specific AI considers a "Primary Threat"
+	const aiFaction = getAllegiance(aiUnit);
+	const primaryEnemyFaction =
+		aiFaction === "ENEMY" ? "PLAYER" : aiFaction === "PLAYER" ? "ENEMY" : null;
 
 	// 2. Sort by AI Preference
 	return validTargets.sort((a, b) => {
+		// --- NEW: Faction Prioritization ---
+		// Direct enemies take priority over neutral bystanders
+		if (primaryEnemyFaction) {
+			const aIsPrimaryEnemy = getAllegiance(a) === primaryEnemyFaction;
+			const bIsPrimaryEnemy = getAllegiance(b) === primaryEnemyFaction;
+
+			if (aIsPrimaryEnemy && !bIsPrimaryEnemy) return -1;
+			if (!aIsPrimaryEnemy && bIsPrimaryEnemy) return 1;
+		}
+
+		// --- ORIGINAL: Fallback Preference ---
 		switch (card.aiTargetPreference) {
 			case "lowestDef":
 				return a.baseDef - b.baseDef;
@@ -61,8 +78,8 @@ function getPrioritizedTargets<C extends AIBattleUnit, T extends BattleUnit>(
 				return Math.random() - 0.5;
 			default:
 				return (
-					getDistanceToBoundingBox({ caster: aiFigure, target: a }) -
-					getDistanceToBoundingBox({ caster: aiFigure, target: b })
+					getDistanceToBoundingBox({ caster: aiUnit, target: a }) -
+					getDistanceToBoundingBox({ caster: aiUnit, target: b })
 				);
 		}
 	});
@@ -73,7 +90,7 @@ function getPrioritizedTargets<C extends AIBattleUnit, T extends BattleUnit>(
 // ==========================================
 const calculateFiringSpot =
 	(get: StoreGet) =>
-	<C extends AIBattleUnit, T extends BattleUnit>({
+	<C extends AIBattleUnit, T extends BoundingBox>({
 		aiUnit,
 		target,
 		card,
@@ -95,7 +112,7 @@ const calculateFiringSpot =
 			// --- KITING LOGIC ("away") ---
 			const reachable = calculateReachableCells({
 				movingUnit: aiUnit,
-				blockingFigures: hardObstacles,
+				blockingUnits: hardObstacles,
 				canTargetSelf: true,
 				gridSize,
 				surfaces,
@@ -207,27 +224,26 @@ export const getIdealTarget: TargetResolver =
 			card.aiTargetPreference &&
 			typeof card.aiTargetPreference !== "string"
 		) {
-			const target = units.find(isUnitInTile(card.aiTargetPreference));
-			if (target) {
-				const moveDest = calculateFiringSpot(get)({ aiUnit, target, card });
-				return {
-					intendedTarget: target,
-					moveDest,
-					canHit: Boolean(
-						moveDest &&
-							isTargetInRange({
-								card,
-								minRange: 1,
-								attacker: { ...aiUnit, gridPosition: moveDest },
-								target,
-							}),
-					),
-				};
-			}
+			const target = { gridPosition: card.aiTargetPreference };
+			const moveDest = calculateFiringSpot(get)({ aiUnit, target, card });
+			return {
+				intendedTarget: target,
+				moveDest,
+				canHit: Boolean(
+					moveDest &&
+						isTargetInRange({
+							card,
+							minRange: 1,
+							attacker: { ...aiUnit, gridPosition: moveDest },
+							target,
+						}),
+				),
+			};
 		}
 
 		// --- STANDARD PIPELINE ---
 		const targetQueue = getPrioritizedTargets(aiUnit, card, units);
+		console.log({ targetQueue });
 
 		let fallbackMove: GridPosition | null = null;
 		let fallbackTarget: BattleUnit | null = null;
@@ -297,7 +313,7 @@ export const getIdealTarget: TargetResolver =
 		};
 	};
 
-function isTargetInRange<C extends BattleUnit, T extends BattleUnit>({
+function isTargetInRange<C extends BattleUnit, T extends BoundingBox>({
 	card,
 	minRange,
 	attacker,

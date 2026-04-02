@@ -1,4 +1,4 @@
-import { briarWolf } from "@/modules/figures/data/monsters/briar-wolf";
+import { briarWolf } from "@/modules/units/data/monsters/briar-wolf";
 import type { Encounter } from "../../domain/encounters.type";
 import { SHADOWS_DEBT } from "./shadowsDebt.definitions";
 

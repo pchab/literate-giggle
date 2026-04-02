@@ -6,7 +6,7 @@ import type { BattleState } from "@/modules/battle/store/battle.store";
 import type {
 	Allegiance,
 	UnitBlueprint,
-} from "@/modules/figures/domain/figures.type";
+} from "@/modules/units/domain/units.type";
 import type { Scene } from "./scenes.type";
 
 export interface Encounter {

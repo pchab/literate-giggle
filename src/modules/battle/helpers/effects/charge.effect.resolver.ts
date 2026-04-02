@@ -1,8 +1,5 @@
 import type { ChargeEffect } from "@/modules/cards/domain/cards.type";
-import {
-	type BattleUnit,
-	UnitStance,
-} from "@/modules/figures/domain/figures.type";
+import { type BattleUnit, UnitStance } from "@/modules/units/domain/units.type";
 import { isTileInBounds, isUnitInTile } from "../grid.helpers";
 import { getLineOfSightPath, moveBattleUnit } from "../move.helpers";
 import { applyCombatUpdate, updateUnitState } from "../state.helpers";

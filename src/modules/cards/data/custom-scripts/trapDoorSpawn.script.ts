@@ -6,14 +6,14 @@ import {
 	isTileEmpty,
 	isTileInBounds,
 } from "@/modules/battle/helpers/grid.helpers";
-import { summonLibrary } from "@/modules/figures/data/summons/summons.data";
+import { sleep } from "@/modules/shared/helpers/sleep";
+import { summonLibrary } from "@/modules/units/data/summons/summons.data";
 import {
 	type BattleUnit,
 	type Summon,
 	UnitStance,
-} from "@/modules/figures/domain/figures.type";
-import { summonId } from "@/modules/figures/helpers/figures.helpers";
-import { sleep } from "@/modules/shared/helpers/sleep";
+} from "@/modules/units/domain/units.type";
+import { summonId } from "@/modules/units/helpers/units.helpers";
 import type { CustomScriptEffect } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
 import { monsterCardLibrary } from "../monsters/monsterCards.data";
@@ -36,7 +36,7 @@ export const trapdoorSpawn: EffectResolver<
 			const nastyBiteCard = monsterCardLibrary[nastyBiteId];
 			const newIntent: Intent = {
 				cardId: nastyBiteId,
-				figureId: caster.id,
+				unitId: caster.id,
 			};
 			set(({ aiIntents, ...prev }) => ({
 				...prev,
@@ -89,6 +89,10 @@ export const trapdoorSpawn: EffectResolver<
 		const newRats: Summon[] = spawnTiles.map((pos, index) => ({
 			id: summonId(`trap-door-rat-${Date.now()}-${index}`),
 			...blueprint,
+			variant:
+				blueprint.availableVariants?.[
+					Math.floor(Math.random() * blueprint.availableVariants.length)
+				] || "default",
 			stance: UnitStance.IDLE,
 			currentHp: blueprint.maxHp,
 			statuses: [],

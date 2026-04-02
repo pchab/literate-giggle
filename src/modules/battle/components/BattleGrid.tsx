@@ -1,10 +1,10 @@
 "use client";
 
+import { useShallow } from "zustand/shallow";
 import { getCellId, isUnitInTile } from "@/modules/battle/helpers/grid.helpers";
 import type { Encounter } from "@/modules/campaign/domain/encounters.type";
-import type { BattleUnit } from "@/modules/figures/domain/figures.type";
-import { isHero, isHeroId } from "@/modules/figures/helpers/figures.helpers";
-import { useShallow } from "zustand/shallow";
+import type { BattleUnit } from "@/modules/units/domain/units.type";
+import { isHero, isHeroId } from "@/modules/units/helpers/units.helpers";
 import { useBattleTurns } from "../hooks/useBattleTurns";
 import { useCellHighlight } from "../hooks/useCellHighlight";
 import { useBattleStore } from "../store/battle.store";

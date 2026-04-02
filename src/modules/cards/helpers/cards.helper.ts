@@ -1,4 +1,4 @@
-import type { Hero } from "@/modules/figures/domain/figures.type";
+import type { Hero } from "@/modules/units/domain/units.type";
 import { cardLibrary } from "../data/cards.data";
 import type {
 	ApplyStatusEffect,

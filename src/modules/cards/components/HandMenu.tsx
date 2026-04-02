@@ -4,8 +4,8 @@ import { motion } from "motion/react";
 import { useState } from "react";
 import { useShallow } from "zustand/shallow";
 import type { HeroCard } from "@/modules/cards/domain/cards.type";
-import type { Hero } from "@/modules/figures/domain/figures.type";
 import { RetroButton } from "@/modules/shared/components/RetroButton";
+import type { Hero } from "@/modules/units/domain/units.type";
 import { useWorldStore } from "@/modules/world/store/world.store";
 import { getComputedCard } from "../helpers/cards.helper";
 import { BattleCard } from "./BattleCard";
@@ -63,7 +63,9 @@ export function HandMenu() {
 		// Optional: Add a little toast notification here!
 	};
 
-	const selectedHero = roster.find((h) => h.id === selectedHeroId);
+	const selectedHero: Hero | undefined = roster.find(
+		(h) => h.id === selectedHeroId,
+	);
 	if (!selectedHero) return null;
 
 	const weapon = selectedHero.selectedCards[0];

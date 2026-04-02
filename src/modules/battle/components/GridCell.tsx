@@ -3,8 +3,8 @@
 import { useShallow } from "zustand/shallow";
 import type { GridPosition } from "@/modules/battle/domain/grid.type";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
-import { UnitSprite } from "@/modules/figures/components/UnitSprite";
-import type { BattleUnit } from "@/modules/figures/domain/figures.type";
+import { UnitSprite } from "@/modules/units/components/UnitSprite";
+import type { BattleUnit } from "@/modules/units/domain/units.type";
 import { ProjectedCasualtyIcon } from "./ProjectedCasualtyIndicator";
 import { ProjectedLandingIndicator } from "./ProjectedLandingIndicator";
 import { VfxOverlay } from "./VfxOverlay";

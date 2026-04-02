@@ -4,8 +4,8 @@ import type {
 	SurfaceType,
 } from "@/modules/battle/domain/grid.type";
 import type { VfxType } from "@/modules/battle/domain/vfx.type";
-import type { Summon } from "@/modules/figures/domain/figures.type";
-import type { Status, StatusType } from "@/modules/figures/domain/status.type";
+import type { Status, StatusType } from "@/modules/units/domain/status.type";
+import type { Summon } from "@/modules/units/domain/units.type";
 
 export type AnchorTarget = BoundingBox | null;
 

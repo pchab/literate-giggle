@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import type { BattleHero } from "@/modules/figures/domain/figures.type";
+import type { BattleHero } from "@/modules/units/domain/units.type";
 
 export default function HeroStatusSidebar({ hero }: { hero: BattleHero }) {
 	// ==========================================

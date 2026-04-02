@@ -1,7 +1,7 @@
 import { m } from "motion/react";
 import { BattleCard } from "@/modules/cards/components/BattleCard";
 import type { Card } from "@/modules/cards/domain/cards.type";
-import type { RuneDraftOption } from "@/modules/figures/domain/heroClass.types";
+import type { RuneDraftOption } from "@/modules/units/domain/heroClass.types";
 import { isCardCompatibleWithRune } from "../runeReward.helpers";
 
 export default function ChooseCard({

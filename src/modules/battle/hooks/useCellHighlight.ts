@@ -1,3 +1,4 @@
+import { useShallow } from "zustand/shallow";
 import type { GridPosition } from "@/modules/battle/domain/grid.type";
 import {
 	isTileEmpty,
@@ -6,9 +7,8 @@ import {
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { cardLibrary } from "@/modules/cards/data/cards.data";
 import type { Card } from "@/modules/cards/domain/cards.type";
-import type { BattleUnit } from "@/modules/figures/domain/figures.type";
-import { isHero } from "@/modules/figures/helpers/figures.helpers";
-import { useShallow } from "zustand/shallow";
+import type { BattleUnit } from "@/modules/units/domain/units.type";
+import { isHero } from "@/modules/units/helpers/units.helpers";
 import type { Intent } from "../domain/intent.type";
 import { areEnemies } from "../helpers/effects/effect.helpers";
 import {
@@ -77,7 +77,7 @@ export function useCellHighlight(): CellHighlight {
 
 		const validTargetCells = calculateReachableCells({
 			movingUnit: { ...hero, baseMove: remainingMove },
-			blockingFigures: oppositeFaction,
+			blockingUnits: oppositeFaction,
 			canTargetSelf: false,
 			gridSize,
 		}).filter(isTileEmpty(units));
@@ -128,7 +128,7 @@ export function useCellHighlight(): CellHighlight {
 					targets.some(isUnitInTile(cell)),
 				);
 			}
-			intent = { figureId: hero.id, cardId: card.id, dangerZone };
+			intent = { unitId: hero.id, cardId: card.id, dangerZone };
 		}
 	} else {
 		// ==========================================
@@ -155,7 +155,7 @@ export function useCellHighlight(): CellHighlight {
 
 	return {
 		...highlight,
-		activeUnit: intent.figureId,
+		activeUnit: intent.unitId,
 		moveCells: intent.intendedMove ?? [],
 		allyTargets:
 			playRequirement === "requires_ally" ? (intent.dangerZone ?? []) : [],

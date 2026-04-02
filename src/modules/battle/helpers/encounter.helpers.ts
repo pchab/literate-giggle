@@ -1,6 +1,6 @@
 import { ENCOUNTER_DB } from "@/modules/campaign/data/encounters.data";
-import type { BattleUnit } from "@/modules/figures/domain/figures.type";
-import { isHero, isMonster } from "@/modules/figures/helpers/figures.helpers";
+import type { BattleUnit } from "@/modules/units/domain/units.type";
+import { isHero, isMonster } from "@/modules/units/helpers/units.helpers";
 import type { BattleState, StoreGet, StoreSet } from "../store/battle.store";
 import { calculateStateDiff } from "./state.helpers";
 

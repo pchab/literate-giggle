@@ -1,5 +1,5 @@
 import type { PushEffect } from "@/modules/cards/domain/cards.type";
-import type { BattleUnit } from "@/modules/figures/domain/figures.type";
+import type { BattleUnit } from "@/modules/units/domain/units.type";
 import {
 	getClosestOriginTile,
 	isTileInBounds,
@@ -15,7 +15,7 @@ export const resolvePushEffect: EffectResolver<BattleUnit, PushEffect> =
 	async ({ anchorTarget, caster, targetIds }) => {
 		const { gridSize } = get();
 		// --- 1. USE THE UNIFIED ARRAY ---
-		let currentFigures = get().units;
+		let currentUnits = get().units;
 
 		const { col: cX, row: cY } = getClosestOriginTile({
 			caster,
@@ -28,8 +28,8 @@ export const resolvePushEffect: EffectResolver<BattleUnit, PushEffect> =
 
 		const processPush = async (entityId: BattleUnit["id"]) => {
 			// --- 2. CLEAN RE-FETCH FOR SEQUENTIAL PUSHES ---
-			currentFigures = get().units;
-			let entity = currentFigures.find((f) => f.id === entityId);
+			currentUnits = get().units;
+			let entity = currentUnits.find((f) => f.id === entityId);
 
 			if (!entity || entity.currentHp <= 0) return;
 
@@ -46,7 +46,7 @@ export const resolvePushEffect: EffectResolver<BattleUnit, PushEffect> =
 			let crushObstacleB: BattleUnit | null = null;
 
 			const getObstacleAt = (col: number, row: number) =>
-				currentFigures.find(
+				currentUnits.find(
 					(f) =>
 						isUnitInTile({ col, row })(f) &&
 						f.id !== entityId &&

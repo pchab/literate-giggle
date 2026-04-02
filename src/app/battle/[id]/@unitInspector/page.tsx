@@ -8,7 +8,7 @@ import {
 	isHero,
 	isMonster,
 	isSummon,
-} from "@/modules/figures/helpers/figures.helpers";
+} from "@/modules/units/helpers/units.helpers";
 import EnemyIntentSidebar from "./enemyIntent";
 import HeroStatusSidebar from "./heroStatus";
 

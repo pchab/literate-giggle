@@ -1,5 +1,5 @@
 import type { BattleStoreServerAction } from "@/modules/battle/store/battle.store";
-import { UnitStance } from "@/modules/figures/domain/figures.type";
+import { UnitStance } from "@/modules/units/domain/units.type";
 
 export function cancelCard(): BattleStoreServerAction {
 	return ({ units, activeHeroCard }) => {

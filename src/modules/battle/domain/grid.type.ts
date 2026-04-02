@@ -1,4 +1,4 @@
-import type { Status } from "@/modules/figures/domain/status.type";
+import type { Status } from "@/modules/units/domain/status.type";
 
 export type GridPosition = {
 	col: number;
