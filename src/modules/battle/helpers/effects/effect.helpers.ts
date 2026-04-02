@@ -15,9 +15,9 @@ import type { StoreGet, StoreSet } from "../../store/battle.store";
 import {
 	doBoundingBoxesIntersect,
 	getCellId,
-	getLineOfSightPath,
 	isUnitInTile,
 } from "../grid.helpers";
+import { getLineOfSightPath } from "../move.helpers";
 import { applyCombatUpdate } from "../state.helpers";
 import { statusRegistry } from "../status.helpers";
 

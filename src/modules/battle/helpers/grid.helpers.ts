@@ -1,12 +1,36 @@
-import type { AnchorTarget, Card } from "@/modules/cards/domain/cards.type";
 import type { BattleUnit } from "../../figures/domain/figures.type";
-import type { BoundingBox, GridPosition } from "../domain/grid.type";
+import type {
+	BoundingBox,
+	GridPosition,
+	SurfaceData,
+} from "../domain/grid.type";
 
 export function getCellId(pos: GridPosition): string {
 	return `${pos.row}-${pos.col}`;
 }
 
-// --- 1. BOUNDING BOX LOGIC ---
+// --- 1. SURVIVAL INSTINCT ---
+export const isTileSafe = (
+	cell: GridPosition,
+	unit: BattleUnit,
+	surfaces?: Record<string, SurfaceData>,
+): boolean => {
+	if (!surfaces) return true;
+	const surface = surfaces[getCellId(cell)];
+	if (!surface) return true;
+
+	if (surface.status) {
+		const isImmune = unit.immunities?.includes(surface.status.type);
+		if (isImmune) {
+			return true;
+		}
+	}
+
+	// aiUnits will avoid hazards, but walk through the other types of surfaces without issue
+	return ["TRAP", "TERRAIN", "SPECIAL"].includes(surface.type);
+};
+
+// --- 2. BOUNDING BOX LOGIC ---
 export function isUnitInTile<T extends BoundingBox>(tile: GridPosition) {
 	return (entity: T) => {
 		const size = entity.size ?? { cols: 1, rows: 1 };
@@ -52,14 +76,14 @@ export const isTileEmpty =
 	(tile: GridPosition) =>
 		!isTileOccupied(figures)(tile);
 
-// --- 2. CLEARANCE LOGIC (For Giant Pathfinding) ---
+// --- 3. CLEARANCE LOGIC (For Giant Pathfinding) ---
 export const canUnitFit = <C extends BattleUnit, T extends BattleUnit>({
 	unit: { id: ignoreUnitId, size = { cols: 1, rows: 1 }, gridPosition },
-	figures,
+	units,
 	gridSize,
 }: {
 	unit: C;
-	figures: T[];
+	units: T[];
 	gridSize: { cols: number; rows: number };
 }): boolean => {
 	for (let r = 0; r < size.rows; r++) {
@@ -67,7 +91,7 @@ export const canUnitFit = <C extends BattleUnit, T extends BattleUnit>({
 			const checkPos = { row: gridPosition.row + r, col: gridPosition.col + c };
 			if (!isTileInBounds(gridSize)(checkPos)) return false;
 
-			const occupant = figures.find(
+			const occupant = units.find(
 				(f) => f.currentHp > 0 && isUnitInTile(checkPos)(f),
 			);
 			if (occupant && occupant.id !== ignoreUnitId) return false;
@@ -76,8 +100,11 @@ export const canUnitFit = <C extends BattleUnit, T extends BattleUnit>({
 	return true;
 };
 
-// --- 3. DISTANCE CALCULATIONS ---
-const getManhattanDistance = (pos1: GridPosition, pos2: GridPosition) => {
+// --- 4. DISTANCE CALCULATIONS ---
+export const getManhattanDistance = (
+	pos1: GridPosition,
+	pos2: GridPosition,
+) => {
 	return Math.abs(pos1.row - pos2.row) + Math.abs(pos1.col - pos2.col);
 };
 
@@ -123,128 +150,7 @@ export const isTileInBounds =
 		);
 	};
 
-// --- 4. PATHFINDING ---
-export const calculateReachableCells = <T extends BattleUnit>({
-	movingUnit,
-	blockingFigures: figures,
-	canTargetSelf = false,
-	gridSize,
-}: {
-	movingUnit: BattleUnit;
-	blockingFigures: T[];
-	canTargetSelf: boolean;
-	gridSize: { cols: number; rows: number };
-}): GridPosition[] => {
-	const { baseMove: moveValue, gridPosition: startPos } = movingUnit;
-	if (moveValue <= 0) return [];
-
-	const queue: { pos: GridPosition; dist: number }[] = [
-		{ pos: startPos, dist: 0 },
-	];
-	const visited = new Set<string>();
-	const startKey = `${startPos.row},${startPos.col}`;
-	visited.add(startKey);
-
-	const reachable: GridPosition[] = canTargetSelf ? [startPos] : [];
-
-	while (queue.length > 0) {
-		const current = queue.shift();
-		if (!current) break;
-
-		if (current.dist > 0) {
-			reachable.push(current.pos);
-		}
-
-		if (current.dist < moveValue) {
-			const neighbors = [
-				{ row: current.pos.row - 1, col: current.pos.col },
-				{ row: current.pos.row + 1, col: current.pos.col },
-				{ row: current.pos.row, col: current.pos.col - 1 },
-				{ row: current.pos.row, col: current.pos.col + 1 },
-			];
-
-			for (const next of neighbors) {
-				const key = `${next.row},${next.col}`;
-				if (!visited.has(key)) {
-					visited.add(key);
-					if (
-						canUnitFit({
-							unit: { ...movingUnit, gridPosition: next },
-							figures,
-							gridSize,
-						})
-					) {
-						queue.push({ pos: next, dist: current.dist + 1 });
-					}
-				}
-			}
-		}
-	}
-
-	return reachable;
-};
-
-export const calculateAttackableCells = ({
-	attacker,
-	rangeValue,
-	canTargetSelf = false,
-	gridSize,
-}: {
-	attacker: BattleUnit;
-	rangeValue: number;
-	canTargetSelf?: boolean;
-	gridSize: { cols: number; rows: number };
-}): GridPosition[] => {
-	const attackable: GridPosition[] = [];
-
-	for (let row = 0; row < gridSize.rows; row++) {
-		for (let col = 0; col < gridSize.cols; col++) {
-			const target = { gridPosition: { row, col } };
-
-			const distance = getDistanceToBoundingBox({ caster: attacker, target });
-
-			if (distance <= rangeValue && (canTargetSelf || distance > 0)) {
-				attackable.push(target.gridPosition);
-			}
-		}
-	}
-	return attackable;
-};
-
-export function getLineOfSightPath(
-	start: GridPosition,
-	end: GridPosition,
-): GridPosition[] {
-	const path: GridPosition[] = [];
-	let x0 = start.col;
-	let y0 = start.row;
-	const x1 = end.col;
-	const y1 = end.row;
-
-	const dx = Math.abs(x1 - x0);
-	const dy = Math.abs(y1 - y0);
-	const sx = x0 < x1 ? 1 : -1;
-	const sy = y0 < y1 ? 1 : -1;
-	let err = dx - dy;
-
-	while (true) {
-		path.push({ col: x0, row: y0 });
-		if (x0 === x1 && y0 === y1) break;
-
-		const e2 = 2 * err;
-		if (e2 > -dy) {
-			err -= dy;
-			x0 += sx;
-		}
-		if (e2 < dx) {
-			err += dx;
-			y0 += sy;
-		}
-	}
-
-	return path;
-}
-
+// --- 5. PATTERN & GEOMETRY MANIPULATION ---
 function rotatePattern({
 	pattern,
 	originPos,
@@ -273,18 +179,17 @@ function rotatePattern({
 }
 
 export function filterGridByAttackPattern({
-	card,
+	pattern,
 	targetPos,
 	originPos,
 	gridSize,
 }: {
-	card: Card;
-	targetPos: AnchorTarget;
+	pattern: GridPosition[];
+	targetPos: BoundingBox | null;
 	originPos: GridPosition;
 	gridSize: { cols: number; rows: number };
 }): GridPosition[] {
-	const pattern = card.aoePattern || [{ col: 0, row: 0 }];
-	if (!targetPos) return pattern;
+	if (!targetPos || pattern.length === 0) return pattern;
 
 	const size = targetPos.size ?? { cols: 1, rows: 1 };
 
@@ -329,7 +234,7 @@ export const getClosestOriginTile = ({
 	anchorTarget,
 }: {
 	caster: BattleUnit;
-	anchorTarget: AnchorTarget;
+	anchorTarget: BoundingBox | null;
 }): GridPosition => {
 	const size = caster.size ?? { cols: 1, rows: 1 };
 	const { gridPosition } = caster;

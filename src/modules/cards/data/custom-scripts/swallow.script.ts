@@ -1,10 +1,10 @@
 import { handleAICardIntent } from "@/modules/battle/helpers/ai.actions.helpers";
 import type { EffectResolver } from "@/modules/battle/helpers/effects/effect.resolvers";
 import {
-	calculateAttackableCells,
 	isTileInBounds,
 	isUnitInTile,
 } from "@/modules/battle/helpers/grid.helpers";
+import { calculateAttackableCells } from "@/modules/battle/helpers/move.helpers";
 import {
 	applyCombatUpdate,
 	updateUnitState,

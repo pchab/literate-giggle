@@ -38,7 +38,7 @@ export const archerCards: Record<Card["id"], Card> = {
 			{
 				type: "create_surface",
 				target: "anchor",
-				surfaceType: "ACID",
+				surfaceType: "HAZARD",
 				duration: 2,
 				spriteBase: "/surfaces/acid.webp",
 				status: {

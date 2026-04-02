@@ -1,8 +1,5 @@
-import { useShallow } from "zustand/shallow";
 import type { GridPosition } from "@/modules/battle/domain/grid.type";
 import {
-	calculateAttackableCells,
-	calculateReachableCells,
 	isTileEmpty,
 	isUnitInTile,
 } from "@/modules/battle/helpers/grid.helpers";
@@ -11,8 +8,13 @@ import { cardLibrary } from "@/modules/cards/data/cards.data";
 import type { Card } from "@/modules/cards/domain/cards.type";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
 import { isHero } from "@/modules/figures/helpers/figures.helpers";
+import { useShallow } from "zustand/shallow";
 import type { Intent } from "../domain/intent.type";
 import { areEnemies } from "../helpers/effects/effect.helpers";
+import {
+	calculateAttackableCells,
+	calculateReachableCells,
+} from "../helpers/move.helpers";
 
 type CellHighlight = {
 	activeUnit?: BattleUnit["id"];

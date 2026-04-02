@@ -3,17 +3,25 @@ import {
 	UnitStance,
 } from "@/modules/figures/domain/figures.type";
 import { sleep } from "@/modules/shared/helpers/sleep";
-import type { GridPosition, SurfaceType } from "../domain/grid.type";
+import type {
+	GridPosition,
+	SurfaceData,
+	SurfaceType,
+} from "../domain/grid.type";
 import type { StoreGet, StoreSet } from "../store/battle.store";
 import {
 	canUnitFit,
 	doBoundingBoxesIntersect,
 	getCellId,
 	getDistanceToBoundingBox,
+	isTileSafe,
 } from "./grid.helpers";
 import { applyCombatUpdate, findUnit, updateUnitState } from "./state.helpers";
 import { statusRegistry } from "./status.helpers";
 
+// ==========================================
+// 1. STATE MUTATION: Execution of Movement
+// ==========================================
 export function moveBattleUnit(
 	get: StoreGet,
 	set: StoreSet,
@@ -46,9 +54,6 @@ export function moveBattleUnit(
 		}
 
 		for (const step of path) {
-			// ==========================================
-			// 1. ASK THE REGISTRY FOR PERMISSION TO MOVE
-			// ==========================================
 			let canTakeStep = true;
 			for (const status of currentUnit.statuses) {
 				const hook = statusRegistry[status.type]?.onBeforeMove;
@@ -65,9 +70,6 @@ export function moveBattleUnit(
 			}
 			if (!canTakeStep) break;
 
-			// ==========================================
-			// 2. VISUAL UPDATE: Move to next tile
-			// ==========================================
 			await updateUnitState(
 				get,
 				set,
@@ -81,11 +83,8 @@ export function moveBattleUnit(
 				await sleep(stepDelayMs);
 			}
 
-			// ==========================================
-			// 3. COMBAT MATH: Environmental Hazards
-			// ==========================================
 			const { surfaces: draftSurfaces } = get();
-			const processedSurfaceTypes = new Set<SurfaceType>(); // PREVENTS DOUBLE DIPPING!
+			const processedSurfaceTypes = new Set<SurfaceType>();
 			let surfacesChanged = false;
 			const nextSurfaces = { ...draftSurfaces };
 
@@ -93,7 +92,6 @@ export function moveBattleUnit(
 				if (!doBoundingBoxesIntersect(currentUnit, surface)) continue;
 				if (currentUnit.surfaceImmunities?.includes(surface.type)) continue;
 
-				// Ensure we only take damage from a surface type once per step
 				if (processedSurfaceTypes.has(surface.type)) continue;
 				processedSurfaceTypes.add(surface.type);
 
@@ -108,7 +106,6 @@ export function moveBattleUnit(
 					});
 				}
 
-				// Batch surface degradation
 				const targetSurface = nextSurfaces[surface.id];
 				if (targetSurface && targetSurface.charges !== undefined) {
 					targetSurface.charges -= 1;
@@ -150,20 +147,25 @@ export function moveBattleUnit(
 	};
 }
 
+// ==========================================
+// 2. PATHFINDING ALGORITHMS
+// ==========================================
 export const calculateExactPath = <C extends BattleUnit, T extends BattleUnit>({
 	movingUnit,
 	targetPos,
-	figures,
+	units,
 	minRange = 0,
 	maxRange = 0,
 	gridSize,
+	surfaces,
 }: {
 	movingUnit: C;
 	targetPos: GridPosition;
-	figures: T[];
+	units: T[];
 	minRange?: number;
 	maxRange?: number;
 	gridSize: { rows: number; cols: number };
+	surfaces?: Record<string, SurfaceData>;
 }): GridPosition[] => {
 	const startPos = movingUnit.gridPosition;
 	const target = { gridPosition: targetPos };
@@ -201,10 +203,13 @@ export const calculateExactPath = <C extends BattleUnit, T extends BattleUnit>({
 		];
 
 		for (const next of neighbors) {
-			// STRICT COLLISION CHECK: You must fit here to path here. Period.
+			if (!isTileSafe(next, movingUnit, surfaces)) {
+				continue;
+			}
+
 			const fits = canUnitFit({
 				unit: { ...movingUnit, gridPosition: next },
-				figures,
+				units,
 				gridSize,
 			});
 
@@ -230,3 +235,131 @@ export const calculateExactPath = <C extends BattleUnit, T extends BattleUnit>({
 
 	return path.reverse();
 };
+
+export const calculateReachableCells = <T extends BattleUnit>({
+	movingUnit,
+	blockingFigures: units,
+	canTargetSelf = false,
+	gridSize,
+	surfaces,
+}: {
+	movingUnit: BattleUnit;
+	blockingFigures: T[];
+	canTargetSelf: boolean;
+	gridSize: { cols: number; rows: number };
+	surfaces?: Record<string, SurfaceData>;
+}): GridPosition[] => {
+	const { baseMove: moveValue, gridPosition: startPos } = movingUnit;
+	if (moveValue <= 0) return [];
+
+	const queue: { pos: GridPosition; dist: number }[] = [
+		{ pos: startPos, dist: 0 },
+	];
+	const visited = new Set<string>();
+	const startKey = `${startPos.row},${startPos.col}`;
+	visited.add(startKey);
+
+	const reachable: GridPosition[] = canTargetSelf ? [startPos] : [];
+
+	while (queue.length > 0) {
+		const current = queue.shift();
+		if (!current) break;
+
+		if (current.dist > 0) {
+			reachable.push(current.pos);
+		}
+
+		if (current.dist < moveValue) {
+			const neighbors = [
+				{ row: current.pos.row - 1, col: current.pos.col },
+				{ row: current.pos.row + 1, col: current.pos.col },
+				{ row: current.pos.row, col: current.pos.col - 1 },
+				{ row: current.pos.row, col: current.pos.col + 1 },
+			];
+
+			for (const next of neighbors) {
+				const key = `${next.row},${next.col}`;
+				if (!visited.has(key)) {
+					visited.add(key);
+
+					if (!isTileSafe(next, movingUnit, surfaces)) {
+						continue;
+					}
+
+					if (
+						canUnitFit({
+							unit: { ...movingUnit, gridPosition: next },
+							units,
+							gridSize,
+						})
+					) {
+						queue.push({ pos: next, dist: current.dist + 1 });
+					}
+				}
+			}
+		}
+	}
+
+	return reachable;
+};
+
+export const calculateAttackableCells = ({
+	attacker,
+	rangeValue,
+	canTargetSelf = false,
+	gridSize,
+}: {
+	attacker: BattleUnit;
+	rangeValue: number;
+	canTargetSelf?: boolean;
+	gridSize: { cols: number; rows: number };
+}): GridPosition[] => {
+	const attackable: GridPosition[] = [];
+
+	for (let row = 0; row < gridSize.rows; row++) {
+		for (let col = 0; col < gridSize.cols; col++) {
+			const target = { gridPosition: { row, col } };
+
+			const distance = getDistanceToBoundingBox({ caster: attacker, target });
+
+			if (distance <= rangeValue && (canTargetSelf || distance > 0)) {
+				attackable.push(target.gridPosition);
+			}
+		}
+	}
+	return attackable;
+};
+
+export function getLineOfSightPath(
+	start: GridPosition,
+	end: GridPosition,
+): GridPosition[] {
+	const path: GridPosition[] = [];
+	let x0 = start.col;
+	let y0 = start.row;
+	const x1 = end.col;
+	const y1 = end.row;
+
+	const dx = Math.abs(x1 - x0);
+	const dy = Math.abs(y1 - y0);
+	const sx = x0 < x1 ? 1 : -1;
+	const sy = y0 < y1 ? 1 : -1;
+	let err = dx - dy;
+
+	while (true) {
+		path.push({ col: x0, row: y0 });
+		if (x0 === x1 && y0 === y1) break;
+
+		const e2 = 2 * err;
+		if (e2 > -dy) {
+			err -= dy;
+			x0 += sx;
+		}
+		if (e2 < dx) {
+			err += dx;
+			y0 += sy;
+		}
+	}
+
+	return path;
+}

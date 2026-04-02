@@ -5,7 +5,8 @@ import type {
 } from "@/modules/figures/domain/figures.type";
 import type { GridPosition } from "../domain/grid.type";
 import type { StoreGet } from "../store/battle.store";
-import { getLineOfSightPath, isUnitInTile } from "./grid.helpers";
+import { isUnitInTile } from "./grid.helpers";
+import { getLineOfSightPath } from "./move.helpers";
 
 export type TargetResolver = (get: StoreGet) => <C extends AIBattleUnit>(
 	aiFigure: C,

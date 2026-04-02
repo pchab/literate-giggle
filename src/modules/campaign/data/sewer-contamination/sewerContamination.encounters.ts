@@ -1,11 +1,15 @@
 import { getCellId } from "@/modules/battle/helpers/grid.helpers";
+import type { BattleState } from "@/modules/battle/store/battle.store";
 import { giantToad } from "@/modules/figures/data/monsters/giant-toad";
 import { smugglerCrate } from "@/modules/figures/data/summons/smugglersCrate";
+import { isHero, isSummon } from "@/modules/figures/helpers/figures.helpers";
 import type { Encounter } from "../../domain/encounters.type";
 import { QUEST_3_IRONHOLD_SUMP } from "./sewerContamination.definitions";
 
 const sewerBounds = { cols: 7, rows: 7 };
 const villageBounds = { cols: 12, rows: 8 };
+const REQUIRED_SURVIVORS = 2;
+const ESCAPE_COLUMN = 11;
 
 export const sewerContaminationEncounters: Record<string, Encounter> = {
 	[QUEST_3_IRONHOLD_SUMP.encounters.giant_toad]: {
@@ -47,7 +51,7 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 			[getCellId({ col: 0, row: 2 })]: {
 				id: getCellId({ col: 0, row: 2 }),
 				spriteBase: "/surfaces/sewers_stream.webp",
-				type: "ACID",
+				type: "HAZARD",
 				damage: 1,
 				duration: -1,
 				gridPosition: { col: 0, row: 2 },
@@ -66,7 +70,23 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 				gridPosition: { col: 9, row: 5 },
 			},
 		],
-		generateSummons: () => [],
+		generateSummons: () => [
+			// {
+			// 	...villagerBlueprint,
+			// 	gridPosition: { col: 2, row: 2 },
+			// 	allegiance: "NEUTRAL",
+			// },
+			// {
+			// 	...villagerBlueprint,
+			// 	gridPosition: { col: 2, row: 5 },
+			// 	allegiance: "NEUTRAL",
+			// },
+			// {
+			// 	...villagerBlueprint,
+			// 	gridPosition: { col: 3, row: 3 },
+			// 	allegiance: "NEUTRAL",
+			// },
+		],
 		surfaces: {
 			[getCellId({ col: 5, row: 0 })]: {
 				id: getCellId({ col: 5, row: 0 }),
@@ -95,6 +115,29 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 				gridPosition: { col: 5, row: 5 },
 				size: { cols: 2, rows: 3 },
 			},
+		},
+		checkWin: (state: BattleState) => {
+			const safeVillagers = state.units.filter(
+				(u) =>
+					isSummon(u) &&
+					u.allegiance === "NEUTRAL" &&
+					u.gridPosition.col >= ESCAPE_COLUMN,
+			);
+			return safeVillagers.length >= REQUIRED_SURVIVORS;
+		},
+
+		checkLoss: (state: BattleState) => {
+			// 1. Did the heroes wipe?
+			const heroesAlive = state.units.filter((u) => isHero(u)).length > 0;
+			if (!heroesAlive) return true;
+
+			// 2. Did too many villagers fall in the river or get eaten?
+			const livingVillagers = state.units.filter(
+				(u) => isSummon(u) && u.allegiance === "NEUTRAL",
+			).length;
+			if (livingVillagers < REQUIRED_SURVIVORS) return true;
+
+			return false;
 		},
 		gridSize: villageBounds,
 	},

@@ -1,6 +1,7 @@
 import type { AnchorTarget } from "@/modules/cards/domain/cards.type";
 import { UnitStance } from "@/modules/figures/domain/figures.type";
 import { isMonster } from "@/modules/figures/helpers/figures.helpers";
+import { singleTargetPattern } from "../../data/attackPattern.data";
 import type { GridPosition } from "../../domain/grid.type";
 import { resolveTargets } from "../../helpers/effects/effect.helpers";
 import { resolvers } from "../../helpers/effects/effect.resolvers";
@@ -9,9 +10,9 @@ import {
 	filterGridByAttackPattern,
 	getClosestOriginTile,
 	getDistanceToBoundingBox,
-	getLineOfSightPath,
 	isUnitInTile,
 } from "../../helpers/grid.helpers";
+import { getLineOfSightPath } from "../../helpers/move.helpers";
 import { updateUnitState } from "../../helpers/state.helpers";
 import type { ActiveCardContext, StoreGet, StoreSet } from "../battle.store";
 import { calculateAIIntents } from "./calculateAIIntents.command";
@@ -62,7 +63,7 @@ export const resolveCard =
 		});
 
 		const patternCells: GridPosition[] = filterGridByAttackPattern({
-			card,
+			pattern: card.aoePattern ?? singleTargetPattern,
 			originPos: attackOrigin,
 			targetPos: actualTarget,
 			gridSize,

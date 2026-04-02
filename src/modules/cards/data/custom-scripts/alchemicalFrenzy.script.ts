@@ -5,12 +5,14 @@ import type {
 } from "@/modules/battle/helpers/ai.targeting.helpers";
 import type { EffectResolver } from "@/modules/battle/helpers/effects/effect.resolvers";
 import {
-	calculateReachableCells,
 	getDistanceToBoundingBox,
-	getLineOfSightPath,
 	isTileEmpty,
 	isTileInBounds,
 } from "@/modules/battle/helpers/grid.helpers";
+import {
+	calculateReachableCells,
+	getLineOfSightPath,
+} from "@/modules/battle/helpers/move.helpers";
 import { getSimulationState } from "@/modules/battle/helpers/simulation.helper";
 import type { StoreGet } from "@/modules/battle/store/battle.store";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";

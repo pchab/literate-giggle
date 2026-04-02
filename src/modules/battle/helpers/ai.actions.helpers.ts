@@ -16,6 +16,7 @@ import {
 	isSummon,
 } from "@/modules/figures/helpers/figures.helpers";
 import { sleep } from "@/modules/shared/helpers/sleep";
+import { singleTargetPattern } from "../data/attackPattern.data";
 import { getIdealTarget } from "./ai.move.helpers";
 import {
 	type AnchorResolver,
@@ -72,7 +73,7 @@ export const handleAICardIntent =
 		const path = calculateExactPath({
 			movingUnit: initialAttacker,
 			targetPos: moveDest,
-			figures: blockingFigures,
+			units: blockingFigures,
 			gridSize,
 		});
 
@@ -126,7 +127,7 @@ export const handleAICardIntent =
 		});
 
 		const targetedCells = filterGridByAttackPattern({
-			card,
+			pattern: card.aoePattern ?? singleTargetPattern,
 			targetPos: anchorTarget,
 			originPos: attackOrigin,
 			gridSize,

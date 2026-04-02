@@ -1,7 +1,6 @@
 import type { MoveEffect } from "@/modules/cards/domain/cards.type";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
-import { getLineOfSightPath } from "../grid.helpers";
-import { moveBattleUnit } from "../move.helpers";
+import { getLineOfSightPath, moveBattleUnit } from "../move.helpers";
 import type { EffectResolver } from "./effect.resolvers";
 
 export const resolveMoveEffect: EffectResolver<BattleUnit, MoveEffect> =

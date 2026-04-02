@@ -36,7 +36,7 @@ export const rogueCards: Record<Card["id"], Card> = {
 			{
 				type: "create_surface",
 				target: "anchor",
-				surfaceType: "ACID",
+				surfaceType: "HAZARD",
 				status: {
 					type: "vulnerable",
 					amount: 2,

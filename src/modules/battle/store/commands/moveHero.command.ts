@@ -55,7 +55,7 @@ export function moveHero(newPosition: GridPosition) {
 		const path = calculateExactPath({
 			movingUnit: hero,
 			targetPos: newPosition,
-			figures: allBlockingFigures,
+			units: allBlockingFigures,
 			gridSize,
 		});
 
