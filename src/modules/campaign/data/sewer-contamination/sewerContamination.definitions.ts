@@ -6,6 +6,7 @@ export const QUEST_3_IRONHOLD_SUMP = {
 	id: questId("ironhold_sump"),
 	encounters: {
 		giant_toad: encounterId("giant_toad"),
+		riverbend_village: encounterId("riverbend_village"),
 	},
 	scenes: {
 		intro: sceneId("ironhold_sump_intro"),

@@ -1,10 +1,10 @@
 "use client";
 
-import { useShallow } from "zustand/shallow";
 import { getCellId, isUnitInTile } from "@/modules/battle/helpers/grid.helpers";
 import type { Encounter } from "@/modules/campaign/domain/encounters.type";
 import type { BattleUnit } from "@/modules/figures/domain/figures.type";
 import { isHero, isHeroId } from "@/modules/figures/helpers/figures.helpers";
+import { useShallow } from "zustand/shallow";
 import { useBattleTurns } from "../hooks/useBattleTurns";
 import { useCellHighlight } from "../hooks/useCellHighlight";
 import { useBattleStore } from "../store/battle.store";
@@ -28,6 +28,11 @@ const tailwindGridCols = [
 	"grid-cols-5",
 	"grid-cols-6",
 	"grid-cols-7",
+	"grid-cols-8",
+	"grid-cols-9",
+	"grid-cols-10",
+	"grid-cols-11",
+	"grid-cols-12",
 ];
 
 export function BattleGrid({ encounterId }: { encounterId: Encounter["id"] }) {
@@ -92,7 +97,7 @@ export function BattleGrid({ encounterId }: { encounterId: Encounter["id"] }) {
 
 	return (
 		<div
-			className={`grid ${tailwindGridCols[gridSize.cols]} gap-1 p-1 bg-zinc-900/80 rounded-lg border border-zinc-800 relative`}
+			className={`grid ${tailwindGridCols[gridSize.cols]} bg-zinc-900/80 rounded-lg border border-zinc-800 relative`}
 			onMouseLeave={() => setHoveredCell(null)}
 			role="toolbar"
 		>

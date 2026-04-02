@@ -1,5 +1,6 @@
 import { BattleGrid } from "@/modules/battle/components/BattleGrid";
 import type { Encounter } from "@/modules/campaign/domain/encounters.type";
+import { MotionCamera } from "@/modules/shared/components/MotionCamera";
 import { getBackgroundImage } from "@/modules/shared/helpers/backgroundImage.helpers";
 
 export default async function BattleScreen({
@@ -15,21 +16,14 @@ export default async function BattleScreen({
 	const backgroundImage = getBackgroundImage(
 		`/battlegrounds/${background}.webp`,
 		1200,
-		817,
+		800,
 	);
 
 	return (
-		<section
-			className="h-full w-full flex flex-col"
-			style={{
-				backgroundImage,
-				backgroundSize: "cover",
-				backgroundPosition: "center",
-			}}
-		>
-			<div className="flex-1 flex items-center justify-center p-8">
+		<section className="h-full w-full">
+			<MotionCamera background={backgroundImage}>
 				<BattleGrid encounterId={encounterId} />
-			</div>
+			</MotionCamera>
 		</section>
 	);
 }

@@ -5,6 +5,7 @@ import type { Encounter } from "../../domain/encounters.type";
 import { QUEST_3_IRONHOLD_SUMP } from "./sewerContamination.definitions";
 
 const sewerBounds = { cols: 7, rows: 7 };
+const villageBounds = { cols: 12, rows: 8 };
 
 export const sewerContaminationEncounters: Record<string, Encounter> = {
 	[QUEST_3_IRONHOLD_SUMP.encounters.giant_toad]: {
@@ -55,5 +56,18 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 		},
 		onWinSceneId: QUEST_3_IRONHOLD_SUMP.scenes.victory,
 		gridSize: sewerBounds,
+	},
+	[QUEST_3_IRONHOLD_SUMP.encounters.riverbend_village]: {
+		id: QUEST_3_IRONHOLD_SUMP.encounters.riverbend_village,
+		name: "Riverbend Village",
+		generateMonsters: () => [
+			{
+				...giantToad,
+				gridPosition: { col: 4, row: 5 },
+			},
+		],
+		generateSummons: () => [],
+		surfaces: {},
+		gridSize: villageBounds,
 	},
 };
