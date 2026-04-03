@@ -1,4 +1,4 @@
-import { QUEST_3_IRONHOLD_SUMP } from "@/modules/campaign/data/sewer-contamination/sewerContamination.definitions";
+import { SEWER_CONTAMINATION } from "@/modules/campaign/data/sewer-contamination/sewerContamination.definitions";
 import { sceneId } from "@/modules/campaign/domain/scenes.type";
 import type { TownData } from "../domain/towns.type";
 import { townId, townLocationId } from "../domain/towns.type";
@@ -44,11 +44,11 @@ export const TOWN_DB: Record<TownData["id"], TownData> = {
 				position: { x: 66, y: 68 },
 
 				unlockCondition: [
-					{ type: "QUEST_ACTIVE", questId: QUEST_3_IRONHOLD_SUMP.id },
+					{ type: "QUEST_ACTIVE", questId: SEWER_CONTAMINATION.id },
 				],
 
 				hideCondition: [
-					{ type: "QUEST_COMPLETED", questId: QUEST_3_IRONHOLD_SUMP.id },
+					{ type: "QUEST_COMPLETED", questId: SEWER_CONTAMINATION.id },
 				],
 
 				defaultSceneId: sceneId("ironhold_sump_intro"),

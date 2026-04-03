@@ -11,8 +11,8 @@ import {
 } from "./necromancer/necromancer.quest";
 import { RAT_IN_THE_CELLAR } from "./rats-in-the-cellar/ratsInTheCellar.definitions";
 import { RAT_IN_THE_CELLAR_QUEST } from "./rats-in-the-cellar/ratsInTheCellar.quest";
-import { QUEST_3_IRONHOLD_SUMP } from "./sewer-contamination/sewerContamination.definitions";
-import { ironholdSumpQuest } from "./sewer-contamination/sewerContamination.quest";
+import { SEWER_CONTAMINATION } from "./sewer-contamination/sewerContamination.definitions";
+import { sewerContaminationQuest } from "./sewer-contamination/sewerContamination.quest";
 import { SHADOWS_DEBT } from "./shadows-debt/shadowsDebt.definitions";
 import { SHADOWS_DEBT_QUEST } from "./shadows-debt/shadowsDebt.quest";
 import {
@@ -27,5 +27,5 @@ export const QUEST_DB: Record<Quest["id"], Quest> = {
 	[QUEST_DWARVEN_HIGHWAY]: DWARVEN_PASSAGE_QUEST,
 	[SHADOWS_DEBT.id]: SHADOWS_DEBT_QUEST,
 	[THE_ALCHEMISTS_LEDGER.id]: alchemistQuest,
-	[QUEST_3_IRONHOLD_SUMP.id]: ironholdSumpQuest,
+	[SEWER_CONTAMINATION.id]: sewerContaminationQuest,
 };

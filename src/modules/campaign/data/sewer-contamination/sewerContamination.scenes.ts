@@ -1,14 +1,10 @@
 import type { Scene } from "@/modules/campaign/domain/scenes.type";
-import {
-	QUEST_3_IRONHOLD_SUMP,
-	QUEST_4A_SMUGGLER_DEN,
-	QUEST_4B_ZOMBIE_RIVERBEND,
-} from "./sewerContamination.definitions";
+import { SEWER_CONTAMINATION } from "./sewerContamination.definitions";
 
-export const ironholdSumpScenes: Record<string, Scene> = {
+export const sewerContaminationScenes: Record<string, Scene> = {
 	// --- PRE-BATTLE SCENE ---
-	[QUEST_3_IRONHOLD_SUMP.scenes.intro]: {
-		id: QUEST_3_IRONHOLD_SUMP.scenes.intro,
+	[SEWER_CONTAMINATION.scenes.intro]: {
+		id: SEWER_CONTAMINATION.scenes.intro,
 		initialStepId: "step-1",
 		steps: {
 			"step-1": {
@@ -20,7 +16,7 @@ export const ironholdSumpScenes: Record<string, Scene> = {
 						actions: [
 							{
 								type: "START_BATTLE",
-								encounterId: QUEST_3_IRONHOLD_SUMP.encounters.giant_toad,
+								encounterId: SEWER_CONTAMINATION.encounters.giant_toad,
 								background: "sewers",
 							},
 						],
@@ -31,8 +27,8 @@ export const ironholdSumpScenes: Record<string, Scene> = {
 	},
 
 	// --- POST-BATTLE SCENE & CAMPAIGN BRANCH ---
-	[QUEST_3_IRONHOLD_SUMP.scenes.victory]: {
-		id: QUEST_3_IRONHOLD_SUMP.scenes.victory,
+	[SEWER_CONTAMINATION.scenes.victory]: {
+		id: SEWER_CONTAMINATION.scenes.victory,
 		initialStepId: "step-1",
 		steps: {
 			"step-1": {
@@ -68,11 +64,10 @@ export const ironholdSumpScenes: Record<string, Scene> = {
 						label: "Begin Quest: The Smuggler's Den",
 						actions: [
 							{ type: "SET_FLAG", flagId: "riverbend_doomed" }, // Used to change the world map/town UI!
-							{ type: "COMPLETE_QUEST", questId: QUEST_3_IRONHOLD_SUMP.id },
 							{
 								type: "ADVANCE_QUEST",
-								questId: QUEST_4A_SMUGGLER_DEN.id,
-								newStepId: QUEST_4A_SMUGGLER_DEN.steps.find_cove,
+								questId: SEWER_CONTAMINATION.id,
+								newStepId: SEWER_CONTAMINATION.steps.find_cove,
 							},
 							{ type: "END_SCENE" },
 						],
@@ -87,13 +82,81 @@ export const ironholdSumpScenes: Record<string, Scene> = {
 						label: "Begin Quest: Riverbend Quarantine",
 						actions: [
 							{ type: "SET_FLAG", flagId: "black_fangs_fortified" }, // Used to make a future fight harder!
-							{ type: "COMPLETE_QUEST", questId: QUEST_3_IRONHOLD_SUMP.id },
 							{
 								type: "ADVANCE_QUEST",
-								questId: QUEST_4B_ZOMBIE_RIVERBEND.id,
-								newStepId: QUEST_4B_ZOMBIE_RIVERBEND.steps.travel_to_village,
+								questId: SEWER_CONTAMINATION.id,
+								newStepId: SEWER_CONTAMINATION.steps.travel_to_village,
 							},
 							{ type: "END_SCENE" },
+						],
+					},
+				],
+			},
+		},
+	},
+	[SEWER_CONTAMINATION.scenes.riverbend_arrival]: {
+		id: SEWER_CONTAMINATION.scenes.riverbend_arrival,
+		initialStepId: "arrival",
+		steps: {
+			arrival: {
+				text: "You arrive at Riverbend just as the sun dips below the mountains. The river, usually crystal clear, is choked with a glowing, viscous sludge. The silence is broken by a chorus of panicked screams from the town square.",
+				backgroundImage: "/scenes/riverbend_panic.webp",
+				choices: [
+					{
+						label: "Rush into the village.",
+						actions: [{ type: "CHANGE_STEP", stepId: "confrontation" }],
+					},
+				],
+			},
+			confrontation: {
+				speaker: "Panicked Villager",
+				text: "They drank from the well! They drank the water and their skin just... sloughed off! Please, the bridge is blocked and the sludge is rising. We need to reach the Ironhold barricades!",
+				backgroundImage: "/scenes/riverbend_panic.webp",
+				choices: [
+					{
+						label:
+							"[Cleric] Get behind me! My faith will protect you against the horde.",
+						reqClass: "CLERIC",
+						actions: [
+							{
+								type: "START_BATTLE",
+								encounterId: SEWER_CONTAMINATION.encounters.riverbend_village,
+								background: "grass_river_3_2",
+							},
+						],
+					},
+					{
+						label:
+							"[Rogue] Stay quiet. I'll clear a path across the bridge. Run when I give the signal.",
+						reqClass: "ROGUE",
+						actions: [
+							{
+								type: "START_BATTLE",
+								encounterId: SEWER_CONTAMINATION.encounters.riverbend_village,
+								background: "grass_river_3_2",
+							},
+						],
+					},
+					{
+						label:
+							"[Mage] The mutagen is highly unstable. Stay clear of the water, I'll handle the dead.",
+						reqClass: "MAGE",
+						actions: [
+							{
+								type: "START_BATTLE",
+								encounterId: SEWER_CONTAMINATION.encounters.riverbend_village,
+								background: "grass_river_3_2",
+							},
+						],
+					},
+					{
+						label: "Draw your weapons. Everyone, run for the barricades!",
+						actions: [
+							{
+								type: "START_BATTLE",
+								encounterId: SEWER_CONTAMINATION.encounters.riverbend_village,
+								background: "grass_river_3_2",
+							},
 						],
 					},
 				],

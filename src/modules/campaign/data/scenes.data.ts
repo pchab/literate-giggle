@@ -3,7 +3,7 @@ import { alchemistScenes } from "./alchemists-ledger/alchemistsLedger.scenes";
 import { DWARVEN_PASSAGE_SCENE_DB } from "./dwarven-passage/dwarvenPassage.scenes";
 import { NECROMANCER_SCENE_DB } from "./necromancer/necromancer.scenes";
 import { RATS_IN_THE_CELLAR_SCENES } from "./rats-in-the-cellar/ratsInTheCellar.scenes";
-import { ironholdSumpScenes } from "./sewer-contamination/sewerContamination.scenes";
+import { sewerContaminationScenes } from "./sewer-contamination/sewerContamination.scenes";
 import { SHADOWS_DEBT } from "./shadows-debt/shadowsDebt.definitions";
 import { SHADOWS_DEBT_SCENES } from "./shadows-debt/shadowsDebt.scenes";
 import { generateTavernGenericScene } from "./tavern.data";
@@ -70,5 +70,5 @@ export const SCENE_DB: Record<Scene["id"], Scene> = {
 	...DWARVEN_PASSAGE_SCENE_DB,
 	...SHADOWS_DEBT_SCENES,
 	...alchemistScenes,
-	...ironholdSumpScenes,
+	...sewerContaminationScenes,
 };

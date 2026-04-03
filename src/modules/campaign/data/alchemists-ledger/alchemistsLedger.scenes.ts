@@ -1,6 +1,6 @@
 import type { Scene } from "@/modules/campaign/domain/scenes.type";
 import { mapNodeId } from "@/modules/world/domain/map.types";
-import { QUEST_3_IRONHOLD_SUMP } from "../sewer-contamination/sewerContamination.definitions";
+import { SEWER_CONTAMINATION } from "../sewer-contamination/sewerContamination.definitions";
 import { THE_ALCHEMISTS_LEDGER as ALCHEMIST } from "./alchemistsLedger.definitions";
 
 export const alchemistScenes: Record<string, Scene> = {
@@ -167,8 +167,8 @@ export const alchemistScenes: Record<string, Scene> = {
 					{ type: "COMPLETE_QUEST", questId: ALCHEMIST.id },
 					{
 						type: "ADVANCE_QUEST",
-						questId: QUEST_3_IRONHOLD_SUMP.id,
-						newStepId: QUEST_3_IRONHOLD_SUMP.steps.investigate,
+						questId: SEWER_CONTAMINATION.id,
+						newStepId: SEWER_CONTAMINATION.steps.investigate,
 					},
 					{ type: "REWARD_EVO_RUNE", evoRune: "rune_acid" },
 					{ type: "END_SCENE" },

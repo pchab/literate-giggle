@@ -10,15 +10,15 @@ import { villager } from "@/modules/units/data/summons/villager";
 import { well } from "@/modules/units/data/summons/well";
 import { isHero } from "@/modules/units/helpers/units.helpers";
 import type { Encounter } from "../../domain/encounters.type";
-import { QUEST_3_IRONHOLD_SUMP } from "./sewerContamination.definitions";
+import { SEWER_CONTAMINATION } from "./sewerContamination.definitions";
 
 const sewerBounds = { cols: 7, rows: 7 };
 const villageBounds = { cols: 12, rows: 8 };
 const REQUIRED_SURVIVORS = 2;
 
 export const sewerContaminationEncounters: Record<string, Encounter> = {
-	[QUEST_3_IRONHOLD_SUMP.encounters.giant_toad]: {
-		id: QUEST_3_IRONHOLD_SUMP.encounters.giant_toad,
+	[SEWER_CONTAMINATION.encounters.giant_toad]: {
+		id: SEWER_CONTAMINATION.encounters.giant_toad,
 		name: "Giant Toad",
 		generateMonsters: () => [
 			{
@@ -63,11 +63,11 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 				size: { cols: sewerBounds.cols, rows: 3 },
 			},
 		},
-		onWinSceneId: QUEST_3_IRONHOLD_SUMP.scenes.victory,
+		onWinSceneId: SEWER_CONTAMINATION.scenes.victory,
 		gridSize: sewerBounds,
 	},
-	[QUEST_3_IRONHOLD_SUMP.encounters.riverbend_village]: {
-		id: QUEST_3_IRONHOLD_SUMP.encounters.riverbend_village,
+	[SEWER_CONTAMINATION.encounters.riverbend_village]: {
+		id: SEWER_CONTAMINATION.encounters.riverbend_village,
 		name: "Riverbend Village",
 		flavorText:
 			"Barnaby’s mutagen has tainted the river. Escort the survivors to the Ironhold barricade before the sludge claims them!",

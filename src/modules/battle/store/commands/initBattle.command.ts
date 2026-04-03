@@ -1,7 +1,6 @@
 import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
 import type { Encounter } from "@/modules/campaign/domain/encounters.type";
 import { getComputedCard } from "@/modules/cards/helpers/cards.helper";
-import { sleep } from "@/modules/shared/helpers/sleep";
 import {
 	type Allegiance,
 	type BattleHero,
@@ -97,6 +96,5 @@ export const initBattle =
 			objectiveProgress: {},
 			gridSize: encounter.gridSize || { cols: 5, rows: 5 },
 		}));
-		await sleep(100);
 		await calculateAIIntents(get, set)({});
 	};
