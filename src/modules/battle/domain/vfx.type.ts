@@ -10,6 +10,7 @@ export type VfxType =
 	| "FIRE"
 	| "BLUNT"
 	| "NECROTIC_IMPACT"
+	| "ESCAPE"
 	| null;
 
 export type Vfx = {

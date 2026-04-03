@@ -19,8 +19,13 @@ export interface Encounter {
 	})[];
 	surfaces?: Record<string, SurfaceData>;
 
+	flavorText?: string;
 	checkLoss?: (state: BattleState) => boolean;
 	checkWin?: (state: BattleState) => boolean;
+	objectiveText?: (progress: BattleState["objectiveProgress"]) => string;
+	updateObjectives?: (
+		state: BattleState,
+	) => Promise<Partial<BattleState | undefined>>;
 
 	onWinSceneId?: Scene["id"];
 	onLoseSceneId?: Scene["id"];

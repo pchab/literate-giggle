@@ -1,5 +1,3 @@
-import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
 import type { Quest } from "@/modules/campaign/domain/quests.type";
 import type { EvolutionRuneId } from "@/modules/cards/data/evolutionRecipes.data";
 import type { Card } from "@/modules/cards/domain/cards.type";
@@ -11,6 +9,8 @@ import type {
 } from "@/modules/units/domain/heroClass.types";
 import type { Hero } from "@/modules/units/domain/units.type";
 import { type MapNode, mapNodeId } from "@/modules/world/domain/map.types";
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 import { claimRewards } from "./commands/claimRewards.command";
 import { forgeEvolution } from "./commands/forgeEvolution.command";
 import { healParty } from "./commands/healParty.command";
@@ -117,7 +117,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 		}),
 		{
 			name: "alpha-world-state",
-			storage: createJSONStorage(() => sessionStorage),
+			storage: createJSONStorage(() => localStorage),
 		},
 	),
 );

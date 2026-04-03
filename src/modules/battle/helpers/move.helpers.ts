@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/style/noNonNullAssertion: <explanation> */
 import { sleep } from "@/modules/shared/helpers/sleep";
 import { type BattleUnit, UnitStance } from "@/modules/units/domain/units.type";
 import type {
@@ -11,7 +12,7 @@ import {
 	doBoundingBoxesIntersect,
 	getCellId,
 	getDistanceToBoundingBox,
-	isTileSafe,
+	getTileDanger,
 } from "./grid.helpers";
 import { applyCombatUpdate, findUnit, updateUnitState } from "./state.helpers";
 import { statusRegistry } from "./status.helpers";
@@ -147,6 +148,44 @@ export function moveBattleUnit(
 // ==========================================
 // 2. PATHFINDING ALGORITHMS
 // ==========================================
+const getTraversableNeighbors = ({
+	currentPos,
+	movingUnit,
+	units,
+	gridSize,
+	surfaces,
+}: {
+	currentPos: GridPosition;
+	movingUnit: BattleUnit;
+	units: BattleUnit[];
+	gridSize: { cols: number; rows: number };
+	surfaces?: Record<string, SurfaceData>;
+}): { pos: GridPosition; cost: number }[] => {
+	const neighbors = [
+		{ row: currentPos.row - 1, col: currentPos.col },
+		{ row: currentPos.row + 1, col: currentPos.col },
+		{ row: currentPos.row, col: currentPos.col - 1 },
+		{ row: currentPos.row, col: currentPos.col + 1 },
+	];
+
+	const validNeighbors: { pos: GridPosition; cost: number }[] = [];
+
+	for (const next of neighbors) {
+		if (
+			canUnitFit({
+				unit: { ...movingUnit, gridPosition: next },
+				units,
+				gridSize,
+			})
+		) {
+			const danger = getTileDanger(next, movingUnit, surfaces);
+			validNeighbors.push({ pos: next, cost: 1 + danger });
+		}
+	}
+
+	return validNeighbors;
+};
+
 export const calculateExactPath = <C extends BattleUnit, T extends BattleUnit>({
 	movingUnit,
 	targetPos,
@@ -161,27 +200,39 @@ export const calculateExactPath = <C extends BattleUnit, T extends BattleUnit>({
 	units: T[];
 	minRange?: number;
 	maxRange?: number;
-	gridSize: { rows: number; cols: number };
+	gridSize: { cols: number; rows: number };
 	surfaces?: Record<string, SurfaceData>;
 }): GridPosition[] => {
 	const startPos = movingUnit.gridPosition;
 	const target = { gridPosition: targetPos };
 
+	// 1. Are we already there?
 	const initialDist = getDistanceToBoundingBox({ caster: movingUnit, target });
 	if (initialDist >= minRange && initialDist <= maxRange) {
 		return [];
 	}
 
-	const queue: GridPosition[] = [startPos];
+	const startKey = getCellId(startPos);
+
+	// 2. Dijkstra Setup
+	const costSoFar = new Map<string, number>();
+	costSoFar.set(startKey, 0);
+
 	const cameFrom = new Map<string, GridPosition | null>();
-	cameFrom.set(getCellId(startPos), null);
+	cameFrom.set(startKey, null);
+
+	const queue: { pos: GridPosition; cost: number }[] = [
+		{ pos: startPos, cost: 0 },
+	];
 
 	let validDestination: GridPosition | null = null;
 
+	// 3. The Search Loop
 	while (queue.length > 0) {
-		// biome-ignore lint/style/noNonNullAssertion: <We just checked the length>
-		const currentPos = queue.shift()!;
+		queue.sort((a, b) => a.cost - b.cost);
+		const { pos: currentPos } = queue.shift()!;
 
+		// Check if current position satisfies our targeting range
 		const distToTarget = getDistanceToBoundingBox({
 			caster: { ...movingUnit, gridPosition: currentPos },
 			target,
@@ -192,30 +243,23 @@ export const calculateExactPath = <C extends BattleUnit, T extends BattleUnit>({
 			break;
 		}
 
-		const neighbors = [
-			{ row: currentPos.row - 1, col: currentPos.col },
-			{ row: currentPos.row + 1, col: currentPos.col },
-			{ row: currentPos.row, col: currentPos.col - 1 },
-			{ row: currentPos.row, col: currentPos.col + 1 },
-		];
+		const validNeighbors = getTraversableNeighbors({
+			currentPos,
+			movingUnit,
+			units,
+			gridSize,
+			surfaces,
+		});
 
-		for (const next of neighbors) {
-			if (!isTileSafe(next, movingUnit, surfaces)) {
-				continue;
-			}
+		for (const { pos: next, cost: stepCost } of validNeighbors) {
+			const currentCost = costSoFar.get(getCellId(currentPos))!;
+			const newCost = currentCost + stepCost;
+			const neighborId = getCellId(next);
 
-			const fits = canUnitFit({
-				unit: { ...movingUnit, gridPosition: next },
-				units,
-				gridSize,
-			});
-
-			if (!fits) continue;
-
-			const key = getCellId(next);
-			if (!cameFrom.has(key)) {
-				cameFrom.set(key, currentPos);
-				queue.push(next);
+			if (!costSoFar.has(neighborId) || newCost < costSoFar.get(neighborId)!) {
+				costSoFar.set(neighborId, newCost);
+				cameFrom.set(neighborId, currentPos);
+				queue.push({ pos: next, cost: newCost });
 			}
 		}
 	}
@@ -225,11 +269,12 @@ export const calculateExactPath = <C extends BattleUnit, T extends BattleUnit>({
 	const path: GridPosition[] = [];
 	let current: GridPosition | null = validDestination;
 
-	while (current && getCellId(current) !== getCellId(startPos)) {
+	while (current && getCellId(current) !== startKey) {
 		path.push(current);
 		current = cameFrom.get(getCellId(current)) || null;
 	}
 
+	// Reverse it so the first step is at index 0
 	return path.reverse();
 };
 
@@ -249,55 +294,49 @@ export const calculateReachableCells = <T extends BattleUnit>({
 	const { baseMove: moveValue, gridPosition: startPos } = movingUnit;
 	if (moveValue <= 0) return [];
 
-	const queue: { pos: GridPosition; dist: number }[] = [
-		{ pos: startPos, dist: 0 },
-	];
-	const visited = new Set<string>();
-	const startKey = `${startPos.row},${startPos.col}`;
-	visited.add(startKey);
+	const startKey = getCellId(startPos);
 
-	const reachable: GridPosition[] = canTargetSelf ? [startPos] : [];
+	const costSoFar = new Map<string, number>();
+	costSoFar.set(startKey, 0);
+
+	const reachableCells = new Map<string, GridPosition>();
+	if (canTargetSelf) {
+		reachableCells.set(startKey, startPos);
+	}
+
+	const queue: { pos: GridPosition; cost: number }[] = [
+		{ pos: startPos, cost: 0 },
+	];
 
 	while (queue.length > 0) {
-		const current = queue.shift();
-		if (!current) break;
+		queue.sort((a, b) => a.cost - b.cost);
 
-		if (current.dist > 0) {
-			reachable.push(current.pos);
-		}
+		const current = queue.shift()!;
 
-		if (current.dist < moveValue) {
-			const neighbors = [
-				{ row: current.pos.row - 1, col: current.pos.col },
-				{ row: current.pos.row + 1, col: current.pos.col },
-				{ row: current.pos.row, col: current.pos.col - 1 },
-				{ row: current.pos.row, col: current.pos.col + 1 },
-			];
+		const validNeighbors = getTraversableNeighbors({
+			currentPos: current.pos,
+			movingUnit,
+			units,
+			gridSize,
+			surfaces,
+		});
 
-			for (const next of neighbors) {
-				const key = `${next.row},${next.col}`;
-				if (!visited.has(key)) {
-					visited.add(key);
+		for (const { pos: next, cost: stepCost } of validNeighbors) {
+			const newCost = current.cost + stepCost;
 
-					if (!isTileSafe(next, movingUnit, surfaces)) {
-						continue;
-					}
+			if (newCost <= moveValue) {
+				const key = getCellId(next);
 
-					if (
-						canUnitFit({
-							unit: { ...movingUnit, gridPosition: next },
-							units,
-							gridSize,
-						})
-					) {
-						queue.push({ pos: next, dist: current.dist + 1 });
-					}
+				if (!costSoFar.has(key) || newCost < costSoFar.get(key)!) {
+					costSoFar.set(key, newCost);
+					reachableCells.set(key, next);
+					queue.push({ pos: next, cost: newCost });
 				}
 			}
 		}
 	}
 
-	return reachable;
+	return Array.from(reachableCells.values());
 };
 
 export const calculateAttackableCells = ({

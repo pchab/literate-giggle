@@ -84,7 +84,7 @@ export const goliathToadCards: Record<Card["id"], Card> = {
 		id: cardId("panic_run"),
 		name: "Panic Run",
 		image: "/cards/panic_run.webp",
-		range: 1,
+		range: 0,
 		playRequirement: "requires_empty_cell",
 		aiTargetPreference: { col: 11, row: 4 },
 		effects: [], // No combat effects needed! The AI will just walk and end turn.

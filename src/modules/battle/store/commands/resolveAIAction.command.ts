@@ -71,7 +71,7 @@ export const resolveAIActions = async (
 	});
 
 	if (!isSimulation) {
-		finalizeAction(get, set, draftUnits);
+		await finalizeAction(get, set, draftUnits);
 		await calculateAIIntents(get, set)({});
 	}
 };

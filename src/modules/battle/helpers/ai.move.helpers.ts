@@ -105,7 +105,7 @@ const calculateFiringSpot =
 		const canTargetSelf = ["requires_entity", "requires_ally"].includes(
 			card.playRequirement,
 		);
-		const minRange = canTargetSelf ? 0 : 1;
+		const minRange = Math.min(canTargetSelf ? 0 : 1, card.range);
 		const hardObstacles = units.filter(areEnemies(aiUnit));
 
 		if (card.aiTargetPreference === "away") {

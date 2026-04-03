@@ -94,6 +94,7 @@ export const initBattle =
 			hoveredCell: null,
 			xpEarned: 0,
 			battleStatus: "ONGOING",
+			objectiveProgress: {},
 			gridSize: encounter.gridSize || { cols: 5, rows: 5 },
 		}));
 		await sleep(100);

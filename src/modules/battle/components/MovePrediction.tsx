@@ -1,7 +1,7 @@
 "use client";
 
-import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
+import { useShallow } from "zustand/shallow";
 import type { GridPosition } from "../domain/grid.type";
 import { isUnitInTile } from "../helpers/grid.helpers";
 
@@ -15,60 +15,61 @@ export default function MovePrediction() {
 	// ==========================================
 	// SMART DUAL-INTENT SUBSCRIPTION
 	// ==========================================
-	const { gridSize, units, projectedMoves, activeUnitId, activeUnitPath } =
-		useBattleStore(
-			useShallow(
-				({
-					gridSize,
-					units,
-					playerIntent,
-					aiIntents,
-					hoveredCell,
-					aiStateDiff,
-					playerStateDiff,
-				}) => {
-					const prediction = {
-						gridSize,
-						units,
-						projectedMoves: aiStateDiff.projectedMoves,
-					};
+	const {
+		gridSize,
+		units,
+		playerIntent,
+		aiIntents,
+		hoveredCell,
+		aiStateDiff,
+		playerStateDiff,
+	} = useBattleStore(
+		useShallow(
+			({
+				gridSize,
+				units,
+				playerIntent,
+				aiIntents,
+				hoveredCell,
+				aiStateDiff,
+				playerStateDiff,
+			}) => ({
+				gridSize,
+				units,
+				playerIntent,
+				aiIntents,
+				hoveredCell,
+				aiStateDiff,
+				playerStateDiff,
+			}),
+		),
+	);
 
-					// 1. Player Intent
-					if (playerIntent) {
-						return {
-							...prediction,
-							projectedMoves: {
-								...prediction.projectedMoves,
-								...playerStateDiff.projectedMoves,
-							},
-							activeUnitId: playerIntent.unitId,
-							activeUnitPath: playerIntent.intendedMove ?? EMPTY_PATH,
-						};
-					}
+	let activeUnitId = null;
+	let projectedMoves = aiStateDiff.projectedMoves ?? EMPTY_MOVES;
+	let activeUnitPath = EMPTY_PATH;
 
-					// 2. AI Intent
-					if (hoveredCell) {
-						const hoveredUnit = units.find(isUnitInTile(hoveredCell));
+	if (playerIntent) {
+		// 1. Player Intent
+		const { unitId, intendedMove = EMPTY_PATH } = playerIntent;
+		activeUnitId = unitId;
+		activeUnitPath = intendedMove;
+		projectedMoves = {
+			...projectedMoves,
+			...playerStateDiff.projectedMoves,
+		};
+	}
 
-						if (hoveredUnit && aiIntents[hoveredUnit.id]) {
-							const intent = aiIntents[hoveredUnit.id];
-							return {
-								...prediction,
-								activeUnitId: intent.unitId,
-								activeUnitPath: intent.intendedMove ?? EMPTY_PATH,
-							};
-						}
-					}
+	if (hoveredCell) {
+		// 2. AI Intent
+		const hoveredUnit = units.find(isUnitInTile(hoveredCell));
 
-					// Fallback
-					return {
-						...prediction,
-						activeUnitId: null,
-						activeUnitPath: EMPTY_PATH,
-					};
-				},
-			),
-		);
+		if (hoveredUnit && aiIntents[hoveredUnit.id]) {
+			const { unitId, intendedMove = EMPTY_PATH } = aiIntents[hoveredUnit.id];
+			activeUnitId = unitId;
+			activeUnitPath = intendedMove;
+		}
+	}
 
 	const moveEntries: [string, GridPosition][] = Object.entries(
 		projectedMoves ?? EMPTY_MOVES,

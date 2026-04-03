@@ -1,3 +1,4 @@
+import { ObjectiveTracker } from "@/modules/campaign/components/ObjectiveTracker";
 import { AnimatePresence } from "framer-motion";
 
 export default function RootBattleLayout({
@@ -12,6 +13,7 @@ export default function RootBattleLayout({
 	return (
 		<>
 			<aside className="flex flex-col justify-end gap-4 p-4 w-125 border-r-2 border-stone-800/50 shadow-2xl bg-radial from-zinc-700 to-grey-800">
+				<ObjectiveTracker />
 				{party}
 				<div className="w-98 h-px bg-linear-to-b from-transparent via-zinc-700 to-transparent" />
 

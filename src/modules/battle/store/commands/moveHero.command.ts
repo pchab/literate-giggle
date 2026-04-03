@@ -13,6 +13,7 @@ export function moveHero(newPosition: GridPosition) {
 			usedMovesThisTurn,
 			units,
 			gridSize,
+			surfaces,
 		} = get();
 
 		if (!activeMoveUnitId || !isHeroId(activeMoveUnitId)) {
@@ -57,6 +58,7 @@ export function moveHero(newPosition: GridPosition) {
 			targetPos: newPosition,
 			units: allBlockingUnits,
 			gridSize,
+			surfaces,
 		});
 
 		await moveBattleUnit(get, set)({ movingUnit: hero, path });

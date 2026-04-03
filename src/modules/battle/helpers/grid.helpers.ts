@@ -10,26 +10,24 @@ export function getCellId(pos: GridPosition): string {
 }
 
 // --- 1. SURVIVAL INSTINCT ---
-export const isTileSafe = (
+export const getTileDanger = (
 	cell: GridPosition,
 	unit: BattleUnit,
 	surfaces?: Record<string, SurfaceData>,
-): boolean => {
-	if (!surfaces) return true;
+): number => {
+	if (!surfaces) return 0;
 	const surface = Object.values(surfaces).find((s) =>
 		doBoundingBoxesIntersect(s, { gridPosition: cell }),
-	); // surfaces are bounding box !
-	if (!surface) return true;
-
+	);
+	if (!surface) return 0;
 	if (surface.status) {
 		const isImmune = unit.immunities?.includes(surface.status.type);
 		if (isImmune) {
-			return true;
+			return 0;
 		}
 	}
 
-	// aiUnits will avoid hazards, but walk through the other types of surfaces without issue
-	return ["TRAP", "TERRAIN", "SPECIAL"].includes(surface.type);
+	return surface.damage ?? 0;
 };
 
 // --- 2. BOUNDING BOX LOGIC ---

@@ -1,5 +1,3 @@
-import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
 import type {
 	GridPosition,
 	SurfaceData,
@@ -16,6 +14,8 @@ import type {
 	BattleUnit,
 	Hero,
 } from "@/modules/units/domain/units.type";
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 import { cancelCard } from "./commands/cancelCard.command";
 import { endTurn } from "./commands/endTurn.command";
 import { initBattle } from "./commands/initBattle.command";
@@ -53,6 +53,7 @@ export type BattleState = {
 	xpEarned: number;
 	encounterId: Encounter["id"] | null;
 	gridSize: { cols: number; rows: number };
+	objectiveProgress: Record<string, number>;
 	battleStatus: BattleStatus;
 };
 
@@ -106,6 +107,7 @@ const initialState: BattleState = {
 	xpEarned: 0,
 	encounterId: null,
 	gridSize: { cols: 8, rows: 8 },
+	objectiveProgress: {},
 	battleStatus: "ONGOING",
 };
 
@@ -143,7 +145,7 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 		}),
 		{
 			name: "alpha-battle-state",
-			storage: createJSONStorage(() => sessionStorage),
+			storage: createJSONStorage(() => localStorage),
 			partialize: (state) => ({
 				encounterId: state.encounterId,
 				units: state.units,
@@ -154,6 +156,7 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 				surfaces: state.surfaces,
 				gridSize: state.gridSize,
 				battleStatus: state.battleStatus,
+				objectiveProgress: state.objectiveProgress,
 			}),
 		},
 	),

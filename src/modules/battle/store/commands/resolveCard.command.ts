@@ -1,6 +1,5 @@
 import type { AnchorTarget } from "@/modules/cards/domain/cards.type";
 import { UnitStance } from "@/modules/units/domain/units.type";
-import { isMonster } from "@/modules/units/helpers/units.helpers";
 import { singleTargetPattern } from "../../data/attackPattern.data";
 import type { GridPosition } from "../../domain/grid.type";
 import { resolveTargets } from "../../helpers/effects/effect.helpers";
@@ -132,7 +131,6 @@ export const resolveCard =
 
 		if (!isSimulation) {
 			await calculateAIIntents(get, set)();
-			const draftMonsters = draftUnits.filter(isMonster);
-			finalizeAction(get, set, draftMonsters);
+			await finalizeAction(get, set, draftUnits);
 		}
 	};

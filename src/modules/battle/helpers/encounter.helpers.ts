@@ -37,7 +37,7 @@ const defaultWinCondition = (state: BattleState) => {
 	);
 };
 
-export const finalizeAction = (
+export const finalizeAction = async (
 	get: StoreGet,
 	set: StoreSet,
 	previousUnits: BattleUnit[],
@@ -76,6 +76,18 @@ export const finalizeAction = (
 		},
 	}));
 
-	// 4. Check if the battle is over
+	// 4. Evaluate encounter objectives
+	const stateAfterCleanup = get();
+	if (stateAfterCleanup.encounterId) {
+		const encounter = ENCOUNTER_DB[stateAfterCleanup.encounterId];
+		if (encounter?.updateObjectives) {
+			const stateUpdates = await encounter.updateObjectives(stateAfterCleanup);
+			if (stateUpdates) {
+				set((prev) => ({ ...prev, ...stateUpdates }));
+			}
+		}
+	}
+
+	// 5. Check if the battle is over
 	evaluateEncounterStatus(get, set);
 };
