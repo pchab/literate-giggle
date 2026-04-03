@@ -1,12 +1,12 @@
 "use client";
 
+import Image from "next/image";
+import { useShallow } from "zustand/shallow";
 import { getCellId } from "@/modules/battle/helpers/grid.helpers";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { Hand } from "@/modules/cards/components/Hand";
 import { RetroButton } from "@/modules/shared/components/RetroButton";
 import type { BattleHero } from "@/modules/units/domain/units.type";
-import Image from "next/image";
-import { useShallow } from "zustand/shallow";
 import { getBlockFromStatuses } from "../helpers/units.helpers";
 import { HeroPortrait } from "./HeroPortrait";
 

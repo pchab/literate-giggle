@@ -1,5 +1,5 @@
-import type { HeroClass } from "@/modules/units/domain/heroClass.types";
 import Image from "next/image";
+import type { HeroClass } from "@/modules/units/domain/heroClass.types";
 import { spriteVariants } from "../data/spriteVariants.data";
 import type { UnitSpriteVariant } from "../domain/units.type";
 

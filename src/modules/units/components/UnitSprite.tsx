@@ -1,12 +1,12 @@
+import { motion } from "motion/react";
+import Image from "next/image";
+import { useShallow } from "zustand/shallow";
 import FloatingDamage from "@/modules/battle/components/FloatingDamage";
 import HealthBar from "@/modules/battle/components/HealthBar";
 import IntentDisplay from "@/modules/battle/components/IntentDisplay";
 import { useCombatText } from "@/modules/battle/hooks/useCombatText";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import type { BattleUnit } from "@/modules/units/domain/units.type";
-import { motion } from "motion/react";
-import Image from "next/image";
-import { useShallow } from "zustand/shallow";
 import { spriteVariants } from "../data/spriteVariants.data";
 import { getBlockFromStatuses } from "../helpers/units.helpers";
 
@@ -23,8 +23,6 @@ export function UnitSprite({ unitInCell }: { unitInCell: BattleUnit }) {
 	const { texts, isHit } = useCombatText(currentHp, currentBlock);
 	const { aiIntents } = useBattleStore(
 		useShallow((state) => ({
-			activeCard: state.activeHeroCard,
-			activeMoveUnitId: state.activeMoveHeroId,
 			aiIntents: state.aiIntents,
 		})),
 	);

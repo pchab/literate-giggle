@@ -27,12 +27,20 @@ export default function MovePrediction() {
 					aiStateDiff,
 					playerStateDiff,
 				}) => {
+					const prediction = {
+						gridSize,
+						units,
+						projectedMoves: aiStateDiff.projectedMoves,
+					};
+
 					// 1. Player Intent
 					if (playerIntent) {
 						return {
-							gridSize,
-							units,
-							projectedMoves: playerStateDiff.projectedMoves,
+							...prediction,
+							projectedMoves: {
+								...prediction.projectedMoves,
+								...playerStateDiff.projectedMoves,
+							},
 							activeUnitId: playerIntent.unitId,
 							activeUnitPath: playerIntent.intendedMove ?? EMPTY_PATH,
 						};
@@ -45,9 +53,7 @@ export default function MovePrediction() {
 						if (hoveredUnit && aiIntents[hoveredUnit.id]) {
 							const intent = aiIntents[hoveredUnit.id];
 							return {
-								gridSize,
-								units,
-								projectedMoves: aiStateDiff.projectedMoves,
+								...prediction,
 								activeUnitId: intent.unitId,
 								activeUnitPath: intent.intendedMove ?? EMPTY_PATH,
 							};
@@ -56,9 +62,7 @@ export default function MovePrediction() {
 
 					// Fallback
 					return {
-						gridSize,
-						units,
-						projectedMoves: EMPTY_MOVES,
+						...prediction,
 						activeUnitId: null,
 						activeUnitPath: EMPTY_PATH,
 					};
