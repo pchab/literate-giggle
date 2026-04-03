@@ -1,6 +1,7 @@
 import { THE_ALCHEMISTS_LEDGER } from "@/modules/campaign/data/alchemists-ledger/alchemistsLedger.definitions";
 import { alchemistsMapNodes } from "@/modules/campaign/data/alchemists-ledger/alchemistsLedger.mapNodes";
 import { QUEST_DWARVEN_HIGHWAY } from "@/modules/campaign/data/dwarven-passage/dwarvenPassage.quest";
+import { sewerContaminationMapNodes } from "@/modules/campaign/data/sewer-contamination/sewerContamination.mapNodes";
 import { VERDANT_RECLAMATION_MAP_NODES } from "@/modules/campaign/data/verdant-reclamation/verdantReclamation.mapNodes";
 import { VERDANT_RECLAMATION } from "@/modules/campaign/data/verdant-reclamation/verdantReclamation.quest";
 import { encounterId } from "@/modules/campaign/domain/encounters.type";
@@ -15,7 +16,12 @@ export const WorldMapNodes: MapData = {
 		type: "TOWN",
 		townId: townId("ironhold_city"),
 		position: { x: 58, y: 45 },
-		connectedNodeIds: ["northern_road", "crossroads", "kiven_river_bridge"],
+		connectedNodeIds: [
+			"northern_road",
+			"crossroads",
+			"kiven_river_bridge",
+			"riverbend_village",
+		],
 		background: "ironhold_gates",
 		variants: [
 			{
@@ -221,4 +227,5 @@ export const WorldMapNodes: MapData = {
 	// ---  QUEST NODES ---
 	...VERDANT_RECLAMATION_MAP_NODES,
 	...alchemistsMapNodes,
+	...sewerContaminationMapNodes,
 };

@@ -1,10 +1,10 @@
-import { motion } from "motion/react";
-import { type ReactElement, useEffect } from "react";
 import {
 	isProjectile,
 	type Vfx,
 	type VfxType,
 } from "@/modules/battle/domain/vfx.type";
+import { motion } from "motion/react";
+import { type ReactElement, useEffect } from "react";
 
 interface VfxOverlayProps {
 	vfx?: Vfx;
@@ -190,6 +190,31 @@ const VfxMapping: Record<NonNullable<VfxType>, ReactElement> = {
 				transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
 			/>
 		</div>
+	),
+	ESCAPE: (
+		<motion.div
+			className="relative flex items-center justify-center w-24 h-24"
+			initial={{ y: 0, opacity: 1, scale: 1 }}
+			animate={{
+				y: [0, -30, -60],
+				opacity: [1, 0.8, 0],
+				scale: [1, 1.1, 0.9],
+			}}
+			transition={{ duration: 0.8, ease: "easeOut" }}
+		>
+			<motion.div
+				className="absolute w-16 h-16 rounded-full bg-white/40 filter blur-md shadow-[0_0_20px_rgba(255,255,255,0.8)]"
+				initial={{ scale: 0.5, opacity: 0 }}
+				animate={{
+					scale: [0.5, 1.5, 2],
+					opacity: [0, 1, 0],
+				}}
+				transition={{ duration: 0.6, ease: "easeOut" }}
+			/>
+			<div className="z-10 text-white text-sm font-bold tracking-widest drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
+				ESCAPED
+			</div>
+		</motion.div>
 	),
 };
 
