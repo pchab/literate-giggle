@@ -18,6 +18,13 @@ export type AITargetPreference =
 	| "away"
 	| GridPosition;
 
+export const PLAY_REQUIREMENTS: PlayRequirement[] = [
+	"requires_enemy",
+	"requires_ally",
+	"requires_entity",
+	"requires_empty_cell",
+	"no_target",
+];
 export type PlayRequirement =
 	| "requires_enemy"
 	| "requires_ally"

@@ -1,0 +1,101 @@
+"use client";
+
+import { BattleGrid } from "@/modules/battle/components/BattleGrid";
+import { useBattleStore } from "@/modules/battle/store/battle.store";
+import { CardPropertyForm } from "@/modules/card-editor/components/CardPropertyForm";
+import { useCardEditorStore } from "@/modules/card-editor/store/cardEditor.store";
+import { MotionCamera } from "@/modules/shared/components/MotionCamera";
+import { getBackgroundImage } from "@/modules/shared/helpers/backgroundImage.helpers";
+import { HeroCard } from "@/modules/units/components/HeroCard";
+import { isHero } from "@/modules/units/helpers/units.helpers";
+import { useEffect } from "react";
+import { useShallow } from "zustand/shallow";
+
+export default function CardEditorPage() {
+	const { draftCard } = useCardEditorStore();
+	const {
+		initEditorTestBattle,
+		enemyAction,
+		battleStatus,
+		units,
+		usedCardsThisTurn,
+		activeHeroCard,
+	} = useBattleStore(
+		useShallow((state) => ({
+			initEditorTestBattle: state.initEditorTestBattle,
+			enemyAction: state.enemyAction,
+			battleStatus: state.battleStatus,
+			units: state.units,
+			usedCardsThisTurn: state.usedCardsThisTurn,
+			activeHeroCard: state.activeHeroCard,
+		})),
+	);
+
+	const backgroundImage = getBackgroundImage(
+		"/battlegrounds/grass_3_2.webp",
+		1200,
+		800,
+	);
+
+	// --- DEBOUNCED INITIALIZATION & CLEANUP ---
+	useEffect(() => {
+		const timer = setTimeout(() => initEditorTestBattle(draftCard), 500);
+		return () => clearTimeout(timer);
+	}, [draftCard, initEditorTestBattle]);
+
+	useEffect(() => {
+		return () => {
+			useBattleStore.setState({
+				battleStatus: "VICTORY",
+				units: [],
+				encounterId: null,
+			});
+		};
+	}, []);
+
+	// --- MICRO GAME-LOOP FOR SANDBOX ---
+	const heroes = units.filter(isHero);
+	const aliveHeroesCount = heroes.filter((h) => h.currentHp > 0).length;
+	const isEnemyTurn =
+		battleStatus === "ONGOING" &&
+		!activeHeroCard &&
+		aliveHeroesCount > 0 &&
+		Object.keys(usedCardsThisTurn).length === aliveHeroesCount;
+
+	useEffect(() => {
+		if (isEnemyTurn) {
+			const timeoutId = setTimeout(() => enemyAction(), 200);
+			return () => clearTimeout(timeoutId);
+		}
+	}, [isEnemyTurn, enemyAction]);
+
+	// Find our mock hero so we can render their UI
+	const testHero = heroes[0];
+
+	return (
+		<div className="flex h-screen w-full bg-zinc-950 overflow-hidden">
+			{/* LEFT PANE */}
+			<div className="w-125 h-full z-10 shrink-0">
+				<CardPropertyForm />
+			</div>
+
+			{/* RIGHT PANE */}
+			<div className="flex-1 relative flex flex-col items-center justify-center p-8 overflow-y-auto">
+				<MotionCamera background={backgroundImage}>
+					<BattleGrid />
+
+					<div className="absolute -top-4 -right-4 px-3 py-1 bg-blue-600/80 text-white text-xs font-bold uppercase tracking-wider rounded backdrop-blur-sm z-50 pointer-events-none">
+						Sandbox Mode
+					</div>
+				</MotionCamera>
+
+				{/* BOTTOM UI: The Hero Card */}
+				{testHero && (
+					<div className="absolute bottom-0 flex justify-center w-full mt-4">
+						<HeroCard {...testHero} />
+					</div>
+				)}
+			</div>
+		</div>
+	);
+}

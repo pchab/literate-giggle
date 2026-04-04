@@ -19,6 +19,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { cancelCard } from "./commands/cancelCard.command";
 import { endTurn } from "./commands/endTurn.command";
 import { initBattle } from "./commands/initBattle.command";
+import { initEditorTestBattle } from "./commands/initEditorTestBattle.command";
 import { moveHero } from "./commands/moveHero.command";
 import { resolveAIActions } from "./commands/resolveAIAction.command";
 import { resolveCard } from "./commands/resolveCard.command";
@@ -76,6 +77,8 @@ type BattleAction = {
 	setHoveredCard: (cardContext: ActiveCardContext | null) => void;
 	setVfx: (cellId: string, vfx: Vfx | null) => void;
 	resetXpEarned: () => void;
+
+	initEditorTestBattle: (draftCard: Card) => void;
 };
 
 const initialState: BattleState = {
@@ -142,6 +145,8 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 					currentVfx: vfx ? { ...otherVfx, [cellId]: vfx } : otherVfx,
 				})),
 			resetXpEarned: () => set({ xpEarned: 0, encounterId: null }),
+			initEditorTestBattle: (draftCard) =>
+				initEditorTestBattle(get, set)(draftCard),
 		}),
 		{
 			name: "alpha-battle-state",

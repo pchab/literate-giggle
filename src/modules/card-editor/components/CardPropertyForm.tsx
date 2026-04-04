@@ -1,0 +1,165 @@
+import {
+	adjacentPattern,
+	cleavePattern,
+	conePattern,
+	crossPattern,
+	linePattern,
+	squarePattern,
+} from "@/modules/battle/data/attackPattern.data";
+import { PLAY_REQUIREMENTS } from "@/modules/cards/domain/cards.type";
+import { useCardEditorStore } from "../store/cardEditor.store";
+import { CardEffectsEditor } from "./CardEffectsEditor";
+
+export function CardPropertyForm() {
+	const { draftCard, updateDraft, exportToJSON } = useCardEditorStore();
+
+	const handleTextChange =
+		(field: keyof typeof draftCard) =>
+		(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+			updateDraft({ [field]: e.target.value });
+		};
+
+	const handleNumberChange =
+		(field: keyof typeof draftCard) =>
+		(e: React.ChangeEvent<HTMLInputElement>) => {
+			updateDraft({ [field]: parseInt(e.target.value, 10) || 0 });
+		};
+
+	return (
+		<div className="flex flex-col h-full p-4 bg-zinc-900 border-r border-zinc-700 text-zinc-100 overflow-y-auto w-full shadow-xl">
+			<h2 className="text-xl font-bold mb-6 text-zinc-100 border-b border-zinc-700 pb-2">
+				Card Properties
+			</h2>
+
+			<div className="space-y-4">
+				{/* Name */}
+				<div className="flex flex-col">
+					<label
+						htmlFor="card-name"
+						className="text-sm font-semibold text-zinc-400 mb-1"
+					>
+						Card Name
+					</label>
+					<input
+						id="card-name"
+						type="text"
+						value={draftCard.name}
+						onChange={handleTextChange("name")}
+						className="px-3 py-2 bg-zinc-800 rounded border border-zinc-700 focus:outline-none focus:border-blue-500"
+					/>
+				</div>
+
+				{/* Range & AoE Pattern (Side by side) */}
+				<div className="flex gap-4">
+					<div className="flex flex-col w-1/3">
+						<label
+							htmlFor="card-range"
+							className="text-sm font-semibold text-zinc-400 mb-1"
+						>
+							Range
+						</label>
+						<input
+							id="card-range"
+							type="number"
+							min="0"
+							value={draftCard.range}
+							onChange={handleNumberChange("range")}
+							className="px-3 py-2 bg-zinc-800 rounded border border-zinc-700 focus:outline-none focus:border-blue-500"
+						/>
+					</div>
+					<div className="flex flex-col w-2/3">
+						<label
+							htmlFor="card-aoe"
+							className="text-sm font-semibold text-zinc-400 mb-1"
+						>
+							AoE Pattern
+						</label>
+						<select
+							id="card-aoe"
+							// Fallback to empty string for "Single Target" (undefined)
+							value={
+								draftCard.aoePattern ? JSON.stringify(draftCard.aoePattern) : ""
+							}
+							onChange={(e) => {
+								const val = e.target.value;
+								updateDraft({ aoePattern: val ? JSON.parse(val) : undefined });
+							}}
+							className="px-3 py-2 bg-zinc-800 rounded border border-zinc-700 focus:outline-none focus:border-blue-500"
+						>
+							<option value="">Single Target (None)</option>
+							<option value={JSON.stringify(cleavePattern)}>Cleave</option>
+							<option value={JSON.stringify(adjacentPattern)}>Adjacent</option>
+							<option value={JSON.stringify(crossPattern)}>Cross</option>
+							<option value={JSON.stringify(squarePattern)}>Square</option>
+							<option value={JSON.stringify(linePattern)}>Line</option>
+							<option value={JSON.stringify(conePattern)}>Cone</option>
+						</select>
+					</div>
+				</div>
+
+				{/* Play Requirement */}
+				<div className="flex flex-col">
+					<label
+						htmlFor="card-play-req"
+						className="text-sm font-semibold text-zinc-400 mb-1"
+					>
+						Play Requirement
+					</label>
+					<select
+						id="card-play-req"
+						value={draftCard.playRequirement}
+						onChange={handleTextChange("playRequirement")}
+						className="px-3 py-2 bg-zinc-800 rounded border border-zinc-700 focus:outline-none focus:border-blue-500"
+					>
+						{PLAY_REQUIREMENTS.map((req) => (
+							<option key={req} value={req}>
+								{req}
+							</option>
+						))}
+					</select>
+				</div>
+
+				{/* Image path */}
+				<div className="flex flex-col">
+					<label
+						htmlFor="card-image"
+						className="text-sm font-semibold text-zinc-400 mb-1"
+					>
+						Image Path
+					</label>
+					<input
+						id="card-image"
+						type="text"
+						value={draftCard.image}
+						onChange={handleTextChange("image")}
+						className="px-3 py-2 bg-zinc-800 rounded border border-zinc-700 focus:outline-none focus:border-blue-500 font-mono text-xs"
+					/>
+				</div>
+
+				{/* Effects JSON Editor */}
+				<div className="flex flex-col pt-4 border-t border-zinc-700 mt-2">
+					<label
+						className="text-sm font-bold text-zinc-300 mb-1"
+						htmlFor="effects"
+					>
+						Card Effects Sequence
+					</label>
+					<CardEffectsEditor
+						effects={draftCard.effects}
+						onChange={(newEffects) => updateDraft({ effects: newEffects })}
+					/>
+				</div>
+			</div>
+
+			<div className="mt-auto pt-6">
+				<button
+					type="button"
+					onClick={exportToJSON}
+					className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded transition-colors"
+				>
+					Export to JSON
+				</button>
+			</div>
+		</div>
+	);
+}
