@@ -1,4 +1,4 @@
-import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
+import type { BattleGet, BattleSet } from "@/modules/battle/store/battle.store";
 import type { Encounter } from "@/modules/campaign/domain/encounters.type";
 import { getComputedCard } from "@/modules/cards/helpers/cards.helper";
 import {
@@ -50,7 +50,7 @@ const bluePrintToSummon = (
 });
 
 export const initBattle =
-	(get: StoreGet, set: StoreSet) =>
+	(get: BattleGet, set: BattleSet) =>
 	async (roster: Hero[], encounterId: Encounter["id"]) => {
 		const encounter = ENCOUNTER_DB[encounterId];
 

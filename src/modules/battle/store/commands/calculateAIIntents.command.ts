@@ -7,7 +7,7 @@ import { isMonster, isSummon } from "@/modules/units/helpers/units.helpers";
 import type { Intent } from "../../domain/intent.type";
 import { getSimulationState } from "../../helpers/simulation.helper";
 import { calculateStateDiff } from "../../helpers/state.helpers";
-import type { StoreGet, StoreSet } from "../battle.store";
+import type { BattleGet, BattleSet } from "../battle.store";
 import { resolveAIActions } from "./resolveAIAction.command";
 
 function isAiBattleUnit(unit: BattleUnit): unit is AIBattleUnit {
@@ -15,7 +15,7 @@ function isAiBattleUnit(unit: BattleUnit): unit is AIBattleUnit {
 }
 
 export const calculateAIIntents =
-	(get: StoreGet, set: StoreSet) =>
+	(get: BattleGet, set: BattleSet) =>
 	async (
 		existingIntents: Record<BattleUnit["id"], Intent> = get().aiIntents,
 	): Promise<void> => {

@@ -2,7 +2,7 @@ import { handleAICardIntent } from "@/modules/battle/helpers/ai.actions.helpers"
 import type { TargetResolver } from "@/modules/battle/helpers/ai.targeting.helpers";
 import type { EffectResolver } from "@/modules/battle/helpers/effects/effect.resolvers";
 import { getSimulationState } from "@/modules/battle/helpers/simulation.helper";
-import type { StoreGet } from "@/modules/battle/store/battle.store";
+import type { BattleGet } from "@/modules/battle/store/battle.store";
 import { acidFlask } from "@/modules/units/data/summons/acidFlask";
 import type { BattleUnit } from "@/modules/units/domain/units.type";
 import {
@@ -14,7 +14,7 @@ import type { CustomScriptEffect } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
 import { alchemistLedgerCards } from "../monsters/alchemistLedgerCards.data";
 
-const getStateScore = (fakeGet: StoreGet, realGet: StoreGet): number => {
+const getStateScore = (fakeGet: BattleGet, realGet: BattleGet): number => {
 	const { units: oldUnits } = realGet();
 	const { units: newUnits } = fakeGet();
 	const oldHeroes = oldUnits.filter(isHero);

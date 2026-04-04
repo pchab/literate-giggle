@@ -3,7 +3,7 @@ import {
 	getClosestOriginTile,
 	getDistanceToBoundingBox,
 } from "@/modules/battle/helpers/grid.helpers";
-import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
+import type { BattleGet, BattleSet } from "@/modules/battle/store/battle.store";
 import type { Card } from "@/modules/cards/domain/cards.type";
 import { sleep } from "@/modules/shared/helpers/sleep";
 import {
@@ -29,7 +29,7 @@ import { calculateExactPath, moveBattleUnit } from "./move.helpers";
 import { updateUnitState } from "./state.helpers";
 
 export const handleAICardIntent =
-	(get: StoreGet, set: StoreSet, isSimulation = false) =>
+	(get: BattleGet, set: BattleSet, isSimulation = false) =>
 	async ({
 		attackerId,
 		card,

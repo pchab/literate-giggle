@@ -1,10 +1,11 @@
-import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
+import type { BattleGet, BattleSet } from "@/modules/battle/store/battle.store";
 import type { Card } from "@/modules/cards/domain/cards.type";
 import { type Hero, UnitStance } from "@/modules/units/domain/units.type";
 import { resolveCard } from "./resolveCard.command";
 
 export const selectCard =
-	(get: StoreGet, set: StoreSet) => async (heroId: Hero["id"], card: Card) => {
+	(get: BattleGet, set: BattleSet) =>
+	async (heroId: Hero["id"], card: Card) => {
 		const {
 			units,
 			activeHeroCard: previousCardContext,

@@ -4,12 +4,12 @@ import { isHero } from "@/modules/units/helpers/units.helpers";
 import { handleAICardIntent } from "../../helpers/ai.actions.helpers";
 import { tickStatusesAndSurfaces } from "../../helpers/effects/effect.helpers";
 import { finalizeAction } from "../../helpers/encounter.helpers";
-import type { StoreGet, StoreSet } from "../battle.store";
+import type { BattleGet, BattleSet } from "../battle.store";
 import { calculateAIIntents } from "./calculateAIIntents.command";
 
 export const resolveAIActions = async (
-	get: StoreGet,
-	set: StoreSet,
+	get: BattleGet,
+	set: BattleSet,
 	isSimulation = false,
 ) => {
 	// ==========================================

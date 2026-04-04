@@ -3,20 +3,20 @@ import type { Status } from "@/modules/units/domain/status.type";
 import type { BattleUnit } from "@/modules/units/domain/units.type";
 import type { GridPosition } from "../domain/grid.type";
 import type { ShadowStateDiff } from "../domain/intent.type";
-import type { StoreGet, StoreSet } from "../store/battle.store";
+import type { BattleGet, BattleSet } from "../store/battle.store";
 import { handleAICardIntent } from "./ai.actions.helpers";
 import { isUnitInTile } from "./grid.helpers";
 import { statusRegistry } from "./status.helpers";
 
 export const findUnit =
-	(get: StoreGet) =>
+	(get: BattleGet) =>
 	<T extends BattleUnit>(unitId: T["id"]): T | undefined => {
 		return get().units.find((u) => u.id === unitId) as T | undefined;
 	};
 
 export function updateUnitState<T extends BattleUnit>(
-	_: StoreGet,
-	set: StoreSet,
+	_: BattleGet,
+	set: BattleSet,
 	__ = false,
 ) {
 	return async (
@@ -81,7 +81,7 @@ export type CombatUpdate = {
 };
 
 export const applyCombatUpdate =
-	(get: StoreGet, set: StoreSet, isSimulation = false) =>
+	(get: BattleGet, set: BattleSet, isSimulation = false) =>
 	async <T extends BattleUnit>(
 		initialUnitId: T["id"],
 		update: CombatUpdate,

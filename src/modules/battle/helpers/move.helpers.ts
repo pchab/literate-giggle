@@ -6,7 +6,7 @@ import type {
 	SurfaceData,
 	SurfaceType,
 } from "../domain/grid.type";
-import type { StoreGet, StoreSet } from "../store/battle.store";
+import type { BattleGet, BattleSet } from "../store/battle.store";
 import {
 	canUnitFit,
 	doBoundingBoxesIntersect,
@@ -21,8 +21,8 @@ import { statusRegistry } from "./status.helpers";
 // 1. STATE MUTATION: Execution of Movement
 // ==========================================
 export function moveBattleUnit(
-	get: StoreGet,
-	set: StoreSet,
+	get: BattleGet,
+	set: BattleSet,
 	isSimulation = false,
 ) {
 	return async <T extends BattleUnit>({

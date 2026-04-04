@@ -115,8 +115,8 @@ export type BattleStoreServerAction = (
 	state: BattleState & BattleAction,
 ) => Partial<BattleState>;
 
-export type StoreGet = () => BattleState;
-export type StoreSet = (
+export type BattleGet = () => BattleState;
+export type BattleSet = (
 	fn: (state: BattleState) => Partial<BattleState>,
 ) => void;
 

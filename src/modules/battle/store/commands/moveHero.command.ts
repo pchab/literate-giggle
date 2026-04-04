@@ -1,5 +1,5 @@
 import type { GridPosition } from "@/modules/battle/domain/grid.type";
-import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
+import type { BattleGet, BattleSet } from "@/modules/battle/store/battle.store";
 import { isHeroId } from "@/modules/units/helpers/units.helpers";
 import { areEnemies } from "../../helpers/effects/effect.helpers";
 import { getDistanceToBoundingBox } from "../../helpers/grid.helpers";
@@ -7,7 +7,7 @@ import { calculateExactPath, moveBattleUnit } from "../../helpers/move.helpers";
 import { calculateAIIntents } from "./calculateAIIntents.command";
 
 export function moveHero(newPosition: GridPosition) {
-	return async (get: StoreGet, set: StoreSet) => {
+	return async (get: BattleGet, set: BattleSet) => {
 		const {
 			activeMoveHeroId: activeMoveUnitId,
 			usedMovesThisTurn,

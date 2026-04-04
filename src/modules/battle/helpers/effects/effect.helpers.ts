@@ -11,7 +11,7 @@ import {
 } from "@/modules/units/helpers/units.helpers";
 import type { SurfaceType } from "../../domain/grid.type";
 import type { VfxType } from "../../domain/vfx.type";
-import type { StoreGet, StoreSet } from "../../store/battle.store";
+import type { BattleGet, BattleSet } from "../../store/battle.store";
 import {
 	doBoundingBoxesIntersect,
 	getCellId,
@@ -89,7 +89,7 @@ export function resolveTargets<T extends BattleUnit>(
 }
 
 export const tickStatusesAndSurfaces =
-	(get: StoreGet, set: StoreSet, isSimulation = false) =>
+	(get: BattleGet, set: BattleSet, isSimulation = false) =>
 	async <T extends BattleUnit>(units: T[]): Promise<void> => {
 		const { surfaces } = get();
 		const nextSurfaces = Object.fromEntries(

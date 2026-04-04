@@ -14,14 +14,17 @@ import {
 	getLineOfSightPath,
 } from "@/modules/battle/helpers/move.helpers";
 import { getSimulationState } from "@/modules/battle/helpers/simulation.helper";
-import type { StoreGet } from "@/modules/battle/store/battle.store";
+import type { BattleGet } from "@/modules/battle/store/battle.store";
 import type { BattleUnit } from "@/modules/units/domain/units.type";
 import { isHero } from "@/modules/units/helpers/units.helpers";
 import type { CustomScriptEffect } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
 import { alchemistLedgerCards } from "../monsters/alchemistLedgerCards.data";
 
-const getBarnabyStateScore = (fakeGet: StoreGet, realGet: StoreGet): number => {
+const getBarnabyStateScore = (
+	fakeGet: BattleGet,
+	realGet: BattleGet,
+): number => {
 	const { units: oldUnits } = realGet();
 	const { units: newUnits } = fakeGet();
 	const oldHeroes = oldUnits.filter(isHero);

@@ -7,7 +7,7 @@ import { sleep } from "@/modules/shared/helpers/sleep";
 import type { BattleUnit } from "@/modules/units/domain/units.type";
 import type { GridPosition } from "../../domain/grid.type";
 import type { VfxType } from "../../domain/vfx.type";
-import type { StoreGet, StoreSet } from "../../store/battle.store";
+import type { BattleGet, BattleSet } from "../../store/battle.store";
 import { getCellId } from "../grid.helpers";
 import {
 	applyCombatUpdate,
@@ -18,7 +18,7 @@ import { getVfxForEffect } from "../vfx.helper";
 import type { EffectResolver } from "./effect.resolvers";
 
 const animateProjectile =
-	(_: StoreGet, set: StoreSet) =>
+	(_: BattleGet, set: BattleSet) =>
 	async (
 		projectile: VfxType,
 		originPos: GridPosition,

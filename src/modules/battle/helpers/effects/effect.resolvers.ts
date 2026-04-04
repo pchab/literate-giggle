@@ -4,7 +4,7 @@ import type {
 	CardEffect,
 } from "@/modules/cards/domain/cards.type";
 import type { BattleUnit } from "@/modules/units/domain/units.type";
-import type { StoreGet, StoreSet } from "../../store/battle.store";
+import type { BattleGet, BattleSet } from "../../store/battle.store";
 import { resolveChargeEffect } from "./charge.effect.resolver";
 import { resolveMoveEffect } from "./move.effect.resolver";
 import { resolvePushEffect } from "./push.effect.resolver";
@@ -20,13 +20,13 @@ interface EffectResolverParams<C extends BattleUnit> {
 }
 
 export type EffectResolver<C extends BattleUnit, E extends CardEffect> = (
-	get: StoreGet,
-	set: StoreSet,
+	get: BattleGet,
+	set: BattleSet,
 	isSimulation: boolean,
 ) => (effect: E) => (params: EffectResolverParams<C>) => Promise<void>;
 
 export const resolvers: EffectResolver<BattleUnit, CardEffect> =
-	(get: StoreGet, set: StoreSet, isSimulation = false) =>
+	(get: BattleGet, set: BattleSet, isSimulation = false) =>
 	(effect: CardEffect) => {
 		switch (effect.type) {
 			case "move":

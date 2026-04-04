@@ -9,7 +9,7 @@ import {
 	applyCombatUpdate,
 	updateUnitState,
 } from "@/modules/battle/helpers/state.helpers";
-import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
+import type { BattleGet, BattleSet } from "@/modules/battle/store/battle.store";
 import { sleep } from "@/modules/shared/helpers/sleep";
 import { type BattleUnit, UnitStance } from "@/modules/units/domain/units.type";
 import type { CustomScriptEffect } from "../../domain/cards.type";
@@ -17,8 +17,8 @@ import { cardId } from "../../helpers/cards.helper";
 import { goliathToadCards } from "../monsters/sewerContaminationCards.data";
 
 export async function triggerRegurgitation(
-	get: StoreGet,
-	set: StoreSet,
+	get: BattleGet,
+	set: BattleSet,
 	isSimulation: boolean,
 	toad: BattleUnit,
 ) {

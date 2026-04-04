@@ -4,11 +4,11 @@ import type {
 	BattleUnit,
 } from "@/modules/units/domain/units.type";
 import type { GridPosition } from "../domain/grid.type";
-import type { StoreGet } from "../store/battle.store";
+import type { BattleGet } from "../store/battle.store";
 import { isUnitInTile } from "./grid.helpers";
 import { getLineOfSightPath } from "./move.helpers";
 
-export type TargetResolver = (get: StoreGet) => <C extends AIBattleUnit>(
+export type TargetResolver = (get: BattleGet) => <C extends AIBattleUnit>(
 	aiUnit: C,
 	card: Card,
 ) => {

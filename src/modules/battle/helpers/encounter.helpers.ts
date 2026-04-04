@@ -1,10 +1,10 @@
 import { ENCOUNTER_DB } from "@/modules/campaign/data/encounters.data";
 import type { BattleUnit } from "@/modules/units/domain/units.type";
 import { isHero, isMonster } from "@/modules/units/helpers/units.helpers";
-import type { BattleState, StoreGet, StoreSet } from "../store/battle.store";
+import type { BattleGet, BattleSet, BattleState } from "../store/battle.store";
 import { calculateStateDiff } from "./state.helpers";
 
-const evaluateEncounterStatus = (get: StoreGet, set: StoreSet) => {
+const evaluateEncounterStatus = (get: BattleGet, set: BattleSet) => {
 	const state = get();
 	if (state.battleStatus !== "ONGOING" || !state.encounterId) return;
 
@@ -38,8 +38,8 @@ const defaultWinCondition = (state: BattleState) => {
 };
 
 export const finalizeAction = async (
-	get: StoreGet,
-	set: StoreSet,
+	get: BattleGet,
+	set: BattleSet,
 	previousUnits: BattleUnit[],
 ) => {
 	const { units: currentUnits, xpEarned } = get();

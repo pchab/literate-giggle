@@ -2,7 +2,7 @@ import type { Card } from "@/modules/cards/domain/cards.type";
 import { isSummon } from "@/modules/units/helpers/units.helpers";
 import type { AIBattleUnit, BattleUnit } from "../../units/domain/units.type";
 import type { BoundingBox, GridPosition } from "../domain/grid.type";
-import type { StoreGet } from "../store/battle.store";
+import type { BattleGet } from "../store/battle.store";
 import type { TargetResolver } from "./ai.targeting.helpers";
 import { areEnemies, getAllegiance } from "./effects/effect.helpers";
 import {
@@ -89,7 +89,7 @@ function getPrioritizedTargets<C extends AIBattleUnit, T extends BattleUnit>(
 // STEP 2: MOVEMENT CALCULATOR (The "How")
 // ==========================================
 const calculateFiringSpot =
-	(get: StoreGet) =>
+	(get: BattleGet) =>
 	<C extends AIBattleUnit, T extends BoundingBox>({
 		aiUnit,
 		target,

@@ -1,11 +1,11 @@
-import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
+import type { BattleGet, BattleSet } from "@/modules/battle/store/battle.store";
 import type { GridPosition } from "../../domain/grid.type";
 import { getSimulationState } from "../../helpers/simulation.helper";
 import { calculateStateDiff } from "../../helpers/state.helpers";
 import { resolveCard } from "./resolveCard.command";
 
 export const setHoveredCell =
-	(get: StoreGet, set: StoreSet) => async (cell: GridPosition | null) => {
+	(get: BattleGet, set: BattleSet) => async (cell: GridPosition | null) => {
 		set(() => ({
 			hoveredCell: cell,
 			playerIntent: null,

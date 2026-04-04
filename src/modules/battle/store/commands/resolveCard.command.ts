@@ -13,11 +13,11 @@ import {
 } from "../../helpers/grid.helpers";
 import { getLineOfSightPath } from "../../helpers/move.helpers";
 import { updateUnitState } from "../../helpers/state.helpers";
-import type { ActiveCardContext, StoreGet, StoreSet } from "../battle.store";
+import type { ActiveCardContext, BattleGet, BattleSet } from "../battle.store";
 import { calculateAIIntents } from "./calculateAIIntents.command";
 
 export const resolveCard =
-	(get: StoreGet, set: StoreSet, isSimulation = false) =>
+	(get: BattleGet, set: BattleSet, isSimulation = false) =>
 	async (anchorTarget: AnchorTarget, cardContext: ActiveCardContext) => {
 		const { units: draftUnits, gridSize } = get();
 		const { unitId, card } = cardContext;

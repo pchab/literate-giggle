@@ -1,4 +1,4 @@
-import type { StoreGet, StoreSet } from "@/modules/battle/store/battle.store";
+import type { BattleGet, BattleSet } from "@/modules/battle/store/battle.store";
 import { triggerRegurgitation } from "@/modules/cards/data/custom-scripts/swallow.script";
 import type { Status, StatusType } from "@/modules/units/domain/status.type";
 import type { BattleUnit } from "@/modules/units/domain/units.type";
@@ -11,8 +11,8 @@ type TickResult = CombatUpdate & { vfxType?: VfxType };
 type StatusRegistryHooks = {
 	// Phase 1: Modifies incoming damage (Shields, Vulnerability)
 	onBeforeDamage?: (
-		get: StoreGet,
-		set: StoreSet,
+		get: BattleGet,
+		set: BattleSet,
 		isSimulation: boolean,
 	) => <T extends BattleUnit>(params: {
 		unit: T;
@@ -22,8 +22,8 @@ type StatusRegistryHooks = {
 
 	// Phase 2: Reacts to HP lost (Spikes, Regurgitation)
 	onAfterDamage?: (
-		get: StoreGet,
-		set: StoreSet,
+		get: BattleGet,
+		set: BattleSet,
 		isSimulation: boolean,
 	) => <T extends BattleUnit>(params: {
 		unit: T;
@@ -32,15 +32,15 @@ type StatusRegistryHooks = {
 
 	// Phase 3: Reacts to death (Explosions, Revives)
 	onDeath?: (
-		get: StoreGet,
-		set: StoreSet,
+		get: BattleGet,
+		set: BattleSet,
 		isSimulation: boolean,
 	) => <T extends BattleUnit>(params: { unit: T }) => Promise<{ unit: T }>;
 
 	// Pahse 4: End of turn tick
 	onTick?: (
-		get: StoreGet,
-		set: StoreSet,
+		get: BattleGet,
+		set: BattleSet,
 		isSimulation: boolean,
 	) => <T extends BattleUnit>(params: {
 		unit: T;
@@ -49,8 +49,8 @@ type StatusRegistryHooks = {
 
 	// Phase 5: Movement interception
 	onBeforeMove?: (
-		get: StoreGet,
-		set: StoreSet,
+		get: BattleGet,
+		set: BattleSet,
 		isSimulation: boolean,
 	) => <T extends BattleUnit>(params: {
 		unit: T;
