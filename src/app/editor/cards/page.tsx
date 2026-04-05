@@ -12,7 +12,7 @@ import { useEffect } from "react";
 import { useShallow } from "zustand/shallow";
 
 export default function CardEditorPage() {
-	const { draftCard } = useCardEditorStore();
+	const { testMode, draftCard } = useCardEditorStore();
 	const {
 		initEditorTestBattle,
 		enemyAction,
@@ -39,7 +39,10 @@ export default function CardEditorPage() {
 
 	// --- DEBOUNCED INITIALIZATION & CLEANUP ---
 	useEffect(() => {
-		const timer = setTimeout(() => initEditorTestBattle(draftCard), 500);
+		const timer = setTimeout(
+			() => initEditorTestBattle(draftCard, testMode),
+			500,
+		);
 		return () => clearTimeout(timer);
 	}, [draftCard, initEditorTestBattle]);
 

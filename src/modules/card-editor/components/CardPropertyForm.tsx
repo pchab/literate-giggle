@@ -6,9 +6,24 @@ import {
 	linePattern,
 	squarePattern,
 } from "@/modules/battle/data/attackPattern.data";
-import { PLAY_REQUIREMENTS } from "@/modules/cards/domain/cards.type";
+import type { GridPosition } from "@/modules/battle/domain/grid.type";
+import { isGridPosition } from "@/modules/battle/helpers/grid.helpers";
+import {
+	type Card,
+	PLAY_REQUIREMENTS,
+} from "@/modules/cards/domain/cards.type";
+import { ImageUploadArea } from "@/modules/shared/components/ImageUploadArea";
 import { useCardEditorStore } from "../store/cardEditor.store";
 import { CardEffectsEditor } from "./CardEffectsEditor";
+
+const AI_PREFERENCES: string[] = [
+	"lowestHp",
+	"random",
+	"lowestDef",
+	"closest",
+	"self",
+	"away",
+];
 
 export function CardPropertyForm() {
 	const { draftCard, updateDraft, exportToJSON } = useCardEditorStore();
@@ -119,6 +134,87 @@ export function CardPropertyForm() {
 					</select>
 				</div>
 
+				{/* AI Target Preference */}
+				<div className="flex flex-col p-3 bg-zinc-950 border border-zinc-700 rounded-md">
+					<label
+						className="text-sm font-semibold text-zinc-400 mb-1"
+						htmlFor="card-ai-target-pref"
+					>
+						AI Target Preference
+					</label>
+					<select
+						id="card-ai-target-pref"
+						value={
+							typeof draftCard.aiTargetPreference === "string"
+								? draftCard.aiTargetPreference
+								: draftCard.aiTargetPreference
+									? "grid"
+									: ""
+						}
+						onChange={(e) => {
+							const val = e.target.value;
+							if (val === "") updateDraft({ aiTargetPreference: undefined });
+							else if (val === "grid")
+								updateDraft({ aiTargetPreference: { col: 0, row: 0 } });
+							else
+								updateDraft({
+									aiTargetPreference: val as Card["aiTargetPreference"],
+								});
+						}}
+						className="px-3 py-2 bg-zinc-800 rounded border border-zinc-700 focus:outline-none focus:border-blue-500 text-sm text-purple-300 font-semibold"
+					>
+						<option value="">None (Default)</option>
+						{AI_PREFERENCES.map((pref) => (
+							<option key={pref} value={pref}>
+								{pref}
+							</option>
+						))}
+						<option value="grid">Specific Grid Position</option>
+					</select>
+
+					{/* Custom Grid Position Inputs */}
+					{isGridPosition(draftCard.aiTargetPreference) && (
+						<div className="flex gap-2 mt-2 pt-2 border-t border-zinc-800">
+							<div className="flex flex-col w-1/2">
+								<span className="text-[10px] text-zinc-500 font-bold mb-1">
+									Col
+								</span>
+								<input
+									type="number"
+									value={draftCard.aiTargetPreference.col}
+									onChange={(e) =>
+										updateDraft({
+											aiTargetPreference: {
+												...(draftCard.aiTargetPreference as GridPosition),
+												col: parseInt(e.target.value, 10) || 0,
+											},
+										})
+									}
+									className="bg-zinc-800 text-xs rounded border border-zinc-700 px-2 py-1"
+								/>
+							</div>
+							<div className="flex flex-col w-1/2">
+								<span className="text-[10px] text-zinc-500 font-bold mb-1">
+									Row
+								</span>
+								<input
+									type="number"
+									value={draftCard.aiTargetPreference.row}
+									onChange={(e) =>
+										updateDraft({
+											aiTargetPreference: {
+												...(draftCard.aiTargetPreference as GridPosition),
+												row: parseInt(e.target.value, 10) || 0,
+											},
+										})
+									}
+									className="bg-zinc-800 text-xs rounded border border-zinc-700 px-2 py-1"
+								/>
+							</div>
+						</div>
+					)}
+				</div>
+
 				{/* Image path */}
 				<div className="flex flex-col">
 					<label
@@ -127,12 +223,16 @@ export function CardPropertyForm() {
 					>
 						Image Path
 					</label>
-					<input
-						id="card-image"
-						type="text"
-						value={draftCard.image}
-						onChange={handleTextChange("image")}
-						className="px-3 py-2 bg-zinc-800 rounded border border-zinc-700 focus:outline-none focus:border-blue-500 font-mono text-xs"
+					<ImageUploadArea
+						label="Card Illustration"
+						currentImage={draftCard.image}
+						onImageChange={(blobUrl, _file) => {
+							// 1. Update the visual preview immediately
+							updateDraft({ image: blobUrl });
+
+							// 2. Later, we will also push the `file` to a global `useCampaignStore`
+							//    so JSZip can grab it when you click "Export Campaign"!
+						}}
 					/>
 				</div>
 

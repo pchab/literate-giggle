@@ -1,4 +1,5 @@
 import type { BattleGet, BattleSet } from "@/modules/battle/store/battle.store";
+import type { EditorTestMode } from "@/modules/card-editor/store/cardEditor.store";
 import type { Card } from "@/modules/cards/domain/cards.type";
 import { CLASS_REGISTRY } from "@/modules/units/data/heroClass.data";
 import { zombie } from "@/modules/units/data/monsters/zombie";
@@ -16,7 +17,7 @@ import {
 } from "@/modules/units/helpers/units.helpers";
 
 export const initEditorTestBattle =
-	(_: BattleGet, set: BattleSet) => (draftCard: Card) => {
+	(_: BattleGet, set: BattleSet) => (draftCard: Card, mode: EditorTestMode) => {
 		const mockHero: BattleHero = {
 			id: heroId("test_hero"),
 			name: "Test Subject",
@@ -46,7 +47,7 @@ export const initEditorTestBattle =
 			gridPosition: { col: 0, row: 0 },
 			statuses: [],
 			stance: UnitStance.IDLE,
-			intentPool: [],
+			intentPool: mode === "AI" ? [{ cardId: draftCard.id, weight: 1 }] : [],
 			xpReward: 0,
 		};
 

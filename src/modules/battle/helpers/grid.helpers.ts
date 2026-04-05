@@ -5,6 +5,10 @@ import type {
 	SurfaceData,
 } from "../domain/grid.type";
 
+export function isGridPosition(pos: unknown): pos is GridPosition {
+	return !!pos && typeof pos === "object" && "col" in pos && "row" in pos;
+}
+
 export function getCellId(pos: GridPosition): string {
 	return `${pos.row}-${pos.col}`;
 }

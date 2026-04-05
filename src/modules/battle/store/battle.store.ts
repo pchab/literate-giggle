@@ -8,6 +8,7 @@ import type {
 } from "@/modules/battle/domain/intent.type";
 import type { Vfx } from "@/modules/battle/domain/vfx.type";
 import type { Encounter } from "@/modules/campaign/domain/encounters.type";
+import type { EditorTestMode } from "@/modules/card-editor/store/cardEditor.store";
 import type { AnchorTarget, Card } from "@/modules/cards/domain/cards.type";
 import type {
 	BattleHero,
@@ -78,7 +79,7 @@ type BattleAction = {
 	setVfx: (cellId: string, vfx: Vfx | null) => void;
 	resetXpEarned: () => void;
 
-	initEditorTestBattle: (draftCard: Card) => void;
+	initEditorTestBattle: (draftCard: Card, testMode: EditorTestMode) => void;
 };
 
 const initialState: BattleState = {
@@ -145,8 +146,8 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 					currentVfx: vfx ? { ...otherVfx, [cellId]: vfx } : otherVfx,
 				})),
 			resetXpEarned: () => set({ xpEarned: 0, encounterId: null }),
-			initEditorTestBattle: (draftCard) =>
-				initEditorTestBattle(get, set)(draftCard),
+			initEditorTestBattle: (draftCard, testMode) =>
+				initEditorTestBattle(get, set)(draftCard, testMode),
 		}),
 		{
 			name: "alpha-battle-state",

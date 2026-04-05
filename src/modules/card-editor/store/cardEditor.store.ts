@@ -3,16 +3,20 @@ import { cardId } from "@/modules/cards/helpers/cards.helper";
 import { create } from "zustand";
 import { exportToJson } from "./commands/exportToJson.command";
 
-export type CardEditorGet = () => EditorState;
+export type EditorTestMode = "PLAYER" | "AI";
+
+export type CardEditorGet = () => CardEditorState;
 export type CardEditorSet = (
-	fn: (state: EditorState) => Partial<EditorState>,
+	fn: (state: CardEditorState) => Partial<CardEditorState>,
 ) => void;
 
-interface EditorState {
-	// The current working draft of the card
+interface CardEditorState {
 	draftCard: Card;
+	testMode: EditorTestMode;
+}
 
-	// Actions
+interface CardEditorActions {
+	setTestMode: (mode: EditorTestMode) => void;
 	updateDraft: (changes: Partial<Card>) => void;
 	resetDraft: () => void;
 	exportToJSON: () => void;
@@ -33,16 +37,20 @@ const INITIAL_DRAFT: Card = {
 	],
 };
 
-export const useCardEditorStore = create<EditorState>((set, get) => ({
-	draftCard: { ...INITIAL_DRAFT },
+export const useCardEditorStore = create<CardEditorState & CardEditorActions>(
+	(set, get) => ({
+		draftCard: { ...INITIAL_DRAFT },
+		testMode: "PLAYER",
 
-	updateDraft: (changes) =>
-		set((state) => ({
-			draftCard: {
-				...state.draftCard,
-				...changes,
-			},
-		})),
-	resetDraft: () => set({ draftCard: { ...INITIAL_DRAFT } }),
-	exportToJSON: exportToJson(get),
-}));
+		setTestMode: (mode) => set({ testMode: mode }),
+		updateDraft: (changes) =>
+			set((state) => ({
+				draftCard: {
+					...state.draftCard,
+					...changes,
+				},
+			})),
+		resetDraft: () => set({ draftCard: { ...INITIAL_DRAFT } }),
+		exportToJSON: exportToJson(get),
+	}),
+);
