@@ -1,5 +1,5 @@
-import { ObjectiveTracker } from "@/modules/campaign/components/ObjectiveTracker";
 import { AnimatePresence } from "framer-motion";
+import { ObjectiveTracker } from "@/modules/campaign/components/ObjectiveTracker";
 
 export default function RootBattleLayout({
 	children,

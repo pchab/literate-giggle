@@ -1,4 +1,4 @@
-import { cardLibrary } from "@/modules/cards/data/cards.data";
+import { useRegistryStore } from "@/modules/shared/store/registry.store";
 import type {
 	AIBattleUnit,
 	BattleUnit,
@@ -48,8 +48,8 @@ export const calculateAIIntents =
 					}
 				}
 			}
-
-			if (cardLibrary[selectedCardId]) {
+			const isValidCard = useRegistryStore.getState().getCard(selectedCardId);
+			if (isValidCard) {
 				baselineIntents[aiunit.id] = {
 					unitId: aiunit.id,
 					cardId: selectedCardId,
@@ -64,7 +64,6 @@ export const calculateAIIntents =
 				...baselineIntents,
 			},
 		}));
-
 		await resolveAIActions(fakeGet, fakeSet, true);
 
 		const { units: simulatedUnits, aiIntents: simulatedAiIntents } = fakeGet();

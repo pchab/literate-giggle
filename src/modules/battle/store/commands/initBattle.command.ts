@@ -82,6 +82,7 @@ export const initBattle =
 				hand: [card1, card2, card3],
 			};
 		});
+
 		set(() => ({
 			encounterId,
 			units: [...battleRoster, ...freshMonsters, ...freshSummons],

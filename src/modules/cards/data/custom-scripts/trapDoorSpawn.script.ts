@@ -7,6 +7,7 @@ import {
 	isTileInBounds,
 } from "@/modules/battle/helpers/grid.helpers";
 import { sleep } from "@/modules/shared/helpers/sleep";
+import { useRegistryStore } from "@/modules/shared/store/registry.store";
 import { summonLibrary } from "@/modules/units/data/summons/summons.data";
 import {
 	type BattleUnit,
@@ -19,7 +20,6 @@ import {
 } from "@/modules/units/helpers/units.helpers";
 import type { CustomScriptEffect } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
-import { monsterCardLibrary } from "../monsters/monsterCards.data";
 
 export const trapdoorSpawn: EffectResolver<
 	BattleUnit,
@@ -36,7 +36,8 @@ export const trapdoorSpawn: EffectResolver<
 		// --- TRAP DOOR BLOCKED => ATTACK WHOEVER IS BLOCKING IT ! ---
 		if (isBlocked) {
 			const nastyBiteId = cardId("nasty_bite");
-			const nastyBiteCard = monsterCardLibrary[nastyBiteId];
+			const nastyBiteCard = useRegistryStore.getState().getCard(nastyBiteId);
+			if (!nastyBiteCard) return;
 			const newIntent: Intent = {
 				cardId: nastyBiteId,
 				unitId: caster.id,
@@ -90,8 +91,8 @@ export const trapdoorSpawn: EffectResolver<
 		if (spawnTiles.length === 0) return;
 
 		const newRats: Summon[] = spawnTiles.map((pos, index) => ({
-			id: summonId(`trap-door-rat-${Date.now()}-${index}`),
 			...blueprint,
+			id: summonId(`trap-door-rat-${Date.now()}-${index}`),
 			variant: getVariantFromBlueprint(blueprint),
 			stance: UnitStance.IDLE,
 			currentHp: blueprint.maxHp,

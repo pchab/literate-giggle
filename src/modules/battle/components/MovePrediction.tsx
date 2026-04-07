@@ -1,7 +1,7 @@
 "use client";
 
-import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { useShallow } from "zustand/shallow";
+import { useBattleStore } from "@/modules/battle/store/battle.store";
 import type { GridPosition } from "../domain/grid.type";
 import { isUnitInTile } from "../helpers/grid.helpers";
 

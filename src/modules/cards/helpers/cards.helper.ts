@@ -1,5 +1,5 @@
+import { useRegistryStore } from "@/modules/shared/store/registry.store";
 import type { Hero } from "@/modules/units/domain/units.type";
-import { cardLibrary } from "../data/cards.data";
 import type {
 	ApplyStatusEffect,
 	Card,
@@ -59,7 +59,7 @@ export function formatCardEffect(effect: CardEffect): string {
 
 export function createHeroCard(heroId: Hero["id"]) {
 	return (baseCardId: Card["id"]): HeroCard => {
-		const baseCard = cardLibrary[baseCardId];
+		const baseCard = useRegistryStore.getState().getCard(baseCardId);
 		if (!baseCard) {
 			throw new Error(`Missing base card id ${baseCardId}`);
 		}
@@ -73,7 +73,7 @@ export function createHeroCard(heroId: Hero["id"]) {
 }
 
 export function getComputedCard(instance: HeroCard): Card {
-	const baseCard = cardLibrary[instance.baseCardId];
+	const baseCard = useRegistryStore.getState().getCard(instance.baseCardId);
 	if (!baseCard) {
 		throw new Error(`Missing card definition ${instance.baseCardId}`);
 	}

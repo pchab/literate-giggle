@@ -1,10 +1,10 @@
+import { motion } from "motion/react";
+import { type ReactElement, useEffect } from "react";
 import {
 	isProjectile,
 	type Vfx,
 	type VfxType,
 } from "@/modules/battle/domain/vfx.type";
-import { motion } from "motion/react";
-import { type ReactElement, useEffect } from "react";
 
 interface VfxOverlayProps {
 	vfx?: Vfx;

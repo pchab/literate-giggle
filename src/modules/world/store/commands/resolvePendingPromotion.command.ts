@@ -1,6 +1,6 @@
-import { cardLibrary } from "@/modules/cards/data/cards.data";
 import type { Card } from "@/modules/cards/domain/cards.type";
 import { createHeroCard } from "@/modules/cards/helpers/cards.helper";
+import { useRegistryStore } from "@/modules/shared/store/registry.store";
 import { CLASS_REGISTRY } from "@/modules/units/data/heroClass.data";
 import type { Hero } from "@/modules/units/domain/units.type";
 import { applyLevelUpTriggers } from "@/modules/units/helpers/levelUpEffects.helper";
@@ -37,7 +37,8 @@ export function resolvePendingPromotion(
 			unlockedQuestsQueue,
 		});
 
-		if (cardLibrary[chosenUtilityCardId]) {
+		const card = useRegistryStore.getState().getCard(chosenUtilityCardId);
+		if (card) {
 			newHero.deck.push(createHeroCard(heroId)(chosenUtilityCardId));
 		}
 

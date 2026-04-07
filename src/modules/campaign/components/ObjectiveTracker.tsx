@@ -1,8 +1,8 @@
 "use client";
 
+import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { ENCOUNTER_DB } from "@/modules/campaign/data/encounters.data";
-import { useShallow } from "zustand/shallow";
 
 export function ObjectiveTracker() {
 	const { objectiveProgress, encounterId } = useBattleStore(

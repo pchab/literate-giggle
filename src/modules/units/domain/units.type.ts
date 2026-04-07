@@ -31,6 +31,7 @@ type IntentOption = {
 };
 
 export interface UnitBlueprint extends Omit<Unit, "id" | "variant"> {
+	id: string & { readonly __brand: "BluePrintId" };
 	availableVariants?: UnitSpriteVariant[];
 	xpReward: number;
 	intentPool: IntentOption[];

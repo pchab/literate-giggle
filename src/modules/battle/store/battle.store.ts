@@ -14,13 +14,17 @@ import type {
 	BattleHero,
 	BattleUnit,
 	Hero,
+	UnitBlueprint,
+	UnitStance,
 } from "@/modules/units/domain/units.type";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+import { calculateAIIntents } from "./commands/calculateAIIntents.command";
 import { cancelCard } from "./commands/cancelCard.command";
 import { endTurn } from "./commands/endTurn.command";
 import { initBattle } from "./commands/initBattle.command";
-import { initEditorTestBattle } from "./commands/initEditorTestBattle.command";
+import { initCardEditorTestBattle } from "./commands/initCardEditorTestBattle.command";
+import { initUnitEditorTestBattle } from "./commands/initUnitEditorTestBattle.command";
 import { moveHero } from "./commands/moveHero.command";
 import { resolveAIActions } from "./commands/resolveAIAction.command";
 import { resolveCard } from "./commands/resolveCard.command";
@@ -79,7 +83,14 @@ type BattleAction = {
 	setVfx: (cellId: string, vfx: Vfx | null) => void;
 	resetXpEarned: () => void;
 
-	initEditorTestBattle: (draftCard: Card, testMode: EditorTestMode) => void;
+	calculateAIIntents: (
+		existingIntents: Record<BattleUnit["id"], Intent>,
+	) => void;
+	initCardEditorTestBattle: (draftCard: Card, testMode: EditorTestMode) => void;
+	initUnitEditorTestBattle: (
+		draftUnit: UnitBlueprint,
+		stance: UnitStance,
+	) => void;
 };
 
 const initialState: BattleState = {
@@ -146,12 +157,16 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 					currentVfx: vfx ? { ...otherVfx, [cellId]: vfx } : otherVfx,
 				})),
 			resetXpEarned: () => set({ xpEarned: 0, encounterId: null }),
-			initEditorTestBattle: (draftCard, testMode) =>
-				initEditorTestBattle(get, set)(draftCard, testMode),
+			calculateAIIntents: (existingIntents: Record<BattleUnit["id"], Intent>) =>
+				calculateAIIntents(get, set)(existingIntents),
+			initCardEditorTestBattle: (draftCard, testMode) =>
+				initCardEditorTestBattle(get, set)(draftCard, testMode),
+			initUnitEditorTestBattle: (draftUnit, stance) =>
+				initUnitEditorTestBattle(get, set)(draftUnit, stance),
 		}),
 		{
 			name: "alpha-battle-state",
-			storage: createJSONStorage(() => localStorage),
+			storage: createJSONStorage(() => sessionStorage),
 			partialize: (state) => ({
 				encounterId: state.encounterId,
 				units: state.units,

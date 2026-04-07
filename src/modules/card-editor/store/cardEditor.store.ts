@@ -17,6 +17,7 @@ interface CardEditorState {
 
 interface CardEditorActions {
 	setTestMode: (mode: EditorTestMode) => void;
+	loadDraft: (card: Card) => void;
 	updateDraft: (changes: Partial<Card>) => void;
 	resetDraft: () => void;
 	exportToJSON: () => void;
@@ -43,6 +44,7 @@ export const useCardEditorStore = create<CardEditorState & CardEditorActions>(
 		testMode: "PLAYER",
 
 		setTestMode: (mode) => set({ testMode: mode }),
+		loadDraft: (card) => set({ draftCard: card }),
 		updateDraft: (changes) =>
 			set((state) => ({
 				draftCard: {

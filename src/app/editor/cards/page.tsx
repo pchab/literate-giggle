@@ -7,14 +7,15 @@ import { useCardEditorStore } from "@/modules/card-editor/store/cardEditor.store
 import { MotionCamera } from "@/modules/shared/components/MotionCamera";
 import { getBackgroundImage } from "@/modules/shared/helpers/backgroundImage.helpers";
 import { HeroCard } from "@/modules/units/components/HeroCard";
-import { isHero } from "@/modules/units/helpers/units.helpers";
+import { isHero, monsterId } from "@/modules/units/helpers/units.helpers";
 import { useEffect } from "react";
 import { useShallow } from "zustand/shallow";
 
 export default function CardEditorPage() {
 	const { testMode, draftCard } = useCardEditorStore();
 	const {
-		initEditorTestBattle,
+		initCardEditorTestBattle,
+		calculateAIIntents,
 		enemyAction,
 		battleStatus,
 		units,
@@ -22,7 +23,8 @@ export default function CardEditorPage() {
 		activeHeroCard,
 	} = useBattleStore(
 		useShallow((state) => ({
-			initEditorTestBattle: state.initEditorTestBattle,
+			initCardEditorTestBattle: state.initCardEditorTestBattle,
+			calculateAIIntents: state.calculateAIIntents,
 			enemyAction: state.enemyAction,
 			battleStatus: state.battleStatus,
 			units: state.units,
@@ -39,12 +41,22 @@ export default function CardEditorPage() {
 
 	// --- DEBOUNCED INITIALIZATION & CLEANUP ---
 	useEffect(() => {
-		const timer = setTimeout(
-			() => initEditorTestBattle(draftCard, testMode),
-			500,
-		);
+		const timer = setTimeout(() => {
+			initCardEditorTestBattle(draftCard, testMode);
+			if (testMode === "AI") {
+				calculateAIIntents(
+					{
+						[monsterId("dummy_target")]: {
+							cardId: draftCard.id,
+							unitId: monsterId("dummy_target"),
+						},
+					},
+					draftCard,
+				);
+			}
+		}, 500);
 		return () => clearTimeout(timer);
-	}, [draftCard, initEditorTestBattle]);
+	}, [draftCard, testMode, calculateAIIntents, initCardEditorTestBattle]);
 
 	useEffect(() => {
 		return () => {
@@ -86,10 +98,6 @@ export default function CardEditorPage() {
 			<div className="flex-1 relative flex flex-col items-center justify-center p-8 overflow-y-auto">
 				<MotionCamera background={backgroundImage}>
 					<BattleGrid />
-
-					<div className="absolute -top-4 -right-4 px-3 py-1 bg-blue-600/80 text-white text-xs font-bold uppercase tracking-wider rounded backdrop-blur-sm z-50 pointer-events-none">
-						Sandbox Mode
-					</div>
 				</MotionCamera>
 
 				{/* BOTTOM UI: The Hero Card */}
@@ -98,6 +106,10 @@ export default function CardEditorPage() {
 						<HeroCard {...testHero} />
 					</div>
 				)}
+			</div>
+
+			<div className="absolute top-4 right-4 px-3 py-1 bg-blue-600/80 text-white text-xs font-bold uppercase tracking-wider rounded backdrop-blur-sm z-50 pointer-events-none">
+				Sandbox Mode
 			</div>
 		</div>
 	);

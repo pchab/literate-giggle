@@ -1,18 +1,23 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { BattleCard } from "@/modules/cards/components/BattleCard";
 import { CardTooltip } from "@/modules/cards/components/CardTooltip";
-import { cardLibrary } from "@/modules/cards/data/cards.data";
+import { useRegistryStore } from "@/modules/shared/store/registry.store";
 import type { AIBattleUnit } from "@/modules/units/domain/units.type";
+import { motion } from "framer-motion";
+import { useShallow } from "zustand/shallow";
 
 export default function EnemyIntentSidebar({
 	aiUnit,
 }: {
 	aiUnit: AIBattleUnit;
 }) {
+	const { getCard } = useRegistryStore(
+		useShallow((state) => ({
+			getCard: state.getCard,
+		})),
+	);
 	const { aiIntents } = useBattleStore(
 		useShallow((state) => ({
 			aiIntents: state.aiIntents,
@@ -110,7 +115,7 @@ export default function EnemyIntentSidebar({
 			{/* --- INTENT/NEXT ACTION --- */}
 			{aiIntents[aiUnit.id] &&
 				(() => {
-					const intentCard = cardLibrary[aiIntents[aiUnit.id].cardId];
+					const intentCard = getCard(aiIntents[aiUnit.id].cardId);
 					if (!intentCard) return null;
 
 					return (
@@ -129,7 +134,7 @@ export default function EnemyIntentSidebar({
 			{/* --- INTENT/ON DEATH ACTION --- */}
 			{aiUnit.onDeath &&
 				(() => {
-					const onDeathCard = cardLibrary[aiUnit.onDeath];
+					const onDeathCard = getCard(aiUnit.onDeath);
 					if (!onDeathCard) return null;
 
 					return (

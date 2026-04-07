@@ -1,18 +1,23 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
-import { useShallow } from "zustand/shallow";
 import { BattleCard } from "@/modules/cards/components/BattleCard";
-import { cardLibrary } from "@/modules/cards/data/cards.data";
 import type { Card } from "@/modules/cards/domain/cards.type";
 import { RetroPanel } from "@/modules/shared/components/RetroPanel";
+import { useRegistryStore } from "@/modules/shared/store/registry.store";
 import { CLASS_REGISTRY } from "@/modules/units/data/heroClass.data";
 import type { HeroClass } from "@/modules/units/domain/heroClass.types";
 import { useWorldStore } from "@/modules/world/store/world.store";
+import { AnimatePresence, motion } from "motion/react";
+import { useState } from "react";
+import { useShallow } from "zustand/shallow";
 import { HeroPortrait } from "./HeroPortrait";
 
 export function ClassPromotionModal() {
+	const { getCard } = useRegistryStore(
+		useShallow((state) => ({
+			getCard: state.getCard,
+		})),
+	);
 	const { pendingPromotions, resolvePromotion, roster } = useWorldStore(
 		useShallow((state) => ({
 			pendingPromotions: state.pendingPromotions,
@@ -69,7 +74,7 @@ export function ClassPromotionModal() {
 								}
 
 								const showcaseCard = showcaseCardId
-									? cardLibrary[showcaseCardId]
+									? getCard(showcaseCardId)
 									: null;
 
 								return (
@@ -232,7 +237,11 @@ export function ClassPromotionModal() {
 						<div className="flex gap-8">
 							{classDef.utilityCardChoices.map((cardId) => {
 								const isSelected = selectedCardId === cardId;
-								const card = cardLibrary[cardId];
+								const card = getCard(cardId);
+								if (!card) {
+									console.warn(`Card with ID ${cardId} not found in registry.`);
+									return null;
+								}
 								return (
 									<button
 										type="button"

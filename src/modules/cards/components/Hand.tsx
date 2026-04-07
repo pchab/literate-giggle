@@ -1,9 +1,9 @@
 "use client";
 
-import { useBattleStore } from "@/modules/battle/store/battle.store";
-import type { BattleHero } from "@/modules/units/domain/units.type";
 import { AnimatePresence, motion } from "motion/react";
 import { useShallow } from "zustand/shallow";
+import { useBattleStore } from "@/modules/battle/store/battle.store";
+import type { BattleHero } from "@/modules/units/domain/units.type";
 import { BattleCard } from "./BattleCard";
 import { CardTooltip } from "./CardTooltip";
 

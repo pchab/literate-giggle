@@ -13,6 +13,8 @@ import {
 	PLAY_REQUIREMENTS,
 } from "@/modules/cards/domain/cards.type";
 import { ImageUploadArea } from "@/modules/shared/components/ImageUploadArea";
+import { useAssetStore } from "@/modules/shared/store/asset.store";
+import { useShallow } from "zustand/shallow";
 import { useCardEditorStore } from "../store/cardEditor.store";
 import { CardEffectsEditor } from "./CardEffectsEditor";
 
@@ -26,7 +28,16 @@ const AI_PREFERENCES: string[] = [
 ];
 
 export function CardPropertyForm() {
-	const { draftCard, updateDraft, exportToJSON } = useCardEditorStore();
+	const { draftCard, testMode, setTestMode, updateDraft, exportToJSON } =
+		useCardEditorStore(
+			useShallow((state) => ({
+				draftCard: state.draftCard,
+				testMode: state.testMode,
+				setTestMode: state.setTestMode,
+				updateDraft: state.updateDraft,
+				exportToJSON: state.exportToJSON,
+			})),
+		);
 
 	const handleTextChange =
 		(field: keyof typeof draftCard) =>
@@ -226,12 +237,11 @@ export function CardPropertyForm() {
 					<ImageUploadArea
 						label="Card Illustration"
 						currentImage={draftCard.image}
-						onImageChange={(blobUrl, _file) => {
-							// 1. Update the visual preview immediately
+						onImageChange={async (blobUrl, file) => {
 							updateDraft({ image: blobUrl });
-
-							// 2. Later, we will also push the `file` to a global `useCampaignStore`
-							//    so JSZip can grab it when you click "Export Campaign"!
+							await useAssetStore
+								.getState()
+								.saveAsset(`/cards/${draftCard.id}`, file);
 						}}
 					/>
 				</div>
@@ -248,6 +258,37 @@ export function CardPropertyForm() {
 						effects={draftCard.effects}
 						onChange={(newEffects) => updateDraft({ effects: newEffects })}
 					/>
+				</div>
+			</div>
+
+			{/* Test Mode Toggle */}
+			<div className="flex flex-col gap-2">
+				<span className="text-sm font-bold text-zinc-300">
+					Sandbox Test Mode
+				</span>
+				<div className="flex items-center justify-between bg-zinc-950 p-1 rounded-md border border-zinc-800">
+					<button
+						type="button"
+						onClick={() => setTestMode("PLAYER")}
+						className={`flex-1 py-2 text-xs font-bold rounded transition-colors ${
+							testMode === "PLAYER"
+								? "bg-blue-600 text-white shadow-md"
+								: "text-zinc-500 hover:text-zinc-300"
+						}`}
+					>
+						Play as Hero
+					</button>
+					<button
+						type="button"
+						onClick={() => setTestMode("AI")}
+						className={`flex-1 py-2 text-xs font-bold rounded transition-colors ${
+							testMode === "AI"
+								? "bg-purple-600 text-white shadow-md"
+								: "text-zinc-500 hover:text-zinc-300"
+						}`}
+					>
+						Test AI Cast
+					</button>
 				</div>
 			</div>
 

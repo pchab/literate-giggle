@@ -1,6 +1,6 @@
 import type { Quest } from "@/modules/campaign/domain/quests.type";
-import { cardLibrary } from "@/modules/cards/data/cards.data";
 import { createHeroCard } from "@/modules/cards/helpers/cards.helper";
+import { useRegistryStore } from "@/modules/shared/store/registry.store";
 import type {
 	LevelUpDefinition,
 	PendingPromotion,
@@ -36,19 +36,22 @@ export function applyLevelUpTriggers(
 			break;
 
 		case "cardUpgrade": {
+			const registryCard = useRegistryStore
+				.getState()
+				.getCard(trigger.newCardId);
 			const deckIndex = newHero.deck.findIndex(
 				(card) => card.baseCardId === trigger.oldCardId,
 			);
 			const handIndex = newHero.selectedCards.findIndex(
 				(card) => card?.baseCardId === trigger.oldCardId,
 			);
-			if (deckIndex !== -1 && cardLibrary[trigger.newCardId]) {
+			if (deckIndex !== -1 && registryCard) {
 				newHero.deck[deckIndex].baseCardId = trigger.newCardId;
 			}
 			if (
 				handIndex !== -1 &&
 				newHero.selectedCards[handIndex] &&
-				cardLibrary[trigger.newCardId]
+				registryCard
 			) {
 				newHero.selectedCards[handIndex].baseCardId = trigger.newCardId;
 			}
@@ -57,7 +60,8 @@ export function applyLevelUpTriggers(
 
 		case "cardUnlock":
 			trigger.newCards.forEach((cardId) => {
-				if (cardLibrary[cardId]) {
+				const registryCard = useRegistryStore.getState().getCard(cardId);
+				if (registryCard) {
 					newHero.deck.push(createHeroCard(hero.id)(cardId));
 				}
 			});

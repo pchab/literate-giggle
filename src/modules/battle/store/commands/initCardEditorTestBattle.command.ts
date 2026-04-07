@@ -16,7 +16,7 @@ import {
 	summonId,
 } from "@/modules/units/helpers/units.helpers";
 
-export const initEditorTestBattle =
+export const initCardEditorTestBattle =
 	(_: BattleGet, set: BattleSet) => (draftCard: Card, mode: EditorTestMode) => {
 		const mockHero: BattleHero = {
 			id: heroId("test_hero"),
@@ -32,18 +32,16 @@ export const initEditorTestBattle =
 			statuses: [],
 			stance: UnitStance.IDLE,
 			passives: [],
-			hand: [draftCard, null, null],
+			hand: mode === "PLAYER" ? [draftCard, null, null] : [null, null, null],
 		};
 
 		const dummyTarget: Monster = {
-			id: monsterId("dummy_target"),
 			...zombie,
+			id: monsterId("dummy_target"),
 			name: "Training Dummy",
 			variant: "default",
 			maxHp: 100,
 			currentHp: 100,
-			baseDef: 0,
-			baseMove: 0,
 			gridPosition: { col: 0, row: 0 },
 			statuses: [],
 			stance: UnitStance.IDLE,
@@ -52,14 +50,12 @@ export const initEditorTestBattle =
 		};
 
 		const mockAlly: Summon = {
-			id: summonId("test_ally"),
 			...villager,
+			id: summonId("test_ally"),
 			allegiance: "PLAYER",
 			variant: "default",
 			maxHp: 100,
 			currentHp: 50,
-			baseDef: 0,
-			baseMove: 0,
 			gridPosition: { col: 4, row: 0 },
 			statuses: [],
 			stance: UnitStance.IDLE,

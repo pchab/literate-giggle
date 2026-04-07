@@ -4,8 +4,8 @@ import {
 	isUnitInTile,
 } from "@/modules/battle/helpers/grid.helpers";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
-import { cardLibrary } from "@/modules/cards/data/cards.data";
 import type { Card } from "@/modules/cards/domain/cards.type";
+import { useRegistryStore } from "@/modules/shared/store/registry.store";
 import type { BattleUnit } from "@/modules/units/domain/units.type";
 import { isHero } from "@/modules/units/helpers/units.helpers";
 import { useShallow } from "zustand/shallow";
@@ -142,7 +142,7 @@ export function useCellHighlight(): CellHighlight {
 			if (!hoveredAiUnit) return highlight;
 
 			intent = aiIntents[hoveredAiUnit.id];
-			card = intent && cardLibrary[intent.cardId];
+			card = intent && useRegistryStore.getState().getCard(intent.cardId);
 		}
 	}
 

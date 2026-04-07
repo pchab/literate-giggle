@@ -1,4 +1,4 @@
-import { cardLibrary } from "@/modules/cards/data/cards.data";
+import { useRegistryStore } from "@/modules/shared/store/registry.store";
 import type { Status } from "@/modules/units/domain/status.type";
 import type { BattleUnit } from "@/modules/units/domain/units.type";
 import type { GridPosition } from "../domain/grid.type";
@@ -184,15 +184,18 @@ export const applyCombatUpdate =
 				}
 			}
 			if (currentUnit.onDeath) {
-				const onDeathCard = cardLibrary[currentUnit.onDeath];
-				await handleAICardIntent(
-					get,
-					set,
-					isSimulation,
-				)({
-					attackerId: currentUnit.id,
-					card: onDeathCard,
-				});
+				const onDeathCard = useRegistryStore
+					.getState()
+					.getCard(currentUnit.onDeath);
+				onDeathCard &&
+					(await handleAICardIntent(
+						get,
+						set,
+						isSimulation,
+					)({
+						attackerId: currentUnit.id,
+						card: onDeathCard,
+					}));
 			}
 		}
 

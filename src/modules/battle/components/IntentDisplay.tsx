@@ -1,8 +1,16 @@
+"use client";
+
 import type { Intent } from "@/modules/battle/domain/intent.type";
-import { cardLibrary } from "@/modules/cards/data/cards.data";
+import { useRegistryStore } from "@/modules/shared/store/registry.store";
+import { useShallow } from "zustand/shallow";
 
 export default function IntentDisplay({ intent }: { intent: Intent }) {
-	const card = cardLibrary[intent.cardId];
+	const { getCard } = useRegistryStore(
+		useShallow((state) => ({
+			getCard: state.getCard,
+		})),
+	);
+	const card = getCard(intent.cardId);
 	if (!card) return null;
 
 	let totalDamage = 0;

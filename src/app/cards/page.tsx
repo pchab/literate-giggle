@@ -1,13 +1,21 @@
+"use client";
+
 import { BattleCard } from "@/modules/cards/components/BattleCard";
-import { cardLibrary } from "@/modules/cards/data/cards.data";
+import { useRegistryStore } from "@/modules/shared/store/registry.store";
+import { useShallow } from "zustand/shallow";
 
 export default function CardsPage() {
-	const allCards = Object.values(cardLibrary);
+	const { getAllCards } = useRegistryStore(
+		useShallow((state) => ({
+			getAllCards: state.getAllCards,
+		})),
+	);
+	const allCards = getAllCards();
 
 	return (
 		<div className="grid grid-cols-5 mx-auto gap-4 overflow-y-scroll">
 			{allCards.map((card) => (
-				<BattleCard card={card} size="large" />
+				<BattleCard key={card.id} card={card} size="large" />
 			))}
 		</div>
 	);

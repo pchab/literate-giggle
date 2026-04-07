@@ -1,5 +1,5 @@
-import { cardLibrary } from "@/modules/cards/data/cards.data";
 import { sleep } from "@/modules/shared/helpers/sleep";
+import { useRegistryStore } from "@/modules/shared/store/registry.store";
 import { isHero } from "@/modules/units/helpers/units.helpers";
 import { handleAICardIntent } from "../../helpers/ai.actions.helpers";
 import { tickStatusesAndSurfaces } from "../../helpers/effects/effect.helpers";
@@ -38,7 +38,7 @@ export const resolveAIActions = async (
 		const intent = aiIntents[freshAIunit.id];
 		if (!intent) continue;
 
-		const cardToPlay = cardLibrary[intent.cardId];
+		const cardToPlay = useRegistryStore.getState().getCard(intent.cardId);
 		if (!cardToPlay) continue;
 
 		await handleAICardIntent(

@@ -1,9 +1,9 @@
 "use client";
 
+import { useShallow } from "zustand/shallow";
 import { getCellId, isUnitInTile } from "@/modules/battle/helpers/grid.helpers";
 import type { BattleUnit } from "@/modules/units/domain/units.type";
 import { isHero, isHeroId } from "@/modules/units/helpers/units.helpers";
-import { useShallow } from "zustand/shallow";
 import { useCellHighlight } from "../hooks/useCellHighlight";
 import { useBattleStore } from "../store/battle.store";
 import { GridCell, type Highlight } from "./GridCell";

@@ -154,4 +154,4 @@ export type PowerRunes = {
 	bonusStatusDuration?: Partial<Record<StatusType, number>>;
 };
 
-export type Hand = [Card, Card | null, Card | null];
+export type Hand = [Card | null, Card | null, Card | null];
