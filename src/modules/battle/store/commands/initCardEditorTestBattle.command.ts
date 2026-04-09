@@ -72,6 +72,7 @@ export const initCardEditorTestBattle =
 			hoveredHeroCard: null,
 			usedCardsThisTurn: {},
 			hoveredCell: null,
+			sandboxCardOverride: draftCard,
 
 			currentVfx: {},
 

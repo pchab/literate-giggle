@@ -5,13 +5,14 @@ export const getSimulationState = (
 ): { fakeGet: BattleGet; fakeSet: BattleSet } => {
 	// 1. Deep clone the critical state (StructuredClone is native and fast)
 	// Note: Only clone the arrays we actually mutate to save performance
-	const { units, surfaces, gridSize } = get();
+	const { units, surfaces, gridSize, sandboxCardOverride } = get();
 	let draftState = structuredClone({
 		units: units,
 		surfaces: surfaces,
 		aiIntents: {},
 		playerIntent: {},
 		gridSize,
+		sandboxCardOverride,
 	}) as ReturnType<BattleGet>;
 
 	// 2. Create the Fake Zustand API

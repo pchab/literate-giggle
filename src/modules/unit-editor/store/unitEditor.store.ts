@@ -4,10 +4,10 @@ import { create } from "zustand";
 
 export interface UnitEditorState {
 	draftUnit: UnitBlueprint;
-	updateDraft: (changes: Partial<UnitBlueprint>) => void;
-	resetDraft: () => void;
-	saveToDatabase: () => Promise<void>;
 	loadDraft: (unit: UnitBlueprint) => void;
+	updateDraft: (changes: Partial<UnitBlueprint>) => void;
+	resetDraft: () => UnitBlueprint["id"];
+	saveToDatabase: () => Promise<void>;
 }
 
 const INITIAL_DRAFT: Omit<UnitBlueprint, "id" | "spriteBase"> = {
@@ -41,9 +41,13 @@ export const useUnitEditorStore = create<UnitEditorState>((set, get) => ({
 			},
 		})),
 	loadDraft: (unit) => set({ draftUnit: unit }),
-	resetDraft: () => set({ draftUnit: createNewUnit() }),
+	resetDraft: () => {
+		const draftUnit = createNewUnit();
+		set({ draftUnit });
+		return draftUnit.id;
+	},
 	saveToDatabase: async () => {
 		const { draftUnit } = get();
-		await idbSet(STORES.DATA, `unit_${draftUnit.name}`, draftUnit);
+		await idbSet(STORES.DATA, `unit_${draftUnit.id}`, draftUnit);
 	},
 }));

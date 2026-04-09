@@ -24,8 +24,8 @@ export const resolveAIActions = async (
 	// ==========================================
 	// 2. EXECUTE ACTIONS
 	// ==========================================
-	const stateAfterTick = get();
-	const allAIUnits = stateAfterTick.units.filter(
+	const { units: unitsAfterTick, sandboxCardOverride } = get();
+	const allAIUnits = unitsAfterTick.filter(
 		(u) => !isHero(u) && u.currentHp > 0,
 	);
 
@@ -38,7 +38,10 @@ export const resolveAIActions = async (
 		const intent = aiIntents[freshAIunit.id];
 		if (!intent) continue;
 
-		const cardToPlay = useRegistryStore.getState().getCard(intent.cardId);
+		const cardToPlay =
+			sandboxCardOverride?.id === intent.cardId
+				? sandboxCardOverride
+				: useRegistryStore.getState().getCard(intent.cardId);
 		if (!cardToPlay) continue;
 
 		await handleAICardIntent(

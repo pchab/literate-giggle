@@ -28,14 +28,14 @@ const AI_PREFERENCES: string[] = [
 ];
 
 export function CardPropertyForm() {
-	const { draftCard, testMode, setTestMode, updateDraft, exportToJSON } =
+	const { draftCard, testMode, setTestMode, updateDraft, saveToDatabase } =
 		useCardEditorStore(
 			useShallow((state) => ({
 				draftCard: state.draftCard,
 				testMode: state.testMode,
 				setTestMode: state.setTestMode,
 				updateDraft: state.updateDraft,
-				exportToJSON: state.exportToJSON,
+				saveToDatabase: state.saveToDatabase,
 			})),
 		);
 
@@ -50,6 +50,14 @@ export function CardPropertyForm() {
 		(e: React.ChangeEvent<HTMLInputElement>) => {
 			updateDraft({ [field]: parseInt(e.target.value, 10) || 0 });
 		};
+
+	const handleSave = async () => {
+		try {
+			await saveToDatabase();
+		} catch (error) {
+			console.error("Failed to save card:", error);
+		}
+	};
 
 	return (
 		<div className="flex flex-col h-full p-4 bg-zinc-900 border-r border-zinc-700 text-zinc-100 overflow-y-auto w-full shadow-xl">
@@ -262,7 +270,7 @@ export function CardPropertyForm() {
 			</div>
 
 			{/* Test Mode Toggle */}
-			<div className="flex flex-col gap-2">
+			<div className="flex flex-col gap-2 pt-4 border-t border-zinc-700 mt-4">
 				<span className="text-sm font-bold text-zinc-300">
 					Sandbox Test Mode
 				</span>
@@ -295,10 +303,10 @@ export function CardPropertyForm() {
 			<div className="mt-auto pt-6">
 				<button
 					type="button"
-					onClick={exportToJSON}
+					onClick={handleSave}
 					className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded transition-colors"
 				>
-					Export to JSON
+					Save Card to Database
 				</button>
 			</div>
 		</div>

@@ -1,4 +1,5 @@
 import { ImageUploadArea } from "@/modules/shared/components/ImageUploadArea";
+import { useSprite } from "@/modules/shared/hooks/useSprite";
 import { useAssetStore } from "@/modules/shared/store/asset.store";
 import { UnitStance } from "@/modules/units/domain/units.type";
 import { useShallow } from "zustand/shallow";
@@ -13,11 +14,18 @@ export function UnitPropertyForm() {
 			saveToDatabase: state.saveToDatabase,
 		})),
 	);
-	const { getSprite, saveAsset } = useAssetStore(
+	const { saveAsset } = useAssetStore(
 		useShallow((state) => ({
-			getSprite: state.getSprite,
+			sprites: state.sprites,
 			saveAsset: state.saveAsset,
 		})),
+	);
+	const idleSprite = useSprite(`${draftUnit.spriteBase}_${UnitStance.IDLE}`);
+	const movingSprite = useSprite(
+		`${draftUnit.spriteBase}_${UnitStance.MOVING}`,
+	);
+	const attackingSprite = useSprite(
+		`${draftUnit.spriteBase}_${UnitStance.ATTACKING}`,
 	);
 
 	const handleTextChange =
@@ -83,27 +91,21 @@ export function UnitPropertyForm() {
 					<div className="grid grid-cols-3 gap-2">
 						<ImageUploadArea
 							label="Idle"
-							currentImage={getSprite(
-								`${draftUnit.spriteBase}_${UnitStance.IDLE}`,
-							)}
+							currentImage={idleSprite}
 							onImageChange={(_url, file) =>
 								handleSpriteUpload(UnitStance.IDLE, file)
 							}
 						/>
 						<ImageUploadArea
 							label="Moving"
-							currentImage={getSprite(
-								`${draftUnit.spriteBase}_${UnitStance.MOVING}`,
-							)}
+							currentImage={movingSprite}
 							onImageChange={(_url, file) =>
 								handleSpriteUpload(UnitStance.MOVING, file)
 							}
 						/>
 						<ImageUploadArea
 							label="Attacking"
-							currentImage={getSprite(
-								`${draftUnit.spriteBase}_${UnitStance.ATTACKING}`,
-							)}
+							currentImage={attackingSprite}
 							onImageChange={(_url, file) =>
 								handleSpriteUpload(UnitStance.ATTACKING, file)
 							}

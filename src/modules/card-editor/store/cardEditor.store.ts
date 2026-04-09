@@ -1,7 +1,7 @@
 import type { Card } from "@/modules/cards/domain/cards.type";
 import { cardId } from "@/modules/cards/helpers/cards.helper";
+import { set as idbSet, STORES } from "@/modules/shared/store/lib/indexed-db";
 import { create } from "zustand";
-import { exportToJson } from "./commands/exportToJson.command";
 
 export type EditorTestMode = "PLAYER" | "AI";
 
@@ -19,14 +19,12 @@ interface CardEditorActions {
 	setTestMode: (mode: EditorTestMode) => void;
 	loadDraft: (card: Card) => void;
 	updateDraft: (changes: Partial<Card>) => void;
-	resetDraft: () => void;
-	exportToJSON: () => void;
+	resetDraft: () => Card["id"];
+	saveToDatabase: () => Promise<void>;
 }
 
-const INITIAL_DRAFT: Card = {
-	id: cardId("draft-card"),
+const INITIAL_DRAFT: Omit<Card, "id" | "image"> = {
 	name: "New Card",
-	image: "/cards/placeholder.webp",
 	range: 1,
 	playRequirement: "requires_enemy",
 	effects: [
@@ -38,9 +36,18 @@ const INITIAL_DRAFT: Card = {
 	],
 };
 
+const createNewCard = (): Card => {
+	const newId = cardId(crypto.randomUUID());
+	return {
+		...INITIAL_DRAFT,
+		id: newId as Card["id"],
+		image: newId,
+	};
+};
+
 export const useCardEditorStore = create<CardEditorState & CardEditorActions>(
 	(set, get) => ({
-		draftCard: { ...INITIAL_DRAFT },
+		draftCard: createNewCard(),
 		testMode: "PLAYER",
 
 		setTestMode: (mode) => set({ testMode: mode }),
@@ -52,7 +59,14 @@ export const useCardEditorStore = create<CardEditorState & CardEditorActions>(
 					...changes,
 				},
 			})),
-		resetDraft: () => set({ draftCard: { ...INITIAL_DRAFT } }),
-		exportToJSON: exportToJson(get),
+		resetDraft: () => {
+			const draftCard = createNewCard();
+			set({ draftCard });
+			return draftCard.id;
+		},
+		saveToDatabase: async () => {
+			const { draftCard } = get();
+			await idbSet(STORES.DATA, `card_${draftCard.id}`, draftCard);
+		},
 	}),
 );

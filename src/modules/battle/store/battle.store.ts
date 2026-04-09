@@ -61,6 +61,8 @@ export type BattleState = {
 	gridSize: { cols: number; rows: number };
 	objectiveProgress: Record<string, number>;
 	battleStatus: BattleStatus;
+
+	sandboxCardOverride: Card | undefined;
 };
 
 type BattleAction = {
@@ -124,6 +126,8 @@ const initialState: BattleState = {
 	gridSize: { cols: 8, rows: 8 },
 	objectiveProgress: {},
 	battleStatus: "ONGOING",
+
+	sandboxCardOverride: undefined,
 };
 
 export type BattleStoreServerAction = (

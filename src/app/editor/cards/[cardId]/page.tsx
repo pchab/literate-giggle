@@ -33,26 +33,17 @@ export default function CardEditorPage() {
 		})),
 	);
 
-	const backgroundImage = getBackgroundImage(
-		"/battlegrounds/grass_3_2.webp",
-		1200,
-		800,
-	);
-
 	// --- DEBOUNCED INITIALIZATION & CLEANUP ---
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			initCardEditorTestBattle(draftCard, testMode);
 			if (testMode === "AI") {
-				calculateAIIntents(
-					{
-						[monsterId("dummy_target")]: {
-							cardId: draftCard.id,
-							unitId: monsterId("dummy_target"),
-						},
+				calculateAIIntents({
+					[monsterId("dummy_target")]: {
+						cardId: draftCard.id,
+						unitId: monsterId("dummy_target"),
 					},
-					draftCard,
-				);
+				});
 			}
 		}, 500);
 		return () => clearTimeout(timer);
@@ -86,6 +77,11 @@ export default function CardEditorPage() {
 
 	// Find our mock hero so we can render their UI
 	const testHero = heroes[0];
+	const backgroundImage = getBackgroundImage(
+		"/battlegrounds/grass_3_2.webp",
+		1200,
+		800,
+	);
 
 	return (
 		<div className="flex h-screen w-full bg-zinc-950 overflow-hidden">
@@ -93,8 +89,6 @@ export default function CardEditorPage() {
 			<div className="w-125 h-full z-10 shrink-0">
 				<CardPropertyForm />
 			</div>
-
-			{/* RIGHT PANE */}
 			<div className="flex-1 relative flex flex-col items-center justify-center p-8 overflow-y-auto">
 				<MotionCamera background={backgroundImage}>
 					<BattleGrid />

@@ -8,11 +8,8 @@ import { getBackgroundImage } from "@/modules/shared/helpers/backgroundImage.hel
 import { UnitPropertyForm } from "@/modules/unit-editor/components/UnitPropertyForm";
 import { useUnitEditorStore } from "@/modules/unit-editor/store/unitEditor.store";
 import { UnitStance } from "@/modules/units/domain/units.type";
-import { monsterId } from "@/modules/units/helpers/units.helpers";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/shallow";
-
-const unitId = monsterId("preview_monster");
 
 export default function UnitEditorPage() {
 	const { draftUnit } = useUnitEditorStore();
@@ -42,7 +39,9 @@ export default function UnitEditorPage() {
 			initUnitEditorTestBattle(draftUnit, previewStance);
 
 			if (previewIntent) {
-				calculateAIIntents({ [unitId]: { cardId: previewIntent, unitId } });
+				calculateAIIntents({
+					[draftUnit.id]: { cardId: previewIntent, unitId: draftUnit.id },
+				});
 			}
 		}, 500);
 		return () => clearTimeout(timer);
@@ -53,23 +52,6 @@ export default function UnitEditorPage() {
 		calculateAIIntents,
 		previewIntent,
 	]);
-
-	// 2. INSTANT AI PROJECTION (Fires immediately when dropdown changes)
-	useEffect(() => {
-		if (previewIntent) {
-			calculateAIIntents({ [unitId]: { cardId: previewIntent, unitId } });
-		} else {
-			useBattleStore.setState({
-				aiIntents: {},
-				aiStateDiff: {
-					projectedMoves: {},
-					projectedCasualties: [],
-					projectedDamage: {},
-					projectedHealing: {},
-				},
-			});
-		}
-	}, [previewIntent, calculateAIIntents]);
 
 	// Clean up on exit
 	useEffect(() => {
@@ -88,8 +70,6 @@ export default function UnitEditorPage() {
 			<div className="h-full z-10 shrink-0 w-125">
 				<UnitPropertyForm />
 			</div>
-
-			{/* RIGHT PANE: Diorama */}
 			<div className="flex-1 relative flex flex-col items-center justify-start p-8 overflow-y-auto">
 				{/* Diorama Controls */}
 				<div className="flex gap-4 mb-6 bg-zinc-900 p-4 rounded-lg border border-zinc-700 shadow-xl z-20">
@@ -116,14 +96,31 @@ export default function UnitEditorPage() {
 						</span>
 						<select
 							value={previewIntent || ""}
-							onChange={(e) =>
-								setPreviewIntent((e.target.value as Card["id"]) || null)
-							}
+							onChange={(e) => {
+								const newIntent = (e.target.value as Card["id"]) || null;
+								setPreviewIntent(newIntent); // 1. Update the local UI state
+
+								// 2. Talk to the engine immediately in the event handler!
+								if (newIntent) {
+									calculateAIIntents({
+										[draftUnit.id]: { cardId: newIntent, unitId: draftUnit.id },
+									});
+								} else {
+									useBattleStore.setState({
+										aiIntents: {},
+										aiStateDiff: {
+											projectedMoves: {},
+											projectedCasualties: [],
+											projectedDamage: {},
+											projectedHealing: {},
+										},
+									});
+								}
+							}}
 							className="bg-zinc-800 text-sm rounded border border-zinc-600 px-3 py-1.5 text-blue-300 font-mono"
 						>
 							<option value="">None</option>
 							{draftUnit.intentPool.map((intent) => (
-								// Using idx as fallback key in case of duplicate IDs while typing
 								<option key={intent.cardId} value={intent.cardId}>
 									{intent.cardId || "(empty)"}
 								</option>

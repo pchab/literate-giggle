@@ -19,7 +19,7 @@ export const calculateAIIntents =
 	async (
 		existingIntents: Record<BattleUnit["id"], Intent> = get().aiIntents,
 	): Promise<void> => {
-		const { units } = get();
+		const { units, sandboxCardOverride } = get();
 
 		const aiUnits = units
 			.filter(isAiBattleUnit)
@@ -28,7 +28,6 @@ export const calculateAIIntents =
 		const { fakeGet, fakeSet } = getSimulationState(get);
 
 		const baselineIntents: Record<string, Intent> = {};
-
 		for (const aiunit of aiUnits) {
 			let selectedCardId = existingIntents[aiunit.id]?.cardId;
 
@@ -48,7 +47,11 @@ export const calculateAIIntents =
 					}
 				}
 			}
-			const isValidCard = useRegistryStore.getState().getCard(selectedCardId);
+
+			const isOverride = sandboxCardOverride?.id === selectedCardId;
+			const registryCard = useRegistryStore.getState().getCard(selectedCardId);
+			const isValidCard = isOverride || !!registryCard;
+
 			if (isValidCard) {
 				baselineIntents[aiunit.id] = {
 					unitId: aiunit.id,

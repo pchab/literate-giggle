@@ -13,6 +13,7 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useShallow } from "zustand/shallow";
 
 type EditorTab = "units" | "cards";
 
@@ -29,9 +30,23 @@ export default function EditorDashboard() {
 	const [activeTab, setActiveTab] = useState<EditorTab>("units");
 	const [items, setItems] = useState<Card[] | UnitBlueprint[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
-
-	// We bring in loadAsset so we can fetch thumbnails for the grid
 	const { loadAsset, getSprite } = useAssetStore();
+	const { resetDraft: resetUnitDraft, loadDraft: loadUnitDraft } =
+		useUnitEditorStore(
+			useShallow((state) => ({
+				resetDraft: state.resetDraft,
+				loadDraft: state.loadDraft,
+				draftUnit: state.draftUnit,
+			})),
+		);
+	const { resetDraft: resetCardDraft, loadDraft: loadCardDraft } =
+		useCardEditorStore(
+			useShallow((state) => ({
+				resetDraft: state.resetDraft,
+				loadDraft: state.loadDraft,
+				draftCard: state.draftCard,
+			})),
+		);
 
 	useEffect(() => {
 		const fetchDatabase = async () => {
@@ -63,21 +78,21 @@ export default function EditorDashboard() {
 
 	const handleCreateNew = () => {
 		if (activeTab === "units") {
-			useUnitEditorStore.getState().resetDraft();
-			router.push("/editor/units");
+			const unitId = resetUnitDraft();
+			router.push(`/editor/units/${unitId}`);
 		} else {
-			useCardEditorStore.getState().resetDraft();
-			router.push("/editor/cards");
+			const cardId = resetCardDraft();
+			router.push(`/editor/cards/${cardId}`);
 		}
 	};
 
 	const handleEditItem = (item: Card | UnitBlueprint) => {
 		if (isUnit(item)) {
-			useUnitEditorStore.getState().loadDraft(item);
-			router.push("/editor/units");
+			loadUnitDraft(item);
+			router.push(`/editor/units/${item.id}`);
 		} else {
-			useCardEditorStore.getState().loadDraft(item);
-			router.push("/editor/cards");
+			loadCardDraft(item);
+			router.push(`/editor/cards/${item.id}`);
 		}
 	};
 
