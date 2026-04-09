@@ -33,8 +33,8 @@ export const resolveSummonEffect: EffectResolver<BattleUnit, SummonEffect> =
 				units: [
 					...units,
 					{
-						id: summonId(Date.now()),
 						...blueprint,
+						id: summonId(Date.now()),
 						variant: getVariantFromBlueprint(blueprint),
 						stance: UnitStance.IDLE,
 						currentHp: blueprint.maxHp,

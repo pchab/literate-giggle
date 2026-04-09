@@ -1,6 +1,7 @@
 import type { UnitBlueprint } from "../../domain/units.type";
 
 export const barrel: UnitBlueprint = {
+	id: "barrel" as UnitBlueprint["id"],
 	name: "Barrel",
 	spriteBase: "summons/barrel",
 	maxHp: 10,

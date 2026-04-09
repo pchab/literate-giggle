@@ -1,6 +1,7 @@
 import type { UnitBlueprint } from "../../domain/units.type";
 
 export const iceWall: UnitBlueprint = {
+	id: "ice_wall" as UnitBlueprint["id"],
 	name: "Ice Wall",
 	spriteBase: "summons/ice_wall",
 	maxHp: 10,

@@ -2,6 +2,7 @@ import { cardId } from "@/modules/cards/helpers/cards.helper";
 import type { UnitBlueprint } from "../../domain/units.type";
 
 export const briarWolf: UnitBlueprint = {
+	id: "briar_wolf" as UnitBlueprint["id"],
 	name: "Briar Wolf",
 	spriteBase: "monsters/briar_wolf",
 	maxHp: 8,

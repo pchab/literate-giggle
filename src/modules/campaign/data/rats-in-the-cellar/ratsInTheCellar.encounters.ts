@@ -1,7 +1,6 @@
 import { getCellId } from "@/modules/battle/helpers/grid.helpers";
 import { rat, ratBoss } from "@/modules/units/data/monsters/rat.data";
 import { barrel } from "@/modules/units/data/summons/barrel";
-import { monsterId } from "@/modules/units/helpers/units.helpers";
 import type { Encounter } from "../../domain/encounters.type";
 import { RAT_IN_THE_CELLAR } from "./ratsInTheCellar.definitions";
 
@@ -64,12 +63,10 @@ export const RATS_IN_THE_CELLAR_ENCOUNTERS: Record<string, Encounter> = {
 			},
 			{
 				...rat,
-				id: monsterId("rat-1"),
 				gridPosition: { col: 3, row: 4 },
 			},
 			{
 				...rat,
-				id: monsterId("rat-2"),
 				gridPosition: { col: 4, row: 3 },
 			},
 		],

@@ -29,25 +29,21 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 		generateSummons: () => [
 			{
 				...smugglerCrate,
-				id: "crate_1",
 				gridPosition: { col: 4, row: 0 },
 				allegiance: "NEUTRAL",
 			},
 			{
 				...smugglerCrate,
-				id: "crate_2",
 				gridPosition: { col: 5, row: 0 },
 				allegiance: "NEUTRAL",
 			},
 			{
 				...smugglerCrate,
-				id: "crate_4",
 				gridPosition: { col: 0, row: 6 },
 				allegiance: "NEUTRAL",
 			},
 			{
 				...smugglerCrate,
-				id: "crate_3",
 				gridPosition: { col: 1, row: 6 },
 				allegiance: "NEUTRAL",
 			},
