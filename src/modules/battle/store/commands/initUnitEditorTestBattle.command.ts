@@ -6,6 +6,7 @@ import type {
 } from "@/modules/units/domain/units.type";
 import { UnitStance } from "@/modules/units/domain/units.type";
 import { heroId, monsterId } from "@/modules/units/helpers/units.helpers";
+import { emptyStateDiff } from "../../domain/intent.type";
 import type { BattleGet, BattleSet } from "../battle.store";
 
 export const initUnitEditorTestBattle =
@@ -50,19 +51,9 @@ export const initUnitEditorTestBattle =
 			hoveredCell: null,
 			currentVfx: {},
 			aiIntents: {},
-			aiStateDiff: {
-				projectedMoves: {},
-				projectedCasualties: [],
-				projectedDamage: {},
-				projectedHealing: {},
-			},
+			aiStateDiff: emptyStateDiff,
 			playerIntent: null,
-			playerStateDiff: {
-				projectedMoves: {},
-				projectedCasualties: [],
-				projectedDamage: {},
-				projectedHealing: {},
-			},
+			playerStateDiff: emptyStateDiff,
 			xpEarned: 0,
 			encounterId: null,
 			gridSize: { cols: 5, rows: 5 },

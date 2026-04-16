@@ -1,5 +1,6 @@
 import type { BattleGet, BattleSet } from "@/modules/battle/store/battle.store";
 import type { GridPosition } from "../../domain/grid.type";
+import { emptyStateDiff } from "../../domain/intent.type";
 import { getSimulationState } from "../../helpers/simulation.helper";
 import { calculateStateDiff } from "../../helpers/state.helpers";
 import { resolveCard } from "./resolveCard.command";
@@ -9,12 +10,7 @@ export const setHoveredCell =
 		set(() => ({
 			hoveredCell: cell,
 			playerIntent: null,
-			playerStateDiff: {
-				projectedMoves: {},
-				projectedCasualties: [],
-				projectedDamage: {},
-				projectedHealing: {},
-			},
+			playerStateDiff: emptyStateDiff,
 		}));
 		if (!cell) return;
 

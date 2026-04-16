@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useShallow } from "zustand/shallow";
 import { BattleGrid } from "@/modules/battle/components/BattleGrid";
+import { emptyStateDiff } from "@/modules/battle/domain/intent.type";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import type { Card } from "@/modules/cards/domain/cards.type";
 import { MotionCamera } from "@/modules/shared/components/MotionCamera";
@@ -10,6 +9,8 @@ import { getBackgroundImage } from "@/modules/shared/helpers/backgroundImage.hel
 import { UnitPropertyForm } from "@/modules/unit-editor/components/UnitPropertyForm";
 import { useUnitEditorStore } from "@/modules/unit-editor/store/unitEditor.store";
 import { UnitStance } from "@/modules/units/domain/units.type";
+import { useEffect, useState } from "react";
+import { useShallow } from "zustand/shallow";
 
 export default function UnitEditorPage() {
 	const { draftUnit } = useUnitEditorStore();
@@ -108,12 +109,7 @@ export default function UnitEditorPage() {
 								} else {
 									useBattleStore.setState({
 										aiIntents: {},
-										aiStateDiff: {
-											projectedMoves: {},
-											projectedCasualties: [],
-											projectedDamage: {},
-											projectedHealing: {},
-										},
+										aiStateDiff: emptyStateDiff,
 									});
 								}
 							}}
