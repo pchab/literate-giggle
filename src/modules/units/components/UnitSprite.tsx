@@ -1,3 +1,6 @@
+import { motion } from "motion/react";
+import Image from "next/image";
+import { useShallow } from "zustand/shallow";
 import FloatingDamage from "@/modules/battle/components/FloatingDamage";
 import HealthBar from "@/modules/battle/components/HealthBar";
 import IntentDisplay from "@/modules/battle/components/IntentDisplay";
@@ -5,9 +8,6 @@ import { useCombatText } from "@/modules/battle/hooks/useCombatText";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { useSprite } from "@/modules/shared/hooks/useSprite";
 import type { BattleUnit } from "@/modules/units/domain/units.type";
-import { motion } from "motion/react";
-import Image from "next/image";
-import { useShallow } from "zustand/shallow";
 import { spriteVariants } from "../data/spriteVariants.data";
 import { getBlockFromStatuses } from "../helpers/units.helpers";
 

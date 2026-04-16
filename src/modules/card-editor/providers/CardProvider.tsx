@@ -1,10 +1,10 @@
 "use client";
 
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import type { Card } from "@/modules/cards/domain/cards.type";
 import LoadingAsset from "@/modules/shared/components/LoadingAsset";
 import { useRegistryStore } from "@/modules/shared/store/registry.store";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
 import { useCardEditorStore } from "../store/cardEditor.store";
 
 export function CardProvider({ children }: { children: React.ReactNode }) {

@@ -68,6 +68,8 @@ export const initBattle =
 			generateSummons = () => [],
 			surfaces = {},
 			startingPositions = startingGridPosition,
+			gridSize = { cols: 5, rows: 5 },
+			removedCells = [],
 		} = encounter;
 
 		const freshMonsters = generateMonsters().map(bluePrintToMonster);
@@ -101,7 +103,8 @@ export const initBattle =
 			xpEarned: 0,
 			battleStatus: "ONGOING",
 			objectiveProgress: {},
-			gridSize: encounter.gridSize || { cols: 5, rows: 5 },
+			gridSize,
+			removedCells,
 		}));
 		await calculateAIIntents(get, set)({});
 	};

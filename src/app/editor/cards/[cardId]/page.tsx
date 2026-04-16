@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+import { useShallow } from "zustand/shallow";
 import { BattleGrid } from "@/modules/battle/components/BattleGrid";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { CardPropertyForm } from "@/modules/card-editor/components/CardPropertyForm";
@@ -8,8 +10,6 @@ import { MotionCamera } from "@/modules/shared/components/MotionCamera";
 import { getBackgroundImage } from "@/modules/shared/helpers/backgroundImage.helpers";
 import { HeroCard } from "@/modules/units/components/HeroCard";
 import { isHero, monsterId } from "@/modules/units/helpers/units.helpers";
-import { useEffect } from "react";
-import { useShallow } from "zustand/shallow";
 
 export default function CardEditorPage() {
 	const { testMode, draftCard } = useCardEditorStore();

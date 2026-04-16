@@ -1,7 +1,7 @@
+import { create } from "zustand";
 import type { Card } from "@/modules/cards/domain/cards.type";
 import { cardId } from "@/modules/cards/helpers/cards.helper";
 import { set as idbSet, STORES } from "@/modules/shared/store/lib/indexed-db";
-import { create } from "zustand";
 
 export type EditorTestMode = "PLAYER" | "AI";
 

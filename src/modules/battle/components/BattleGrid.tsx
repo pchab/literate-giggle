@@ -31,12 +31,19 @@ const tailwindGridCols = [
 	"grid-cols-10",
 	"grid-cols-11",
 	"grid-cols-12",
+	"grid-cols-13",
+	"grid-cols-14",
+	"grid-cols-15",
+	"grid-cols-16",
+	"grid-cols-17",
+	"grid-cols-18",
 ];
 
 export function BattleGrid() {
 	const cellHighlight = useCellHighlight();
 	const {
 		gridSize,
+		removedCells,
 		units,
 		activeHeroCard,
 		activeMoveHeroId,
@@ -49,6 +56,7 @@ export function BattleGrid() {
 	} = useBattleStore(
 		useShallow((state) => ({
 			gridSize: state.gridSize,
+			removedCells: state.removedCells,
 			units: state.units,
 			activeHeroCard: state.activeHeroCard,
 			activeMoveHeroId: state.activeMoveHeroId,
@@ -94,11 +102,14 @@ export function BattleGrid() {
 
 	return (
 		<div
-			className={`grid ${tailwindGridCols[gridSize.cols]} bg-zinc-900/80 rounded-lg border border-zinc-800 relative`}
+			className={`grid ${tailwindGridCols[gridSize.cols]} rounded-lg border border-zinc-800 relative`}
 			onMouseLeave={() => setHoveredCell(null)}
 			role="toolbar"
 		>
 			{getCells(gridSize).map((cell) => {
+				if (removedCells.map(getCellId).includes(cell.id)) {
+					return <div className="w-grid h-grid bg-transparent"></div>;
+				}
 				const unitsInCell = units.filter(isUnitInTile(cell));
 				const hasUnitInCell = unitsInCell.length > 0;
 				const unitInCell = unitsInCell[0];

@@ -206,7 +206,7 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 	[SEWER_CONTAMINATION.encounters.sump_watcher]: {
 		id: SEWER_CONTAMINATION.encounters.sump_watcher,
 		name: "The Sump Watcher",
-		gridSize: { cols: 8, rows: 7 },
+		gridSize: { cols: 14, rows: 7 },
 		generateMonsters: () => [
 			{
 				...sumpWatcher,
@@ -225,6 +225,13 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 				gridPosition: { col: 5, row: 4 },
 				allegiance: "NEUTRAL",
 			},
+		],
+		removedCells: [
+			{ col: 4, row: 0 },
+			{ col: 4, row: 1 },
+			{ col: 4, row: 2 },
+			{ col: 4, row: 5 },
+			{ col: 4, row: 6 },
 		],
 	},
 };

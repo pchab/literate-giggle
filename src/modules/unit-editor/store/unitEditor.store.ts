@@ -1,6 +1,6 @@
+import { create } from "zustand";
 import { set as idbSet, STORES } from "@/modules/shared/store/lib/indexed-db";
 import type { UnitBlueprint } from "@/modules/units/domain/units.type";
-import { create } from "zustand";
 
 export interface UnitEditorState {
 	draftUnit: UnitBlueprint;

@@ -1,8 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import LoadingAsset from "@/modules/shared/components/LoadingAsset";
 import { useRegistryStore } from "@/modules/shared/store/registry.store";
-import { useEffect, useState } from "react";
 
 export function CampaignProvider({ children }: { children: React.ReactNode }) {
 	const [isReady, setIsReady] = useState(false);

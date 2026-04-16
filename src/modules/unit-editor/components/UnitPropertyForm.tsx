@@ -1,8 +1,8 @@
+import { useShallow } from "zustand/shallow";
 import { ImageUploadArea } from "@/modules/shared/components/ImageUploadArea";
 import { useSprite } from "@/modules/shared/hooks/useSprite";
 import { useAssetStore } from "@/modules/shared/store/asset.store";
 import { UnitStance } from "@/modules/units/domain/units.type";
-import { useShallow } from "zustand/shallow";
 import { useUnitEditorStore } from "../store/unitEditor.store";
 import { IntentPoolEditor } from "./IntentPoolEditor";
 

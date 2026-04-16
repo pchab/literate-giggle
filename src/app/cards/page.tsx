@@ -1,8 +1,8 @@
 "use client";
 
+import { useShallow } from "zustand/shallow";
 import { BattleCard } from "@/modules/cards/components/BattleCard";
 import { useRegistryStore } from "@/modules/shared/store/registry.store";
-import { useShallow } from "zustand/shallow";
 
 export default function CardsPage() {
 	const { getAllCards } = useRegistryStore(

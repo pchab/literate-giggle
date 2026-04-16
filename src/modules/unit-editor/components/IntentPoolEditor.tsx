@@ -1,7 +1,7 @@
+import { useShallow } from "zustand/shallow";
 import type { Card } from "@/modules/cards/domain/cards.type";
 import { useRegistryStore } from "@/modules/shared/store/registry.store";
 import type { UnitBlueprint } from "@/modules/units/domain/units.type";
-import { useShallow } from "zustand/shallow";
 
 type IntentOption = UnitBlueprint["intentPool"][0];
 

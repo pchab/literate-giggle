@@ -31,6 +31,7 @@ export interface Encounter {
 	onLoseSceneId?: Scene["id"];
 	gridSize?: { cols: number; rows: number };
 	startingPositions?: GridPosition[];
+	removedCells?: GridPosition[];
 }
 
 export function encounterId(id: string): Encounter["id"] {

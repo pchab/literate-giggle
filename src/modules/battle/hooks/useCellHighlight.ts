@@ -1,3 +1,4 @@
+import { useShallow } from "zustand/shallow";
 import type { GridPosition } from "@/modules/battle/domain/grid.type";
 import {
 	isTileEmpty,
@@ -8,7 +9,6 @@ import type { Card } from "@/modules/cards/domain/cards.type";
 import { useRegistryStore } from "@/modules/shared/store/registry.store";
 import type { BattleUnit } from "@/modules/units/domain/units.type";
 import { isHero } from "@/modules/units/helpers/units.helpers";
-import { useShallow } from "zustand/shallow";
 import type { Intent } from "../domain/intent.type";
 import { areEnemies } from "../helpers/effects/effect.helpers";
 import {

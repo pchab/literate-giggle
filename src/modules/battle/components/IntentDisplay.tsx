@@ -1,8 +1,8 @@
 "use client";
 
+import { useShallow } from "zustand/shallow";
 import type { Intent } from "@/modules/battle/domain/intent.type";
 import { useRegistryStore } from "@/modules/shared/store/registry.store";
-import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "../store/battle.store";
 
 export default function IntentDisplay({ intent }: { intent: Intent }) {

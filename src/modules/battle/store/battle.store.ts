@@ -1,3 +1,5 @@
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 import type {
 	GridPosition,
 	SurfaceData,
@@ -17,8 +19,6 @@ import type {
 	UnitBlueprint,
 	UnitStance,
 } from "@/modules/units/domain/units.type";
-import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
 import { calculateAIIntents } from "./commands/calculateAIIntents.command";
 import { cancelCard } from "./commands/cancelCard.command";
 import { endTurn } from "./commands/endTurn.command";
@@ -41,6 +41,7 @@ export type ActiveCardContext = {
 export type BattleState = {
 	units: BattleUnit[];
 	surfaces: Record<string, SurfaceData>;
+	removedCells: GridPosition[];
 
 	activeMoveHeroId: BattleHero["id"] | null;
 	usedMovesThisTurn: Record<BattleHero["id"], number>;
@@ -104,6 +105,7 @@ const initialState: BattleState = {
 	usedMovesThisTurn: {},
 	usedCardsThisTurn: {},
 	surfaces: {},
+	removedCells: [],
 	currentVfx: {},
 
 	aiIntents: {},

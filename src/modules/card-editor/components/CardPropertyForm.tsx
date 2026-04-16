@@ -1,3 +1,4 @@
+import { useShallow } from "zustand/shallow";
 import {
 	adjacentPattern,
 	cleavePattern,
@@ -14,7 +15,6 @@ import {
 } from "@/modules/cards/domain/cards.type";
 import { ImageUploadArea } from "@/modules/shared/components/ImageUploadArea";
 import { useAssetStore } from "@/modules/shared/store/asset.store";
-import { useShallow } from "zustand/shallow";
 import { useCardEditorStore } from "../store/cardEditor.store";
 import { CardEffectsEditor } from "./CardEffectsEditor";
 
