@@ -4,6 +4,7 @@ import {
 } from "@/modules/battle/helpers/grid.helpers";
 import type { BattleState } from "@/modules/battle/store/battle.store";
 import { giantToad } from "@/modules/units/data/monsters/giant-toad";
+import { sumpWatcher } from "@/modules/units/data/monsters/sump-slime";
 import { zombie } from "@/modules/units/data/monsters/zombie";
 import { smugglerCrate } from "@/modules/units/data/summons/smugglersCrate";
 import { villager } from "@/modules/units/data/summons/villager";
@@ -201,5 +202,29 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 			return false;
 		},
 		gridSize: villageBounds,
+	},
+	[SEWER_CONTAMINATION.encounters.sump_watcher]: {
+		id: SEWER_CONTAMINATION.encounters.sump_watcher,
+		name: "The Sump Watcher",
+		gridSize: { cols: 8, rows: 7 },
+		generateMonsters: () => [
+			{
+				...sumpWatcher,
+				gridPosition: { col: 6, row: 2 },
+				statuses: [{ type: "unstable_mitosis", amount: 1, duration: -1 }],
+			},
+		],
+		generateSummons: () => [
+			{
+				...smugglerCrate,
+				gridPosition: { col: 2, row: 3 },
+				allegiance: "NEUTRAL",
+			},
+			{
+				...smugglerCrate,
+				gridPosition: { col: 5, row: 4 },
+				allegiance: "NEUTRAL",
+			},
+		],
 	},
 };

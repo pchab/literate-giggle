@@ -5,14 +5,14 @@ import { itemCards } from "./items/itemCards";
 import { alchemistLedgerCards } from "./monsters/alchemistLedgerCards.data";
 import { dwarvenPassageCards } from "./monsters/dwarvenPassageCards.data";
 import { monsterCardLibrary } from "./monsters/monsterCards.data";
-import { goliathToadCards } from "./monsters/sewerContaminationCards.data";
+import { sewerContaminationCards } from "./monsters/sewerContaminationCards.data";
 
 export const cardLibrary: Record<Card["id"], Card> = {
 	...heroCardLibrary,
 	...monsterCardLibrary,
 	...dwarvenPassageCards,
 	...alchemistLedgerCards,
-	...goliathToadCards,
+	...sewerContaminationCards,
 	...itemCards,
 };
 

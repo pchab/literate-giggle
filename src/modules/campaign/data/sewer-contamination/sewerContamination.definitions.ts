@@ -7,6 +7,7 @@ export const SEWER_CONTAMINATION = {
 	encounters: {
 		giant_toad: encounterId("giant_toad"),
 		riverbend_village: encounterId("riverbend_village"),
+		sump_watcher: encounterId("sump_watcher"),
 	},
 	scenes: {
 		intro: sceneId("ironhold_sump_intro"),

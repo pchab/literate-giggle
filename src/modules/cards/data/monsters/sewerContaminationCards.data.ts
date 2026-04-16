@@ -2,7 +2,7 @@ import { adjacentPattern } from "@/modules/battle/data/attackPattern.data";
 import type { Card } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
 
-export const goliathToadCards: Record<Card["id"], Card> = {
+export const sewerContaminationCards: Record<Card["id"], Card> = {
 	[cardId("giant_chomp")]: {
 		id: cardId("giant_chomp"),
 		name: "Giant Chomp",
@@ -103,5 +103,22 @@ export const goliathToadCards: Record<Card["id"], Card> = {
 				target: "self",
 			},
 		],
+	},
+	[cardId("sewer_flush")]: {
+		id: cardId("sewer_flush"),
+		name: "Sewer Flush",
+		image: "/cards/sewer_flush.webp",
+		range: 99, 
+		playRequirement: "no_target",
+		aiTargetPreference: "self", // Boss casts it instantly
+		effects: [
+			{
+				type: "push",
+				distance: 3, // Pushes heroes 3 tiles south
+				collisionDamage: 2, // If they hit a crate, they take 2 damage instead of dying in sludge
+				target: "all_enemies",
+				pushDirection: "away" // Assuming 'away' from the northern wall pushes them South
+			}
+		]
 	},
 };

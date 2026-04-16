@@ -4,9 +4,14 @@ import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { BattleCard } from "@/modules/cards/components/BattleCard";
 import { CardTooltip } from "@/modules/cards/components/CardTooltip";
 import { useRegistryStore } from "@/modules/shared/store/registry.store";
+import type { StatusType } from "@/modules/units/domain/status.type";
 import type { AIBattleUnit } from "@/modules/units/domain/units.type";
 import { motion } from "framer-motion";
 import { useShallow } from "zustand/shallow";
+
+function formatStatus(statusType: StatusType) {
+	return statusType.replace("_", " ");
+}
 
 export default function EnemyIntentSidebar({
 	aiUnit,
@@ -106,7 +111,7 @@ export default function EnemyIntentSidebar({
 								: status.type === "vulnerable"
 									? "⚡"
 									: "✨"}
-							{status.type} {status.amount > 0 && status.amount}
+							{formatStatus(status.type)} {status.amount > 0 && status.amount}
 						</span>
 					))}
 				</div>

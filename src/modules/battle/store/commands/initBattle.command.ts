@@ -4,6 +4,7 @@ import { getComputedCard } from "@/modules/cards/helpers/cards.helper";
 import {
 	type Allegiance,
 	type BattleHero,
+	type BattleUnit,
 	type Hero,
 	type Monster,
 	type Summon,
@@ -26,26 +27,30 @@ const startingGridPosition = [
 ];
 
 const bluePrintToMonster = (
-	blueprint: UnitBlueprint & { gridPosition: GridPosition },
+	blueprint: UnitBlueprint & {
+		gridPosition: GridPosition;
+		statuses?: BattleUnit["statuses"];
+	},
 ): Monster => ({
 	...blueprint,
 	variant: getVariantFromBlueprint(blueprint),
 	id: monsterId(crypto.randomUUID()),
 	currentHp: blueprint.maxHp,
-	statuses: [],
+	statuses: blueprint.statuses ?? [],
 	stance: UnitStance.IDLE,
 });
 const bluePrintToSummon = (
 	blueprint: UnitBlueprint & {
 		gridPosition: GridPosition;
 		allegiance: Allegiance;
+		statuses?: BattleUnit["statuses"];
 	},
 ): Summon => ({
 	...blueprint,
 	variant: getVariantFromBlueprint(blueprint),
 	id: summonId(crypto.randomUUID()),
 	currentHp: blueprint.maxHp,
-	statuses: [],
+	statuses: blueprint.statuses ?? [],
 	stance: UnitStance.IDLE,
 });
 

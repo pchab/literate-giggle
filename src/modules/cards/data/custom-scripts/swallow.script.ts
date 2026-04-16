@@ -14,7 +14,7 @@ import { sleep } from "@/modules/shared/helpers/sleep";
 import { type BattleUnit, UnitStance } from "@/modules/units/domain/units.type";
 import type { CustomScriptEffect } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
-import { goliathToadCards } from "../monsters/sewerContaminationCards.data";
+import { sewerContaminationCards } from "../monsters/sewerContaminationCards.data";
 
 export async function triggerRegurgitation(
 	get: BattleGet,
@@ -91,7 +91,7 @@ export const swallow: EffectResolver<BattleUnit, CustomScriptEffect<void>> =
 	async ({ caster, targetIds }) => {
 		// GUARD 1: Is the toad already full?
 		if (caster.statuses.some((s) => s.type === "digesting")) {
-			const card = goliathToadCards[cardId("giant_chomp")];
+			const card = sewerContaminationCards[cardId("giant_chomp")];
 			await handleAICardIntent(
 				get,
 				set,

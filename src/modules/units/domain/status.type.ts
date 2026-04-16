@@ -5,7 +5,8 @@ export type StatusType =
 	| "vulnerable"
 	| "regen"
 	| "swallowed"
-	| "digesting";
+	| "digesting"
+	| "unstable_mitosis";
 
 export interface Status {
 	type: StatusType;
