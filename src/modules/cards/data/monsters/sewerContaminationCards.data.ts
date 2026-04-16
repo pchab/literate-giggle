@@ -118,7 +118,7 @@ export const sewerContaminationCards: Record<Card["id"], Card> = {
 				collisionDamage: 2,
 				target: "all_enemies",
 				pushDirection: "towards",
-				focalPoint: { col: 0, row: 4 },
+				focalPoint: { col: 0, row: 3 },
 			},
 		],
 	},

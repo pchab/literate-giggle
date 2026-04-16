@@ -32,7 +32,7 @@ export const recklessExperiment: EffectResolver<
 		} = alchemistLedgerCards;
 		const ironClub = hoboCards[cardId("iron_club")];
 
-		const { units, gridSize } = get();
+		const { units, gridSize, removedCells } = get();
 		const activeHeroes = units.filter(isHero).filter((h) => h.currentHp > 0);
 
 		if (activeHeroes.length === 0) return;
@@ -85,7 +85,7 @@ export const recklessExperiment: EffectResolver<
 				const nextPos = { col: currentX + dx, row: currentY + dy };
 
 				if (
-					!isTileInBounds(gridSize)(nextPos) ||
+					!isTileInBounds(gridSize, removedCells)(nextPos) ||
 					!isTileEmpty(currentUnits)(nextPos)
 				) {
 					break;

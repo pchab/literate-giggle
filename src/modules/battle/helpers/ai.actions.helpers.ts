@@ -41,7 +41,7 @@ export const handleAICardIntent =
 		getTarget?: TargetResolver;
 		getAnchor?: AnchorResolver;
 	}) => {
-		const { units, gridSize } = get(); // Unified array!
+		const { units, gridSize, removedCells } = get(); // Unified array!
 		const initialAttacker = units.find((u) => u.id === attackerId) as
 			| AIBattleUnit
 			| undefined;
@@ -75,6 +75,7 @@ export const handleAICardIntent =
 			targetPos: moveDest,
 			units: blockingUnits,
 			gridSize,
+			removedCells,
 		});
 
 		const movedUnit = await moveBattleUnit(
@@ -131,6 +132,7 @@ export const handleAICardIntent =
 			targetPos: anchorTarget,
 			originPos: attackOrigin,
 			gridSize,
+			removedCells,
 		});
 
 		if (isSimulation) {

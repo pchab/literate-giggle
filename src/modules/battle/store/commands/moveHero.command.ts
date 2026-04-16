@@ -13,6 +13,7 @@ export function moveHero(newPosition: GridPosition) {
 			usedMovesThisTurn,
 			units,
 			gridSize,
+			removedCells,
 			surfaces,
 		} = get();
 
@@ -58,6 +59,7 @@ export function moveHero(newPosition: GridPosition) {
 			targetPos: newPosition,
 			units: allBlockingUnits,
 			gridSize,
+			removedCells,
 			surfaces,
 		});
 

@@ -83,15 +83,17 @@ export const canUnitFit = <C extends BattleUnit, T extends BattleUnit>({
 	unit: { id: ignoreUnitId, size = { cols: 1, rows: 1 }, gridPosition },
 	units,
 	gridSize,
+	removedCells,
 }: {
 	unit: C;
 	units: T[];
 	gridSize: { cols: number; rows: number };
+	removedCells: GridPosition[];
 }): boolean => {
 	for (let r = 0; r < size.rows; r++) {
 		for (let c = 0; c < size.cols; c++) {
 			const checkPos = { row: gridPosition.row + r, col: gridPosition.col + c };
-			if (!isTileInBounds(gridSize)(checkPos)) return false;
+			if (!isTileInBounds(gridSize, removedCells)(checkPos)) return false;
 
 			const occupant = units.find(
 				(f) => f.currentHp > 0 && isUnitInTile(checkPos)(f),
@@ -143,13 +145,21 @@ export const getDistanceToBoundingBox = <
 };
 
 export const isTileInBounds =
-	(gridSize: { rows: number; cols: number }) => (pos: GridPosition) => {
-		return (
-			pos.row >= 0 &&
-			pos.row < gridSize.rows &&
-			pos.col >= 0 &&
-			pos.col < gridSize.cols
+	(
+		gridSize: { cols: number; rows: number },
+		removedCells: GridPosition[] = [],
+	) =>
+	(pos: GridPosition) => {
+		// 1. Check outer boundaries
+		if (pos.col < 0 || pos.col >= gridSize.cols) return false;
+		if (pos.row < 0 || pos.row >= gridSize.rows) return false;
+
+		// 2. Check inner holes
+		const isRemoved = removedCells.some(
+			(rc) => rc.col === pos.col && rc.row === pos.row,
 		);
+
+		return !isRemoved;
 	};
 
 // --- 5. PATTERN & GEOMETRY MANIPULATION ---
@@ -185,11 +195,13 @@ export function filterGridByAttackPattern({
 	targetPos,
 	originPos,
 	gridSize,
+	removedCells,
 }: {
 	pattern: GridPosition[];
 	targetPos: BoundingBox | null;
 	originPos: GridPosition;
 	gridSize: { cols: number; rows: number };
+	removedCells: GridPosition[];
 }): GridPosition[] {
 	if (!targetPos || pattern.length === 0) return pattern;
 
@@ -228,7 +240,7 @@ export function filterGridByAttackPattern({
 		}
 	}
 
-	return expandedPattern.filter(isTileInBounds(gridSize));
+	return expandedPattern.filter(isTileInBounds(gridSize, removedCells));
 }
 
 export const getClosestOriginTile = ({

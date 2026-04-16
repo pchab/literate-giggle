@@ -100,7 +100,7 @@ const calculateFiringSpot =
 		card: Card;
 	}): GridPosition | null => {
 		if (aiUnit.baseMove === 0) return aiUnit.gridPosition;
-		const { units, gridSize, surfaces } = get();
+		const { units, gridSize, removedCells, surfaces } = get();
 
 		const canTargetSelf = ["requires_entity", "requires_ally"].includes(
 			card.playRequirement,
@@ -115,6 +115,7 @@ const calculateFiringSpot =
 				blockingUnits: hardObstacles,
 				canTargetSelf: true,
 				gridSize,
+				removedCells,
 				surfaces,
 			});
 
@@ -123,6 +124,7 @@ const calculateFiringSpot =
 					unit: { ...aiUnit, gridPosition: cell },
 					units,
 					gridSize,
+					removedCells,
 				}),
 			);
 
@@ -134,7 +136,7 @@ const calculateFiringSpot =
 						canTargetSelf: false,
 						gridSize,
 					})
-						.filter(isTileInBounds(gridSize))
+						.filter(isTileInBounds(gridSize, removedCells))
 						.filter(isTileEmpty(units));
 					return possibleSpawns.length > 0;
 				}
@@ -180,6 +182,7 @@ const calculateFiringSpot =
 			minRange,
 			maxRange: card.range,
 			gridSize,
+			removedCells,
 			surfaces,
 		});
 
@@ -193,6 +196,7 @@ const calculateFiringSpot =
 					unit: { ...aiUnit, gridPosition: candidateDest },
 					units,
 					gridSize,
+					removedCells,
 				})
 			) {
 				return candidateDest;
@@ -209,7 +213,7 @@ const calculateFiringSpot =
 export const getIdealTarget: TargetResolver =
 	(get) =>
 	<C extends AIBattleUnit>(aiUnit: C, card: Card) => {
-		const { units, gridSize } = get();
+		const { units, gridSize, removedCells } = get();
 		// --- FAST PATH: SELF ---
 		if (card.aiTargetPreference === "self") {
 			return {
@@ -262,7 +266,7 @@ export const getIdealTarget: TargetResolver =
 						canTargetSelf: false,
 						gridSize,
 					})
-						.filter(isTileInBounds(gridSize))
+						.filter(isTileInBounds(gridSize, removedCells))
 						.filter(isTileEmpty(units));
 
 					if (possibleSpawns.length > 0) {

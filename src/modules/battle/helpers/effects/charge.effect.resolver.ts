@@ -13,11 +13,11 @@ export const resolveChargeEffect: EffectResolver<BattleUnit, ChargeEffect> =
 		if (!anchorTarget) {
 			return;
 		}
-		const { gridSize } = get();
+		const { gridSize, removedCells } = get();
 		const fullPath = getLineOfSightPath(
 			caster.gridPosition,
 			anchorTarget.gridPosition,
-		).filter(isTileInBounds(gridSize));
+		).filter(isTileInBounds(gridSize, removedCells));
 
 		let currentCaster = caster;
 

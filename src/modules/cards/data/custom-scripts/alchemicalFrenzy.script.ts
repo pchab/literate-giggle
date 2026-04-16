@@ -53,7 +53,7 @@ export const alchemicalFrenzy: EffectResolver<
 	(get, set, isSimulation = false) =>
 	(_) =>
 	async ({ caster }) => {
-		const { units, gridSize } = get();
+		const { units, gridSize, removedCells } = get();
 		const activeHeroes = units.filter(isHero).filter((h) => h.currentHp > 0);
 
 		if (activeHeroes.length === 0) return;
@@ -65,6 +65,7 @@ export const alchemicalFrenzy: EffectResolver<
 			blockingUnits: activeHeroes,
 			canTargetSelf: true,
 			gridSize,
+			removedCells,
 		}).filter(isTileEmpty(units));
 
 		reachableCells.push(caster.gridPosition);
@@ -94,7 +95,7 @@ export const alchemicalFrenzy: EffectResolver<
 				const path = getLineOfSightPath(startPos, {
 					col: startPos.col + gridSize.cols * dx,
 					row: startPos.row + gridSize.rows * dy,
-				}).filter(isTileInBounds(gridSize));
+				}).filter(isTileInBounds(gridSize, removedCells));
 
 				const targetPos = path[path.length - 1];
 

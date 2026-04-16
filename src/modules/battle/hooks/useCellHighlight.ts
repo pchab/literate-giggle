@@ -27,6 +27,7 @@ type CellHighlight = {
 export function useCellHighlight(): CellHighlight {
 	const {
 		gridSize,
+		removedCells,
 		units,
 		aiIntents,
 		activeHeroCard,
@@ -38,6 +39,7 @@ export function useCellHighlight(): CellHighlight {
 	} = useBattleStore(
 		useShallow((state) => ({
 			gridSize: state.gridSize,
+			removedCells: state.removedCells,
 			units: state.units,
 			aiIntents: state.aiIntents,
 			activeHeroCard: state.activeHeroCard,
@@ -80,6 +82,7 @@ export function useCellHighlight(): CellHighlight {
 			blockingUnits: oppositeFaction,
 			canTargetSelf: false,
 			gridSize,
+			removedCells,
 		}).filter(isTileEmpty(units));
 
 		return {

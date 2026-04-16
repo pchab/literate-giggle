@@ -1,20 +1,202 @@
 import type { PushEffect } from "@/modules/cards/domain/cards.type";
 import type { BattleUnit } from "@/modules/units/domain/units.type";
+import type { GridPosition } from "../../domain/grid.type";
 import {
 	getClosestOriginTile,
 	isTileInBounds,
 	isUnitInTile,
 } from "../grid.helpers";
-import { moveBattleUnit } from "../move.helpers";
+import { getLineOfSightPath, moveBattleUnit } from "../move.helpers";
 import { applyCombatUpdate } from "../state.helpers";
 import type { EffectResolver } from "./effect.resolvers";
+
+type PushPathResult = {
+	path: GridPosition[];
+	collidedWith: BattleUnit | null;
+	isCrushed: boolean;
+	crushObstacles: BattleUnit[];
+};
+
+const getPushPath = (
+	entity: BattleUnit,
+	{
+		pushDirection = "away",
+		distance,
+		referenceX,
+		referenceY,
+		chargeDx,
+		chargeDy,
+		gridSize,
+		removedCells = [],
+		getObstacleAt,
+	}: {
+		pushDirection?: PushEffect["pushDirection"];
+		distance: number;
+		referenceX: number;
+		referenceY: number;
+		chargeDx: number;
+		chargeDy: number;
+		gridSize: { cols: number; rows: number };
+		removedCells?: GridPosition[];
+		getObstacleAt: (col: number, row: number) => BattleUnit | undefined;
+	},
+): PushPathResult => {
+	const { col: tX, row: tY } = entity.gridPosition;
+	const result: PushPathResult = {
+		path: [],
+		collidedWith: null,
+		isCrushed: false,
+		crushObstacles: [],
+	};
+
+	let staticDx = 0;
+	let staticDy = 0;
+
+	// 1. Handle Sideways (Crush Logic)
+	if (pushDirection === "sideways") {
+		const dirA = { dx: -chargeDy, dy: chargeDx };
+		const dirB = { dx: chargeDy, dy: -chargeDx };
+
+		const posA = { col: tX + dirA.dx, row: tY + dirA.dy };
+		const posB = { col: tX + dirB.dx, row: tY + dirB.dy };
+
+		const obsA = getObstacleAt(posA.col, posA.row);
+		const obsB = getObstacleAt(posB.col, posB.row);
+
+		const aBlocked = !isTileInBounds(gridSize, removedCells)(posA) || !!obsA;
+		const bBlocked = !isTileInBounds(gridSize, removedCells)(posB) || !!obsB;
+
+		if (aBlocked && bBlocked) {
+			result.isCrushed = true;
+			if (obsA) result.crushObstacles.push(obsA);
+			if (obsB) result.crushObstacles.push(obsB);
+			return result; // Early exit on crush
+		}
+
+		if (aBlocked && !bBlocked) {
+			staticDx = dirB.dx;
+			staticDy = dirB.dy;
+		} else if (!aBlocked && bBlocked) {
+			staticDx = dirA.dx;
+			staticDy = dirA.dy;
+		} else {
+			staticDx = dirA.dx; // Tie-breaker
+			staticDy = dirA.dy;
+		}
+	}
+	// 2. Set static cardinal vectors
+	else {
+		switch (pushDirection) {
+			case "north":
+				staticDy = -1;
+				break;
+			case "south":
+				staticDy = 1;
+				break;
+			case "east":
+				staticDx = 1;
+				break;
+			case "west":
+				staticDx = -1;
+				break;
+		}
+	}
+
+	let currentX = tX;
+	let currentY = tY;
+
+	for (let i = 0; i < distance; i++) {
+		let stepDx = staticDx;
+		let stepDy = staticDy;
+
+		// ==========================================
+		// TRUE VECTOR CALCULATION (BRESENHAM)
+		// ==========================================
+		if (pushDirection === "towards" || pushDirection === "away") {
+			const targetPoint =
+				pushDirection === "towards"
+					? { col: referenceX, row: referenceY }
+					: {
+							// For "away", project a point far in the opposite direction
+							col: currentX + (currentX - referenceX) * 10,
+							row: currentY + (currentY - referenceY) * 10,
+						};
+
+			const idealPath = getLineOfSightPath(
+				{ col: currentX, row: currentY },
+				targetPoint,
+			);
+
+			// idealPath[0] is the current position. idealPath[1] is the true next step.
+			if (idealPath.length > 1) {
+				stepDx = idealPath[1].col - currentX;
+				stepDy = idealPath[1].row - currentY;
+			} else {
+				break; // We have exactly reached the focal point
+			}
+		}
+
+		if (stepDx === 0 && stepDy === 0) break;
+
+		let nextPos = { col: currentX + stepDx, row: currentY + stepDy };
+		let obstacle = getObstacleAt(nextPos.col, nextPos.row);
+
+		// ==========================================
+		// FLUID SLIDE MECHANIC
+		// ==========================================
+		const isBlocked =
+			obstacle || !isTileInBounds(gridSize, removedCells)(nextPos);
+
+		// If moving diagonally and the direct path is blocked, try to "slide"
+		if (isBlocked && stepDx !== 0 && stepDy !== 0) {
+			const slideHoriz = { col: currentX + stepDx, row: currentY };
+			const obsHoriz = getObstacleAt(slideHoriz.col, slideHoriz.row);
+			const horizValid =
+				isTileInBounds(gridSize, removedCells)(slideHoriz) && !obsHoriz;
+
+			const slideVert = { col: currentX, row: currentY + stepDy };
+			const obsVert = getObstacleAt(slideVert.col, slideVert.row);
+			const vertValid =
+				isTileInBounds(gridSize, removedCells)(slideVert) && !obsVert;
+
+			// Pick the valid slide direction that gets us closer to the target
+			const distHoriz =
+				Math.abs(slideHoriz.col - referenceX) +
+				Math.abs(slideHoriz.row - referenceY);
+			const distVert =
+				Math.abs(slideVert.col - referenceX) +
+				Math.abs(slideVert.row - referenceY);
+
+			if (horizValid && (!vertValid || distHoriz <= distVert)) {
+				nextPos = slideHoriz;
+				obstacle = undefined;
+			} else if (vertValid) {
+				nextPos = slideVert;
+				obstacle = undefined;
+			}
+		}
+
+		// ==========================================
+		// TERMINAL COLLISION
+		// ==========================================
+		if (!isTileInBounds(gridSize, removedCells)(nextPos) || obstacle) {
+			result.collidedWith = obstacle || null;
+			break;
+		}
+
+		currentX = nextPos.col;
+		currentY = nextPos.row;
+		result.path.push({ col: currentX, row: currentY });
+	}
+
+	return result;
+};
 
 export const resolvePushEffect: EffectResolver<BattleUnit, PushEffect> =
 	(get, set, isSimulation = false) =>
 	({ pushDirection, distance, collisionDamage, focalPoint }) =>
 	async ({ anchorTarget, caster, targetIds }) => {
-		const { gridSize } = get();
-		// --- 1. USE THE UNIFIED ARRAY ---
+		const { gridSize, removedCells = [] } = get();
 		let currentUnits = get().units;
 
 		const { col: cX, row: cY } = getClosestOriginTile({
@@ -27,23 +209,15 @@ export const resolvePushEffect: EffectResolver<BattleUnit, PushEffect> =
 		const chargeDy = Math.sign(anchorPos.row - cY);
 
 		const processPush = async (entityId: BattleUnit["id"]) => {
-			// --- 2. CLEAN RE-FETCH FOR SEQUENTIAL PUSHES ---
-			currentUnits = get().units;
+			currentUnits = get().units; // Clean re-fetch
 			let entity = currentUnits.find((f) => f.id === entityId);
 
 			if (!entity || entity.currentHp <= 0) return;
 
-			const { col: tX, row: tY } = entity.gridPosition;
 			const { col: bodyX, row: bodyY } = getClosestOriginTile({
 				caster: focalPoint ? { gridPosition: focalPoint } : caster,
 				anchorTarget: entity,
 			});
-			let dx = 0;
-			let dy = 0;
-
-			let isCrushed = false;
-			let crushObstacleA: BattleUnit | null = null;
-			let crushObstacleB: BattleUnit | null = null;
 
 			const getObstacleAt = (col: number, row: number) =>
 				currentUnits.find(
@@ -53,145 +227,67 @@ export const resolvePushEffect: EffectResolver<BattleUnit, PushEffect> =
 						f.currentHp > 0,
 				);
 
-			// ==========================================
-			// 2. DETERMINE TRAJECTORY
-			// ==========================================
-			if (pushDirection === "north") {
-				dx = 0;
-				dy = -1;
-			} else if (pushDirection === "south") {
-				dx = 0;
-				dy = 1;
-			} else if (pushDirection === "east") {
-				dx = 1;
-				dy = 0;
-			} else if (pushDirection === "west") {
-				dx = -1;
-				dy = 0;
-			} else if (pushDirection === "sideways") {
-				const dirA = { dx: -chargeDy, dy: chargeDx };
-				const dirB = { dx: chargeDy, dy: -chargeDx };
+			// --- 1. DELEGATE TO HELPER ---
+			const { path, collidedWith, isCrushed, crushObstacles } = getPushPath(
+				entity,
+				{
+					pushDirection,
+					distance,
+					referenceX: focalPoint ? focalPoint.col : bodyX,
+					referenceY: focalPoint ? focalPoint.row : bodyY,
+					chargeDx,
+					chargeDy,
+					gridSize,
+					removedCells,
+					getObstacleAt,
+				},
+			);
 
-				const posA = { col: tX + dirA.dx, row: tY + dirA.dy };
-				const posB = { col: tX + dirB.dx, row: tY + dirB.dy };
-
-				crushObstacleA = getObstacleAt(posA.col, posA.row) || null;
-				crushObstacleB = getObstacleAt(posB.col, posB.row) || null;
-
-				const aBlocked = !isTileInBounds(gridSize)(posA) || !!crushObstacleA;
-				const bBlocked = !isTileInBounds(gridSize)(posB) || !!crushObstacleB;
-
-				if (aBlocked && bBlocked) {
-					isCrushed = true;
-				} else if (aBlocked && !bBlocked) {
-					dx = dirB.dx;
-					dy = dirB.dy;
-				} else if (!aBlocked && bBlocked) {
-					dx = dirA.dx;
-					dy = dirA.dy;
-				} else {
-					dx = dirA.dx; // Tie-breaker: defaults to clockwise
-					dy = dirA.dy;
-				}
-			} else if (pushDirection === "towards") {
-				dx = -Math.sign(tX - bodyX);
-				dy = -Math.sign(tY - bodyY);
-			} else {
-				// "away"
-				dx = Math.sign(tX - bodyX);
-				dy = Math.sign(tY - bodyY);
-			}
-
-			// ==========================================
-			// 3. EXECUTE CRUSH (Early Exit)
-			// ==========================================
+			// --- 2. EXECUTE CRUSH ---
 			if (isCrushed) {
 				if (collisionDamage > 0) {
-					// Send the combat intents directly to the pipeline!
 					await applyCombatUpdate(
 						get,
 						set,
 						isSimulation,
 					)(entity.id, { damageTaken: collisionDamage * 2 });
-
-					if (crushObstacleA) {
+					for (const obs of crushObstacles) {
 						await applyCombatUpdate(
 							get,
 							set,
 							isSimulation,
-						)(crushObstacleA.id, { damageTaken: collisionDamage });
-					}
-					if (crushObstacleB) {
-						await applyCombatUpdate(
-							get,
-							set,
-							isSimulation,
-						)(crushObstacleB.id, { damageTaken: collisionDamage });
+						)(obs.id, { damageTaken: collisionDamage });
 					}
 				}
 				return;
 			}
 
-			if (dx === 0 && dy === 0) return;
-
-			// ==========================================
-			// 4. CALCULATE MOVEMENT PATH
-			// ==========================================
-			let currentX = tX;
-			let currentY = tY;
-			let collidedWith: BattleUnit | null = null;
-			const pushPath: { col: number; row: number }[] = [];
-
-			for (let i = 0; i < distance; i++) {
-				const nextPos = { col: currentX + dx, row: currentY + dy };
-				const obstacle = getObstacleAt(nextPos.col, nextPos.row);
-
-				if (!isTileInBounds(gridSize)(nextPos) || obstacle) {
-					collidedWith = obstacle || null;
-					break;
-				}
-
-				currentX = nextPos.col;
-				currentY = nextPos.row;
-				pushPath.push({ col: currentX, row: currentY });
-			}
-
-			if (pushPath.length === 0 && !collidedWith) return;
-
-			// ==========================================
-			// 5. ANIMATE MOVEMENT
-			// ==========================================
-			if (pushPath.length > 0) {
+			// --- 3. ANIMATE MOVEMENT ---
+			if (path.length > 0) {
 				const movedEntity = await moveBattleUnit(
 					get,
 					set,
 					isSimulation,
 				)({
 					movingUnit: entity,
-					path: pushPath,
+					path,
 					stepDelayMs: isSimulation ? 0 : 100,
 					forcedMove: true,
 				});
 
-				// Guard: If they died to a surface during the push, stop processing!
 				if (!movedEntity || movedEntity.currentHp <= 0) return;
 				entity = movedEntity;
 			}
 
-			// ==========================================
-			// 6. RESOLVE STANDARD COLLISION
-			// ==========================================
-			const stoppedShort = pushPath.length < distance;
+			// --- 4. RESOLVE STANDARD COLLISION ---
+			const stoppedShort = path.length < distance;
 			if (stoppedShort || collidedWith) {
 				if (collisionDamage > 0 && entity.currentHp > 0) {
-					// Damage the pushed unit
 					await applyCombatUpdate(
 						get,
 						set,
 						isSimulation,
 					)(entity.id, { damageTaken: collisionDamage });
-
-					// Damage the obstacle it hit
 					if (collidedWith) {
 						await applyCombatUpdate(
 							get,
@@ -203,7 +299,6 @@ export const resolvePushEffect: EffectResolver<BattleUnit, PushEffect> =
 			}
 		};
 
-		// Execute sequentially to prevent concurrent grid state clobbering
 		for (const targetId of targetIds) {
 			await processPush(targetId);
 		}

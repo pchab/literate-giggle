@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/style/noNonNullAssertion: <explanation> */
+/** biome-ignore-all lint/style/noNonNullAssertion: Dijkstra algo */
 import { sleep } from "@/modules/shared/helpers/sleep";
 import { type BattleUnit, UnitStance } from "@/modules/units/domain/units.type";
 import type {
@@ -153,12 +153,14 @@ const getTraversableNeighbors = ({
 	movingUnit,
 	units,
 	gridSize,
+	removedCells,
 	surfaces,
 }: {
 	currentPos: GridPosition;
 	movingUnit: BattleUnit;
 	units: BattleUnit[];
 	gridSize: { cols: number; rows: number };
+	removedCells: GridPosition[];
 	surfaces?: Record<string, SurfaceData>;
 }): { pos: GridPosition; cost: number }[] => {
 	const neighbors = [
@@ -176,6 +178,7 @@ const getTraversableNeighbors = ({
 				unit: { ...movingUnit, gridPosition: next },
 				units,
 				gridSize,
+				removedCells,
 			})
 		) {
 			const danger = getTileDanger(next, movingUnit, surfaces);
@@ -193,6 +196,7 @@ export const calculateExactPath = <C extends BattleUnit, T extends BattleUnit>({
 	minRange = 0,
 	maxRange = 0,
 	gridSize,
+	removedCells,
 	surfaces,
 }: {
 	movingUnit: C;
@@ -201,6 +205,7 @@ export const calculateExactPath = <C extends BattleUnit, T extends BattleUnit>({
 	minRange?: number;
 	maxRange?: number;
 	gridSize: { cols: number; rows: number };
+	removedCells: GridPosition[];
 	surfaces?: Record<string, SurfaceData>;
 }): GridPosition[] => {
 	const startPos = movingUnit.gridPosition;
@@ -248,6 +253,7 @@ export const calculateExactPath = <C extends BattleUnit, T extends BattleUnit>({
 			movingUnit,
 			units,
 			gridSize,
+			removedCells,
 			surfaces,
 		});
 
@@ -283,12 +289,14 @@ export const calculateReachableCells = <T extends BattleUnit>({
 	blockingUnits: units,
 	canTargetSelf = false,
 	gridSize,
+	removedCells,
 	surfaces,
 }: {
 	movingUnit: BattleUnit;
 	blockingUnits: T[];
 	canTargetSelf: boolean;
 	gridSize: { cols: number; rows: number };
+	removedCells: GridPosition[];
 	surfaces?: Record<string, SurfaceData>;
 }): GridPosition[] => {
 	const { baseMove: moveValue, gridPosition: startPos } = movingUnit;
@@ -318,6 +326,7 @@ export const calculateReachableCells = <T extends BattleUnit>({
 			movingUnit,
 			units,
 			gridSize,
+			removedCells,
 			surfaces,
 		});
 

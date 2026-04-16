@@ -210,19 +210,19 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 		generateMonsters: () => [
 			{
 				...sumpWatcher,
-				gridPosition: { col: 6, row: 2 },
+				gridPosition: { col: 12, row: 2 },
 				statuses: [{ type: "unstable_mitosis", amount: 1, duration: -1 }],
 			},
 		],
 		generateSummons: () => [
 			{
 				...smugglerCrate,
-				gridPosition: { col: 2, row: 3 },
+				gridPosition: { col: 6, row: 2 },
 				allegiance: "NEUTRAL",
 			},
 			{
 				...smugglerCrate,
-				gridPosition: { col: 5, row: 4 },
+				gridPosition: { col: 6, row: 5 },
 				allegiance: "NEUTRAL",
 			},
 		],
@@ -232,6 +232,11 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 			{ col: 4, row: 2 },
 			{ col: 4, row: 5 },
 			{ col: 4, row: 6 },
+		],
+		startingPositions: [
+			{ col: 7, row: 2 },
+			{ col: 7, row: 3 },
+			{ col: 7, row: 4 },
 		],
 	},
 };

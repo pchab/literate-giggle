@@ -31,6 +31,9 @@ export const areEnemies = (u1: BattleUnit) => (u2: BattleUnit) => {
 	return getAllegiance(u1) !== getAllegiance(u2);
 };
 
+const isNeutralSummon = (u: BattleUnit) =>
+	isSummon(u) && u.allegiance === "NEUTRAL";
+
 export function resolveTargets<T extends BattleUnit>(
 	targetType: EffectTarget,
 	anchorTarget: AnchorTarget,
@@ -61,11 +64,17 @@ export function resolveTargets<T extends BattleUnit>(
 	}
 
 	if (targetType === "all_enemies") {
-		return aliveUnits.filter(areEnemies(caster)).map((f) => f.id);
+		return aliveUnits
+			.filter((f) => !isNeutralSummon(f))
+			.filter(areEnemies(caster))
+			.map((f) => f.id);
 	}
 
 	if (targetType === "all_allies") {
-		return aliveUnits.filter((f) => !areEnemies(caster)(f)).map((f) => f.id);
+		return aliveUnits
+			.filter((f) => !isNeutralSummon(f))
+			.filter((f) => !areEnemies(caster)(f))
+			.map((f) => f.id);
 	}
 
 	if (targetType === "path" && anchorTarget) {

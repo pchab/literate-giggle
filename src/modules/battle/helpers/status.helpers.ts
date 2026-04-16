@@ -196,7 +196,7 @@ export const statusRegistry: Record<StatusType, StatusRegistryHooks> = {
 		onBeforeDamage:
 			(get, set) =>
 			async ({ unit, damageTaken, isTrueDamage }) => {
-				const { units, gridSize } = get();
+				const { units, gridSize, removedCells } = get();
 
 				// 1. Find empty adjacent tiles to spawn the slimes
 				const spawnTiles = calculateAttackableCells({
@@ -204,7 +204,9 @@ export const statusRegistry: Record<StatusType, StatusRegistryHooks> = {
 					rangeValue: 1,
 					gridSize,
 				}).filter(
-					(tile) => isTileInBounds(gridSize)(tile) && isTileEmpty(units)(tile),
+					(tile) =>
+						isTileInBounds(gridSize, removedCells)(tile) &&
+						isTileEmpty(units)(tile),
 				);
 
 				// 2. Spawn up to 2 slimes
