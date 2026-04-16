@@ -15,6 +15,7 @@ import {
 	monsterId,
 	summonId,
 } from "@/modules/units/helpers/units.helpers";
+import { emptyStateDiff } from "../../domain/intent.type";
 
 export const initCardEditorTestBattle =
 	(_: BattleGet, set: BattleSet) => (draftCard: Card, mode: EditorTestMode) => {
@@ -77,19 +78,9 @@ export const initCardEditorTestBattle =
 			currentVfx: {},
 
 			aiIntents: {},
-			aiStateDiff: {
-				projectedMoves: {},
-				projectedCasualties: [],
-				projectedDamage: {},
-				projectedHealing: {},
-			},
+			aiStateDiff: emptyStateDiff,
 			playerIntent: null,
-			playerStateDiff: {
-				projectedMoves: {},
-				projectedCasualties: [],
-				projectedDamage: {},
-				projectedHealing: {},
-			},
+			playerStateDiff: emptyStateDiff,
 
 			xpEarned: 0,
 			encounterId: null,

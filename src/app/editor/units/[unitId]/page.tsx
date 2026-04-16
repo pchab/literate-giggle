@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/shallow";
 import { BattleGrid } from "@/modules/battle/components/BattleGrid";
+import { emptyStateDiff } from "@/modules/battle/domain/intent.type";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import type { Card } from "@/modules/cards/domain/cards.type";
 import { MotionCamera } from "@/modules/shared/components/MotionCamera";
@@ -108,12 +109,7 @@ export default function UnitEditorPage() {
 								} else {
 									useBattleStore.setState({
 										aiIntents: {},
-										aiStateDiff: {
-											projectedMoves: {},
-											projectedCasualties: [],
-											projectedDamage: {},
-											projectedHealing: {},
-										},
+										aiStateDiff: emptyStateDiff,
 									});
 								}
 							}}

@@ -2,6 +2,14 @@ import type { AnchorTarget, Card } from "@/modules/cards/domain/cards.type";
 import type { BattleUnit } from "@/modules/units/domain/units.type";
 import type { GridPosition } from "./grid.type";
 
+export const emptyStateDiff: ShadowStateDiff = {
+	projectedMoves: {},
+	projectedCasualties: [],
+	projectedDamage: {},
+	projectedHealing: {},
+	projectedSpawns: [],
+};
+
 export type ShadowStateDiff = {
 	projectedMoves: Record<BattleUnit["id"], GridPosition>;
 	projectedCasualties: BattleUnit["id"][];
