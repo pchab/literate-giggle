@@ -108,17 +108,18 @@ export const sewerContaminationCards: Record<Card["id"], Card> = {
 		id: cardId("sewer_flush"),
 		name: "Sewer Flush",
 		image: "/cards/sewer_flush.webp",
-		range: 99, 
+		range: 99,
 		playRequirement: "no_target",
-		aiTargetPreference: "self", // Boss casts it instantly
+		aiTargetPreference: "self",
 		effects: [
 			{
 				type: "push",
-				distance: 3, // Pushes heroes 3 tiles south
-				collisionDamage: 2, // If they hit a crate, they take 2 damage instead of dying in sludge
+				distance: 3,
+				collisionDamage: 2,
 				target: "all_enemies",
-				pushDirection: "away" // Assuming 'away' from the northern wall pushes them South
-			}
-		]
+				pushDirection: "towards",
+				focalPoint: { col: 0, row: 4 },
+			},
+		],
 	},
 };

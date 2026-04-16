@@ -11,7 +11,7 @@ import type { EffectResolver } from "./effect.resolvers";
 
 export const resolvePushEffect: EffectResolver<BattleUnit, PushEffect> =
 	(get, set, isSimulation = false) =>
-	(effect) =>
+	({ pushDirection, distance, collisionDamage, focalPoint }) =>
 	async ({ anchorTarget, caster, targetIds }) => {
 		const { gridSize } = get();
 		// --- 1. USE THE UNIFIED ARRAY ---
@@ -35,7 +35,7 @@ export const resolvePushEffect: EffectResolver<BattleUnit, PushEffect> =
 
 			const { col: tX, row: tY } = entity.gridPosition;
 			const { col: bodyX, row: bodyY } = getClosestOriginTile({
-				caster,
+				caster: focalPoint ? { gridPosition: focalPoint } : caster,
 				anchorTarget: entity,
 			});
 			let dx = 0;
@@ -56,7 +56,19 @@ export const resolvePushEffect: EffectResolver<BattleUnit, PushEffect> =
 			// ==========================================
 			// 2. DETERMINE TRAJECTORY
 			// ==========================================
-			if (effect.pushDirection === "sideways") {
+			if (pushDirection === "north") {
+				dx = 0;
+				dy = -1;
+			} else if (pushDirection === "south") {
+				dx = 0;
+				dy = 1;
+			} else if (pushDirection === "east") {
+				dx = 1;
+				dy = 0;
+			} else if (pushDirection === "west") {
+				dx = -1;
+				dy = 0;
+			} else if (pushDirection === "sideways") {
 				const dirA = { dx: -chargeDy, dy: chargeDx };
 				const dirB = { dx: chargeDy, dy: -chargeDx };
 
@@ -81,7 +93,7 @@ export const resolvePushEffect: EffectResolver<BattleUnit, PushEffect> =
 					dx = dirA.dx; // Tie-breaker: defaults to clockwise
 					dy = dirA.dy;
 				}
-			} else if (effect.pushDirection === "towards") {
+			} else if (pushDirection === "towards") {
 				dx = -Math.sign(tX - bodyX);
 				dy = -Math.sign(tY - bodyY);
 			} else {
@@ -94,27 +106,27 @@ export const resolvePushEffect: EffectResolver<BattleUnit, PushEffect> =
 			// 3. EXECUTE CRUSH (Early Exit)
 			// ==========================================
 			if (isCrushed) {
-				if (effect.collisionDamage > 0) {
+				if (collisionDamage > 0) {
 					// Send the combat intents directly to the pipeline!
 					await applyCombatUpdate(
 						get,
 						set,
 						isSimulation,
-					)(entity.id, { damageTaken: effect.collisionDamage * 2 });
+					)(entity.id, { damageTaken: collisionDamage * 2 });
 
 					if (crushObstacleA) {
 						await applyCombatUpdate(
 							get,
 							set,
 							isSimulation,
-						)(crushObstacleA.id, { damageTaken: effect.collisionDamage });
+						)(crushObstacleA.id, { damageTaken: collisionDamage });
 					}
 					if (crushObstacleB) {
 						await applyCombatUpdate(
 							get,
 							set,
 							isSimulation,
-						)(crushObstacleB.id, { damageTaken: effect.collisionDamage });
+						)(crushObstacleB.id, { damageTaken: collisionDamage });
 					}
 				}
 				return;
@@ -130,7 +142,7 @@ export const resolvePushEffect: EffectResolver<BattleUnit, PushEffect> =
 			let collidedWith: BattleUnit | null = null;
 			const pushPath: { col: number; row: number }[] = [];
 
-			for (let i = 0; i < effect.distance; i++) {
+			for (let i = 0; i < distance; i++) {
 				const nextPos = { col: currentX + dx, row: currentY + dy };
 				const obstacle = getObstacleAt(nextPos.col, nextPos.row);
 
@@ -169,15 +181,15 @@ export const resolvePushEffect: EffectResolver<BattleUnit, PushEffect> =
 			// ==========================================
 			// 6. RESOLVE STANDARD COLLISION
 			// ==========================================
-			const stoppedShort = pushPath.length < effect.distance;
+			const stoppedShort = pushPath.length < distance;
 			if (stoppedShort || collidedWith) {
-				if (effect.collisionDamage > 0 && entity.currentHp > 0) {
+				if (collisionDamage > 0 && entity.currentHp > 0) {
 					// Damage the pushed unit
 					await applyCombatUpdate(
 						get,
 						set,
 						isSimulation,
-					)(entity.id, { damageTaken: effect.collisionDamage });
+					)(entity.id, { damageTaken: collisionDamage });
 
 					// Damage the obstacle it hit
 					if (collidedWith) {
@@ -185,7 +197,7 @@ export const resolvePushEffect: EffectResolver<BattleUnit, PushEffect> =
 							get,
 							set,
 							isSimulation,
-						)(collidedWith.id, { damageTaken: effect.collisionDamage });
+						)(collidedWith.id, { damageTaken: collisionDamage });
 					}
 				}
 			}

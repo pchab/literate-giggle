@@ -65,7 +65,15 @@ export type PushEffect = {
 	distance: number;
 	collisionDamage: number;
 	target: EffectTarget;
-	pushDirection?: "away" | "sideways" | "towards";
+	pushDirection?:
+		| "away"
+		| "sideways"
+		| "towards"
+		| "north"
+		| "south"
+		| "east"
+		| "west";
+	focalPoint?: GridPosition;
 };
 
 export type ChargeEffect = {

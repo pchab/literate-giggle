@@ -235,7 +235,7 @@ export const getClosestOriginTile = ({
 	caster,
 	anchorTarget,
 }: {
-	caster: BattleUnit;
+	caster: BoundingBox;
 	anchorTarget: BoundingBox | null;
 }): GridPosition => {
 	const size = caster.size ?? { cols: 1, rows: 1 };
