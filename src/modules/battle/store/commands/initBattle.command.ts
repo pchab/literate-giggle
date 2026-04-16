@@ -67,6 +67,7 @@ export const initBattle =
 			generateMonsters,
 			generateSummons = () => [],
 			surfaces = {},
+			startingPositions = startingGridPosition,
 		} = encounter;
 
 		const freshMonsters = generateMonsters().map(bluePrintToMonster);
@@ -82,7 +83,7 @@ export const initBattle =
 			return {
 				...hero,
 				stance: UnitStance.IDLE,
-				gridPosition: startingGridPosition[index],
+				gridPosition: startingPositions[index],
 				statuses: [],
 				hand: [card1, card2, card3],
 			};
