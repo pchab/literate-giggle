@@ -4,7 +4,7 @@ import type { UnitBlueprint } from "../../domain/units.type";
 export const sumpSlime: UnitBlueprint = {
 	id: "sump_slime" as UnitBlueprint["id"],
 	name: "Sump Slime",
-	spriteBase: "monsters/sump_slime",
+	spriteBase: "monsters/slime",
 	maxHp: 20,
 	baseMove: 2,
 	baseDef: 0,
