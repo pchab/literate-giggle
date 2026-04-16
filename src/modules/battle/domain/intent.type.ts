@@ -7,6 +7,7 @@ export type ShadowStateDiff = {
 	projectedCasualties: BattleUnit["id"][];
 	projectedDamage: Record<BattleUnit["id"], number>;
 	projectedHealing: Record<BattleUnit["id"], number>;
+	projectedSpawns: BattleUnit[];
 };
 
 export type Intent = {

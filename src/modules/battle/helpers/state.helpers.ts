@@ -37,6 +37,7 @@ export const calculateStateDiff = (
 	const projectedCasualties: BattleUnit["id"][] = [];
 	const projectedDamage: Record<BattleUnit["id"], number> = {};
 	const projectedHealing: Record<BattleUnit["id"], number> = {};
+	const projectedSpawns: BattleUnit[] = []; // <-- NEW
 
 	realUnits.forEach((realUnit) => {
 		const shadowUnit = shadowUnits.find((f) => f.id === realUnit.id);
@@ -64,11 +65,19 @@ export const calculateStateDiff = (
 		}
 	});
 
+	shadowUnits.forEach((shadowUnit) => {
+		const realUnit = realUnits.find((f) => f.id === shadowUnit.id);
+		if (!realUnit && shadowUnit.currentHp > 0) {
+			projectedSpawns.push(shadowUnit);
+		}
+	});
+
 	return {
 		projectedMoves,
 		projectedCasualties,
 		projectedDamage,
 		projectedHealing,
+		projectedSpawns,
 	};
 };
 

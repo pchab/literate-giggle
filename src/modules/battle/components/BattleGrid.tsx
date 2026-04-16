@@ -7,7 +7,7 @@ import { isHero, isHeroId } from "@/modules/units/helpers/units.helpers";
 import { useCellHighlight } from "../hooks/useCellHighlight";
 import { useBattleStore } from "../store/battle.store";
 import { GridCell, type Highlight } from "./GridCell";
-import MovePrediction from "./MovePrediction";
+import ShadowPredictions from "./ShadowPredictions";
 import { SurfacesOverlay } from "./SurfaceOverlay";
 
 const getCells = (gridSize: { rows: number; cols: number }) =>
@@ -161,7 +161,7 @@ export function BattleGrid() {
 			})}
 			<SurfacesOverlay />
 			{/* --- SVG OVERLAY FOR PROJECTED MOVES --- */}
-			<MovePrediction />
+			<ShadowPredictions />
 		</div>
 	);
 }

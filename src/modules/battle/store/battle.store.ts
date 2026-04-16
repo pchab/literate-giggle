@@ -114,6 +114,7 @@ const initialState: BattleState = {
 		projectedCasualties: [],
 		projectedDamage: {},
 		projectedHealing: {},
+		projectedSpawns: [],
 	},
 	playerIntent: null,
 	playerStateDiff: {
@@ -121,6 +122,7 @@ const initialState: BattleState = {
 		projectedCasualties: [],
 		projectedDamage: {},
 		projectedHealing: {},
+		projectedSpawns: [],
 	},
 
 	xpEarned: 0,
