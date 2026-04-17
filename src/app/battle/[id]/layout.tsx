@@ -1,4 +1,4 @@
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "motion/react";
 import { ObjectiveTracker } from "@/modules/campaign/components/ObjectiveTracker";
 
 export default function RootBattleLayout({

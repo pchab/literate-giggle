@@ -65,9 +65,9 @@ export default function SceneComponent({ scene }: { scene: Scene }) {
 										!reqClass ||
 										roster.map(({ heroClass }) => heroClass).includes(reqClass),
 								)
-								.map((choice, idx) => (
+								.map((choice) => (
 									<RetroButton
-										key={idx}
+										key={crypto.randomUUID()}
 										variant="default"
 										className="w-full max-w-md text-sm md:text-base py-3 border-zinc-500 hover:border-amber-400 hover:text-amber-400 bg-zinc-900/90 backdrop-blur-sm shadow-[0_4px_15px_rgba(0,0,0,0.8)]"
 										onClick={() => processActions(choice.actions)}

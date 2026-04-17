@@ -97,7 +97,7 @@ export default function ChooseRune({
 			</div>
 
 			<div className="flex flex-col gap-2">
-				{activeDraft.choices.map((rune, i) => {
+				{activeDraft.choices.map((rune) => {
 					// --- NEW: Compatibility Guard ---
 					const hasValidTarget = deck.some((c) =>
 						isCardCompatibleWithRune(c, rune),
@@ -106,7 +106,7 @@ export default function ChooseRune({
 					return (
 						<button
 							type="button"
-							key={i}
+							key={crypto.randomUUID()}
 							disabled={!hasValidTarget}
 							onClick={() => handleChooseRune(rune)}
 							className={`border rounded p-2 text-sm text-left transition-colors flex justify-between items-center

@@ -99,7 +99,7 @@ export function CardEffectsEditor({
 		<div className="flex flex-col gap-4 mt-2">
 			{effects.map((effect, index) => (
 				<div
-					key={index}
+					key={crypto.randomUUID()}
 					className="flex flex-col bg-zinc-950 border border-zinc-700 rounded p-3 relative"
 				>
 					{/* Header & Remove Button */}

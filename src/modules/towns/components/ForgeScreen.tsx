@@ -107,10 +107,10 @@ export function ForgeScreen({ onClose }: { onClose: () => void }) {
 											No Evolution Runes in inventory.
 										</span>
 									)}
-									{inventory.map((rune, i) => (
+									{inventory.map((rune) => (
 										<button
 											type="button"
-											key={`${rune}-${i}`}
+											key={crypto.randomUUID()}
 											onClick={() => setSelectedRune(rune)}
 											className={`px-4 py-2 border-2 rounded font-bold text-sm uppercase transition-all ${
 												selectedRune === rune

@@ -104,11 +104,11 @@ export function ClassPromotionModal() {
 											<div className="w-12 h-px bg-zinc-700 my-1 group-hover:bg-amber-500/50 transition-colors" />
 
 											<div className="flex flex-col gap-1 items-center">
-												{immediateBonuses.map((trigger, idx) => {
+												{immediateBonuses.map((trigger) => {
 													if (trigger.type === "statsIncrease") {
 														return (
 															<span
-																key={idx}
+																key={crypto.randomUUID()}
 																className="text-xs font-mono text-cyan-400 font-bold tracking-wide"
 															>
 																+{trigger.amount} {trigger.stat.toUpperCase()}
@@ -118,7 +118,7 @@ export function ClassPromotionModal() {
 													if (trigger.type === "passiveUnlock") {
 														return (
 															<div
-																key={idx}
+																key={crypto.randomUUID()}
 																className="mt-2 bg-emerald-950/50 border border-emerald-800/50 px-3 py-1.5 rounded text-[10px] font-bold text-emerald-400 flex items-center gap-1.5 shadow-inner"
 															>
 																<span className="text-emerald-300">

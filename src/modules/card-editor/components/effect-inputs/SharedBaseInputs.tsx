@@ -1,6 +1,7 @@
 import type { VfxType } from "@/modules/battle/domain/vfx.type";
 import type {
 	CardEffect,
+	DamageEffect,
 	EffectTarget,
 	PushEffect,
 	SummonEffect,
@@ -100,7 +101,7 @@ export function SharedBaseInputs({
 							min="0"
 							onChange={(e) =>
 								onChange({
-									collisionDamage: parseInt(e.target.value) || 0,
+									collisionDamage: parseInt(e.target.value, 10) || 0,
 								} as Partial<CardEffect>)
 							}
 							className="bg-zinc-800 text-xs rounded border border-zinc-700 px-2 py-1 w-full"
@@ -149,7 +150,7 @@ export function SharedBaseInputs({
 				<FieldRow label="VFX / Proj">
 					<div className="flex gap-1 w-full">
 						<select
-							value={(effect as any).vfx || ""}
+							value={(effect as DamageEffect).vfx || ""}
 							onChange={(e) =>
 								onChange({
 									vfx: (e.target.value as VfxType) || undefined,
@@ -165,7 +166,7 @@ export function SharedBaseInputs({
 							))}
 						</select>
 						<select
-							value={(effect as any).projectile || ""}
+							value={(effect as DamageEffect).projectile || ""}
 							onChange={(e) =>
 								onChange({
 									projectile: (e.target.value as VfxType) || undefined,

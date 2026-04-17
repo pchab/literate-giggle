@@ -32,11 +32,14 @@ export const resolveSurfacesTriggered =
 			if (processedSurfaceTypes.has(surface.type)) continue;
 			processedSurfaceTypes.add(surface.type);
 
-			await resolvehandleSurfaceCard(
-				get,
-				set,
-				isSimulation,
-			)({ surface, target: unit, card: surface.onStep });
+			if (surface.onStep) {
+				!isSimulation && console.log({ unit, card: surface.onStep });
+				await resolveSurfaceCard(
+					get,
+					set,
+					isSimulation,
+				)({ surface, target: unit, card: surface.onStep });
+			}
 
 			const targetSurface = nextSurfaces[surface.id];
 			if (targetSurface && targetSurface.charges !== undefined) {
@@ -53,7 +56,7 @@ export const resolveSurfacesTriggered =
 		}
 	};
 
-export const resolvehandleSurfaceCard =
+export const resolveSurfaceCard =
 	(get: BattleGet, set: BattleSet, isSimulation = false) =>
 	async ({
 		surface,
@@ -87,10 +90,11 @@ export const resolvehandleSurfaceCard =
 			caster: phantomCaster,
 			anchorTarget: target,
 		});
+		!isSimulation && console.log({ target, attackOrigin });
 
 		// Handle LoS interception
 		const anchorTarget = getAnchorTarget({
-			attacker: phantomCaster,
+			attacker: { gridPosition: attackOrigin, id: phantomCaster.id },
 			card,
 			intendedTarget: target,
 			obstacles: units,
@@ -107,6 +111,7 @@ export const resolvehandleSurfaceCard =
 		// ==========================================
 		// 2. RESOLVE EFFECTS
 		// ==========================================
+		!isSimulation && console.log({ anchorTarget });
 		const lockedTargets = card.effects.map((effect) =>
 			resolveTargets(
 				effect.target,
@@ -116,6 +121,7 @@ export const resolvehandleSurfaceCard =
 				targetedCells,
 			),
 		);
+		!isSimulation && console.log({ lockedTargets });
 
 		for (let i = 0; i < card.effects.length; i++) {
 			const effect = card.effects[i];

@@ -99,6 +99,7 @@ export const applyCombatUpdate =
 		if (!maybeUnit) return;
 
 		let currentUnit = maybeUnit;
+		!isSimulation && console.log({ update, currentUnit });
 		let pendingDamage = update.damageTaken ?? 0;
 		const baseStatuses = update.replaceStatuses
 			? [...update.replaceStatuses]
@@ -117,6 +118,7 @@ export const applyCombatUpdate =
 						set,
 						isSimulation,
 					)({
+						amount: status.amount,
 						unit: currentUnit,
 						damageTaken: pendingDamage,
 						isTrueDamage: update.isTrueDamage, // <--- Let hooks know!

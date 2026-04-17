@@ -27,25 +27,20 @@ export function SurfacesOverlay() {
 				return (
 					<div
 						key={surface.id}
-						className="relative flex items-center justify-center w-full h-full overflow-visible pointer-events-none"
+						className="relative flex items-center justify-center pointer-events-none"
 						style={{
 							gridColumn: `${surface.gridPosition.col + 1} / span ${cols}`,
 							gridRow: `${surface.gridPosition.row + 1} / span ${rows}`,
 						}}
 					>
-						<Image
-							src={surface.spriteBase}
-							alt={surface.type}
-							width={0}
-							height={0}
-							sizes="100vw"
-							style={{
-								width: "auto",
-								height: "100%",
-								maxWidth: "150%",
-							}}
-							className="mix-blend-screen"
-						/>
+						<div className="absolute inset-0 opacity-80">
+							<Image
+								src={surface.spriteBase}
+								alt={surface.type}
+								fill
+								className="rounded-md mix-blend-screen object-cover"
+							/>
+						</div>
 					</div>
 				);
 			})}

@@ -23,7 +23,7 @@ export const getTileDanger = (
 	const surface = Object.values(surfaces).find((s) =>
 		doBoundingBoxesIntersect(s, { gridPosition: cell }),
 	);
-	if (!surface) return 0;
+	if (!surface?.onStep) return 0;
 	const danger = surface.onStep.effects.reduce((dangerRating, cardEffect) => {
 		if (cardEffect.type === "damage") {
 			return dangerRating + cardEffect.amount;

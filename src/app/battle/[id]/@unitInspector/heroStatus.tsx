@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import type { BattleHero } from "@/modules/units/domain/units.type";
 
 export default function HeroStatusSidebar({ hero }: { hero: BattleHero }) {
@@ -76,9 +76,9 @@ export default function HeroStatusSidebar({ hero }: { hero: BattleHero }) {
 							🛡️ {totalBlock}
 						</span>
 					)}
-					{otherStatuses.map((status, idx) => (
+					{otherStatuses.map((status) => (
 						<span
-							key={idx}
+							key={crypto.randomUUID()}
 							className="text-xs bg-zinc-900 text-zinc-300 px-2 py-0.5 rounded border border-zinc-700 capitalize flex items-center gap-1"
 						>
 							{status.type === "poison"

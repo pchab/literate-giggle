@@ -23,6 +23,7 @@ type StatusRegistryHooks = {
 		set: BattleSet,
 		isSimulation: boolean,
 	) => <T extends BattleUnit>(params: {
+		amount: Status["amount"];
 		unit: T;
 		isTrueDamage?: boolean;
 		damageTaken: number;
@@ -70,9 +71,9 @@ export const statusRegistry: Record<StatusType, StatusRegistryHooks> = {
 	vulnerable: {
 		onBeforeDamage:
 			() =>
-			async ({ unit, damageTaken, isTrueDamage }) => {
+			async ({ unit, damageTaken, isTrueDamage, amount }) => {
 				if (isTrueDamage) return { unit, damageTaken };
-				return { unit, damageTaken: damageTaken + 2 };
+				return { unit, damageTaken: damageTaken + amount };
 			},
 	},
 

@@ -72,10 +72,7 @@ export function moveBattleUnit(
 				gridPosition: step,
 			});
 			currentUnit = refreshUnit() || currentUnit;
-
-			if (!isSimulation && stepDelayMs > 0) {
-				await sleep(stepDelayMs);
-			}
+			await sleep(!isSimulation ? stepDelayMs : 0);
 
 			await resolveSurfacesTriggered(
 				get,

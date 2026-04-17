@@ -3,6 +3,8 @@ import {
 	getCellId,
 } from "@/modules/battle/helpers/grid.helpers";
 import type { BattleState } from "@/modules/battle/store/battle.store";
+import { deadlyHazard } from "@/modules/cards/data/surfaces/deadlyHazard";
+import { toxicSewer } from "@/modules/cards/data/surfaces/toxicSewer";
 import { giantToad } from "@/modules/units/data/monsters/giant-toad";
 import { sumpWatcher } from "@/modules/units/data/monsters/sump-slime";
 import { zombie } from "@/modules/units/data/monsters/zombie";
@@ -54,10 +56,10 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 				id: getCellId({ col: 0, row: 2 }),
 				spriteBase: "/surfaces/sewers_stream.webp",
 				type: "HAZARD",
-				damage: 1,
 				duration: -1,
 				gridPosition: { col: 0, row: 2 },
 				size: { cols: sewerBounds.cols, rows: 3 },
+				onStep: toxicSewer,
 			},
 		},
 		onWinSceneId: SEWER_CONTAMINATION.scenes.victory,
@@ -110,7 +112,7 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 				id: getCellId({ col: 5, row: 0 }),
 				spriteBase: "/surfaces/river_1.webp",
 				type: "HAZARD",
-				damage: 999,
+				onStep: deadlyHazard,
 				duration: -1,
 				gridPosition: { col: 5, row: 0 },
 				size: { cols: 2, rows: 3 },
@@ -119,7 +121,6 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 				id: getCellId({ col: 5, row: 3 }),
 				spriteBase: "/surfaces/bridge.webp",
 				type: "TERRAIN",
-				damage: 0,
 				duration: -1,
 				gridPosition: { col: 5, row: 3 },
 				size: { cols: 2, rows: 2 },
@@ -128,7 +129,7 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 				id: getCellId({ col: 5, row: 5 }),
 				spriteBase: "/surfaces/river_2.webp",
 				type: "HAZARD",
-				damage: 999,
+				onStep: deadlyHazard,
 				duration: -1,
 				gridPosition: { col: 5, row: 5 },
 				size: { cols: 2, rows: 3 },
@@ -137,7 +138,6 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 				id: getCellId({ col: 11, row: 3 }),
 				spriteBase: "/surfaces/escape_zone.webp",
 				type: "SPECIAL",
-				damage: 0,
 				duration: -1,
 				gridPosition: { col: 11, row: 3 },
 				size: { cols: 1, rows: 6 },

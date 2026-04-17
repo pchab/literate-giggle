@@ -14,20 +14,27 @@ interface RegistryStore {
 	getUnit: (id: string) => UnitBlueprint | undefined;
 }
 
+function isCard(item: Card | UnitBlueprint): item is Card {
+	return "effects" in item;
+}
+function isUnitBlueprint(item: Card | UnitBlueprint): item is UnitBlueprint {
+	return "intentPool" in item;
+}
+
 export const useRegistryStore = create<RegistryStore>((set, get) => ({
 	cards: { ...cardLibrary },
 	units: {},
 
 	initRegistry: async () => {
 		try {
-			const allData = await getAll(STORES.DATA);
+			const allData = await getAll<Card | UnitBlueprint>(STORES.DATA);
 
 			const customCards: Record<string, Card> = {};
 			const customUnits: Record<string, UnitBlueprint> = {};
 
-			allData.forEach((item: any) => {
-				if (item.effects) customCards[item.id] = item;
-				if (item.intentPool) customUnits[item.id] = item;
+			allData.forEach((item: Card | UnitBlueprint) => {
+				if (isCard(item)) customCards[item.id] = item;
+				if (isUnitBlueprint(item)) customUnits[item.id] = item;
 			});
 
 			set((state) => ({

@@ -28,11 +28,11 @@ export function Hand({ id: heroId, hand }: Pick<BattleHero, "id" | "hand">) {
 
 	return (
 		<div className="w-full h-32 flex justify-end items-center gap-3 pr-4">
-			{hand.map((card, index) => {
+			{hand.map((card) => {
 				if (!card) {
 					return (
 						<div
-							key={`empty-slot-${index}`}
+							key={`empty-slot-${crypto.randomUUID()}`}
 							className="w-16 h-24 rounded border-2 border-dashed border-zinc-700/50 flex items-center justify-center bg-zinc-900/20"
 						>
 							<span className="text-zinc-600 text-xs text-center px-1">

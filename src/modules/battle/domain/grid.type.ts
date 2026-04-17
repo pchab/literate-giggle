@@ -17,7 +17,7 @@ export type SurfaceData = {
 	size?: { cols: number; rows: number };
 
 	charges?: number;
-	onStep: Card;
+	onStep?: Card;
 	focalPoint?: BoundingBox;
 };
 
