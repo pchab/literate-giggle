@@ -9,17 +9,13 @@ import {
 	isMonsterId,
 	isSummon,
 } from "@/modules/units/helpers/units.helpers";
-import type { SurfaceType } from "../../domain/grid.type";
 import type { VfxType } from "../../domain/vfx.type";
 import type { BattleGet, BattleSet } from "../../store/battle.store";
-import {
-	doBoundingBoxesIntersect,
-	getCellId,
-	isUnitInTile,
-} from "../grid.helpers";
+import { getCellId, isUnitInTile } from "../grid.helpers";
 import { getLineOfSightPath } from "../move.helpers";
 import { applyCombatUpdate } from "../state.helpers";
 import { statusRegistry } from "../status.helpers";
+import { resolveSurfacesTriggered } from "../surfaces.helpers";
 
 export const getAllegiance = (u: BattleUnit) => {
 	if (isHeroId(u.id)) return "PLAYER";
@@ -100,11 +96,6 @@ export function resolveTargets<T extends BattleUnit>(
 export const tickStatusesAndSurfaces =
 	(get: BattleGet, set: BattleSet, isSimulation = false) =>
 	async <T extends BattleUnit>(units: T[]): Promise<void> => {
-		const { surfaces } = get();
-		const nextSurfaces = Object.fromEntries(
-			Object.entries(surfaces).map(([id, surface]) => [id, { ...surface }]),
-		);
-
 		// ==========================================
 		// 1. TICK UNITS & APPLY SURFACES
 		// ==========================================
@@ -138,46 +129,21 @@ export const tickStatusesAndSurfaces =
 				}))
 				.filter((status) => status.duration > 0 || status.duration === -1);
 
-			// --- B. Evaluate Surfaces Under the Unit ---
-			const processedSurfaceTypes = new Set<SurfaceType>();
+			// --- B. Apply the Combat update ---
+			await applyCombatUpdate(
+				get,
+				set,
+				isSimulation,
+			)(unit.id, {
+				damageTaken: totalDamage,
+				isTrueDamage: true,
+				healingReceived: totalHealing,
+				newStatuses: newStatuses,
+				replaceStatuses: agedStatuses,
+			});
 
-			for (const surface of Object.values(nextSurfaces)) {
-				if (!doBoundingBoxesIntersect(unit, surface)) continue;
-				if (unit.surfaceImmunities?.includes(surface.type)) continue;
-				if (processedSurfaceTypes.has(surface.type)) continue;
-
-				processedSurfaceTypes.add(surface.type);
-
-				if (surface.damage) totalDamage += surface.damage;
-				if (surface.status) newStatuses.push(surface.status);
-
-				if (surface.charges !== undefined) {
-					surface.charges -= 1;
-					if (surface.charges <= 0) {
-						surface.duration = 0;
-					}
-				}
-			}
-
-			// --- C. Apply the Combined Combat update ---
-			if (
-				totalDamage > 0 ||
-				totalHealing > 0 ||
-				newStatuses.length > 0 ||
-				unit.statuses.length > 0
-			) {
-				await applyCombatUpdate(
-					get,
-					set,
-					isSimulation,
-				)(unit.id, {
-					damageTaken: totalDamage,
-					isTrueDamage: true,
-					healingReceived: totalHealing,
-					newStatuses: newStatuses,
-					replaceStatuses: agedStatuses,
-				});
-			}
+			// --- C. Evaluate Surfaces Under the Unit ---
+			await resolveSurfacesTriggered(get, set, isSimulation)({ unit });
 
 			// --- D. Trigger VFX ---
 			if (!isSimulation && tickVfxTypes.length > 0) {
@@ -188,22 +154,5 @@ export const tickStatusesAndSurfaces =
 					return { currentVfx: nextVfx };
 				});
 			}
-		}
-
-		// ==========================================
-		// 2. TICK SURFACES DURATION & CLEANUP
-		// ==========================================
-		for (const cellId in nextSurfaces) {
-			const surface = nextSurfaces[cellId];
-			if (surface.duration !== -1) {
-				surface.duration -= 1;
-			}
-			if (surface.duration === 0) {
-				delete nextSurfaces[cellId];
-			}
-		}
-
-		if (!isSimulation) {
-			set(() => ({ surfaces: nextSurfaces }));
 		}
 	};

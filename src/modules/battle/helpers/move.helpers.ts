@@ -1,21 +1,17 @@
 /** biome-ignore-all lint/style/noNonNullAssertion: Dijkstra algo */
 import { sleep } from "@/modules/shared/helpers/sleep";
 import { type BattleUnit, UnitStance } from "@/modules/units/domain/units.type";
-import type {
-	GridPosition,
-	SurfaceData,
-	SurfaceType,
-} from "../domain/grid.type";
+import type { GridPosition, SurfaceData } from "../domain/grid.type";
 import type { BattleGet, BattleSet } from "../store/battle.store";
 import {
 	canUnitFit,
-	doBoundingBoxesIntersect,
 	getCellId,
 	getDistanceToBoundingBox,
 	getTileDanger,
 } from "./grid.helpers";
-import { applyCombatUpdate, findUnit, updateUnitState } from "./state.helpers";
+import { findUnit, updateUnitState } from "./state.helpers";
 import { statusRegistry } from "./status.helpers";
+import { resolveSurfacesTriggered } from "./surfaces.helpers";
 
 // ==========================================
 // 1. STATE MUTATION: Execution of Movement
@@ -81,42 +77,11 @@ export function moveBattleUnit(
 				await sleep(stepDelayMs);
 			}
 
-			const { surfaces: draftSurfaces } = get();
-			const processedSurfaceTypes = new Set<SurfaceType>();
-			let surfacesChanged = false;
-			const nextSurfaces = { ...draftSurfaces };
-
-			for (const surface of Object.values(draftSurfaces)) {
-				if (!doBoundingBoxesIntersect(currentUnit, surface)) continue;
-				if (currentUnit.surfaceImmunities?.includes(surface.type)) continue;
-
-				if (processedSurfaceTypes.has(surface.type)) continue;
-				processedSurfaceTypes.add(surface.type);
-
-				if (surface.damage || surface.status) {
-					await applyCombatUpdate(
-						get,
-						set,
-						isSimulation,
-					)(currentUnit.id, {
-						damageTaken: surface.damage,
-						newStatuses: surface.status ? [surface.status] : undefined,
-					});
-				}
-
-				const targetSurface = nextSurfaces[surface.id];
-				if (targetSurface && targetSurface.charges !== undefined) {
-					targetSurface.charges -= 1;
-					surfacesChanged = true;
-					if (targetSurface.charges <= 0) {
-						delete nextSurfaces[surface.id];
-					}
-				}
-			}
-
-			if (surfacesChanged) {
-				set((prev) => ({ ...prev, surfaces: nextSurfaces }));
-			}
+			await resolveSurfacesTriggered(
+				get,
+				set,
+				isSimulation,
+			)({ unit: currentUnit });
 
 			const freshUnit = refreshUnit();
 			if (!freshUnit || freshUnit.currentHp <= 0) {
@@ -127,6 +92,13 @@ export function moveBattleUnit(
 
 			if (currentUnit.statuses.some((s) => s.type === "rooted")) {
 				break;
+			}
+
+			if (
+				currentUnit.gridPosition.col !== step.col ||
+				currentUnit.gridPosition.row !== step.row
+			) {
+				break; // They were knocked off course! Abort the original path.
 			}
 		}
 

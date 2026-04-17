@@ -3,7 +3,7 @@ import type {
 	AIBattleUnit,
 	BattleUnit,
 } from "@/modules/units/domain/units.type";
-import type { GridPosition } from "../domain/grid.type";
+import type { GridEntity, GridPosition } from "../domain/grid.type";
 import type { BattleGet } from "../store/battle.store";
 import { isUnitInTile } from "./grid.helpers";
 import { getLineOfSightPath } from "./move.helpers";
@@ -29,7 +29,7 @@ export type AnchorResolver = ({
 	obstacles: BattleUnit[];
 }) => AnchorTarget;
 
-export function getAnchorTarget<C extends BattleUnit>({
+export function getAnchorTarget<C extends GridEntity>({
 	attacker,
 	card,
 	intendedTarget,
@@ -66,7 +66,7 @@ export function getAnchorTarget<C extends BattleUnit>({
 	return intendedTarget;
 }
 
-function getActualTarget<C extends BattleUnit, T extends BattleUnit>({
+function getActualTarget<C extends GridEntity, T extends BattleUnit>({
 	attacker,
 	intendedTargetPos,
 	units,

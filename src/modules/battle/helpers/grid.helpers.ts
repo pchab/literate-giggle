@@ -24,14 +24,21 @@ export const getTileDanger = (
 		doBoundingBoxesIntersect(s, { gridPosition: cell }),
 	);
 	if (!surface) return 0;
-	if (surface.status) {
-		const isImmune = unit.immunities?.includes(surface.status.type);
-		if (isImmune) {
-			return 0;
+	const danger = surface.onStep.effects.reduce((dangerRating, cardEffect) => {
+		if (cardEffect.type === "damage") {
+			return dangerRating + cardEffect.amount;
 		}
-	}
-
-	return surface.damage ?? 0;
+		if (cardEffect.type === "apply_status") {
+			return (
+				dangerRating +
+				(unit.immunities?.includes(cardEffect.status.type)
+					? 0
+					: cardEffect.status.amount)
+			);
+		}
+		return dangerRating;
+	}, 0);
+	return danger;
 };
 
 // --- 2. BOUNDING BOX LOGIC ---
