@@ -1,5 +1,7 @@
 import type { Card } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
+import { acidBurn } from "../surfaces/acidBurn";
+import { bearTrap } from "../surfaces/bearTrap";
 
 export const archerCards: Record<Card["id"], Card> = {
 	[cardId("short_bow")]: {
@@ -41,11 +43,7 @@ export const archerCards: Record<Card["id"], Card> = {
 				surfaceType: "HAZARD",
 				duration: 2,
 				spriteBase: "/surfaces/acid.webp",
-				status: {
-					type: "vulnerable",
-					amount: 2,
-					duration: 2,
-				},
+				onStep: acidBurn,
 			},
 		],
 	},
@@ -61,12 +59,7 @@ export const archerCards: Record<Card["id"], Card> = {
 				target: "anchor",
 				surfaceType: "TRAP",
 				duration: -1,
-				damage: 3,
-				status: {
-					type: "rooted",
-					amount: 0,
-					duration: 2,
-				},
+				onStep: bearTrap,
 				spriteBase: "/surfaces/bear_trap.webp",
 				charges: 1,
 			},

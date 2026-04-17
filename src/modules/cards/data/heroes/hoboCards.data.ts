@@ -1,5 +1,6 @@
 import type { Card } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
+import { acidBurn } from "../surfaces/acidBurn";
 
 export const hoboCards: Record<Card["id"], Card> = {
 	[cardId("club")]: {
@@ -108,11 +109,7 @@ export const hoboCards: Record<Card["id"], Card> = {
 				type: "create_surface",
 				target: "anchor",
 				surfaceType: "HAZARD",
-				status: {
-					type: "vulnerable",
-					amount: 2,
-					duration: 2,
-				},
+				onStep: acidBurn,
 				duration: 3,
 				spriteBase: "/surfaces/acid.webp",
 			},

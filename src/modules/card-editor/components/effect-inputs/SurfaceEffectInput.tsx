@@ -1,23 +1,20 @@
 import type { SurfaceType } from "@/modules/battle/domain/grid.type";
 import type { CreateSurfaceEffect } from "@/modules/cards/domain/cards.type";
-import type { StatusType } from "@/modules/units/domain/status.type";
+import { useRegistryStore } from "@/modules/shared/store/registry.store";
+import { useShallow } from "zustand/shallow";
 import type { EffectInputProps } from "./types";
 
 const SURFACE_TYPES: SurfaceType[] = ["TRAP", "SPECIAL", "HAZARD", "TERRAIN"];
-const STATUS_TYPES: StatusType[] = [
-	"block",
-	"poison",
-	"rooted",
-	"vulnerable",
-	"regen",
-	"swallowed",
-	"digesting",
-];
 
 export function SurfaceEffectInput({
-	effect: { surfaceType, spriteBase, damage, duration, status, charges, size },
+	effect: { surfaceType, spriteBase, onStep, duration, charges, size },
 	onChange,
 }: EffectInputProps<CreateSurfaceEffect>) {
+	const { cards } = useRegistryStore(
+		useShallow((state) => ({ cards: state.cards })),
+	);
+	const allCards = Object.values(cards);
+
 	return (
 		<div className="flex flex-col gap-2 mt-1 p-2 bg-zinc-900 border border-zinc-700 rounded-md">
 			<span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-1">
@@ -75,26 +72,6 @@ export function SurfaceEffectInput({
 								duration: Number.isNaN(val) ? 1 : val,
 							});
 						}}
-						className="bg-zinc-800 text-xs rounded border border-zinc-700 px-2 py-1 w-full"
-					/>
-				</div>
-				<div className="w-1/3 flex flex-col">
-					<span className="text-[10px] font-semibold text-zinc-400 mb-1">
-						Damage (Opt)
-					</span>
-					<input
-						type="number"
-						value={damage ?? ""}
-						min="0"
-						placeholder="0"
-						onChange={(e) =>
-							onChange({
-								damage:
-									e.target.value === ""
-										? undefined
-										: parseInt(e.target.value, 10),
-							})
-						}
 						className="bg-zinc-800 text-xs rounded border border-zinc-700 px-2 py-1 w-full"
 					/>
 				</div>
@@ -179,74 +156,34 @@ export function SurfaceEffectInput({
 			<div className="mt-2 pt-2 border-t border-zinc-800">
 				<div className="flex justify-between items-center mb-2">
 					<span className="text-[10px] font-semibold text-zinc-400">
-						Apply Status on Step (Opt)
+						Trigger Card on Step (Opt)
 					</span>
-					<button
-						type="button"
-						className={`text-[10px] px-2 py-0.5 rounded border ${status ? "bg-red-900/30 text-red-400" : "bg-blue-900/30 text-blue-400"}`}
-						onClick={() =>
-							onChange({
-								status: status
-									? undefined
-									: { type: "poison", duration: 1, amount: 1 },
-							})
-						}
-					>
-						{status ? "Remove Status" : "+ Add Status"}
-					</button>
-				</div>
-
-				{status && (
-					<div className="flex gap-2">
-						<select
-							value={status.type}
-							onChange={(e) =>
-								onChange({
-									status: {
-										...status,
-										type: e.target.value as StatusType,
-									},
-								})
-							}
-							className="bg-zinc-950 text-[10px] rounded border border-zinc-700 px-1 py-1 w-1/3 text-blue-300"
+					<div className="flex-1 flex flex-col">
+						<label
+							className="text-[10px] uppercase text-zinc-500 font-bold mb-1"
+							htmlFor="cardId"
 						>
-							{STATUS_TYPES.map((t) => (
-								<option key={t} value={t}>
-									{t}
+							Card
+						</label>
+						<select
+							value={onStep?.id}
+							onChange={(e) => {
+								const card = allCards.find(({ id }) => id === e.target.value);
+								onChange({ onStep: card });
+							}}
+							className="px-2 py-1.5 bg-zinc-800 text-sm rounded border border-zinc-700 text-zinc-200 focus:outline-none focus:border-blue-500"
+						>
+							<option value="" disabled>
+								Select an ability...
+							</option>
+							{allCards.map((card) => (
+								<option key={card.id} value={card.id}>
+									{card.name}
 								</option>
 							))}
 						</select>
-						<input
-							type="number"
-							title="Duration (-1 for infinite)"
-							value={status.duration}
-							min="-1"
-							placeholder="Dur"
-							onChange={(e) => {
-								const val = parseInt(e.target.value, 10);
-								onChange({
-									status: { ...status, duration: Number.isNaN(val) ? 1 : val },
-								});
-							}}
-							className="bg-zinc-950 text-[10px] rounded border border-zinc-700 px-1 py-1 w-1/3"
-						/>
-						<input
-							type="number"
-							value={status.amount}
-							min="0"
-							placeholder="Amt"
-							onChange={(e) =>
-								onChange({
-									status: {
-										...status,
-										amount: parseInt(e.target.value, 10) || 0,
-									},
-								})
-							}
-							className="bg-zinc-950 text-[10px] rounded border border-zinc-700 px-1 py-1 w-1/3"
-						/>
 					</div>
-				)}
+				</div>
 			</div>
 		</div>
 	);

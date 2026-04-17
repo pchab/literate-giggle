@@ -1,6 +1,7 @@
 import type {
 	BoundingBox,
 	GridPosition,
+	SurfaceData,
 	SurfaceType,
 } from "@/modules/battle/domain/grid.type";
 import type { VfxType } from "@/modules/battle/domain/vfx.type";
@@ -99,14 +100,8 @@ export type ApplyStatusEffect = {
 export type CreateSurfaceEffect = {
 	type: "create_surface";
 	target: EffectTarget;
-	size?: BoundingBox["size"];
 	surfaceType: SurfaceType;
-	duration: number;
-	damage?: number;
-	status?: Status;
-	spriteBase: string;
-	charges?: number;
-};
+} & Omit<SurfaceData, "id" | "gridPosition" | "type">;
 
 export type CustomScriptEffect<P> = {
 	type: "custom_script";

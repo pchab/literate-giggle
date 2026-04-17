@@ -33,7 +33,6 @@ export const resolveSurfacesTriggered =
 			processedSurfaceTypes.add(surface.type);
 
 			if (surface.onStep) {
-				!isSimulation && console.log({ unit, card: surface.onStep });
 				await resolveSurfaceCard(
 					get,
 					set,
@@ -90,7 +89,6 @@ export const resolveSurfaceCard =
 			caster: phantomCaster,
 			anchorTarget: target,
 		});
-		!isSimulation && console.log({ target, attackOrigin });
 
 		// Handle LoS interception
 		const anchorTarget = getAnchorTarget({
@@ -111,7 +109,6 @@ export const resolveSurfaceCard =
 		// ==========================================
 		// 2. RESOLVE EFFECTS
 		// ==========================================
-		!isSimulation && console.log({ anchorTarget });
 		const lockedTargets = card.effects.map((effect) =>
 			resolveTargets(
 				effect.target,
@@ -121,7 +118,6 @@ export const resolveSurfaceCard =
 				targetedCells,
 			),
 		);
-		!isSimulation && console.log({ lockedTargets });
 
 		for (let i = 0; i < card.effects.length; i++) {
 			const effect = card.effects[i];

@@ -99,7 +99,6 @@ export const applyCombatUpdate =
 		if (!maybeUnit) return;
 
 		let currentUnit = maybeUnit;
-		!isSimulation && console.log({ update, currentUnit });
 		let pendingDamage = update.damageTaken ?? 0;
 		const baseStatuses = update.replaceStatuses
 			? [...update.replaceStatuses]

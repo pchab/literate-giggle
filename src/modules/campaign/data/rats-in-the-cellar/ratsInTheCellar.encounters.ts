@@ -1,4 +1,5 @@
 import { getCellId } from "@/modules/battle/helpers/grid.helpers";
+import { mouseTrap } from "@/modules/cards/data/surfaces/mouseTrap";
 import { rat, ratBoss } from "@/modules/units/data/monsters/rat.data";
 import { barrel } from "@/modules/units/data/summons/barrel";
 import type { Encounter } from "../../domain/encounters.type";
@@ -39,7 +40,7 @@ export const RATS_IN_THE_CELLAR_ENCOUNTERS: Record<string, Encounter> = {
 				gridPosition: { col: 1, row: 3 },
 				type: "TRAP",
 				duration: -1,
-				damage: 3,
+				onStep: mouseTrap,
 				spriteBase: "/surfaces/mouse_trap.webp",
 				charges: 1,
 			},

@@ -19,10 +19,9 @@ export const resolveSurfaceEffect: EffectResolver<
 					size: effect.size ?? { cols: 1, rows: 1 },
 					type: effect.surfaceType,
 					duration: effect.duration,
-					damage: effect.damage,
 					spriteBase: effect.spriteBase,
-					status: effect.status,
 					charges: effect.charges,
+					onStep: effect.onStep,
 				},
 			});
 			return surfaces;

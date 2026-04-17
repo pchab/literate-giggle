@@ -73,7 +73,6 @@ export const resolveStandardEffect: EffectResolver<
 	(get, set, isSimulation = false) =>
 	(effect) =>
 	async ({ anchorTarget, caster, targetIds }) => {
-		!isSimulation && console.log({ caster, anchorTarget });
 		const targetPositions: GridPosition[] = [];
 
 		if (anchorTarget && effect.projectile && !isSimulation) {

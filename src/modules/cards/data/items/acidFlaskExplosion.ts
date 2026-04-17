@@ -1,6 +1,7 @@
 import { crossPattern } from "@/modules/battle/data/attackPattern.data";
 import type { Card } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
+import { acidBurn } from "../surfaces/acidBurn";
 
 export const acidFlaskExplosionCard: Card = {
 	id: cardId("acid_flask_explosion"),
@@ -23,11 +24,7 @@ export const acidFlaskExplosionCard: Card = {
 			surfaceType: "HAZARD",
 			duration: 3,
 			spriteBase: "/surfaces/acid.webp",
-			status: {
-				type: "vulnerable",
-				amount: 2,
-				duration: 2,
-			},
+			onStep: acidBurn,
 		},
 	],
 };
