@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useShallow } from "zustand/shallow";
 import { getCellId, isUnitInTile } from "@/modules/battle/helpers/grid.helpers";
 import type { BattleUnit } from "@/modules/units/domain/units.type";
@@ -75,6 +76,17 @@ export function BattleGrid() {
 
 	const isMoving = !!activeMoveHeroId;
 	const isActive = !!activeHeroCard;
+
+	// Escape cancels the current card or move selection.
+	useEffect(() => {
+		const onKeyDown = (e: KeyboardEvent) => {
+			if (e.key !== "Escape") return;
+			if (activeHeroCard) cancelCard();
+			else if (activeMoveHeroId) setActiveMoveHeroId(null);
+		};
+		window.addEventListener("keydown", onKeyDown);
+		return () => window.removeEventListener("keydown", onKeyDown);
+	}, [activeHeroCard, activeMoveHeroId, cancelCard, setActiveMoveHeroId]);
 
 	const enemyTargetIds = new Set(cellHighlight.enemyTargets?.map(getCellId));
 	const allyTargetIds = new Set(cellHighlight.allyTargets?.map(getCellId));

@@ -5,10 +5,12 @@ import { useBattleTurns } from "../hooks/useBattleTurns";
 
 export default function BattleTurns({
 	encounterId,
+	background,
 }: {
 	encounterId: Encounter["id"];
+	background: string;
 }) {
-	const { isPlayerTurn } = useBattleTurns(encounterId);
+	const { isPlayerTurn } = useBattleTurns(encounterId, background);
 	return (
 		<div className="flex justify-center w-full my-4 pointer-events-none z-50">
 			<div

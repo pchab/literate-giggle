@@ -19,6 +19,8 @@ export default function ChooseCard({
 	handleChooseCard: (cardInstanceId: Card["id"]) => void;
 }) {
 	const handIds = new Set(hero.selectedCards.map((c) => c?.instanceId));
+	// Tag only matters when some cards sit in the deck, outside the hand.
+	const showHand = hero.deck.length > hero.selectedCards.filter(Boolean).length;
 	const targets = hero.deck.filter((c) =>
 		isCardCompatibleWithRune(getComputedCard(c), selectedRune),
 	);
@@ -52,7 +54,7 @@ export default function ChooseCard({
 						key={heroCard.instanceId}
 						heroCard={heroCard}
 						previewRune={selectedRune}
-						inHand={handIds.has(heroCard.instanceId)}
+						inHand={showHand && handIds.has(heroCard.instanceId)}
 						onClick={() => handleChooseCard(heroCard.instanceId)}
 					/>
 				))}

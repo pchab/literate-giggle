@@ -7,7 +7,10 @@ import type { Hero } from "@/modules/units/domain/units.type";
 import { isHero } from "@/modules/units/helpers/units.helpers";
 import { useWorldStore } from "@/modules/world/store/world.store";
 
-export function useBattleTurns(encounterId: Encounter["id"]): {
+export function useBattleTurns(
+	encounterId: Encounter["id"],
+	background?: string,
+): {
 	isPlayerTurn: boolean;
 } {
 	const router = useRouter();
@@ -43,15 +46,19 @@ export function useBattleTurns(encounterId: Encounter["id"]): {
 	useEffect(() => {
 		if (!isInit && roster.length > 0) {
 			setIsInit(true);
+			useBattleStore.setState({ background: background ?? null });
 			initBattle(roster, encounterId);
 		}
-	}, [isInit, roster, encounterId, initBattle]);
+	}, [isInit, roster, encounterId, initBattle, background]);
 
 	// --- ENEMY TURN TRIGGER ---
 	const aliveHeroesCount = heroes.filter((h) => h.currentHp > 0).length;
+	// A card still selected by a hero who already ended their turn can't block the enemy.
+	const hasLiveSelection =
+		!!activeHeroCard && !usedCardsThisTurn[activeHeroCard.unitId];
 	const isEnemyTurn =
 		battleStatus === "ONGOING" &&
-		!activeHeroCard &&
+		!hasLiveSelection &&
 		aliveHeroesCount > 0 &&
 		Object.keys(usedCardsThisTurn).length === aliveHeroesCount;
 

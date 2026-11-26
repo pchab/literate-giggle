@@ -64,7 +64,7 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 		steps: {
 			report: {
 				speaker: "King Tanotalos II",
-				text: "The leaf eaters have attacked our logging camp ? How dare they... We need to send a message that Ironhold will not fall so easily.",
+				text: "The leaf eaters have attacked our logging camp? How dare they... We need to send a message that Ironhold will not fall so easily.",
 				backgroundImage: "/scenes/ironhold_throne_room.webp",
 				onNext: [{ type: "CHANGE_STEP", stepId: "getOrders" }],
 			},

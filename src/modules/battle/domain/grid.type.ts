@@ -18,6 +18,9 @@ export type SurfaceData = {
 
 	charges?: number;
 	onStep?: Card;
+	/** Player-facing name / explanation for the inspector. */
+	name?: string;
+	description?: string;
 	focalPoint?: BoundingBox;
 };
 

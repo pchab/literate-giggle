@@ -11,7 +11,7 @@ export function generateTavernGenericScene(
 			steps: {
 				intro: {
 					speaker: "Bartender",
-					text: "What can I get you ?",
+					text: "What can I get you?",
 					backgroundImage,
 					choices: [
 						{

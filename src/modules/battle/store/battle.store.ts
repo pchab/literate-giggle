@@ -59,6 +59,8 @@ export type BattleState = {
 
 	xpEarned: number;
 	encounterId: Encounter["id"] | null;
+	/** Battleground of the running fight, so a reload can resume the right URL. */
+	background: string | null;
 	gridSize: { cols: number; rows: number };
 	objectiveProgress: Record<string, number>;
 	battleStatus: BattleStatus;
@@ -127,6 +129,7 @@ const initialState: BattleState = {
 
 	xpEarned: 0,
 	encounterId: null,
+	background: null,
 	gridSize: { cols: 8, rows: 8 },
 	objectiveProgress: {},
 	battleStatus: "ONGOING",
@@ -177,6 +180,7 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 			storage: createJSONStorage(() => sessionStorage),
 			partialize: (state) => ({
 				encounterId: state.encounterId,
+				background: state.background,
 				units: state.units,
 				aiIntents: state.aiIntents,
 				usedMovesThisTurn: state.usedMovesThisTurn,

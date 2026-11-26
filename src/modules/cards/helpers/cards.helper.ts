@@ -52,6 +52,8 @@ export function formatCardEffect(effect: CardEffect): string {
 			return `🧱 ${effect.blueprintId.replace(/-/g, " ")}.`;
 		case "create_surface":
 			return `📛 Create ${effect.surfaceType} on the target cell.`;
+		case "custom_script":
+			return `✨ ${effect.description ?? `${effect.scriptId.replace(/_/g, " ")}.`}`;
 		default:
 			return `Unknown effect.`;
 	}

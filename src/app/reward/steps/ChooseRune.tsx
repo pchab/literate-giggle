@@ -15,6 +15,8 @@ export default function ChooseRune({
 	handleChooseRune: (rune: RuneDraftOption) => void;
 }) {
 	const handIds = new Set(hero.selectedCards.map((c) => c?.instanceId));
+	// Tag only matters when some cards sit in the deck, outside the hand.
+	const showHand = hero.deck.length > hero.selectedCards.filter(Boolean).length;
 	const computedDeck = hero.deck.map(getComputedCard);
 
 	return (
@@ -33,7 +35,7 @@ export default function ChooseRune({
 						<HeroCardView
 							key={heroCard.instanceId}
 							heroCard={heroCard}
-							inHand={handIds.has(heroCard.instanceId)}
+							inHand={showHand && handIds.has(heroCard.instanceId)}
 						/>
 					))}
 				</div>

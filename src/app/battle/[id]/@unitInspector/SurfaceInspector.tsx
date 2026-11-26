@@ -5,6 +5,17 @@ import type { SurfaceData } from "@/modules/battle/domain/grid.type";
 import { BattleCard } from "@/modules/cards/components/BattleCard";
 import { CardTooltip } from "@/modules/cards/components/CardTooltip";
 
+const SURFACE_FALLBACK: Record<
+	SurfaceData["type"],
+	{ name: string; description: string }
+> = {
+	TRAP: { name: "Trap", description: "Triggers when a unit steps on it." },
+	HAZARD: { name: "Hazard", description: "Hurts units that end up on it." },
+	TERRAIN: { name: "Terrain", description: "Changes how units move here." },
+	WALL: { name: "Wall", description: "Blocks movement." },
+	SPECIAL: { name: "Special tile", description: "Plays a role in this fight." },
+};
+
 export default function SurfaceInspectorSidebar({
 	surface,
 }: {
@@ -26,7 +37,7 @@ export default function SurfaceInspectorSidebar({
 			{/* --- HEADER --- */}
 			<div className="relative z-10 flex items-center justify-between mb-1">
 				<h3 className="text-sm font-bold text-green-300 uppercase tracking-widest drop-shadow-md">
-					{surface.type.replace("_", " ")}
+					{surface.name ?? SURFACE_FALLBACK[surface.type].name}
 				</h3>
 				<div className="flex items-center gap-3">
 					{surface.charges !== undefined && (
@@ -41,6 +52,10 @@ export default function SurfaceInspectorSidebar({
 					)}
 				</div>
 			</div>
+
+			<p className="relative z-10 text-xs text-zinc-300 leading-snug">
+				{surface.description ?? SURFACE_FALLBACK[surface.type].description}
+			</p>
 
 			{/* --- TRIGGER/CARD --- */}
 			{card && (

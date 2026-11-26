@@ -48,6 +48,8 @@ export const RATS_IN_THE_CELLAR_ENCOUNTERS: Record<string, Encounter> = {
 				id: getCellId({ col: 2, row: 2 }),
 				gridPosition: { col: 2, row: 2 },
 				type: "SPECIAL",
+				name: "Trapdoor",
+				description: "Rats crawl out of here.",
 				duration: -1,
 				spriteBase: "/surfaces/closed_trapdoor.webp",
 			},
@@ -56,7 +58,7 @@ export const RATS_IN_THE_CELLAR_ENCOUNTERS: Record<string, Encounter> = {
 	},
 	[RAT_IN_THE_CELLAR.encounters.rat_boss]: {
 		id: RAT_IN_THE_CELLAR.encounters.rat_boss,
-		name: "Big rat !",
+		name: "Big rat!",
 		generateMonsters: () => [
 			{
 				...ratBoss,
@@ -83,6 +85,8 @@ export const RATS_IN_THE_CELLAR_ENCOUNTERS: Record<string, Encounter> = {
 				id: getCellId({ col: 2, row: 2 }),
 				gridPosition: { col: 2, row: 2 },
 				type: "SPECIAL",
+				name: "Trapdoor",
+				description: "Rats crawl out of here.",
 				duration: -1,
 				spriteBase: "/surfaces/closed_trapdoor.webp",
 			},

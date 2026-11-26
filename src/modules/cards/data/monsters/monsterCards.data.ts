@@ -63,6 +63,7 @@ export const monsterCardLibrary: Record<Card["id"], Card> = {
 			{
 				type: "custom_script",
 				scriptId: "trapdoor_spawn",
+				description: "Calls 2 rats out of the trapdoors.",
 				target: "self",
 				payload: { spawnCount: 2, blueprintId: summonId("rat") },
 			},

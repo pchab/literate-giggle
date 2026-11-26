@@ -38,6 +38,7 @@ export function HeroSummary({
 	const handIds = new Set(
 		hero.selectedCards.filter((c) => !!c).map((c) => c?.instanceId),
 	);
+	const showHand = hero.deck.length > handIds.size;
 
 	return (
 		<div
@@ -72,7 +73,7 @@ export function HeroSummary({
 						<HeroCardView
 							key={heroCard.instanceId}
 							heroCard={heroCard}
-							inHand={handIds.has(heroCard.instanceId)}
+							inHand={showHand && handIds.has(heroCard.instanceId)}
 							isPlayable={false}
 						/>
 					))}

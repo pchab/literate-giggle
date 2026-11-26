@@ -2,6 +2,7 @@
 
 import { AnimatePresence, m } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import { getComputedCard } from "@/modules/cards/helpers/cards.helper";
 import { RetroPanel } from "@/modules/shared/components/RetroPanel";
 import { HeroAvatar } from "@/modules/units/components/HeroSummary";
 import { CLASS_REGISTRY } from "@/modules/units/data/heroClass.data";
@@ -15,6 +16,7 @@ import {
 	applyDraftResult,
 	buildDraftSteps,
 } from "@/modules/units/helpers/draft.helper";
+import { isCardCompatibleWithRune } from "./runeReward.helpers";
 import ChooseCard from "./steps/ChooseCard";
 import ChooseNewCard from "./steps/ChooseNewCard";
 import ChoosePassive from "./steps/ChoosePassive";
@@ -59,7 +61,12 @@ export default function HeroRewardPanel({
 			}
 			return;
 		}
-		const timer = setTimeout(() => setPhase("draft"), 2500);
+		// Functional update: re-runs of this effect (new onDraftComplete each parent
+		// render) must not drag a finished panel back to the draft step.
+		const timer = setTimeout(
+			() => setPhase((p) => (p === "xp" ? "draft" : p)),
+			2500,
+		);
 		return () => clearTimeout(timer);
 	}, [steps.length, onDraftComplete]);
 
@@ -150,7 +157,22 @@ export default function HeroRewardPanel({
 									key={`rune-${stepIndex}`}
 									hero={workingHero}
 									choices={step.choices}
-									handleChooseRune={setPendingRune}
+									handleChooseRune={(rune) => {
+										const targets = workingHero.deck.filter((c) =>
+											isCardCompatibleWithRune(getComputedCard(c), rune),
+										);
+										if (targets.length === 1) {
+											commit({
+												...result,
+												runes: [
+													...result.runes,
+													{ rune, cardInstanceId: targets[0].instanceId },
+												],
+											});
+										} else {
+											setPendingRune(rune);
+										}
+									}}
 								/>
 							)}
 							{step.kind === "rune" && pendingRune && (

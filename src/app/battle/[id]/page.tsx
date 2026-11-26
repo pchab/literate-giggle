@@ -27,7 +27,7 @@ export default async function BattleScreen({
 			</MotionCamera>
 
 			<div className="absolute top-0 right-0">
-				<BattleTurns encounterId={encounterId} />
+				<BattleTurns encounterId={encounterId} background={background} />
 			</div>
 		</section>
 	);

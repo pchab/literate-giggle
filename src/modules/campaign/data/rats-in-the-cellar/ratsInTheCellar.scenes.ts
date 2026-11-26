@@ -10,7 +10,7 @@ export const RATS_IN_THE_CELLAR_SCENES: Record<Scene["id"], Scene> = {
 			start: {
 				backgroundImage: "/scenes/rusty_boar_tavern.webp",
 				speaker: "Rusty Boar bartender",
-				text: "Filthy rats! They came out of nowhere... Can you help me out ? I'll give you a free round of ale.",
+				text: "Filthy rats! They came out of nowhere... Can you help me out? I'll give you a free round of ale.",
 				choices: [
 					{
 						label: "Fine... I'll do it.",

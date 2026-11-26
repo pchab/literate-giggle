@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { useShallow } from "zustand/shallow";
+import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
 import { useDynamicMap } from "@/modules/world/hooks/useDynamicMap";
 import { useWorldStore } from "@/modules/world/store/world.store";
@@ -44,8 +45,10 @@ export default function Home() {
 		case "MAP":
 			return redirectToPhase("/world");
 		case "BATTLE": {
+			// Fights started from a scene aren't the node's encounter: resume what's running.
+			const { encounterId, background } = useBattleStore.getState();
 			redirectToPhase(
-				`/battle/${currentNode.encounterId}?background=${currentNode.background}`,
+				`/battle/${encounterId ?? currentNode.encounterId}?background=${background ?? currentNode.background}`,
 			);
 			break;
 		}

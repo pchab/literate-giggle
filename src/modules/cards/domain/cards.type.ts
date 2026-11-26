@@ -108,6 +108,8 @@ export type CustomScriptEffect<P> = {
 	scriptId: string;
 	target: EffectTarget;
 	payload: P;
+	/** Player-facing text for tooltips. Falls back to the script id. */
+	description?: string;
 };
 
 export type CardEffect =
