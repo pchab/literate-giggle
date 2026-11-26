@@ -89,10 +89,11 @@ export const resolveStandardEffect: EffectResolver<
 
 			targetPositions.push(target.gridPosition);
 
-			const combatUpdate: CombatUpdate = {};
+			const combatUpdate: CombatUpdate = { sourceId: caster.id };
 
 			if (effect.type === "damage") {
 				combatUpdate.damageTaken = effect.amount;
+				combatUpdate.isDirectHit = true;
 			} else if (effect.type === "heal") {
 				combatUpdate.healingReceived = effect.amount;
 			} else if (effect.type === "apply_status") {

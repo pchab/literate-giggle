@@ -18,6 +18,10 @@ import {
 } from "@/modules/units/helpers/units.helpers";
 import { ENCOUNTER_DB } from "../../../campaign/data/encounters.data";
 import type { GridPosition } from "../../domain/grid.type";
+import {
+	applyPassivesToCard,
+	triggerTurnStart,
+} from "../../helpers/passive.helpers";
 import { calculateAIIntents } from "./calculateAIIntents.command";
 
 const startingGridPosition = [
@@ -78,7 +82,8 @@ export const initBattle =
 		const battleRoster: BattleHero[] = roster.map((hero, index) => {
 			const [card1, card2, card3] = hero.selectedCards
 				.filter((c) => !!c)
-				.map(getComputedCard);
+				.map(getComputedCard)
+				.map((card) => applyPassivesToCard(hero, card));
 			if (!card1) {
 				throw new Error(`Error instanciating card ${hero.selectedCards[0]}`);
 			}
@@ -106,5 +111,6 @@ export const initBattle =
 			gridSize,
 			removedCells,
 		}));
+		await triggerTurnStart(get, set, false)(battleRoster);
 		await calculateAIIntents(get, set)({});
 	};

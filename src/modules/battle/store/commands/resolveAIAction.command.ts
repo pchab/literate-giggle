@@ -4,6 +4,7 @@ import { isHero } from "@/modules/units/helpers/units.helpers";
 import { handleAICardIntent } from "../../helpers/ai.actions.helpers";
 import { tickStatusesAndSurfaces } from "../../helpers/effects/effect.helpers";
 import { finalizeAction } from "../../helpers/encounter.helpers";
+import { triggerTurnStart } from "../../helpers/passive.helpers";
 import type { BattleGet, BattleSet } from "../battle.store";
 import { calculateAIIntents } from "./calculateAIIntents.command";
 
@@ -72,6 +73,8 @@ export const resolveAIActions = async (
 			usedCardsThisTurn: {},
 		};
 	});
+
+	await triggerTurnStart(get, set, isSimulation)(get().units.filter(isHero));
 
 	if (!isSimulation) {
 		await finalizeAction(get, set, draftUnits);

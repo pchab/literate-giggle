@@ -2,6 +2,7 @@ import { QUEST_DWARVEN_HIGHWAY } from "@/modules/campaign/data/dwarven-passage/d
 import { NECROMANCER_QUEST_ID } from "@/modules/campaign/data/necromancer/necromancer.quest";
 import { VERDANT_RECLAMATION } from "@/modules/campaign/data/verdant-reclamation/verdantReclamation.quest";
 import { cardId } from "@/modules/cards/helpers/cards.helper";
+import { PASSIVE_IDS } from "@/modules/units/data/passiveIds.data";
 import type { ClassDefinition, HeroClass } from "../domain/heroClass.types";
 
 export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
@@ -39,6 +40,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		xpThresholds: [10, 20, 30, 40, 50, 60],
 		levelUpTriggers: [
 			[
+				{ type: "passiveUnlock", passiveId: PASSIVE_IDS.hold_the_line },
 				{ type: "statsIncrease", stat: "hp", amount: 2 },
 				{ type: "statsIncrease", stat: "def", amount: 1 },
 				{ type: "powerRune" },
@@ -64,6 +66,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		xpThresholds: [10, 20, 30, 40, 50, 60],
 		levelUpTriggers: [
 			[
+				{ type: "passiveUnlock", passiveId: PASSIVE_IDS.spell_focus },
 				{ type: "statsIncrease", stat: "hp", amount: 1 },
 				{ type: "powerRune" },
 				{
@@ -88,6 +91,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		xpThresholds: [10, 20, 30, 40, 50, 60],
 		levelUpTriggers: [
 			[
+				{ type: "passiveUnlock", passiveId: PASSIVE_IDS.backstab },
 				{ type: "statsIncrease", stat: "hp", amount: 1 },
 				{ type: "statsIncrease", stat: "move", amount: 1 },
 				{ type: "powerRune" },
@@ -112,6 +116,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		xpThresholds: [10, 20, 30, 40, 50, 60],
 		levelUpTriggers: [
 			[
+				{ type: "passiveUnlock", passiveId: PASSIVE_IDS.steady_aim },
 				{ type: "statsIncrease", stat: "hp", amount: 1 },
 				{ type: "powerRune" },
 				{
@@ -135,6 +140,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		xpThresholds: [10, 20, 30, 40, 50, 60],
 		levelUpTriggers: [
 			[
+				{ type: "passiveUnlock", passiveId: PASSIVE_IDS.devotion },
 				{ type: "statsIncrease", stat: "hp", amount: 2 },
 				{ type: "statsIncrease", stat: "def", amount: 1 },
 				{ type: "powerRune" },
@@ -158,6 +164,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		xpThresholds: [10, 20, 30, 40, 50, 60],
 		levelUpTriggers: [
 			[
+				{ type: "passiveUnlock", passiveId: PASSIVE_IDS.bulwark },
 				{ type: "statsIncrease", stat: "hp", amount: 2 },
 				{ type: "statsIncrease", stat: "def", amount: 1 },
 				{
@@ -180,6 +187,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		xpThresholds: [10, 20, 30, 40, 50, 60],
 		levelUpTriggers: [
 			[
+				{ type: "passiveUnlock", passiveId: PASSIVE_IDS.bloodlust },
 				{ type: "statsIncrease", stat: "hp", amount: 2 },
 				{ type: "statsIncrease", stat: "def", amount: 1 },
 				{

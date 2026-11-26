@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import { getPassives } from "@/modules/battle/helpers/passive.helpers";
 import type { BattleHero } from "@/modules/units/domain/units.type";
 
 export default function HeroStatusSidebar({ hero }: { hero: BattleHero }) {
@@ -23,6 +24,7 @@ export default function HeroStatusSidebar({ hero }: { hero: BattleHero }) {
 	const totalBlock =
 		displayStatuses.find((s) => s.type === "block")?.amount || 0;
 	const otherStatuses = displayStatuses.filter((s) => s.type !== "block");
+	const passives = getPassives(hero);
 
 	return (
 		<motion.div
@@ -67,6 +69,21 @@ export default function HeroStatusSidebar({ hero }: { hero: BattleHero }) {
 					/>
 				</div>
 			</div>
+
+			{/* --- PASSIVES --- */}
+			{passives.length > 0 && (
+				<div className="relative z-10 flex flex-wrap gap-2">
+					{passives.map((passive) => (
+						<span
+							key={passive.id}
+							title={passive.description}
+							className="text-xs bg-emerald-950/50 text-emerald-300 px-2 py-0.5 rounded border border-emerald-800/50 flex items-center gap-1 cursor-help"
+						>
+							{passive.icon} {passive.name}
+						</span>
+					))}
+				</div>
+			)}
 
 			{/* --- STATUS TRACKERS --- */}
 			{displayStatuses.length > 0 && (

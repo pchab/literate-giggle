@@ -3,11 +3,13 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { useShallow } from "zustand/shallow";
+import { PASSIVE_REGISTRY } from "@/modules/battle/data/passives.data";
 import { BattleCard } from "@/modules/cards/components/BattleCard";
 import type { Card } from "@/modules/cards/domain/cards.type";
 import { RetroPanel } from "@/modules/shared/components/RetroPanel";
 import { useRegistryStore } from "@/modules/shared/store/registry.store";
 import { CLASS_REGISTRY } from "@/modules/units/data/heroClass.data";
+import type { PassiveId } from "@/modules/units/data/passiveIds.data";
 import type { HeroClass } from "@/modules/units/domain/heroClass.types";
 import { useWorldStore } from "@/modules/world/store/world.store";
 import { HeroPortrait } from "./HeroPortrait";
@@ -116,17 +118,26 @@ export function ClassPromotionModal() {
 														);
 													}
 													if (trigger.type === "passiveUnlock") {
+														const passive =
+															PASSIVE_REGISTRY[trigger.passiveId as PassiveId];
 														return (
 															<div
 																key={crypto.randomUUID()}
-																className="mt-2 bg-emerald-950/50 border border-emerald-800/50 px-3 py-1.5 rounded text-[10px] font-bold text-emerald-400 flex items-center gap-1.5 shadow-inner"
+																className="mt-2 bg-emerald-950/50 border border-emerald-800/50 px-3 py-1.5 rounded text-[10px] font-bold text-emerald-400 flex flex-col items-center gap-0.5 shadow-inner max-w-48"
 															>
-																<span className="text-emerald-300">
-																	✨ Passive:
+																<span className="flex items-center gap-1.5">
+																	<span className="text-emerald-300">
+																		{passive?.icon ?? "✨"} Passive:
+																	</span>
+																	<span className="uppercase tracking-wider">
+																		{passive?.name ?? trigger.passiveId}
+																	</span>
 																</span>
-																<span className="uppercase tracking-wider">
-																	{trigger.passiveId.replace("passive-", "")}
-																</span>
+																{passive && (
+																	<span className="font-normal text-emerald-200/80 text-center leading-snug">
+																		{passive.description}
+																	</span>
+																)}
 															</div>
 														);
 													}

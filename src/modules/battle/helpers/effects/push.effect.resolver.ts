@@ -250,13 +250,16 @@ export const resolvePushEffect: EffectResolver<BattleUnit, PushEffect> =
 						get,
 						set,
 						isSimulation,
-					)(entity.id, { damageTaken: collisionDamage * 2 });
+					)(entity.id, {
+						damageTaken: collisionDamage * 2,
+						sourceId: caster.id,
+					});
 					for (const obs of crushObstacles) {
 						await applyCombatUpdate(
 							get,
 							set,
 							isSimulation,
-						)(obs.id, { damageTaken: collisionDamage });
+						)(obs.id, { damageTaken: collisionDamage, sourceId: caster.id });
 					}
 				}
 				return;
@@ -287,13 +290,16 @@ export const resolvePushEffect: EffectResolver<BattleUnit, PushEffect> =
 						get,
 						set,
 						isSimulation,
-					)(entity.id, { damageTaken: collisionDamage });
+					)(entity.id, { damageTaken: collisionDamage, sourceId: caster.id });
 					if (collidedWith) {
 						await applyCombatUpdate(
 							get,
 							set,
 							isSimulation,
-						)(collidedWith.id, { damageTaken: collisionDamage });
+						)(collidedWith.id, {
+							damageTaken: collisionDamage,
+							sourceId: caster.id,
+						});
 					}
 				}
 			}

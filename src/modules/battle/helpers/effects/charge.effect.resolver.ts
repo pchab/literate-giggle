@@ -50,6 +50,7 @@ export const resolveChargeEffect: EffectResolver<BattleUnit, ChargeEffect> =
 					isSimulation,
 				)(victimId, {
 					damageTaken: effect.collisionDamage,
+					sourceId: currentCaster.id,
 				});
 
 				// --- ATTEMPT 1: SIDEWAYS PUSH ---
@@ -99,6 +100,7 @@ export const resolveChargeEffect: EffectResolver<BattleUnit, ChargeEffect> =
 							isSimulation,
 						)(victimId, {
 							damageTaken: 2 * effect.collisionDamage,
+							sourceId: currentCaster.id,
 						});
 						break;
 					}

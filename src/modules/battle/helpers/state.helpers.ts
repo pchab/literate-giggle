@@ -6,6 +6,12 @@ import type { ShadowStateDiff } from "../domain/intent.type";
 import type { BattleGet, BattleSet } from "../store/battle.store";
 import { handleAICardIntent } from "./ai.actions.helpers";
 import { isUnitInTile } from "./grid.helpers";
+import {
+	broadcastDamaged,
+	getOverhealStatuses,
+	modifyDamageByPassives,
+	triggerKill,
+} from "./passive.helpers";
 import { statusRegistry } from "./status.helpers";
 
 export const findUnit =
@@ -87,6 +93,10 @@ export type CombatUpdate = {
 	healingReceived?: number;
 	newStatuses?: Status[];
 	replaceStatuses?: Status[];
+	/** Unit responsible for this update: credited with kills and overheals. */
+	sourceId?: BattleUnit["id"];
+	/** Direct card hit: the source's outgoing damage passives apply. */
+	isDirectHit?: boolean;
 };
 
 export const applyCombatUpdate =
@@ -104,6 +114,22 @@ export const applyCombatUpdate =
 			? [...update.replaceStatuses]
 			: [...currentUnit.statuses];
 		currentUnit.statuses = baseStatuses;
+
+		// ==========================================
+		// PHASE 0: PASSIVES (source & aura damage modifiers)
+		// ==========================================
+		if (pendingDamage > 0 && !update.isTrueDamage) {
+			pendingDamage = modifyDamageByPassives(
+				get,
+				set,
+				isSimulation,
+			)({
+				sourceId: update.sourceId,
+				isDirectHit: update.isDirectHit,
+				target: currentUnit,
+				amount: pendingDamage,
+			});
+		}
 
 		// ==========================================
 		// PHASE 1: ON BEFORE DAMAGE (Modify the Math)
@@ -141,13 +167,26 @@ export const applyCombatUpdate =
 			currentUnit.currentHp = Math.max(0, currentUnit.currentHp - finalDamage);
 		}
 
-		if (update.healingReceived)
+		let overhealStatuses: Status[] = [];
+		if (update.healingReceived) {
+			const overflow =
+				currentUnit.currentHp + update.healingReceived - currentUnit.maxHp;
 			currentUnit.currentHp = Math.min(
 				currentUnit.maxHp,
 				currentUnit.currentHp + update.healingReceived,
 			);
-		if (update.newStatuses)
-			currentUnit.statuses = [...baseStatuses, ...update.newStatuses];
+			overhealStatuses = getOverhealStatuses(
+				get,
+				set,
+				isSimulation,
+			)({ sourceId: update.sourceId, target: currentUnit, overflow });
+		}
+		if (update.newStatuses || overhealStatuses.length)
+			currentUnit.statuses = [
+				...currentUnit.statuses,
+				...(update.newStatuses ?? []),
+				...overhealStatuses,
+			];
 
 		const actualHpLost = startingHp - currentUnit.currentHp;
 
@@ -217,4 +256,26 @@ export const applyCombatUpdate =
 				? units.filter((u) => u.id !== currentUnit.id)
 				: units.map((u) => (u.id === currentUnit.id ? currentUnit : u)),
 		}));
+
+		// ==========================================
+		// 4. PASSIVE REACTIONS (after commit, so they see the new state)
+		// ==========================================
+		if (actualHpLost > 0) {
+			await broadcastDamaged(
+				get,
+				set,
+				isSimulation,
+			)({
+				target: currentUnit,
+				hpLost: actualHpLost,
+				sourceId: update.sourceId,
+			});
+		}
+		if (toRemove) {
+			await triggerKill(
+				get,
+				set,
+				isSimulation,
+			)({ sourceId: update.sourceId, victim: currentUnit });
+		}
 	};
