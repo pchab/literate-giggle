@@ -24,6 +24,7 @@ export const goblin: UnitBlueprint = {
 export const goblinShaman: UnitBlueprint = {
 	id: "goblin_shaman" as UnitBlueprint["id"],
 	name: "Goblin Shaman",
+	hint: "He detonates the acid vials his goblins kick at you. Take him out first and the goblins fall back on their clubs.",
 	spriteBase: "monsters/goblin_shaman",
 	maxHp: 24,
 	baseMove: 2,

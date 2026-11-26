@@ -38,5 +38,18 @@ export const SHADOWS_DEBT_QUEST: Quest = {
 			],
 			onEnterSceneId: SHADOWS_DEBT.scenes.report_to_vane,
 		},
+		// Branch: the party lost to the wolf and chose to own up.
+		[SHADOWS_DEBT.steps.confess_to_vane]: {
+			id: SHADOWS_DEBT.steps.confess_to_vane,
+			logDescription:
+				"The Briar Wolf got away with the sigil. Tell Captain Vane the truth.",
+			targetNodeId: [
+				{
+					mapNodeId: mapNodeId("port_city"),
+					locationId: townLocationId("port_city_ship"),
+				},
+			],
+			onEnterSceneId: SHADOWS_DEBT.scenes.confess_to_vane,
+		},
 	},
 };

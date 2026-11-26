@@ -38,6 +38,7 @@ export const sewerContaminationCards: Record<Card["id"], Card> = {
 			{
 				type: "custom_script",
 				scriptId: "swallow",
+				description: "Swallows the target whole.",
 				target: "anchor",
 				payload: undefined,
 			},

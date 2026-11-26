@@ -8,6 +8,7 @@ export const SHADOWS_DEBT = {
 		speak_to_vane: questStepId("speak_to_vane"),
 		hunt_the_wolf: questStepId("hunt_the_wolf"),
 		report_to_vane: questStepId("report_to_vane"),
+		confess_to_vane: questStepId("confess_to_vane"),
 	},
 	scenes: {
 		vane_intro: sceneId("vane_intro"),
@@ -15,6 +16,7 @@ export const SHADOWS_DEBT = {
 		wolf_victory: sceneId("wolf_victory"),
 		report_to_vane: sceneId("report_to_vane"),
 		game_over_forest: sceneId("game_over_forest"),
+		confess_to_vane: sceneId("confess_to_vane"),
 	},
 	encounters: {
 		briar_wolf_boss: encounterId("briar_wolf_boss"),

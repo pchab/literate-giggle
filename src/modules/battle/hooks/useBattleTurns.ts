@@ -14,10 +14,11 @@ export function useBattleTurns(
 	isPlayerTurn: boolean;
 } {
 	const router = useRouter();
-	const { roster, stageBattleRewards } = useWorldStore(
+	const { roster, stageBattleRewards, setPhase } = useWorldStore(
 		useShallow((state) => ({
 			roster: state.roster,
 			stageBattleRewards: state.stageBattleRewards,
+			setPhase: state.setPhase,
 		})),
 	);
 
@@ -89,13 +90,14 @@ export function useBattleTurns(
 		}
 
 		if (battleStatus === "DEFEAT") {
-			// Route to a game over screen or village destruction scene
+			// Losing is a choice point, not a dead end: retry, retreat, or let the story go on.
 			const timeoutId = setTimeout(() => {
-				router.push("/game-over");
+				setPhase("DEFEAT");
+				router.push("/defeat");
 			}, 1000);
 			return () => clearTimeout(timeoutId);
 		}
-	}, [battleStatus, heroes, router, stageBattleRewards]);
+	}, [battleStatus, heroes, router, stageBattleRewards, setPhase]);
 
 	return { isPlayerTurn: !isEnemyTurn };
 }

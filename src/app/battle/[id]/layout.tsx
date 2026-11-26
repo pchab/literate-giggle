@@ -12,12 +12,12 @@ export default function RootBattleLayout({
 }>) {
 	return (
 		<>
-			<aside className="flex flex-col justify-end gap-4 p-4 w-125 border-r-2 border-stone-800/50 shadow-2xl bg-radial from-zinc-700 to-grey-800">
+			<aside className="flex flex-col gap-4 p-4 w-[clamp(400px,38vw,500px)] shrink-0 overflow-y-auto [&>*:first-child]:mt-auto border-r-2 border-stone-800/50 shadow-2xl bg-radial from-zinc-700 to-grey-800">
 				<ObjectiveTracker />
 				{party}
-				<div className="w-98 h-px bg-linear-to-b from-transparent via-zinc-700 to-transparent" />
+				<div className="w-full max-w-98 h-px shrink-0 bg-linear-to-b from-transparent via-zinc-700 to-transparent" />
 
-				<div className="h-64 relative">
+				<div className="h-48 min-[1100px]:h-64 shrink-0 relative">
 					<AnimatePresence mode="wait">{unitInspector}</AnimatePresence>
 				</div>
 			</aside>

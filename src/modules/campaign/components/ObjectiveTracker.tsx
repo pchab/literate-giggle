@@ -43,6 +43,12 @@ export function ObjectiveTracker() {
 					</div>
 				)}
 			</div>
+
+			{encounter.tip && (
+				<div className="mt-1 text-[11px] leading-snug text-amber-200/90 bg-amber-950/60 border border-amber-800/40 px-3 py-1.5 rounded-md w-full text-center">
+					💡 {encounter.tip}
+				</div>
+			)}
 		</div>
 	);
 }

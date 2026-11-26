@@ -27,7 +27,7 @@ export function Hand({ id: heroId, hand }: Pick<BattleHero, "id" | "hand">) {
 	);
 
 	return (
-		<div className="w-full h-32 flex justify-end items-center gap-3 pr-4">
+		<div className="w-full h-32 flex justify-end items-center gap-1.5 pr-2 min-[1100px]:gap-3 min-[1100px]:pr-4">
 			{hand.map((card) => {
 				if (!card) {
 					return (

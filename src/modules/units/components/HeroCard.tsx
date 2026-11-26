@@ -85,8 +85,8 @@ export function HeroCard({
 				/>
 			</div>
 
-			<div className="z-10 w-full flex items-center pl-4">
-				<HeroPortrait classType={heroClass} variant={variant} />
+			<div className="z-10 w-full flex items-center pl-2 min-[1100px]:pl-4">
+				<HeroPortrait classType={heroClass} variant={variant} compact />
 
 				<div className="flex flex-col gap-2">
 					<span
@@ -148,7 +148,7 @@ export function HeroCard({
 					</RetroButton>
 				</div>
 
-				<div className="w-px h-16 bg-linear-to-b from-transparent via-zinc-700 to-transparent mx-2" />
+				<div className="w-px h-16 bg-linear-to-b from-transparent via-zinc-700 to-transparent mx-1 min-[1100px]:mx-2" />
 
 				<Hand id={id} hand={hand} />
 			</div>

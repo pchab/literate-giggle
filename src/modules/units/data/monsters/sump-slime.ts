@@ -19,6 +19,7 @@ export const sumpSlime: UnitBlueprint = {
 export const sumpWatcher: UnitBlueprint = {
 	id: "sump_watcher" as UnitBlueprint["id"],
 	name: "Sump Watcher",
+	hint: "Attacks only split it into slimes. It dissolves 20 HP every turn: survive, and brace against crates when it flushes the sewer.",
 	spriteBase: "monsters/sewer_boss",
 	maxHp: 100,
 	baseMove: 0,

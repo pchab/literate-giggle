@@ -20,6 +20,7 @@ export const rat: UnitBlueprint = {
 export const ratBoss: UnitBlueprint = {
 	id: "rat_boss" as UnitBlueprint["id"],
 	name: "Rat King",
+	hint: "He calls rats up through the trapdoor. Stand on it and he has to fight you himself.",
 	spriteBase: "monsters/rat_boss",
 	maxHp: 9,
 	baseMove: 2,

@@ -111,21 +111,22 @@ export const STATUS_INFO: Record<StatusType, StatusInfo> = {
 		label: "Swallowed",
 		icon: "👅",
 		color: "text-pink-300",
-		description: "Trapped inside a creature.",
+		description: "Swallowed: takes damage every turn until freed.",
 		internal: true,
 	},
 	digesting: {
 		label: "Digesting",
 		icon: "🍖",
 		color: "text-pink-300",
-		description: "Will spit out its prey once hurt enough.",
+		description: "Spits its prey out after taking this much damage.",
 		internal: true,
 	},
 	unstable_mitosis: {
 		label: "Mitosis",
 		icon: "🧫",
 		color: "text-green-300",
-		description: "Splits when hit.",
+		description:
+			"Hits split it into slimes instead of hurting it. Loses 20 HP every turn.",
 		internal: true,
 	},
 };

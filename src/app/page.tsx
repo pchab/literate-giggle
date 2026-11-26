@@ -58,6 +58,8 @@ export default function Home() {
 			return redirectToPhase(`/scenes/${activeSceneId}`);
 		case "REWARD":
 			return redirectToPhase("/reward");
+		case "DEFEAT":
+			return redirectToPhase("/defeat");
 		default:
 			redirect("/start");
 	}

@@ -89,6 +89,16 @@ export default function EnemyIntentSidebar({
 				</div>
 			</div>
 
+			{/* --- BOSS HINT --- */}
+			{aiUnit.hint && (
+				<div className="relative z-10 text-[11px] leading-snug text-amber-200/90 bg-amber-950/30 border border-amber-800/40 rounded px-2 py-1.5">
+					<span className="font-bold uppercase tracking-wider text-amber-400">
+						💡 How to beat it:{" "}
+					</span>
+					{aiUnit.hint}
+				</div>
+			)}
+
 			{/* --- STATUS TRACKERS --- */}
 			{displayStatuses.length > 0 && (
 				<div className="relative z-10 flex flex-wrap gap-2 mt-1">

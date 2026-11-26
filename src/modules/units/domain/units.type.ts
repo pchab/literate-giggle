@@ -49,6 +49,8 @@ export interface Unit {
 	surfaceImmunities?: SurfaceType[];
 	onDeath?: Card["id"];
 	size?: BoundingBox["size"];
+	/** Boss tip shown in the inspector: how the fight is meant to be won. */
+	hint?: string;
 }
 
 export interface BattleUnit extends Unit {

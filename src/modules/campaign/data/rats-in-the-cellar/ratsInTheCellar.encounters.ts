@@ -9,6 +9,7 @@ export const RATS_IN_THE_CELLAR_ENCOUNTERS: Record<string, Encounter> = {
 	[RAT_IN_THE_CELLAR.encounters.rat_mob]: {
 		id: RAT_IN_THE_CELLAR.encounters.rat_mob,
 		name: "Filthy rats",
+		tip: "Shove one rat into another: the collision hurts both. And rats are dumb enough to walk into a mouse trap.",
 		generateMonsters: () => [
 			{
 				...rat,

@@ -70,7 +70,7 @@ export function useSceneEngine(setLocalStep: (stepId: string) => void) {
 					break;
 				case "START_SCENE":
 					setActiveSceneId(action.sceneId);
-					redirect(`/scene/${action.sceneId}`);
+					redirect(`/scenes/${action.sceneId}`);
 					break;
 				case "END_SCENE":
 					setActiveSceneId(null);

@@ -20,6 +20,8 @@ export interface Encounter {
 	surfaces?: Record<string, SurfaceData>;
 
 	flavorText?: string;
+	/** Gameplay tip shown under the objective (teaches a mechanic). */
+	tip?: string;
 	checkLoss?: (state: BattleState) => boolean;
 	checkWin?: (state: BattleState) => boolean;
 	objectiveText?: (progress: BattleState["objectiveProgress"]) => string;

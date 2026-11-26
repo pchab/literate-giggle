@@ -54,7 +54,7 @@ export function UnitSprite({ unitInCell }: { unitInCell: BattleUnit }) {
 			{heroColor && (
 				<>
 					<span
-						className="absolute -top-2 left-1/2 -translate-x-1/2 z-30 text-[9px] font-bold uppercase tracking-wider px-1.5 rounded-sm bg-zinc-950/80 border pointer-events-none whitespace-nowrap"
+						className="absolute top-[10px] left-1/2 -translate-x-1/2 z-30 text-[8px] leading-tight font-bold uppercase tracking-wider px-1 rounded-sm bg-zinc-950/70 border pointer-events-none whitespace-nowrap"
 						style={{ color: heroColor.hex, borderColor: `${heroColor.hex}80` }}
 					>
 						{unitInCell.name}

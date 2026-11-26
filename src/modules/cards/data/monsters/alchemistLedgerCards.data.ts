@@ -14,6 +14,8 @@ export const alchemistLedgerCards: Record<Card["id"], Card> = {
 			{
 				type: "custom_script",
 				scriptId: "volatile_transmutation",
+				description:
+					"Fires at an acid vial to blow it up next to a hero, or at a hero directly.",
 				target: "self",
 				payload: undefined,
 			},
@@ -52,6 +54,8 @@ export const alchemistLedgerCards: Record<Card["id"], Card> = {
 			{
 				type: "custom_script",
 				scriptId: "reckless_experiment",
+				description:
+					"Puts an acid vial down and kicks it toward the closest hero.",
 				target: "self",
 				payload: undefined,
 			},
@@ -99,6 +103,8 @@ export const alchemistLedgerCards: Record<Card["id"], Card> = {
 			{
 				type: "custom_script",
 				scriptId: "alchemical_frenzy",
+				description:
+					"Charges in a straight line or diagonal, slamming heroes into whatever is behind them.",
 				target: "self",
 				payload: undefined,
 			},

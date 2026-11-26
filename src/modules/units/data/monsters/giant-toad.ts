@@ -4,6 +4,7 @@ import type { UnitBlueprint } from "../../domain/units.type";
 export const giantToad: UnitBlueprint = {
 	id: "giant_toad" as UnitBlueprint["id"],
 	name: "Giant Toad",
+	hint: "Its tongue drags a hero in and swallows them. Deal 12 damage to the toad to make it spit them out.",
 	spriteBase: "monsters/giant_toad",
 	maxHp: 60,
 	baseMove: 2,

@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { useShallow } from "zustand/shallow";
+import { isUnitInTile } from "@/modules/battle/helpers/grid.helpers";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { STATUS_INFO } from "@/modules/units/data/statusInfo.data";
 import type { StatusType } from "@/modules/units/domain/status.type";
@@ -18,17 +19,29 @@ export default function HealthBar({ unitId }: { unitId: BattleUnit["id"] }) {
 	// ==========================================
 	// SMART SUBSCRIPTIONS
 	// ==========================================
-	const { units, projectedDamage, projectedHealing } = useBattleStore(
-		useShallow((state) => ({
-			units: state.units,
-			projectedDamage:
-				(state.aiStateDiff.projectedDamage[unitId] ?? 0) +
-				(state.playerStateDiff.projectedDamage[unitId] ?? 0),
-			projectedHealing:
-				(state.aiStateDiff.projectedHealing[unitId] ?? 0) +
-				(state.playerStateDiff.projectedHealing[unitId] ?? 0),
-		})),
-	);
+	const { units, projectedDamage, projectedHealing, isAbsorbed } =
+		useBattleStore(
+			useShallow((state) => ({
+				units: state.units,
+				// Targeted by the previewed attack, yet it deals nothing (armour, block…)
+				isAbsorbed: (() => {
+					const card = (state.activeHeroCard ?? state.hoveredHeroCard)?.card;
+					const zone = state.playerIntent?.dangerZone;
+					const unit = state.units.find((u) => u.id === unitId);
+					if (!card || !zone || !unit) return false;
+					if (!card.effects.some((e) => e.type === "damage")) return false;
+					if ((state.playerStateDiff.projectedDamage[unitId] ?? 0) > 0)
+						return false;
+					return zone.some((cell) => isUnitInTile(cell)(unit));
+				})(),
+				projectedDamage:
+					(state.aiStateDiff.projectedDamage[unitId] ?? 0) +
+					(state.playerStateDiff.projectedDamage[unitId] ?? 0),
+				projectedHealing:
+					(state.aiStateDiff.projectedHealing[unitId] ?? 0) +
+					(state.playerStateDiff.projectedHealing[unitId] ?? 0),
+			})),
+		);
 
 	const unit = units.find((u) => u.id === unitId);
 	if (!unit) return null;
@@ -134,6 +147,14 @@ export default function HealthBar({ unitId }: { unitId: BattleUnit["id"] }) {
 				{totalBlock > 0 && <span className="text-blue-300">🛡️{totalBlock}</span>}
 
 				{/* Text Popups */}
+				{isAbsorbed && (
+					<span
+						className="text-zinc-400"
+						title="Armour or block absorbs this hit"
+					>
+						0🛡
+					</span>
+				)}
 				{projectedDamage > 0 && (
 					<span className="text-orange-400">-{projectedDamage}</span>
 				)}

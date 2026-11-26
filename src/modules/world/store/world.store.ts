@@ -11,6 +11,7 @@ import type {
 } from "@/modules/units/domain/heroClass.types";
 import type { Hero } from "@/modules/units/domain/units.type";
 import { type MapNode, mapNodeId } from "@/modules/world/domain/map.types";
+import { batterParty } from "./commands/batterParty.command";
 import { claimRewards } from "./commands/claimRewards.command";
 import { forgeEvolution } from "./commands/forgeEvolution.command";
 import { healParty } from "./commands/healParty.command";
@@ -21,7 +22,14 @@ import { stageBattleRewards } from "./commands/stageBattleRewards.command";
 import { travelToNode } from "./commands/travelToNode.command";
 import { updateSelectedCards } from "./commands/updateSelectedCards.command";
 
-export type GamePhase = "TOWN" | "CAMP" | "MAP" | "BATTLE" | "REWARD" | "SCENE";
+export type GamePhase =
+	| "TOWN"
+	| "CAMP"
+	| "MAP"
+	| "BATTLE"
+	| "REWARD"
+	| "SCENE"
+	| "DEFEAT";
 
 export interface WorldState {
 	phase: GamePhase;
@@ -56,6 +64,7 @@ interface WorldAction {
 	) => void;
 	clearUnlockedQuestsQueue: () => void;
 	healParty: (healAmount: number) => void;
+	batterParty: () => void;
 	rewardEvoRune: (runeId: EvolutionRuneId) => void;
 	forgeEvolution: (
 		heroId: Hero["id"],
@@ -96,6 +105,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 				set(updateSelectedCards(heroId, selectedCards)),
 			clearUnlockedQuestsQueue: () => set({ unlockedQuestsQueue: [] }),
 			healParty: (healAmount: number) => set(healParty(healAmount)),
+			batterParty: () => set(batterParty()),
 			rewardEvoRune: (runeId: EvolutionRuneId) =>
 				set(({ evolutionRunesInventory }) => ({
 					evolutionRunesInventory: [...evolutionRunesInventory, runeId],

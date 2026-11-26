@@ -83,7 +83,7 @@ export const SHADOWS_DEBT_SCENES: Record<Scene["id"], Scene> = {
 							{
 								type: "START_BATTLE",
 								encounterId: SHADOWS_DEBT.encounters.briar_wolf_boss,
-								background: "forest",
+								background: "grass",
 							},
 						],
 					},
@@ -110,6 +110,81 @@ export const SHADOWS_DEBT_SCENES: Record<Scene["id"], Scene> = {
 							{ type: "END_SCENE" },
 						],
 					},
+				],
+			},
+		},
+	},
+
+	// --- DEFEAT BRANCH (onLoseSceneId of the Briar Wolf fight) ---
+	[SHADOWS_DEBT.scenes.game_over_forest]: {
+		id: SHADOWS_DEBT.scenes.game_over_forest,
+		initialStepId: "forest-edge",
+		steps: {
+			"forest-edge": {
+				text: "You come to at the edge of the Whispering Woods, thorns still lodged in your skin. The Briar Wolf is gone, and Vane's sigil with it. Its tracks, scorched with blue light, lead back into the trees.",
+				backgroundImage: "/scenes/briar_wolf_ambush.webp",
+				choices: [
+					{
+						label: "Bind your wounds. The hunt isn't over.",
+						actions: [{ type: "END_SCENE" }],
+					},
+					{
+						label: "Go back to Vane and tell him the truth.",
+						actions: [
+							{ type: "SET_FLAG", flagId: "briar_wolf_escaped" },
+							{
+								type: "ADVANCE_QUEST",
+								questId: SHADOWS_DEBT.id,
+								newStepId: SHADOWS_DEBT.steps.confess_to_vane,
+							},
+							{ type: "END_SCENE" },
+						],
+					},
+				],
+			},
+		},
+	},
+
+	[SHADOWS_DEBT.scenes.confess_to_vane]: {
+		id: SHADOWS_DEBT.scenes.confess_to_vane,
+		initialStepId: "confession",
+		steps: {
+			confession: {
+				speaker: "Captain Vane",
+				text: "Let me guess. The wolf is still out there and my family's sigil is still in its belly. ...At least you came back to say it to my face. Most don't.",
+				backgroundImage: "/scenes/port_city_ship.webp",
+				choices: [
+					{
+						label: "Give us another chance.",
+						actions: [{ type: "CHANGE_STEP", stepId: "second-chance" }],
+					},
+					{
+						label: "We're done with this job.",
+						actions: [{ type: "CHANGE_STEP", stepId: "debt" }],
+					},
+				],
+			},
+			"second-chance": {
+				speaker: "Captain Vane",
+				text: "Fine. The beast won't wander far from the Briarwoods. Bring me that sigil and we'll forget this conversation ever happened.",
+				backgroundImage: "/scenes/port_city_ship.webp",
+				onNext: [
+					{
+						type: "ADVANCE_QUEST",
+						questId: SHADOWS_DEBT.id,
+						newStepId: SHADOWS_DEBT.steps.hunt_the_wolf,
+					},
+					{ type: "END_SCENE" },
+				],
+			},
+			debt: {
+				speaker: "Captain Vane",
+				text: "Then you owe the Hollow Keel. I don't forget a debt, friend. One day I'll come to collect.",
+				backgroundImage: "/scenes/port_city_ship.webp",
+				onNext: [
+					{ type: "SET_FLAG", flagId: "vane_debt" },
+					{ type: "COMPLETE_QUEST", questId: SHADOWS_DEBT.id },
+					{ type: "END_SCENE" },
 				],
 			},
 		},
