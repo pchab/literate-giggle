@@ -8,6 +8,7 @@ import { Hand } from "@/modules/cards/components/Hand";
 import { RetroButton } from "@/modules/shared/components/RetroButton";
 import type { BattleHero } from "@/modules/units/domain/units.type";
 import { getMoveValue } from "@/modules/units/helpers/units.helpers";
+import { getHeroColor } from "../data/heroPalette.data";
 import { getBlockFromStatuses } from "../helpers/units.helpers";
 import { HeroPortrait } from "./HeroPortrait";
 
@@ -22,6 +23,7 @@ function hpPercentToColor(percent: number): string {
 export function HeroCard({
 	id,
 	heroClass,
+	name,
 	baseMove,
 	hand,
 	currentHp,
@@ -61,13 +63,15 @@ export function HeroCard({
 	const isUsingCard = !!activeCard && activeCard.unitId === id;
 
 	const currentBlock = getBlockFromStatuses(statuses);
+	const heroColor = getHeroColor(variant);
 
 	const isHoveredHero =
 		hoveredCell && getCellId(gridPosition) === getCellId(hoveredCell);
 
 	return (
 		<div
-			className={`relative flex items-center w-full max-w-2xl h-32 rounded-lg border ${isHoveredHero ? "border-blue-700 border-2" : "border-zinc-800"} shadow-xl bg-zinc-950 mb-2`}
+			className={`relative flex items-center w-full max-w-2xl h-32 rounded-lg border border-l-4 ${isHoveredHero ? "border-blue-700 border-2 border-l-4" : "border-zinc-800"} shadow-xl bg-zinc-950 mb-2`}
+			style={{ borderLeftColor: heroColor.hex }}
 			role="toolbar"
 			onMouseEnter={() => setHoveredCell(gridPosition)}
 			onMouseLeave={() => setHoveredCell(null)}
@@ -85,6 +89,12 @@ export function HeroCard({
 				<HeroPortrait classType={heroClass} variant={variant} />
 
 				<div className="flex flex-col gap-2">
+					<span
+						className="text-xs font-pixel uppercase tracking-widest leading-none drop-shadow-md"
+						style={{ color: heroColor.hex }}
+					>
+						{name}
+					</span>
 					<span className="text-sm font-black drop-shadow-md flex gap-1">
 						❤️{" "}
 						<span className={hpPercentToColor(currentHp / maxHp)}>

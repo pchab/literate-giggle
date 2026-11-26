@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { getPassives } from "@/modules/battle/helpers/passive.helpers";
 import { StatusChip } from "@/modules/units/components/StatusChip";
+import { getHeroColor } from "@/modules/units/data/heroPalette.data";
 import type { BattleHero } from "@/modules/units/domain/units.type";
 
 export default function HeroStatusSidebar({ hero }: { hero: BattleHero }) {
@@ -41,7 +42,10 @@ export default function HeroStatusSidebar({ hero }: { hero: BattleHero }) {
 			{/* --- HEADER & HP --- */}
 			<div className="relative z-10 flex flex-col gap-1.5">
 				<div className="flex items-center justify-between mb-1">
-					<h3 className="text-sm font-bold text-blue-300 uppercase tracking-widest drop-shadow-md">
+					<h3
+						className="text-sm font-bold uppercase tracking-widest drop-shadow-md"
+						style={{ color: getHeroColor(hero.variant).hex }}
+					>
 						{hero.name}
 					</h3>
 

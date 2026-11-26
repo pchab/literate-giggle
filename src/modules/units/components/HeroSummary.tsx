@@ -3,22 +3,34 @@
 import Image from "next/image";
 import { HeroCardView } from "@/modules/cards/components/HeroCardView";
 import { CLASS_REGISTRY } from "../data/heroClass.data";
-import { spriteVariants } from "../data/spriteVariants.data";
+import { getHeroColor } from "../data/heroPalette.data";
 import type { Hero } from "../domain/units.type";
+import { useHeroSprite } from "../hooks/useHeroSprite";
 import { PassiveChip } from "./PassiveChip";
 
 export function HeroAvatar({ hero, size = 56 }: { hero: Hero; size?: number }) {
+	const portrait = useHeroSprite(
+		`/portraits/${hero.heroClass.toLowerCase()}.webp`,
+		hero.variant,
+		true,
+	);
+	const { hex } = getHeroColor(hero.variant);
 	return (
 		<div
-			className="shrink-0 rounded-full bg-zinc-900 border-2 border-zinc-700 overflow-hidden flex items-center justify-center"
-			style={{ width: size, height: size }}
+			className="shrink-0 rounded-full bg-zinc-900 border-2 overflow-hidden flex items-center justify-center"
+			style={{
+				width: size,
+				height: size,
+				borderColor: hex,
+				boxShadow: `0 0 8px ${hex}55`,
+			}}
 		>
 			<Image
-				src={`/portraits/${hero.heroClass.toLowerCase()}.webp`}
+				src={portrait.src}
 				alt={hero.heroClass}
 				width={size}
 				height={size}
-				style={{ filter: spriteVariants[hero.variant || "default"] }}
+				style={{ filter: portrait.filter }}
 			/>
 		</div>
 	);
@@ -47,7 +59,10 @@ export function HeroSummary({
 			<div className="flex items-center gap-3">
 				<HeroAvatar hero={hero} />
 				<div className="flex flex-col gap-1 min-w-0">
-					<span className="font-pixel text-lg tracking-widest text-zinc-100 uppercase leading-none">
+					<span
+						className="font-pixel text-lg tracking-widest uppercase leading-none"
+						style={{ color: getHeroColor(hero.variant).hex }}
+					>
 						{hero.name}
 					</span>
 					<span className="text-[11px] text-amber-400 font-bold uppercase tracking-wider">

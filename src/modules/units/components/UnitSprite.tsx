@@ -8,8 +8,9 @@ import { useCombatText } from "@/modules/battle/hooks/useCombatText";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { useSprite } from "@/modules/shared/hooks/useSprite";
 import type { BattleUnit } from "@/modules/units/domain/units.type";
-import { spriteVariants } from "../data/spriteVariants.data";
-import { getBlockFromStatuses } from "../helpers/units.helpers";
+import { getHeroColor } from "../data/heroPalette.data";
+import { getBlockFromStatuses, isHero } from "../helpers/units.helpers";
+import { useHeroSprite } from "../hooks/useHeroSprite";
 
 export function UnitSprite({ unitInCell }: { unitInCell: BattleUnit }) {
 	const {
@@ -30,6 +31,9 @@ export function UnitSprite({ unitInCell }: { unitInCell: BattleUnit }) {
 
 	const spriteId = `${spriteBase}_${stance}`;
 	const imageSrc = useSprite(spriteId, `/sprites/${spriteId}.webp`);
+	const heroUnit = isHero(unitInCell);
+	const sprite = useHeroSprite(imageSrc, unitInCell.variant, heroUnit);
+	const heroColor = heroUnit ? getHeroColor(unitInCell.variant) : null;
 
 	const intent = aiIntents?.[id];
 
@@ -45,6 +49,26 @@ export function UnitSprite({ unitInCell }: { unitInCell: BattleUnit }) {
 			className="absolute inset-0 flex flex-col items-center z-10"
 		>
 			{intent && <IntentDisplay intent={intent} />}
+
+			{/* Hero identity: name plate + foot ring in the hero's colour */}
+			{heroColor && (
+				<>
+					<span
+						className="absolute -top-2 left-1/2 -translate-x-1/2 z-30 text-[9px] font-bold uppercase tracking-wider px-1.5 rounded-sm bg-zinc-950/80 border pointer-events-none whitespace-nowrap"
+						style={{ color: heroColor.hex, borderColor: `${heroColor.hex}80` }}
+					>
+						{unitInCell.name}
+					</span>
+					<div
+						className="absolute bottom-[14px] left-1/2 -translate-x-1/2 w-[75%] h-4 rounded-[50%] z-0 pointer-events-none"
+						style={{
+							border: `2px solid ${heroColor.hex}`,
+							background: `radial-gradient(ellipse, ${heroColor.hex}80, transparent 75%)`,
+							boxShadow: `0 0 10px ${heroColor.hex}90`,
+						}}
+					/>
+				</>
+			)}
 
 			<FloatingDamage texts={texts} />
 			<motion.div
@@ -72,7 +96,7 @@ export function UnitSprite({ unitInCell }: { unitInCell: BattleUnit }) {
 					transition={{ duration: 0.4, ease: "easeInOut" }}
 				>
 					<Image
-						src={imageSrc}
+						src={sprite.src}
 						alt={`${spriteBase} stance ${stance}`}
 						width={0}
 						height={0}
@@ -82,7 +106,7 @@ export function UnitSprite({ unitInCell }: { unitInCell: BattleUnit }) {
 							width: "auto",
 							height: "100%",
 							maxWidth: "150%",
-							filter: spriteVariants[unitInCell.variant || "default"],
+							filter: sprite.filter,
 						}}
 						className="z-20 object-contain object-bottom"
 						priority
