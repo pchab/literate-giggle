@@ -1,6 +1,6 @@
 import { sleep } from "@/modules/shared/helpers/sleep";
 import { useRegistryStore } from "@/modules/shared/store/registry.store";
-import { isHero } from "@/modules/units/helpers/units.helpers";
+import { isHero, isIncapacitated } from "@/modules/units/helpers/units.helpers";
 import { handleAICardIntent } from "../../helpers/ai.actions.helpers";
 import { tickStatusesAndSurfaces } from "../../helpers/effects/effect.helpers";
 import { finalizeAction } from "../../helpers/encounter.helpers";
@@ -35,6 +35,14 @@ export const resolveAIActions = async (
 
 		const freshAIunit = units.find((u) => u.id === aiUnit.id);
 		if (!freshAIunit || freshAIunit.currentHp <= 0) continue;
+
+		// Frozen / stunned: lose the turn. Drop the intent so the UI doesn't show a fake threat.
+		if (isIncapacitated(freshAIunit)) {
+			set(({ aiIntents: { [freshAIunit.id]: _skipped, ...rest } }) => ({
+				aiIntents: rest,
+			}));
+			continue;
+		}
 
 		const intent = aiIntents[freshAIunit.id];
 		if (!intent) continue;
@@ -75,6 +83,23 @@ export const resolveAIActions = async (
 	});
 
 	await triggerTurnStart(get, set, isSimulation)(get().units.filter(isHero));
+
+	// Frozen / stunned heroes auto-pass their turn.
+	const skippedHeroes = get().units.filter(
+		(u) => isHero(u) && u.currentHp > 0 && isIncapacitated(u),
+	);
+	if (skippedHeroes.length > 0) {
+		set(({ usedCardsThisTurn, usedMovesThisTurn }) => ({
+			usedCardsThisTurn: {
+				...usedCardsThisTurn,
+				...Object.fromEntries(skippedHeroes.map((h) => [h.id, true])),
+			},
+			usedMovesThisTurn: {
+				...usedMovesThisTurn,
+				...Object.fromEntries(skippedHeroes.map((h) => [h.id, 99])),
+			},
+		}));
+	}
 
 	if (!isSimulation) {
 		await finalizeAction(get, set, draftUnits);

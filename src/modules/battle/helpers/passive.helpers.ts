@@ -94,7 +94,12 @@ export const getOverhealStatuses =
 
 export const broadcastDamaged =
 	(get: BattleGet, set: BattleSet, isSimulation: boolean) =>
-	async (params: { target: BattleUnit; hpLost: number; sourceId?: string }) => {
+	async (params: {
+		target: BattleUnit;
+		hpLost: number;
+		sourceId?: string;
+		isDirectHit?: boolean;
+	}) => {
 		for (const owner of livingPassiveOwners(get)) {
 			for (const passive of getPassives(owner)) {
 				await passive.hooks.onAnyDamaged?.(

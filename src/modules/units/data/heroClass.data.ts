@@ -160,7 +160,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		id: "KNIGHT",
 		name: "Knight",
 		spriteBase: "heroes/knight",
-		utilityCardChoices: [cardId("knight_placeholder")],
+		utilityCardChoices: [cardId("challenge")],
 		xpThresholds: [10, 20, 30, 40, 50, 60],
 		levelUpTriggers: [
 			[
@@ -183,7 +183,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		id: "BARBARIAN",
 		name: "Barbarian",
 		spriteBase: "heroes/barbarian",
-		utilityCardChoices: [cardId("barbarian_placeholder")],
+		utilityCardChoices: [cardId("war_cry")],
 		xpThresholds: [10, 20, 30, 40, 50, 60],
 		levelUpTriggers: [
 			[
@@ -206,10 +206,11 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		id: "PYROMANCER",
 		name: "Pyromancer",
 		spriteBase: "heroes/pyromancer",
-		utilityCardChoices: [cardId("pyromancer_placeholder")],
+		utilityCardChoices: [cardId("ignite")],
 		xpThresholds: [10, 20, 30, 40, 50, 60],
 		levelUpTriggers: [
 			[
+				{ type: "passiveUnlock", passiveId: PASSIVE_IDS.kindling },
 				{ type: "statsIncrease", stat: "hp", amount: 2 },
 				{
 					type: "cardUpgrade",
@@ -227,10 +228,11 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 		id: "CRYOMANCER",
 		name: "Cryomancer",
 		spriteBase: "heroes/cryomancer",
-		utilityCardChoices: [cardId("ice_wall"), cardId("cryomancer_placeholder")],
+		utilityCardChoices: [cardId("ice_wall"), cardId("frostbite")],
 		xpThresholds: [10, 20, 30, 40, 50, 60],
 		levelUpTriggers: [
 			[
+				{ type: "passiveUnlock", passiveId: PASSIVE_IDS.permafrost },
 				{ type: "statsIncrease", stat: "hp", amount: 2 },
 				{
 					type: "cardUpgrade",

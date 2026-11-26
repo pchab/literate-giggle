@@ -1,17 +1,10 @@
 import type { ApplyStatusEffect } from "@/modules/cards/domain/cards.type";
+import { STATUS_INFO } from "@/modules/units/data/statusInfo.data";
 import type { StatusType } from "@/modules/units/domain/status.type";
 import FieldRow from "../FieldRow";
 import type { EffectInputProps } from "./types";
 
-const STATUS_TYPES: StatusType[] = [
-	"block",
-	"poison",
-	"rooted",
-	"vulnerable",
-	"regen",
-	"swallowed",
-	"digesting",
-];
+const STATUS_TYPES: StatusType[] = Object.keys(STATUS_INFO) as StatusType[];
 
 export default function ApplyStatusEffectInput({
 	effect: { status },
@@ -38,7 +31,7 @@ export default function ApplyStatusEffectInput({
 				>
 					{STATUS_TYPES.map((t) => (
 						<option key={t} value={t}>
-							{t}
+							{STATUS_INFO[t].icon} {t}
 						</option>
 					))}
 				</select>

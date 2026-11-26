@@ -4,7 +4,8 @@ import {
 } from "@/modules/units/data/passiveIds.data";
 import type { PassiveDefinition } from "@/modules/units/domain/passive.type";
 import type { BattleUnit } from "@/modules/units/domain/units.type";
-import { getAllegiance } from "../helpers/effects/effect.helpers";
+import { hasStatus } from "@/modules/units/helpers/units.helpers";
+import { areEnemies, getAllegiance } from "../helpers/effects/effect.helpers";
 import {
 	getDistanceToBoundingBox,
 	isUnitInTile,
@@ -154,6 +155,42 @@ export const PASSIVE_REGISTRY: Record<PassiveId, PassiveDefinition> = {
 		hooks: {
 			modifyCard: (card) =>
 				card.range >= 2 ? { ...card, range: card.range + 1 } : card,
+		},
+	},
+
+	// --- PYROMANCER ---
+	[PASSIVE_IDS.kindling]: {
+		id: PASSIVE_IDS.kindling,
+		name: "Kindling",
+		icon: "🔥",
+		description: "+2 damage against burning targets.",
+		hooks: {
+			modifyOutgoingDamage: (_, { target, amount }) =>
+				hasStatus(target, "burn") ? amount + 2 : amount,
+		},
+	},
+
+	// --- CRYOMANCER ---
+	[PASSIVE_IDS.permafrost]: {
+		id: PASSIVE_IDS.permafrost,
+		name: "Permafrost",
+		icon: "❄️",
+		description:
+			"Direct hits that deal damage also apply 1 Chill (3 Chill = Frozen).",
+		hooks: {
+			onAnyDamaged: async (ctx, { target, sourceId, isDirectHit }) => {
+				if (sourceId !== ctx.owner.id || !isDirectHit) return;
+				const victim = ctx.get().units.find((u) => u.id === target.id);
+				if (!victim || victim.currentHp <= 0) return;
+				if (!areEnemies(ctx.owner)(victim)) return;
+				await applyCombatUpdate(
+					ctx.get,
+					ctx.set,
+					ctx.isSimulation,
+				)(victim.id, {
+					newStatuses: [{ type: "chill", amount: 1, duration: 2 }],
+				});
+			},
 		},
 	},
 

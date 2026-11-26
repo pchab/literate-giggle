@@ -8,7 +8,7 @@ import { useBattleStore } from "@/modules/battle/store/battle.store";
 import type { Card } from "@/modules/cards/domain/cards.type";
 import { useRegistryStore } from "@/modules/shared/store/registry.store";
 import type { BattleUnit } from "@/modules/units/domain/units.type";
-import { isHero } from "@/modules/units/helpers/units.helpers";
+import { getMoveValue, isHero } from "@/modules/units/helpers/units.helpers";
 import type { Intent } from "../domain/intent.type";
 import { areEnemies } from "../helpers/effects/effect.helpers";
 import {
@@ -74,7 +74,8 @@ export function useCellHighlight(): CellHighlight {
 		const hero = heroes.find(({ id }) => id === activeMoveHeroId);
 		if (!hero) return highlight;
 
-		const remainingMove = hero.baseMove - (usedMovesThisTurn[hero.id] ?? 0);
+		const remainingMove =
+			getMoveValue(hero) - (usedMovesThisTurn[hero.id] ?? 0);
 		const oppositeFaction = units.filter(areEnemies(hero));
 
 		const validTargetCells = calculateReachableCells({

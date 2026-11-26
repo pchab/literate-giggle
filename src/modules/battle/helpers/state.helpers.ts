@@ -12,7 +12,7 @@ import {
 	modifyDamageByPassives,
 	triggerKill,
 } from "./passive.helpers";
-import { statusRegistry } from "./status.helpers";
+import { reconcileStatuses, statusRegistry } from "./status.helpers";
 
 export const findUnit =
 	(get: BattleGet) =>
@@ -129,7 +129,26 @@ export const applyCombatUpdate =
 				target: currentUnit,
 				amount: pendingDamage,
 			});
+
+			// Source statuses (Might, Weak) only shape direct hits.
+			const source = update.sourceId
+				? findUnit(get)(update.sourceId)
+				: undefined;
+			if (source && update.isDirectHit) {
+				for (const status of source.statuses) {
+					const hook = statusRegistry[status.type]?.onBeforeDealDamage;
+					if (hook) {
+						pendingDamage = hook({
+							status,
+							source,
+							target: currentUnit,
+							damage: pendingDamage,
+						});
+					}
+				}
+			}
 		}
+		const dealtDirectHit = pendingDamage > 0 && !!update.isDirectHit;
 
 		// ==========================================
 		// PHASE 1: ON BEFORE DAMAGE (Modify the Math)
@@ -147,6 +166,8 @@ export const applyCombatUpdate =
 						unit: currentUnit,
 						damageTaken: pendingDamage,
 						isTrueDamage: update.isTrueDamage, // <--- Let hooks know!
+						sourceId: update.sourceId,
+						isDirectHit: update.isDirectHit,
 					});
 					currentUnit = unit;
 					pendingDamage = damageTaken;
@@ -182,11 +203,11 @@ export const applyCombatUpdate =
 			)({ sourceId: update.sourceId, target: currentUnit, overflow });
 		}
 		if (update.newStatuses || overhealStatuses.length)
-			currentUnit.statuses = [
-				...currentUnit.statuses,
-				...(update.newStatuses ?? []),
-				...overhealStatuses,
-			];
+			currentUnit.statuses = reconcileStatuses(
+				currentUnit.statuses,
+				[...(update.newStatuses ?? []), ...overhealStatuses],
+				currentUnit.immunities,
+			);
 
 		const actualHpLost = startingHp - currentUnit.currentHp;
 
@@ -204,6 +225,8 @@ export const applyCombatUpdate =
 					)({
 						unit: currentUnit,
 						hpLost: actualHpLost,
+						sourceId: update.sourceId,
+						isDirectHit: update.isDirectHit,
 					});
 					currentUnit = result.unit;
 				}
@@ -260,6 +283,14 @@ export const applyCombatUpdate =
 		// ==========================================
 		// 4. PASSIVE REACTIONS (after commit, so they see the new state)
 		// ==========================================
+		if (dealtDirectHit && update.sourceId) {
+			const source = findUnit(get)(update.sourceId);
+			for (const status of source?.statuses ?? []) {
+				const hook = statusRegistry[status.type]?.onAfterDealDamage;
+				if (source && hook) await hook(get, set, isSimulation)({ source });
+			}
+		}
+
 		if (actualHpLost > 0) {
 			await broadcastDamaged(
 				get,
@@ -269,6 +300,7 @@ export const applyCombatUpdate =
 				target: currentUnit,
 				hpLost: actualHpLost,
 				sourceId: update.sourceId,
+				isDirectHit: update.isDirectHit,
 			});
 		}
 		if (toRemove) {

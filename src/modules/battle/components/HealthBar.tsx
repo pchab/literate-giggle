@@ -1,7 +1,18 @@
 import { motion } from "motion/react";
 import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
+import { STATUS_INFO } from "@/modules/units/data/statusInfo.data";
+import type { StatusType } from "@/modules/units/domain/status.type";
 import type { BattleUnit } from "@/modules/units/domain/units.type";
+
+const CONTROL_STATUSES: StatusType[] = [
+	"frozen",
+	"stun",
+	"chill",
+	"taunt",
+	"stealth",
+	"marked",
+];
 
 export default function HealthBar({ unitId }: { unitId: BattleUnit["id"] }) {
 	// ==========================================
@@ -30,9 +41,13 @@ export default function HealthBar({ unitId }: { unitId: BattleUnit["id"] }) {
 		.filter((s) => s.type === "block")
 		.reduce((sum, s) => sum + s.amount, 0);
 
+	// Damage-over-time ticking next turn (poison + burn)
 	const totalPoison = statuses
-		.filter((s) => s.type === "poison")
+		.filter((s) => s.type === "poison" || s.type === "burn")
 		.reduce((sum, s) => sum + s.amount, 0);
+	const controlIcons = CONTROL_STATUSES.filter((type) =>
+		statuses.some((s) => s.type === type),
+	).map((type) => STATUS_INFO[type].icon);
 
 	// ==========================================
 	// HP PERCENTAGE MATH (Left to Right Visual Order)
@@ -132,9 +147,11 @@ export default function HealthBar({ unitId }: { unitId: BattleUnit["id"] }) {
 							totalPoison >= netHp ? "text-purple-300" : "text-purple-400"
 						}`}
 					>
-						☠️{totalPoison}
+						{statuses.some((s) => s.type === "burn") ? "🔥" : "☠️"}
+						{totalPoison}
 					</span>
 				)}
+				{controlIcons.length > 0 && <span>{controlIcons.join("")}</span>}
 			</span>
 		</div>
 	);

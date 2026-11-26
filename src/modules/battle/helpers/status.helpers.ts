@@ -12,7 +12,7 @@ import type { GridPosition } from "../domain/grid.type";
 import type { VfxType } from "../domain/vfx.type";
 import { isTileEmpty, isTileInBounds } from "./grid.helpers";
 import { calculateAttackableCells } from "./move.helpers";
-import type { CombatUpdate } from "./state.helpers";
+import { applyCombatUpdate, type CombatUpdate } from "./state.helpers";
 
 type TickResult = CombatUpdate & { vfxType?: VfxType };
 
@@ -27,6 +27,8 @@ type StatusRegistryHooks = {
 		unit: T;
 		isTrueDamage?: boolean;
 		damageTaken: number;
+		sourceId?: BattleUnit["id"];
+		isDirectHit?: boolean;
 	}) => Promise<{ unit: T; damageTaken: number }>;
 
 	// Phase 2: Reacts to HP lost (Spikes, Regurgitation)
@@ -37,7 +39,24 @@ type StatusRegistryHooks = {
 	) => <T extends BattleUnit>(params: {
 		unit: T;
 		hpLost: number;
+		sourceId?: BattleUnit["id"];
+		isDirectHit?: boolean;
 	}) => Promise<{ unit: T }>;
+
+	// Source side: modifies outgoing damage of a direct hit (Might, Weak). Sync.
+	onBeforeDealDamage?: (params: {
+		status: Status;
+		source: BattleUnit;
+		target: BattleUnit;
+		damage: number;
+	}) => number;
+
+	// Source side: after the unit dealt a direct hit (Stealth breaks)
+	onAfterDealDamage?: (
+		get: BattleGet,
+		set: BattleSet,
+		isSimulation: boolean,
+	) => (params: { source: BattleUnit }) => Promise<void>;
 
 	// Phase 3: Reacts to death (Explosions, Revives)
 	onDeath?: (
@@ -129,6 +148,87 @@ export const statusRegistry: Record<StatusType, StatusRegistryHooks> = {
 					isTrueDamage: true,
 					vfxType: "POISON",
 				};
+			},
+	},
+
+	burn: {
+		onTick:
+			() =>
+			async ({ status }) => ({
+				damageTaken: status.amount,
+				isTrueDamage: true,
+				vfxType: "FIRE",
+			}),
+	},
+
+	// Chill & Frozen & Stun & Haste & Taunt: read by getMoveValue / isIncapacitated / AI targeting.
+	chill: {},
+	frozen: {},
+	stun: {},
+	haste: {},
+	taunt: {},
+
+	stealth: {
+		onAfterDealDamage:
+			(_, set) =>
+			async ({ source }) => {
+				set(({ units }) => ({
+					units: units.map((u) =>
+						u.id === source.id
+							? {
+									...u,
+									statuses: u.statuses.filter((s) => s.type !== "stealth"),
+								}
+							: u,
+					),
+				}));
+			},
+	},
+
+	might: {
+		onBeforeDealDamage: ({ status, damage }) => damage + status.amount,
+	},
+
+	weak: {
+		onBeforeDealDamage: ({ status, damage }) =>
+			Math.max(0, damage - status.amount),
+	},
+
+	marked: {
+		onBeforeDamage:
+			() =>
+			async ({ unit, damageTaken, isDirectHit }) => {
+				if (!isDirectHit) return { unit, damageTaken };
+				const bonus = unit.statuses
+					.filter((s) => s.type === "marked")
+					.reduce((acc, s) => acc + s.amount, 0);
+				return {
+					unit: {
+						...unit,
+						statuses: unit.statuses.filter((s) => s.type !== "marked"),
+					},
+					damageTaken: damageTaken + bonus,
+				};
+			},
+	},
+
+	thorns: {
+		onAfterDamage:
+			(get, set, isSimulation) =>
+			async ({ unit, sourceId, isDirectHit }) => {
+				if (!isDirectHit || !sourceId || sourceId === unit.id) return { unit };
+				const amount = unit.statuses
+					.filter((s) => s.type === "thorns")
+					.reduce((acc, s) => acc + s.amount, 0);
+				await applyCombatUpdate(
+					get,
+					set,
+					isSimulation,
+				)(sourceId, {
+					damageTaken: amount,
+					isTrueDamage: true,
+				});
+				return { unit };
 			},
 	},
 
@@ -247,3 +347,45 @@ export const statusRegistry: Record<StatusType, StatusRegistryHooks> = {
 		},
 	},
 };
+
+/**
+ * Merges incoming statuses into a unit's list and applies elemental rules:
+ * - Burn melts Chill and Frozen.
+ * - Chill douses Burn; 3+ total Chill turns into Frozen (skips 1 turn).
+ * - Several hooks (marked, thorns, …) sum stacks themselves, so duplicates are fine.
+ */
+export function reconcileStatuses(
+	existing: Status[],
+	incoming: Status[],
+	immunities: StatusType[] = [],
+): Status[] {
+	let statuses = [...existing];
+
+	for (const status of incoming) {
+		if (immunities.includes(status.type)) continue;
+
+		if (status.type === "burn") {
+			statuses = statuses.filter(
+				(s) => s.type !== "chill" && s.type !== "frozen",
+			);
+		}
+		if (status.type === "chill") {
+			statuses = statuses.filter((s) => s.type !== "burn");
+		}
+
+		statuses.push(status);
+
+		const totalChill = statuses
+			.filter((s) => s.type === "chill")
+			.reduce((acc, s) => acc + s.amount, 0);
+		if (totalChill >= 3 && !immunities.includes("frozen")) {
+			statuses = statuses.filter(
+				(s) => s.type !== "chill" && s.type !== "frozen",
+			);
+			// Duration 2: survives the owner's next tick, so exactly one turn is lost.
+			statuses.push({ type: "frozen", amount: 1, duration: 2 });
+		}
+	}
+
+	return statuses;
+}

@@ -31,6 +31,22 @@ export const cryomancerCards: Record<Card["id"], Card> = {
 		],
 	},
 
+	[cardId("frostbite")]: {
+		id: cardId("frostbite"),
+		name: "Frostbite",
+		range: 2,
+		image: "/cards/frost_shards.webp",
+		playRequirement: "requires_enemy",
+		effects: [
+			{ type: "damage", amount: 2, target: "anchor", projectile: "ICE" },
+			{
+				type: "apply_status",
+				status: { type: "chill", amount: 1, duration: 2 },
+				target: "anchor",
+			},
+		],
+	},
+
 	[cardId("cryomancer_placeholder")]: {
 		id: cardId("cryomancer_placeholder"),
 		name: "Cryomancer Placeholder",

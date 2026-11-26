@@ -11,6 +11,21 @@ export const pyromancerCards: Record<Card["id"], Card> = {
 		playRequirement: "requires_enemy",
 		effects: [{ type: "damage", amount: 4, target: "anchor" }],
 	},
+	[cardId("ignite")]: {
+		id: cardId("ignite"),
+		name: "Ignite",
+		range: 2,
+		image: "/cards/fireball.webp",
+		playRequirement: "requires_enemy",
+		effects: [
+			{
+				type: "apply_status",
+				status: { type: "burn", amount: 2, duration: 3 },
+				target: "anchor",
+				projectile: "FIREBALL",
+			},
+		],
+	},
 	[cardId("fireball")]: {
 		id: cardId("fireball"),
 		name: "Fireball",

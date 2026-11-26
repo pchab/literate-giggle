@@ -7,6 +7,7 @@ import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { Hand } from "@/modules/cards/components/Hand";
 import { RetroButton } from "@/modules/shared/components/RetroButton";
 import type { BattleHero } from "@/modules/units/domain/units.type";
+import { getMoveValue } from "@/modules/units/helpers/units.helpers";
 import { getBlockFromStatuses } from "../helpers/units.helpers";
 import { HeroPortrait } from "./HeroPortrait";
 
@@ -52,7 +53,8 @@ export function HeroCard({
 	);
 
 	const distanceAlreadyMoved = usedMovesThisTurn[id] ?? 0;
-	const remainingMoves = baseMove - distanceAlreadyMoved;
+	const remainingMoves =
+		getMoveValue({ baseMove, statuses }) - distanceAlreadyMoved;
 	const isMoving = activeMoveUnitId === id;
 
 	const hasUsedCard = !!usedCardsThisTurn[id];

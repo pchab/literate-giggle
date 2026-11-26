@@ -6,12 +6,8 @@ import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { BattleCard } from "@/modules/cards/components/BattleCard";
 import { CardTooltip } from "@/modules/cards/components/CardTooltip";
 import { useRegistryStore } from "@/modules/shared/store/registry.store";
-import type { StatusType } from "@/modules/units/domain/status.type";
+import { StatusChip } from "@/modules/units/components/StatusChip";
 import type { AIBattleUnit } from "@/modules/units/domain/units.type";
-
-function formatStatus(statusType: StatusType) {
-	return statusType.replace("_", " ");
-}
 
 export default function EnemyIntentSidebar({
 	aiUnit,
@@ -102,17 +98,7 @@ export default function EnemyIntentSidebar({
 						</span>
 					)}
 					{otherStatuses.map((status) => (
-						<span
-							key={crypto.randomUUID()}
-							className="text-xs bg-zinc-900 text-zinc-300 px-2 py-0.5 rounded border border-zinc-700 capitalize flex items-center gap-1"
-						>
-							{status.type === "poison"
-								? "☠️"
-								: status.type === "vulnerable"
-									? "⚡"
-									: "✨"}
-							{formatStatus(status.type)} {status.amount > 0 && status.amount}
-						</span>
+						<StatusChip key={status.type} status={status} />
 					))}
 				</div>
 			)}

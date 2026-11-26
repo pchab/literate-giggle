@@ -1,3 +1,4 @@
+import type { StatusType } from "../domain/status.type";
 import type {
 	BattleHero,
 	BattleUnit,
@@ -52,6 +53,33 @@ export function getBlockFromStatuses(statuses: BattleHero["statuses"]): number {
 		return block;
 	}, 0);
 }
+
+export const hasStatus = (
+	unit: Pick<BattleUnit, "statuses">,
+	type: StatusType,
+): boolean => unit.statuses?.some((s) => s.type === type) ?? false;
+
+export const sumStatus = (
+	unit: Pick<BattleUnit, "statuses">,
+	type: StatusType,
+): number =>
+	unit.statuses?.reduce(
+		(acc, s) => (s.type === type ? acc + s.amount : acc),
+		0,
+	) ?? 0;
+
+/** Frozen or stunned units lose their whole turn (no move, no card). */
+export const isIncapacitated = (unit: Pick<BattleUnit, "statuses">): boolean =>
+	hasStatus(unit, "frozen") || hasStatus(unit, "stun");
+
+/** Movement after haste / chill. Never negative. */
+export const getMoveValue = (
+	unit: Pick<BattleUnit, "statuses" | "baseMove">,
+): number => {
+	if (isIncapacitated(unit)) return 0;
+	const chillPenalty = hasStatus(unit, "chill") ? 1 : 0;
+	return Math.max(0, unit.baseMove + sumStatus(unit, "haste") - chillPenalty);
+};
 
 export function getVariantFromBlueprint({
 	availableVariants,

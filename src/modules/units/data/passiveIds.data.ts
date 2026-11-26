@@ -8,6 +8,8 @@ export const PASSIVE_IDS = {
 	steady_aim: "steady_aim",
 	spell_focus: "spell_focus",
 	devotion: "devotion",
+	kindling: "kindling",
+	permafrost: "permafrost",
 } as const;
 
 export type PassiveId = (typeof PASSIVE_IDS)[keyof typeof PASSIVE_IDS];

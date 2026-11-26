@@ -3,7 +3,11 @@
 import { useShallow } from "zustand/shallow";
 import { getCellId, isUnitInTile } from "@/modules/battle/helpers/grid.helpers";
 import type { BattleUnit } from "@/modules/units/domain/units.type";
-import { isHero, isHeroId } from "@/modules/units/helpers/units.helpers";
+import {
+	getMoveValue,
+	isHero,
+	isHeroId,
+} from "@/modules/units/helpers/units.helpers";
 import { useCellHighlight } from "../hooks/useCellHighlight";
 import { useBattleStore } from "../store/battle.store";
 import { GridCell, type Highlight } from "./GridCell";
@@ -119,7 +123,7 @@ export function BattleGrid() {
 
 				const remainingMoves =
 					hasUnitInCell && isHeroId(unitsInCell[0].id)
-						? unitsInCell[0].baseMove -
+						? getMoveValue(unitsInCell[0]) -
 							(usedMovesThisTurn[unitsInCell[0].id] ?? 0)
 						: 0;
 

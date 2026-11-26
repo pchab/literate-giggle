@@ -11,6 +11,26 @@ export const knightCards: Record<Card["id"], Card> = {
 		effects: [{ type: "damage", amount: 4, target: "anchor" }],
 	},
 
+	[cardId("challenge")]: {
+		id: cardId("challenge"),
+		name: "Challenge",
+		range: 0,
+		image: "/cards/shield_wall.webp",
+		playRequirement: "no_target",
+		effects: [
+			{
+				type: "apply_status",
+				status: { type: "taunt", amount: 1, duration: 1 },
+				target: "self",
+			},
+			{
+				type: "apply_status",
+				status: { type: "block", amount: 3, duration: 1 },
+				target: "self",
+			},
+		],
+	},
+
 	[cardId("bastard_sword")]: {
 		id: cardId("bastard_sword"),
 		name: "Bastard Sword",

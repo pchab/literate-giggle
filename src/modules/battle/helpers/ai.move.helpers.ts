@@ -1,5 +1,9 @@
 import type { Card } from "@/modules/cards/domain/cards.type";
-import { isSummon } from "@/modules/units/helpers/units.helpers";
+import {
+	getMoveValue,
+	hasStatus,
+	isSummon,
+} from "@/modules/units/helpers/units.helpers";
 import type { AIBattleUnit, BattleUnit } from "../../units/domain/units.type";
 import type { BoundingBox, GridPosition } from "../domain/grid.type";
 import type { BattleGet } from "../store/battle.store";
@@ -51,6 +55,11 @@ function getPrioritizedTargets<C extends AIBattleUnit, T extends BattleUnit>(
 			validTargets = aliveUnits;
 	}
 
+	// Stealthed enemies can't be singled out.
+	validTargets = validTargets.filter(
+		(t) => !(areEnemies(aiUnit)(t) && hasStatus(t, "stealth")),
+	);
+
 	// Determine what this specific AI considers a "Primary Threat"
 	const aiFaction = getAllegiance(aiUnit);
 	const primaryEnemyFaction =
@@ -66,6 +75,12 @@ function getPrioritizedTargets<C extends AIBattleUnit, T extends BattleUnit>(
 
 			if (aIsPrimaryEnemy && !bIsPrimaryEnemy) return -1;
 			if (!aIsPrimaryEnemy && bIsPrimaryEnemy) return 1;
+
+			// Taunting enemies are always the first pick.
+			const aTaunts = aIsPrimaryEnemy && hasStatus(a, "taunt");
+			const bTaunts = bIsPrimaryEnemy && hasStatus(b, "taunt");
+			if (aTaunts && !bTaunts) return -1;
+			if (!aTaunts && bTaunts) return 1;
 		}
 
 		// --- ORIGINAL: Fallback Preference ---
@@ -99,7 +114,7 @@ const calculateFiringSpot =
 		target: T;
 		card: Card;
 	}): GridPosition | null => {
-		if (aiUnit.baseMove === 0) return aiUnit.gridPosition;
+		if (getMoveValue(aiUnit) === 0) return aiUnit.gridPosition;
 		const { units, gridSize, removedCells, surfaces } = get();
 
 		const canTargetSelf = ["requires_entity", "requires_ally"].includes(
@@ -111,7 +126,7 @@ const calculateFiringSpot =
 		if (card.aiTargetPreference === "away") {
 			// --- KITING LOGIC ("away") ---
 			const reachable = calculateReachableCells({
-				movingUnit: aiUnit,
+				movingUnit: { ...aiUnit, baseMove: getMoveValue(aiUnit) },
 				blockingUnits: hardObstacles,
 				canTargetSelf: true,
 				gridSize,
@@ -188,7 +203,7 @@ const calculateFiringSpot =
 
 		if (fullPath.length === 0) return null;
 
-		let stepsToTake = Math.min(aiUnit.baseMove, fullPath.length);
+		let stepsToTake = Math.min(getMoveValue(aiUnit), fullPath.length);
 		while (stepsToTake > 0) {
 			const candidateDest = fullPath[stepsToTake - 1];
 			if (

@@ -30,7 +30,12 @@ export type PassiveHooks = {
 	/** Broadcast to every unit with passives after any unit loses HP. */
 	onAnyDamaged?: (
 		ctx: PassiveContext,
-		params: { target: BattleUnit; hpLost: number; sourceId?: string },
+		params: {
+			target: BattleUnit;
+			hpLost: number;
+			sourceId?: string;
+			isDirectHit?: boolean;
+		},
 	) => Promise<void>;
 
 	/** Owner dealt the killing blow. */

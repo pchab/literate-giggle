@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { getPassives } from "@/modules/battle/helpers/passive.helpers";
+import { StatusChip } from "@/modules/units/components/StatusChip";
 import type { BattleHero } from "@/modules/units/domain/units.type";
 
 export default function HeroStatusSidebar({ hero }: { hero: BattleHero }) {
@@ -94,17 +95,7 @@ export default function HeroStatusSidebar({ hero }: { hero: BattleHero }) {
 						</span>
 					)}
 					{otherStatuses.map((status) => (
-						<span
-							key={crypto.randomUUID()}
-							className="text-xs bg-zinc-900 text-zinc-300 px-2 py-0.5 rounded border border-zinc-700 capitalize flex items-center gap-1"
-						>
-							{status.type === "poison"
-								? "☠️"
-								: status.type === "vulnerable"
-									? "⚡"
-									: "✨"}
-							{status.type} {status.amount > 0 && status.amount}
-						</span>
+						<StatusChip key={status.type} status={status} />
 					))}
 				</div>
 			)}

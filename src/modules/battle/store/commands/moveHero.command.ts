@@ -1,6 +1,6 @@
 import type { GridPosition } from "@/modules/battle/domain/grid.type";
 import type { BattleGet, BattleSet } from "@/modules/battle/store/battle.store";
-import { isHeroId } from "@/modules/units/helpers/units.helpers";
+import { getMoveValue, isHeroId } from "@/modules/units/helpers/units.helpers";
 import { areEnemies } from "../../helpers/effects/effect.helpers";
 import { getDistanceToBoundingBox } from "../../helpers/grid.helpers";
 import { calculateExactPath, moveBattleUnit } from "../../helpers/move.helpers";
@@ -30,7 +30,7 @@ export function moveHero(newPosition: GridPosition) {
 		}
 
 		const moveAlreadyDone = usedMovesThisTurn[activeMoveUnitId] ?? 0;
-		const remainingMove = hero.baseMove - moveAlreadyDone;
+		const remainingMove = getMoveValue(hero) - moveAlreadyDone;
 
 		if (remainingMove < 1) {
 			return {};
@@ -47,7 +47,7 @@ export function moveHero(newPosition: GridPosition) {
 
 		if (distance > remainingMove) {
 			console.warn(
-				`Hero ${heroId} cannot move more than ${hero.baseMove} squares.`,
+				`Hero ${heroId} cannot move more than ${remainingMove} squares.`,
 			);
 			return {};
 		}
