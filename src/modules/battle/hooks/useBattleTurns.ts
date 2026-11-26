@@ -2,7 +2,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
+import { ENCOUNTER_DB } from "@/modules/campaign/data/encounters.data";
 import type { Encounter } from "@/modules/campaign/domain/encounters.type";
+import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
 import type { Hero } from "@/modules/units/domain/units.type";
 import { isHero } from "@/modules/units/helpers/units.helpers";
 import { useWorldStore } from "@/modules/world/store/world.store";
@@ -82,6 +84,12 @@ export function useBattleTurns(
 			);
 
 			const timeoutId = setTimeout(() => {
+				// Partial outcomes become story flags before the win scene plays.
+				const encounter = ENCOUNTER_DB[encounterId];
+				const outcome = encounter?.outcomeFlags?.(useBattleStore.getState());
+				for (const flag of outcome ?? []) {
+					useCampaignStore.getState().setFlag(flag);
+				}
 				stageBattleRewards(remainingHealth);
 				router.push("/reward");
 			}, 1000);
@@ -97,7 +105,7 @@ export function useBattleTurns(
 			}, 1000);
 			return () => clearTimeout(timeoutId);
 		}
-	}, [battleStatus, heroes, router, stageBattleRewards, setPhase]);
+	}, [battleStatus, heroes, router, stageBattleRewards, setPhase, encounterId]);
 
 	return { isPlayerTurn: !isEnemyTurn };
 }

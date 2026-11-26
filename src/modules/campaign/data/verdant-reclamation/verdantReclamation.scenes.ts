@@ -389,6 +389,13 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 				speaker: "Panicked Barkeep",
 				text: "They broke through the walls! There are wolves made of thorns tearing up the taproom! Please, help us!",
 				backgroundImage: "/scenes/rusty_boar_assault.webp",
+				onEnter: [
+					{
+						type: "IF_FLAGS",
+						all: ["cellar_sealed"],
+						actions: [{ type: "CHANGE_STEP", stepId: "friend" }],
+					},
+				],
 				choices: [
 					{
 						label: "Defend the tavern! (Start Battle)",
@@ -402,11 +409,29 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 					},
 				],
 			},
+			friend: {
+				speaker: "Rusty Boar bartender",
+				text: "You! The rat-catchers! The cellar held, so they're coming through the front door instead. My regulars barricaded the bar and they're throwing bottles. Help us hold, and every ale in the house is yours.",
+				backgroundImage: "/scenes/rusty_boar_assault.webp",
+				choices: [
+					{
+						label: "Hold the bar together! (Party fully healed, start battle)",
+						actions: [
+							{ type: "HEAL_PARTY", amount: 99 },
+							{
+								type: "START_BATTLE",
+								encounterId: encounterId("defend_tavern_ambush"),
+								background: "rusty_boar_ruined",
+							},
+						],
+					},
+				],
+			},
 		},
 	},
 
 	[sceneId("victory_defend_tavern_ambush")]: {
-		id: sceneId("defend_tavern_ambush"),
+		id: sceneId("victory_defend_tavern_ambush"),
 		initialStepId: "intro",
 		steps: {
 			intro: {
@@ -439,6 +464,13 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 				speaker: "Arch-Druid Sylas",
 				text: "Our treants broke through their walls! Tear apart the tavern and let the wilds reclaim this land!",
 				backgroundImage: "/scenes/rusty_boar_assault.webp",
+				onEnter: [
+					{
+						type: "IF_FLAGS",
+						all: ["cellar_sealed"],
+						actions: [{ type: "CHANGE_STEP", stepId: "recognized" }],
+					},
+				],
 				choices: [
 					{
 						label: "Assault the taproom! (Start Battle)",
@@ -450,6 +482,38 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 							},
 						],
 					},
+				],
+			},
+			recognized: {
+				speaker: "Rusty Boar bartender",
+				text: "You? You cleared my cellar. I poured you free ale. And now you come back with the trees to burn the place down?",
+				backgroundImage: "/scenes/rusty_boar_assault.webp",
+				choices: [
+					{
+						label: "Nothing personal. (Start Battle)",
+						actions: [
+							{
+								type: "START_BATTLE",
+								encounterId: encounterId("assault_tavern_ambush"),
+								background: "rusty_boar_assault",
+							},
+						],
+					},
+					{
+						label:
+							"Get your people out the back. We'll tell Sylas the tavern is taken.",
+						actions: [{ type: "CHANGE_STEP", stepId: "spared" }],
+					},
+				],
+			},
+			spared: {
+				speaker: "Rusty Boar bartender",
+				text: "...I won't forget this. Neither will the city, whoever ends up ruling it.",
+				backgroundImage: "/scenes/rusty_boar_assault.webp",
+				onNext: [
+					{ type: "SET_FLAG", flagId: "spared_rusty_boar" },
+					{ type: "SET_FLAG", flagId: "tavern_cleared" },
+					{ type: "END_SCENE" },
 				],
 			},
 		},
@@ -492,6 +556,13 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 				backgroundImage: "/scenes/ironhold_throne_room.webp",
 				choices: [
 					{
+						label:
+							"Send word to the dwarves of the passage. (Party fully healed)",
+						reqFlags: ["dwarves_allied"],
+						hideIfFlags: ["dwarves_called"],
+						actions: [{ type: "CHANGE_STEP", stepId: "dwarves" }],
+					},
+					{
 						label: "Defend the king.",
 						actions: [
 							{
@@ -501,6 +572,16 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 							},
 						],
 					},
+				],
+			},
+			dwarves: {
+				speaker: "Dwarven Prospector",
+				text: "Did someone call for friends of the mountain? We brought hammers, ale and bandages. Mostly ale. Go on, finish this.",
+				backgroundImage: "/scenes/ironhold_throne_room.webp",
+				onNext: [
+					{ type: "SET_FLAG", flagId: "dwarves_called" },
+					{ type: "HEAL_PARTY", amount: 99 },
+					{ type: "CHANGE_STEP", stepId: "intro" },
 				],
 			},
 		},
@@ -515,6 +596,13 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 				backgroundImage: "/scenes/ironhold_throne_room.webp",
 				choices: [
 					{
+						label:
+							"Send word to the dwarves of the passage. (Party fully healed)",
+						reqFlags: ["dwarves_allied"],
+						hideIfFlags: ["dwarves_called"],
+						actions: [{ type: "CHANGE_STEP", stepId: "dwarves" }],
+					},
+					{
 						label: "Your reign ends today.",
 						actions: [
 							{
@@ -524,6 +612,16 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 							},
 						],
 					},
+				],
+			},
+			dwarves: {
+				speaker: "Dwarven Prospector",
+				text: "Did someone call for friends of the mountain? We brought hammers, ale and bandages. Mostly ale. Go on, finish this.",
+				backgroundImage: "/scenes/ironhold_throne_room.webp",
+				onNext: [
+					{ type: "SET_FLAG", flagId: "dwarves_called" },
+					{ type: "HEAL_PARTY", amount: 99 },
+					{ type: "CHANGE_STEP", stepId: "intro" },
 				],
 			},
 		},
@@ -573,6 +671,89 @@ export const VERDANT_RECLAMATION_SCENE_DB: Record<Scene["id"], Scene> = {
 							},
 							{ type: "SET_FLAG", flagId: "ironhold_fallen" },
 							{ type: "COMPLETE_QUEST", questId: VERDANT_RECLAMATION.id },
+							{ type: "END_SCENE" },
+						],
+					},
+				],
+			},
+		},
+	},
+
+	// ==========================================
+	// DEFEATS — the war goes on either way
+	// ==========================================
+	[sceneId("bridge_lost")]: {
+		id: sceneId("bridge_lost"),
+		initialStepId: "spared",
+		steps: {
+			spared: {
+				speaker: "Elven Commander",
+				text: "Enough. You fought for your city, and you lost. I will not kill you for that. Go back to your king, and tell him what you saw here. Or stay, and see what we are fighting for.",
+				backgroundImage: "/scenes/river_bridge_hostile.webp",
+				choices: [
+					{
+						label: "Ironhold is still our home. We'll stop you at the fronts.",
+						actions: [{ type: "END_SCENE" }],
+					},
+					{
+						label: "...Show us. We'll march with the forest.",
+						actions: [
+							{ type: "CLEAR_FLAG", flagId: "aligned_with_ironhold" },
+							{ type: "SET_FLAG", flagId: "aligned_with_forest" },
+							{ type: "SET_FLAG", flagId: "turned_at_the_bridge" },
+							{
+								type: "ADVANCE_QUEST",
+								questId: VERDANT_RECLAMATION.id,
+								newStepId: VERDANT_RECLAMATION.steps.assault_ironhold,
+							},
+							{ type: "END_SCENE" },
+						],
+					},
+				],
+			},
+		},
+	},
+
+	[sceneId("ironhold_falls")]: {
+		id: sceneId("ironhold_falls"),
+		initialStepId: "fallen",
+		steps: {
+			fallen: {
+				speaker: "Arch-Druid Sylas",
+				text: "The iron king is dead, and his city with him. Roots will split these walls within a season. You fought well, stone-dwellers. Leave, and never come back with steel.",
+				backgroundImage: "/scenes/ironhold_throne_room_destroyed.webp",
+				choices: [
+					{
+						label: "Lead the survivors out of the city.",
+						actions: [
+							{ type: "SET_FLAG", flagId: "ironhold_fallen" },
+							{ type: "SET_FLAG", flagId: "led_the_refugees" },
+							{ type: "COMPLETE_QUEST", questId: VERDANT_RECLAMATION.id },
+							{ type: "FORCE_MOVE", nodeId: mapNodeId("cromee_town") },
+							{ type: "END_SCENE" },
+						],
+					},
+				],
+			},
+		},
+	},
+
+	[sceneId("host_broken")]: {
+		id: sceneId("host_broken"),
+		initialStepId: "broken",
+		steps: {
+			broken: {
+				speaker: "King Tanotalos II",
+				text: "The forest's little rebellion dies in my throne room. Hang the druids. As for you... you are banished. Set foot in Ironhold again and you will join them.",
+				backgroundImage: "/scenes/ironhold_throne_room.webp",
+				choices: [
+					{
+						label: "Retreat with what's left of the Briar Host.",
+						actions: [
+							{ type: "SET_FLAG", flagId: "ironhold_saved" },
+							{ type: "SET_FLAG", flagId: "banished_from_ironhold" },
+							{ type: "COMPLETE_QUEST", questId: VERDANT_RECLAMATION.id },
+							{ type: "FORCE_MOVE", nodeId: mapNodeId("cromee_town") },
 							{ type: "END_SCENE" },
 						],
 					},

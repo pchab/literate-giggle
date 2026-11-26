@@ -6,17 +6,20 @@ import { useDynamicMap } from "@/modules/world/hooks/useDynamicMap";
 import { useWorldStore } from "@/modules/world/store/world.store";
 
 export function useSceneEngine(setLocalStep: (stepId: string) => void) {
-	const { advanceQuest, completeQuest, setActiveSceneId, flags, setFlag } =
+	const { advanceQuest, completeQuest, setActiveSceneId, setFlag, clearFlag } =
 		useCampaignStore(
 			useShallow((state) => ({
 				advanceQuest: state.advanceQuest,
 				completeQuest: state.completeQuest,
 				setActiveSceneId: state.setActiveSceneId,
-				flags: state.flags,
 				setFlag: state.setFlag,
+				clearFlag: state.clearFlag,
 			})),
 		);
-	const { currentNodeId, setPhase, rewardEvoRune, travelToNode } =
+	// Read flags fresh: earlier actions in the same list may have just set one.
+	const hasFlag = (flag: string) =>
+		useCampaignStore.getState().flags.includes(flag);
+	const { currentNodeId, setPhase, rewardEvoRune, travelToNode, healParty } =
 		useWorldStore(
 			useShallow((state) => ({
 				currentNodeId: state.currentNodeId,
@@ -24,11 +27,12 @@ export function useSceneEngine(setLocalStep: (stepId: string) => void) {
 				roster: state.roster,
 				rewardEvoRune: state.rewardEvoRune,
 				travelToNode: state.travelToNode,
+				healParty: state.healParty,
 			})),
 		);
 	const dynamicMap = useDynamicMap();
 
-	const processActions = (actions: SceneAction[]) => {
+	const processActions = (actions: SceneAction[]): void => {
 		actions.forEach((action) => {
 			switch (action.type) {
 				// --- CAMPAIGN STATE MUTATIONS ---
@@ -36,9 +40,7 @@ export function useSceneEngine(setLocalStep: (stepId: string) => void) {
 					advanceQuest(action.questId, action.newStepId);
 					break;
 				case "ADVANCE_IF_FLAGS": {
-					const hasRequiredFlags = action.requiredFlags.every((flag) =>
-						flags.includes(flag),
-					);
+					const hasRequiredFlags = action.requiredFlags.every(hasFlag);
 					if (hasRequiredFlags) {
 						advanceQuest(action.questId, action.newStepId);
 					}
@@ -52,6 +54,19 @@ export function useSceneEngine(setLocalStep: (stepId: string) => void) {
 					break;
 				case "SET_FLAG":
 					setFlag(action.flagId);
+					break;
+				case "CLEAR_FLAG":
+					clearFlag(action.flagId);
+					break;
+				case "IF_FLAGS": {
+					const ok =
+						(action.all ?? []).every(hasFlag) &&
+						!(action.none ?? []).some(hasFlag);
+					processActions(ok ? action.actions : (action.otherwise ?? []));
+					break;
+				}
+				case "HEAL_PARTY":
+					healParty(action.amount);
 					break;
 				case "REWARD_EVO_RUNE":
 					rewardEvoRune(action.evoRune);

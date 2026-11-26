@@ -1,10 +1,11 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/shallow";
 import type { Scene } from "@/modules/campaign/domain/scenes.type";
 import { useSceneEngine } from "@/modules/campaign/hooks/useSceneEngine.hook";
+import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
 import { RetroButton } from "@/modules/shared/components/RetroButton";
 import { getBackgroundImage } from "@/modules/shared/helpers/backgroundImage.helpers";
 import { useWorldStore } from "@/modules/world/store/world.store";
@@ -17,6 +18,16 @@ export default function SceneComponent({ scene }: { scene: Scene }) {
 		setCurrentStepId(newStepId),
 	);
 	const roster = useWorldStore(useShallow((state) => state.roster));
+
+	// Step entry hooks (automatic branching on flags). Runs once per step visit.
+	const enteredStep = useRef<string | null>(null);
+	useEffect(() => {
+		if (enteredStep.current === currentStepId) return;
+		enteredStep.current = currentStepId;
+		const step = scene.steps[currentStepId];
+		if (step?.onEnter) processActions(step.onEnter);
+	}, [currentStepId, scene, processActions]);
+	const flags = useCampaignStore((state) => state.flags);
 
 	if (!currentStepId) return null;
 
@@ -61,9 +72,13 @@ export default function SceneComponent({ scene }: { scene: Scene }) {
 						>
 							{currentStep.choices
 								.filter(
-									({ reqClass }) =>
-										!reqClass ||
-										roster.map(({ heroClass }) => heroClass).includes(reqClass),
+									({ reqClass, reqFlags, hideIfFlags }) =>
+										(!reqClass ||
+											roster
+												.map(({ heroClass }) => heroClass)
+												.includes(reqClass)) &&
+										(reqFlags ?? []).every((f) => flags.includes(f)) &&
+										!(hideIfFlags ?? []).some((f) => flags.includes(f)),
 								)
 								.map((choice) => (
 									<RetroButton

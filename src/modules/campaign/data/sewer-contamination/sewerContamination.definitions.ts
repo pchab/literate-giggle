@@ -13,6 +13,12 @@ export const SEWER_CONTAMINATION = {
 		intro: sceneId("ironhold_sump_intro"),
 		victory: sceneId("ironhold_sump_victory"),
 		riverbend_arrival: sceneId("riverbend_arrival"),
+		riverbend_victory: sceneId("riverbend_victory"),
+		riverbend_lost: sceneId("riverbend_lost"),
+		toad_lost: sceneId("ironhold_sump_toad_lost"),
+		smugglers_den: sceneId("smugglers_den"),
+		den_victory: sceneId("smugglers_den_victory"),
+		den_lost: sceneId("smugglers_den_lost"),
 	},
 	steps: {
 		investigate: questStepId("sump_investigate"),

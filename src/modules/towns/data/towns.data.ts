@@ -43,8 +43,16 @@ export const TOWN_DB: Record<TownData["id"], TownData> = {
 				icon: "mutagen_warning",
 				position: { x: 66, y: 68 },
 
+				// Only while the quest leads into the sewers (not during the Riverbend detour).
 				unlockCondition: [
-					{ type: "QUEST_ACTIVE", questId: SEWER_CONTAMINATION.id },
+					{
+						type: "QUEST_ACTIVE",
+						questId: SEWER_CONTAMINATION.id,
+						stepId: [
+							SEWER_CONTAMINATION.steps.investigate,
+							SEWER_CONTAMINATION.steps.find_cove,
+						],
+					},
 				],
 
 				hideCondition: [

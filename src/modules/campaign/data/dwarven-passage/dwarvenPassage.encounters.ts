@@ -3,6 +3,7 @@ import {
 	stone_elemental,
 } from "@/modules/units/data/monsters/golem.data";
 import { type Encounter, encounterId } from "../../domain/encounters.type";
+import { sceneId } from "../../domain/scenes.type";
 
 export const DWARVEN_PASSAGE_ENCOUNTER_DB: Record<string, Encounter> = {
 	[encounterId("stone_gate_guards")]: {
@@ -22,6 +23,7 @@ export const DWARVEN_PASSAGE_ENCOUNTER_DB: Record<string, Encounter> = {
 	[encounterId("golem_boss")]: {
 		id: encounterId("golem_boss"),
 		name: "The Golem Overseer",
+		onLoseSceneId: sceneId("golem_lost"),
 		generateMonsters: () => [
 			{
 				...golem_overseer,

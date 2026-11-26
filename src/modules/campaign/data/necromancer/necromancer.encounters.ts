@@ -3,6 +3,7 @@ import { bat } from "@/modules/units/data/monsters/bat.data";
 import { necromancer } from "@/modules/units/data/monsters/necromancer.data";
 import { skeleton } from "@/modules/units/data/monsters/skeleton.data";
 import { type Encounter, encounterId } from "../../domain/encounters.type";
+import { sceneId } from "../../domain/scenes.type";
 
 export const NECROMANCER_ENCOUNTER_DB: Record<string, Encounter> = {
 	[encounterId("bat_swarm")]: {
@@ -78,6 +79,7 @@ export const NECROMANCER_ENCOUNTER_DB: Record<string, Encounter> = {
 	[encounterId("necromancer_boss")]: {
 		id: encounterId("necromancer_boss"),
 		name: "The Crypt Master",
+		onLoseSceneId: sceneId("crypt_lost"),
 		generateMonsters: () => [
 			{
 				...necromancer,

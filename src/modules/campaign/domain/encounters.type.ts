@@ -30,6 +30,8 @@ export interface Encounter {
 	) => Promise<Partial<BattleState | undefined>>;
 
 	onWinSceneId?: Scene["id"];
+	/** Story flags set on victory from how the fight went (villagers saved, turns left…). */
+	outcomeFlags?: (state: BattleState) => string[];
 	onLoseSceneId?: Scene["id"];
 	gridSize?: { cols: number; rows: number };
 	startingPositions?: GridPosition[];

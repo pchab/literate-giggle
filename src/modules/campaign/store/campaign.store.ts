@@ -27,6 +27,7 @@ interface CampaignActions {
 	) => Scene["id"] | null;
 	setActiveSceneId: (sceneId: Scene["id"] | null) => void;
 	setFlag: (flagId: string) => void;
+	clearFlag: (flagId: string) => void;
 }
 
 const initialState: CampaignState = {
@@ -53,7 +54,12 @@ export const useCampaignStore = create<CampaignState & CampaignActions>()(
 			completeQuest: (questId) => set(completeQuest(questId)),
 			getOverride: getOverride(get),
 			setActiveSceneId: (sceneId) => set({ activeSceneId: sceneId }),
-			setFlag: (flagId) => set(({ flags }) => ({ flags: [...flags, flagId] })),
+			setFlag: (flagId) =>
+				set(({ flags }) => ({
+					flags: flags.includes(flagId) ? flags : [...flags, flagId],
+				})),
+			clearFlag: (flagId) =>
+				set(({ flags }) => ({ flags: flags.filter((f) => f !== flagId) })),
 		}),
 		{
 			name: "alpha-campaign-state",

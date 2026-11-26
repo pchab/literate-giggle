@@ -110,14 +110,64 @@ export const DWARVEN_PASSAGE_SCENE_DB: Record<Scene["id"], Scene> = {
 			start: {
 				backgroundImage: "/scenes/open_stone_gates.webp",
 				speaker: "Dwarven Prospector",
-				text: "By the Ancestors, you actually did it! The passage is secure. Here, take this heavy armor plating as promised.",
-				onNext: [
-					{ type: "COMPLETE_QUEST", questId: QUEST_DWARVEN_HIGHWAY },
+				text: "By the Ancestors, you actually did it! The passage is secure. Now... that core is still glowing. My kin could rebuild the Overseer to guard the road for us. Or you could pry it out and keep it. Your call, you earned it.",
+				choices: [
 					{
-						type: "REWARD_EVO_RUNE",
-						evoRune: "rune_mountain",
+						label: "Pry out the core. We'll put it to use.",
+						actions: [
+							{ type: "COMPLETE_QUEST", questId: QUEST_DWARVEN_HIGHWAY },
+							{ type: "REWARD_EVO_RUNE", evoRune: "rune_mountain" },
+							{ type: "FORCE_MOVE", nodeId: mapNodeId("dwarven_passage") },
+							{ type: "END_SCENE" },
+						],
 					},
+					{
+						label: "Rebuild it. Let it guard your people.",
+						actions: [{ type: "CHANGE_STEP", stepId: "rebuild" }],
+					},
+				],
+			},
+			rebuild: {
+				backgroundImage: "/scenes/open_stone_gates.webp",
+				speaker: "Dwarven Prospector",
+				text: "Spoken like a friend of the mountain. Take this iron from our forges instead. And if you're ever in trouble, send word. The dwarves of the passage remember their friends.",
+				onNext: [
+					{ type: "SET_FLAG", flagId: "dwarves_allied" },
+					{ type: "COMPLETE_QUEST", questId: QUEST_DWARVEN_HIGHWAY },
+					{ type: "REWARD_EVO_RUNE", evoRune: "rune_iron" },
 					{ type: "FORCE_MOVE", nodeId: mapNodeId("dwarven_passage") },
+					{ type: "END_SCENE" },
+				],
+			},
+		},
+	},
+
+	// DEFEAT against the Overseer
+	[sceneId("golem_lost")]: {
+		id: sceneId("golem_lost"),
+		initialStepId: "start",
+		steps: {
+			start: {
+				backgroundImage: "/scenes/stone_gates.webp",
+				text: "The Overseer hurls you back out through the gates like sacks of gravel. With a grinding roar, the stone doors swing shut again.",
+				choices: [
+					{
+						label: "We'll be back. (Try again later)",
+						actions: [{ type: "END_SCENE" }],
+					},
+					{
+						label: "Tell the prospector it can't be done.",
+						actions: [{ type: "CHANGE_STEP", stepId: "collapse" }],
+					},
+				],
+			},
+			collapse: {
+				backgroundImage: "/scenes/stone_gates.webp",
+				speaker: "Dwarven Prospector",
+				text: "Then nobody gets through. We'll bring the mountain down on the old road. Shame. That passage was the last way home for my kin.",
+				onNext: [
+					{ type: "SET_FLAG", flagId: "passage_collapsed" },
+					{ type: "COMPLETE_QUEST", questId: QUEST_DWARVEN_HIGHWAY },
 					{ type: "END_SCENE" },
 				],
 			},

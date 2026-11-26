@@ -33,5 +33,17 @@ export const sewerContaminationQuest: Quest = {
 			],
 			onEnterSceneId: SEWER_CONTAMINATION.scenes.riverbend_arrival,
 		},
+		[SEWER_CONTAMINATION.steps.find_cove]: {
+			id: SEWER_CONTAMINATION.steps.find_cove,
+			logDescription:
+				"Follow the barge channel under Ironhold and stop the Black Fangs' mutagen shipment.",
+			targetNodeId: [
+				{
+					mapNodeId: mapNodeId("ironhold_city"),
+					locationId: townLocationId("sewers"),
+				},
+			],
+			onEnterSceneId: SEWER_CONTAMINATION.scenes.smugglers_den,
+		},
 	},
 };

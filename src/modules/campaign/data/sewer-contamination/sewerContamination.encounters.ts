@@ -5,14 +5,20 @@ import {
 import type { BattleState } from "@/modules/battle/store/battle.store";
 import { deadlyHazard } from "@/modules/cards/data/surfaces/deadlyHazard";
 import { toxicSewer } from "@/modules/cards/data/surfaces/toxicSewer";
+import { cardId } from "@/modules/cards/helpers/cards.helper";
 import { giantToad } from "@/modules/units/data/monsters/giant-toad";
-import { sumpWatcher } from "@/modules/units/data/monsters/sump-slime";
+import { ratBoss } from "@/modules/units/data/monsters/rat.data";
+import {
+	sumpSlime,
+	sumpWatcher,
+} from "@/modules/units/data/monsters/sump-slime";
 import { zombie } from "@/modules/units/data/monsters/zombie";
 import { smugglerCrate } from "@/modules/units/data/summons/smugglersCrate";
 import { villager } from "@/modules/units/data/summons/villager";
 import { well } from "@/modules/units/data/summons/well";
 import { isHero } from "@/modules/units/helpers/units.helpers";
 import type { Encounter } from "../../domain/encounters.type";
+import { hasStoryFlag, STORY_FLAGS } from "../../helpers/storyFlags";
 import { SEWER_CONTAMINATION } from "./sewerContamination.definitions";
 
 const sewerBounds = { cols: 7, rows: 7 };
@@ -28,7 +34,26 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 				...giantToad,
 				gridPosition: { col: 4, row: 5 },
 			},
+			// Consequences: Barnaby's mutagen kept flowing / the Rat King fled into the sewers.
+			...(hasStoryFlag(STORY_FLAGS.mutagenSpreading)
+				? [
+						{ ...sumpSlime, gridPosition: { col: 6, row: 5 } },
+						{ ...sumpSlime, gridPosition: { col: 6, row: 6 } },
+					]
+				: []),
+			...(hasStoryFlag(STORY_FLAGS.ratKingEscaped)
+				? [
+						{
+							...ratBoss,
+							// No trapdoor down here: he just bites.
+							hint: "Out of his cellar, the Rat King has no rats left to call. He bites like a cornered animal.",
+							intentPool: [{ cardId: cardId("rat_bite"), weight: 1 }],
+							gridPosition: { col: 3, row: 6 },
+						},
+					]
+				: []),
 		],
+		onLoseSceneId: SEWER_CONTAMINATION.scenes.toad_lost,
 		generateSummons: () => [
 			{
 				...smugglerCrate,
@@ -76,10 +101,31 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 			{ ...zombie, gridPosition: { col: 10, row: 5 } },
 			{ ...zombie, gridPosition: { col: 9, row: 6 } },
 
-			// The Pursuers (Spawning behind the villagers)
-			{ ...zombie, gridPosition: { col: 0, row: 3 } },
-			{ ...zombie, gridPosition: { col: 0, row: 4 } },
+			// The Pursuers (Spawning behind the villagers) — a Rogue can clear them first
+			...(hasStoryFlag("riverbend_scouted")
+				? []
+				: [
+						{ ...zombie, gridPosition: { col: 0, row: 3 } },
+						{ ...zombie, gridPosition: { col: 0, row: 4 } },
+					]),
+
+			// Consequences of earlier choices (a Mage can burn the extra sludge)
+			...(hasStoryFlag(STORY_FLAGS.mutagenSpreading) &&
+			!hasStoryFlag("riverbend_sludge_burned")
+				? [
+						{ ...zombie, gridPosition: { col: 10, row: 2 } },
+						{ ...zombie, gridPosition: { col: 10, row: 4 } },
+					]
+				: []),
+			...(hasStoryFlag(STORY_FLAGS.toadEscaped)
+				? [{ ...giantToad, gridPosition: { col: 8, row: 3 } }]
+				: []),
 		],
+		onWinSceneId: SEWER_CONTAMINATION.scenes.riverbend_victory,
+		onLoseSceneId: SEWER_CONTAMINATION.scenes.riverbend_lost,
+		// Partial outcome: how many villagers made it shapes the ending.
+		outcomeFlags: ({ objectiveProgress: { savedVillagers = 0 } }) =>
+			savedVillagers >= 4 ? [STORY_FLAGS.riverbendAllSaved] : [],
 		generateSummons: () => [
 			{
 				...villager,
@@ -206,8 +252,18 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 	[SEWER_CONTAMINATION.encounters.sump_watcher]: {
 		id: SEWER_CONTAMINATION.encounters.sump_watcher,
 		name: "The Sump Watcher",
+		tip: "Hitting the Watcher only splits it. It dissolves on its own: survive five turns.",
+		onWinSceneId: SEWER_CONTAMINATION.scenes.den_victory,
+		onLoseSceneId: SEWER_CONTAMINATION.scenes.den_lost,
 		gridSize: { cols: 14, rows: 7 },
 		generateMonsters: () => [
+			// Took the Riverbend detour first: the Black Fangs fortified the dock.
+			...(hasStoryFlag("black_fangs_fortified")
+				? [
+						{ ...sumpSlime, gridPosition: { col: 10, row: 1 } },
+						{ ...sumpSlime, gridPosition: { col: 10, row: 5 } },
+					]
+				: []),
 			{
 				...sumpWatcher,
 				gridPosition: { col: 12, row: 2 },

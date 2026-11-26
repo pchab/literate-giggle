@@ -23,6 +23,19 @@ export type SceneAction =
 			evoRune: EvolutionRuneId;
 	  }
 	| { type: "SET_FLAG"; flagId: string }
+	| { type: "CLEAR_FLAG"; flagId: string }
+	/** Branch on story flags: `all` must be set, `none` must be unset. */
+	| {
+			type: "IF_FLAGS";
+			all?: string[];
+			none?: string[];
+			/** Run when the condition holds. */
+			actions: SceneAction[];
+			/** Run otherwise. */
+			otherwise?: SceneAction[];
+	  }
+	/** Heal every hero by `amount` HP (inn, healer, blessing…). */
+	| { type: "HEAL_PARTY"; amount: number }
 	| { type: "FORCE_MOVE"; nodeId: MapNode["id"] }
 	| { type: "END_SCENE" };
 
@@ -31,6 +44,10 @@ export interface SceneChoice {
 	label: string;
 	actions: SceneAction[];
 	reqClass?: HeroClass;
+	/** Only shown when all these story flags are set. */
+	reqFlags?: string[];
+	/** Hidden when any of these story flags is set. */
+	hideIfFlags?: string[];
 }
 
 export interface SceneStep {
@@ -39,6 +56,8 @@ export interface SceneStep {
 	backgroundImage?: string;
 	choices?: SceneChoice[];
 	onNext?: SceneAction[];
+	/** Runs once when the step is shown (e.g. IF_FLAGS → CHANGE_STEP to branch automatically). */
+	onEnter?: SceneAction[];
 }
 
 export interface Scene {

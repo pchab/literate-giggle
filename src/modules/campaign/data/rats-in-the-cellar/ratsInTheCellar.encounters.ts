@@ -56,6 +56,7 @@ export const RATS_IN_THE_CELLAR_ENCOUNTERS: Record<string, Encounter> = {
 			},
 		},
 		onWinSceneId: RAT_IN_THE_CELLAR.scenes.investigate_cellar,
+		onLoseSceneId: RAT_IN_THE_CELLAR.scenes.rats_overrun,
 	},
 	[RAT_IN_THE_CELLAR.encounters.rat_boss]: {
 		id: RAT_IN_THE_CELLAR.encounters.rat_boss,
@@ -93,5 +94,6 @@ export const RATS_IN_THE_CELLAR_ENCOUNTERS: Record<string, Encounter> = {
 			},
 		},
 		onWinSceneId: RAT_IN_THE_CELLAR.scenes.report_victory,
+		onLoseSceneId: RAT_IN_THE_CELLAR.scenes.rat_king_escapes,
 	},
 };

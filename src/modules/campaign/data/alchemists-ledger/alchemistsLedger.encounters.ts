@@ -122,5 +122,6 @@ export const alchemistEncounters: Record<string, Encounter> = {
 		],
 		gridSize: { cols: 6, rows: 6 },
 		onWinSceneId: THE_ALCHEMISTS_LEDGER.scenes.barnaby_defeated,
+		onLoseSceneId: THE_ALCHEMISTS_LEDGER.scenes.barnaby_escapes,
 	},
 };

@@ -1,7 +1,17 @@
-import type { Scene } from "@/modules/campaign/domain/scenes.type";
+import type { Scene, SceneAction } from "@/modules/campaign/domain/scenes.type";
 import { mapNodeId } from "@/modules/world/domain/map.types";
+import { STORY_FLAGS } from "../../helpers/storyFlags";
 import { SEWER_CONTAMINATION } from "../sewer-contamination/sewerContamination.definitions";
 import { THE_ALCHEMISTS_LEDGER as ALCHEMIST } from "./alchemistsLedger.definitions";
+
+/** Every ending of the ledger leads under Ironhold. */
+const startSump: SceneAction[] = [
+	{
+		type: "ADVANCE_QUEST",
+		questId: SEWER_CONTAMINATION.id,
+		newStepId: SEWER_CONTAMINATION.steps.investigate,
+	},
+];
 
 export const alchemistScenes: Record<string, Scene> = {
 	[ALCHEMIST.scenes.intro]: {
@@ -48,6 +58,7 @@ export const alchemistScenes: Record<string, Scene> = {
 				backgroundImage: "/scenes/merchant_shop.webp",
 				text: "Do not question me, spell-slinger! It is medicine! Now go, before the trail goes cold!",
 				onNext: [
+					{ type: "SET_FLAG", flagId: STORY_FLAGS.barnabySuspected },
 					{
 						type: "ADVANCE_QUEST",
 						questId: ALCHEMIST.id,
@@ -75,6 +86,13 @@ export const alchemistScenes: Record<string, Scene> = {
 					{
 						label: "This isn't medicine. We need to find the rest of the book.",
 						actions: [{ type: "CHANGE_STEP", stepId: "step_3" }],
+					},
+					{
+						label: "Not our business. A job's a job. We bring the book back.",
+						actions: [
+							{ type: "SET_FLAG", flagId: "ledger_mercenary" },
+							{ type: "CHANGE_STEP", stepId: "step_3" },
+						],
 					},
 				],
 			},
@@ -133,7 +151,40 @@ export const alchemistScenes: Record<string, Scene> = {
 						label: "We read it, Barnaby. This is poison.",
 						actions: [{ type: "CHANGE_STEP", stepId: "step_2" }],
 					},
+					{
+						label: "Here's your book. Now pay us, double, like you promised.",
+						actions: [{ type: "CHANGE_STEP", stepId: "step_sold" }],
+					},
+					{
+						label:
+							"[Seen through him] Drink one of your 'cures' first, Barnaby. Go on.",
+						reqFlags: [STORY_FLAGS.barnabySuspected],
+						actions: [{ type: "CHANGE_STEP", stepId: "step_dare" }],
+					},
 				],
+			},
+			step_dare: {
+				speaker: "Barnaby",
+				backgroundImage: "/scenes/merchant_shop.webp",
+				text: "...You want a demonstration? Very well. Watch closely, spell-slinger. This is what the future looks like!",
+				onNext: [{ type: "CHANGE_STEP", stepId: "step_3" }],
+			},
+			step_sold: {
+				speaker: "Barnaby",
+				backgroundImage: "/scenes/merchant_shop.webp",
+				text: "Ha! Professionals! I knew I liked you. Here: double, and a little something extra. You've just bought a front-row seat to a new age, friends.",
+				onNext: [
+					{ type: "SET_FLAG", flagId: STORY_FLAGS.barnabyFree },
+					{ type: "SET_FLAG", flagId: STORY_FLAGS.mutagenSpreading },
+					{ type: "REWARD_EVO_RUNE", evoRune: "rune_acid" },
+					{ type: "COMPLETE_QUEST", questId: ALCHEMIST.id },
+					{ type: "CHANGE_STEP", stepId: "step_sold_after" },
+				],
+			},
+			step_sold_after: {
+				backgroundImage: "/scenes/merchant_shop.webp",
+				text: "A week later, the Ironhold town crier is shouting about glowing slime pouring out of the sewer grates. Barnaby's shop has been empty for days.",
+				onNext: [...startSump, { type: "END_SCENE" }],
 			},
 			step_2: {
 				speaker: "Barnaby",
@@ -160,17 +211,60 @@ export const alchemistScenes: Record<string, Scene> = {
 		steps: {
 			step_1: {
 				backgroundImage: "/scenes/alchemist_aftermath.webp",
-				text: `Barnaby collapses into a display case, shattering what little glass remained in the shop. His mutated muscles twitch and shrink as the volatile concoctions leave his system.
-					The air is thick with the acrid smoke of bubbling acid and crushed herbs.
-					As you search the wreckage, you spot something humming at the bottom of a broken vat. It is a jagged, glowing green stone that seems to melt the very wood it rests upon.`,
+				text: "Barnaby collapses into a display case, shattering what little glass remained in the shop. His mutated muscles twitch and shrink as the volatile concoctions leave his system. He's still breathing, barely, in a spreading pool of acid.",
+				choices: [
+					{
+						label: "Drag him out and hand him to the city guard.",
+						actions: [
+							{ type: "SET_FLAG", flagId: STORY_FLAGS.barnabyJailed },
+							{ type: "CHANGE_STEP", stepId: "step_loot" },
+						],
+					},
+					{
+						label: "Let the acid finish what he started.",
+						actions: [
+							{ type: "SET_FLAG", flagId: STORY_FLAGS.barnabyDead },
+							{ type: "CHANGE_STEP", stepId: "step_loot" },
+						],
+					},
+				],
+			},
+			step_loot: {
+				backgroundImage: "/scenes/alchemist_aftermath.webp",
+				text: "As you search the wreckage, you spot something humming at the bottom of a broken vat: a jagged, glowing green stone that seems to melt the very wood it rests upon. His ledger mentions crates sent 'below Ironhold'.",
 				onNext: [
 					{ type: "COMPLETE_QUEST", questId: ALCHEMIST.id },
-					{
-						type: "ADVANCE_QUEST",
-						questId: SEWER_CONTAMINATION.id,
-						newStepId: SEWER_CONTAMINATION.steps.investigate,
-					},
 					{ type: "REWARD_EVO_RUNE", evoRune: "rune_acid" },
+					...startSump,
+					{ type: "END_SCENE" },
+				],
+			},
+		},
+	},
+
+	// --- DEFEAT: Barnaby gets away ---
+	[ALCHEMIST.scenes.barnaby_escapes]: {
+		id: ALCHEMIST.scenes.barnaby_escapes,
+		initialStepId: "step_1",
+		steps: {
+			step_1: {
+				backgroundImage: "/scenes/alchemist_aftermath.webp",
+				text: "You come to among broken glass and burning herbs. The back window is smashed. Barnaby is gone, and so is every vial he could carry.",
+				choices: [
+					{
+						label: "Report him to the city guard. He can't hide forever.",
+						actions: [{ type: "CHANGE_STEP", stepId: "step_2" }],
+					},
+				],
+			},
+			step_2: {
+				backgroundImage: "/scenes/alchemist_aftermath.webp",
+				text: "The guard posts his face on every door in Connury. Three days later, the first reports come in from Ironhold: green slime bubbling out of the sewer grates.",
+				onNext: [
+					{ type: "SET_FLAG", flagId: STORY_FLAGS.barnabyEscaped },
+					{ type: "SET_FLAG", flagId: STORY_FLAGS.mutagenSpreading },
+					{ type: "COMPLETE_QUEST", questId: ALCHEMIST.id },
+					...startSump,
 					{ type: "END_SCENE" },
 				],
 			},

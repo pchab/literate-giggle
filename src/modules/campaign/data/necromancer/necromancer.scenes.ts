@@ -111,7 +111,7 @@ export const NECROMANCER_SCENE_DB: Record<Scene["id"], Scene> = {
 		},
 	},
 
-	// SCENE 4: Returning the book & The Reward!
+	// SCENE 4: Returning the book — give it, keep it, or burn it
 	[sceneId("mage_tower_finale")]: {
 		id: sceneId("mage_tower_finale"),
 		initialStepId: "start",
@@ -120,13 +120,112 @@ export const NECROMANCER_SCENE_DB: Record<Scene["id"], Scene> = {
 				backgroundImage: "/scenes/wizard_tower.webp",
 				speaker: "The Archmage",
 				text: "You survived... I am impressed. Hand over the tome. In exchange, I shall unlock the true potential of your incantations.",
-				onNext: [
-					{ type: "COMPLETE_QUEST", questId: NECROMANCER_QUEST_ID },
+				onEnter: [
 					{
-						type: "REWARD_EVO_RUNE",
-						evoRune: "rune_arcane",
+						type: "IF_FLAGS",
+						all: ["necromancer_free"],
+						actions: [{ type: "CHANGE_STEP", stepId: "failed" }],
 					},
+				],
+				choices: [
+					{
+						label: "Hand over the tome.",
+						actions: [
+							{ type: "COMPLETE_QUEST", questId: NECROMANCER_QUEST_ID },
+							{ type: "REWARD_EVO_RUNE", evoRune: "rune_arcane" },
+							{ type: "SET_FLAG", flagId: "archmage_ally" },
+							{ type: "END_SCENE" },
+						],
+					},
+					{
+						label: "No. The tome stays with us.",
+						actions: [{ type: "CHANGE_STEP", stepId: "keep" }],
+					},
+					{
+						label: "[Cleric] Nobody should read this. It burns, here and now.",
+						reqClass: "CLERIC",
+						actions: [{ type: "CHANGE_STEP", stepId: "burn" }],
+					},
+				],
+			},
+			keep: {
+				backgroundImage: "/scenes/wizard_tower.webp",
+				speaker: "The Archmage",
+				text: "So the spark became a fire. Keep it, then, and feel it whisper to you at night. But you will never climb these stairs again.",
+				onNext: [
+					{ type: "SET_FLAG", flagId: "kept_necronomicon" },
+					{ type: "SET_FLAG", flagId: "archmage_hostile" },
+					{ type: "COMPLETE_QUEST", questId: NECROMANCER_QUEST_ID },
+					{ type: "REWARD_EVO_RUNE", evoRune: "rune_blood" },
 					{ type: "END_SCENE" },
+				],
+			},
+			burn: {
+				backgroundImage: "/scenes/wizard_tower.webp",
+				speaker: "The Archmage",
+				text: "...Centuries of knowledge, gone. You fool. You may even be right. Go, before I decide which.",
+				onNext: [
+					{ type: "SET_FLAG", flagId: "tome_burned" },
+					{ type: "HEAL_PARTY", amount: 99 },
+					{ type: "COMPLETE_QUEST", questId: NECROMANCER_QUEST_ID },
+					{ type: "END_SCENE" },
+				],
+			},
+			failed: {
+				backgroundImage: "/scenes/wizard_tower.webp",
+				speaker: "The Archmage",
+				text: "You sealed him in? He is still down there, with my tome, raising the dead of an entire city. A spark that runs from the dark is no spark at all.",
+				choices: [
+					{
+						label: "Then we'll go back down and finish it.",
+						actions: [
+							{ type: "CLEAR_FLAG", flagId: "necromancer_free" },
+							{
+								type: "ADVANCE_QUEST",
+								questId: NECROMANCER_QUEST_ID,
+								newStepId: questStepId("defeat_necromancer"),
+							},
+							{ type: "END_SCENE" },
+						],
+					},
+					{
+						label: "We're done with your errands.",
+						actions: [
+							{ type: "SET_FLAG", flagId: "archmage_hostile" },
+							{ type: "COMPLETE_QUEST", questId: NECROMANCER_QUEST_ID },
+							{ type: "END_SCENE" },
+						],
+					},
+				],
+			},
+		},
+	},
+
+	// DEFEAT in the crypt
+	[sceneId("crypt_lost")]: {
+		id: sceneId("crypt_lost"),
+		initialStepId: "start",
+		steps: {
+			start: {
+				backgroundImage: "/scenes/crypt_entrance.webp",
+				text: "You scramble up the crypt stairs with the dead clawing at your heels. Below, the Necromancer's laughter echoes off the stone. The slab still hangs open.",
+				choices: [
+					{
+						label: "Regroup. We'll go back down when we're ready.",
+						actions: [{ type: "END_SCENE" }],
+					},
+					{
+						label: "Drop the slab and seal him in. Tell the Archmage.",
+						actions: [
+							{ type: "SET_FLAG", flagId: "necromancer_free" },
+							{
+								type: "ADVANCE_QUEST",
+								questId: NECROMANCER_QUEST_ID,
+								newStepId: questStepId("return_to_tower"),
+							},
+							{ type: "END_SCENE" },
+						],
+					},
 				],
 			},
 		},

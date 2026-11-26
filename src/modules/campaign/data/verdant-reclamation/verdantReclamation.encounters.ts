@@ -13,6 +13,7 @@ export const VERDANT_RECLAMATION_ENCOUNTER_DB: Record<string, Encounter> = {
 	// --- FIRST ENCOUNTER: KIVEN BRIDGE ---
 	[encounterId("elven_commander")]: {
 		id: encounterId("elven_commander"),
+		onLoseSceneId: sceneId("bridge_lost"),
 		name: "Kiven River Bridge - Elven Commander",
 		generateMonsters: () => [
 			{
@@ -183,6 +184,7 @@ export const VERDANT_RECLAMATION_ENCOUNTER_DB: Record<string, Encounter> = {
 	[encounterId("ironhold_arch_druid_boss")]: {
 		id: encounterId("ironhold_arch_druid_boss"),
 		name: "Final Battle - Defend Ironhold",
+		onLoseSceneId: sceneId("ironhold_falls"),
 		generateMonsters: () => [
 			{
 				...archdruid,
@@ -209,7 +211,8 @@ export const VERDANT_RECLAMATION_ENCOUNTER_DB: Record<string, Encounter> = {
 	},
 	[encounterId("ironhold_king_boss")]: {
 		id: encounterId("ironhold_king_boss"),
-		name: "Final Battle - Defend Ironhold",
+		name: "Final Battle - Storm the Throne",
+		onLoseSceneId: sceneId("host_broken"),
 		generateMonsters: () => [
 			{
 				...humanKing,

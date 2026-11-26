@@ -11,6 +11,8 @@ export const RAT_IN_THE_CELLAR = {
 		job_offer: sceneId("pest_control_job_offer"),
 		investigate_cellar: sceneId("investigate_cellar"),
 		report_victory: sceneId("report_victory"),
+		rats_overrun: sceneId("rats_overrun"),
+		rat_king_escapes: sceneId("rat_king_escapes"),
 	},
 	encounters: {
 		rat_mob: encounterId("rat_mob"),
