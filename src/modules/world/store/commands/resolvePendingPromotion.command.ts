@@ -38,7 +38,10 @@ export function resolvePendingPromotion(
 		});
 
 		const card = useRegistryStore.getState().getCard(chosenUtilityCardId);
-		if (card) {
+		const alreadyOwned = newHero.deck.some(
+			(c) => c.baseCardId === chosenUtilityCardId,
+		);
+		if (card && !alreadyOwned) {
 			newHero.deck.push(createHeroCard(heroId)(chosenUtilityCardId));
 		}
 

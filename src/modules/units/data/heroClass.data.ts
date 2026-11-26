@@ -16,7 +16,17 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 			[],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
+				{
+					type: "cardChoice",
+					options: [
+						cardId("hamstring"),
+						cardId("shield_block"),
+						cardId("bear_trap"),
+					],
+				},
+			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
 			[
 				{ type: "statsIncrease", amount: 1, stat: "hp" },
@@ -52,9 +62,29 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				{ type: "unlockQuest", questId: QUEST_DWARVEN_HIGHWAY },
 			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
+				{
+					type: "cardChoice",
+					options: [
+						cardId("shield_block"),
+						cardId("bull_rush"),
+						cardId("hamstring"),
+					],
+				},
+			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
+				{
+					type: "passiveChoice",
+					options: [
+						PASSIVE_IDS.opportunist,
+						PASSIVE_IDS.momentum,
+						PASSIVE_IDS.second_wind,
+					],
+				},
+			],
 			[{ type: "classPromotion", classId: ["KNIGHT", "BARBARIAN"] }],
 		],
 	},
@@ -77,9 +107,29 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				{ type: "unlockQuest", questId: NECROMANCER_QUEST_ID },
 			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
+				{
+					type: "cardChoice",
+					options: [
+						cardId("arcane_shield"),
+						cardId("summon_arcane_wisp"),
+						cardId("blinding_sigil"),
+					],
+				},
+			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
+				{
+					type: "passiveChoice",
+					options: [
+						PASSIVE_IDS.opportunist,
+						PASSIVE_IDS.momentum,
+						PASSIVE_IDS.second_wind,
+					],
+				},
+			],
 			[{ type: "classPromotion", classId: ["PYROMANCER", "CRYOMANCER"] }],
 		],
 	},
@@ -102,9 +152,29 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				},
 			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
+				{
+					type: "cardChoice",
+					options: [
+						cardId("poison_shiv"),
+						cardId("hamstring"),
+						cardId("bear_trap"),
+					],
+				},
+			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
+				{
+					type: "passiveChoice",
+					options: [
+						PASSIVE_IDS.opportunist,
+						PASSIVE_IDS.momentum,
+						PASSIVE_IDS.second_wind,
+					],
+				},
+			],
 			// [{ type: "classPromotion", classId: [] }],
 		],
 	},
@@ -126,9 +196,29 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				},
 			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
+				{
+					type: "cardChoice",
+					options: [
+						cardId("bear_trap"),
+						cardId("hamstring"),
+						cardId("blinding_sigil"),
+					],
+				},
+			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
+				{
+					type: "passiveChoice",
+					options: [
+						PASSIVE_IDS.opportunist,
+						PASSIVE_IDS.momentum,
+						PASSIVE_IDS.second_wind,
+					],
+				},
+			],
 			// [{ type: "classPromotion", classId: [] }],
 		],
 	},
@@ -151,9 +241,29 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				},
 			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
+				{
+					type: "cardChoice",
+					options: [
+						cardId("divine_aegis"),
+						cardId("blinding_sigil"),
+						cardId("sylvan_balm"),
+					],
+				},
+			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
+				{
+					type: "passiveChoice",
+					options: [
+						PASSIVE_IDS.opportunist,
+						PASSIVE_IDS.momentum,
+						PASSIVE_IDS.second_wind,
+					],
+				},
+			],
 		],
 	},
 	KNIGHT: {
@@ -174,9 +284,29 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				},
 			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
+				{
+					type: "cardChoice",
+					options: [
+						cardId("challenge"),
+						cardId("shield_block"),
+						cardId("bull_rush"),
+					],
+				},
+			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
+				{
+					type: "passiveChoice",
+					options: [
+						PASSIVE_IDS.opportunist,
+						PASSIVE_IDS.momentum,
+						PASSIVE_IDS.second_wind,
+					],
+				},
+			],
 		],
 	},
 	BARBARIAN: {
@@ -197,9 +327,29 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				},
 			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
+				{
+					type: "cardChoice",
+					options: [
+						cardId("war_cry"),
+						cardId("bull_rush"),
+						cardId("hamstring"),
+					],
+				},
+			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
+				{
+					type: "passiveChoice",
+					options: [
+						PASSIVE_IDS.opportunist,
+						PASSIVE_IDS.momentum,
+						PASSIVE_IDS.second_wind,
+					],
+				},
+			],
 		],
 	},
 	PYROMANCER: {
@@ -219,9 +369,29 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				},
 			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
+				{
+					type: "cardChoice",
+					options: [
+						cardId("ignite"),
+						cardId("arcane_shield"),
+						cardId("blinding_sigil"),
+					],
+				},
+			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
+				{
+					type: "passiveChoice",
+					options: [
+						PASSIVE_IDS.opportunist,
+						PASSIVE_IDS.momentum,
+						PASSIVE_IDS.second_wind,
+					],
+				},
+			],
 		],
 	},
 	CRYOMANCER: {
@@ -241,9 +411,29 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 				},
 			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
+				{
+					type: "cardChoice",
+					options: [
+						cardId("ice_wall"),
+						cardId("frostbite"),
+						cardId("arcane_shield"),
+					],
+				},
+			],
 			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
-			[{ type: "statsIncrease", amount: 1, stat: "hp" }, { type: "powerRune" }],
+			[
+				{ type: "statsIncrease", amount: 1, stat: "hp" },
+				{
+					type: "passiveChoice",
+					options: [
+						PASSIVE_IDS.opportunist,
+						PASSIVE_IDS.momentum,
+						PASSIVE_IDS.second_wind,
+					],
+				},
+			],
 		],
 	},
 };

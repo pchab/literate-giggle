@@ -61,7 +61,8 @@ export function applyLevelUpTriggers(
 		case "cardUnlock":
 			trigger.newCards.forEach((cardId) => {
 				const registryCard = useRegistryStore.getState().getCard(cardId);
-				if (registryCard) {
+				const owned = newHero.deck.some((c) => c.baseCardId === cardId);
+				if (registryCard && !owned) {
 					newHero.deck.push(createHeroCard(hero.id)(cardId));
 				}
 			});
@@ -82,6 +83,11 @@ export function applyLevelUpTriggers(
 
 		case "unlockQuest":
 			newUnlockedQuests.push(trigger.questId);
+			break;
+
+		// Picked by the player on the reward screen, applied by claimRewards.
+		case "cardChoice":
+		case "passiveChoice":
 			break;
 	}
 

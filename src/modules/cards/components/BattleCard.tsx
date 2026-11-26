@@ -10,6 +10,8 @@ interface BattleCardProps {
 	isPlayable?: boolean;
 	onClick?: () => void;
 	size?: "normal" | "large";
+	/** Display-only: no hover/tap motion and no "unplayable" dimming. */
+	isStatic?: boolean;
 }
 
 export function BattleCard({
@@ -18,6 +20,7 @@ export function BattleCard({
 	isPlayable = true,
 	onClick,
 	size = "normal",
+	isStatic = false,
 }: BattleCardProps) {
 	if (!card) {
 		return null;
@@ -67,7 +70,7 @@ export function BattleCard({
 			onClick={onClick}
 			className={`
                 relative rounded-md overflow-hidden shadow-xl bg-zinc-950
-                ${!isPlayable ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+                ${isStatic ? "cursor-default" : !isPlayable ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
                 group
                 ${isLg ? "w-card-large h-card-large" : "w-card h-card"}
             `}
@@ -78,8 +81,10 @@ export function BattleCard({
 					? `0px 0px 20px 0px ${glowColor.replace("0.5", "0.8")}`
 					: "0px 6px 12px -2px rgba(0, 0, 0, 0.8)",
 			}}
-			whileHover={isPlayable && !isSelected ? { y: -8, scale: 1.05 } : {}}
-			whileTap={isPlayable ? { scale: 0.95 } : {}}
+			whileHover={
+				isPlayable && !isSelected && !isStatic ? { y: -8, scale: 1.05 } : {}
+			}
+			whileTap={isPlayable && !isStatic ? { scale: 0.95 } : {}}
 			transition={{ type: "spring", stiffness: 400, damping: 25 }}
 		>
 			{/* 1. Base Frame */}

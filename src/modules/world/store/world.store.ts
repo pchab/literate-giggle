@@ -5,9 +5,9 @@ import type { EvolutionRuneId } from "@/modules/cards/data/evolutionRecipes.data
 import type { Card } from "@/modules/cards/domain/cards.type";
 import type {
 	HeroClass,
+	HeroDraftResult,
 	PendingPowerRune,
 	PendingPromotion,
-	RuneDraftOption,
 } from "@/modules/units/domain/heroClass.types";
 import type { Hero } from "@/modules/units/domain/units.type";
 import { type MapNode, mapNodeId } from "@/modules/world/domain/map.types";
@@ -43,13 +43,7 @@ interface WorldAction {
 	) => void;
 	claimRewards: (
 		earnedXp: number,
-		completedDraft: Record<
-			Hero["id"],
-			{
-				rune: RuneDraftOption;
-				cardInstanceId: Card["id"];
-			}[]
-		>,
+		completedDraft: Record<Hero["id"], HeroDraftResult>,
 	) => void;
 	resolvePromotion: (
 		heroId: Hero["id"],
@@ -94,13 +88,7 @@ export const useWorldStore = create<WorldState & WorldAction>()(
 			stageBattleRewards: (remainingHp) => set(stageBattleRewards(remainingHp)),
 			claimRewards: (
 				earnedXp: number,
-				completedDraft: Record<
-					Hero["id"],
-					{
-						rune: RuneDraftOption;
-						cardInstanceId: Card["id"];
-					}[]
-				>,
+				completedDraft: Record<Hero["id"], HeroDraftResult>,
 			) => set(claimRewards(earnedXp, completedDraft)),
 			resolvePromotion: (heroId, chosenClass, utilityCardId) =>
 				set(resolvePendingPromotion(heroId, chosenClass, utilityCardId)),

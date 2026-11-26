@@ -40,6 +40,10 @@ export type LevelUpDefinition =
 	| { type: "statsIncrease"; amount: number; stat: "hp" | "def" | "move" }
 	| { type: "classPromotion"; classId: HeroClass[] }
 	| { type: "passiveUnlock"; passiveId: string }
+	/** Player picks one card to learn (resolved on the reward screen). */
+	| { type: "cardChoice"; options: Card["id"][] }
+	/** Player picks one passive (resolved on the reward screen). */
+	| { type: "passiveChoice"; options: string[] }
 	| { type: "unlockQuest"; questId: Quest["id"] }
 	| { type: "powerRune" };
 
@@ -62,4 +66,23 @@ export type PendingPromotion = {
 export type PendingPowerRune = {
 	heroId: Hero["id"];
 	choices: RuneDraftOption[];
+};
+
+/** One decision the player makes on the reward screen. */
+export type LevelUpDraftStep =
+	| { kind: "rune"; level: number; choices: RuneDraftOption[] }
+	| { kind: "card"; level: number; options: Card["id"][] }
+	| { kind: "passive"; level: number; options: string[] };
+
+/** Everything a hero picked on the reward screen. */
+export type HeroDraftResult = {
+	runes: { rune: RuneDraftOption; cardInstanceId: Card["id"] }[];
+	cards: Card["id"][];
+	passives: string[];
+};
+
+export const EMPTY_DRAFT_RESULT: HeroDraftResult = {
+	runes: [],
+	cards: [],
+	passives: [],
 };

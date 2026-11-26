@@ -1,20 +1,16 @@
-import type { HeroCard } from "@/modules/cards/domain/cards.type";
-import { addPowerRune } from "@/modules/cards/helpers/heroCards.helper";
 import { CLASS_REGISTRY } from "@/modules/units/data/heroClass.data";
-import type { RuneDraftOption } from "@/modules/units/domain/heroClass.types";
+import {
+	EMPTY_DRAFT_RESULT,
+	type HeroDraftResult,
+} from "@/modules/units/domain/heroClass.types";
 import type { Hero } from "@/modules/units/domain/units.type";
+import { applyDraftResult } from "@/modules/units/helpers/draft.helper";
 import { applyLevelUpTriggers } from "@/modules/units/helpers/levelUpEffects.helper";
 import type { WorldStoreServerAction } from "@/modules/world/store/world.store";
 
 export function claimRewards(
 	earnedXp: number,
-	completedDraft: Record<
-		Hero["id"],
-		{
-			rune: RuneDraftOption;
-			cardInstanceId: HeroCard["instanceId"];
-		}[]
-	>,
+	completedDraft: Record<Hero["id"], HeroDraftResult>,
 ): WorldStoreServerAction {
 	return ({ roster, pendingPromotions, unlockedQuestsQueue }) => {
 		let newPendingPromotions = [...pendingPromotions];
@@ -51,33 +47,11 @@ export function claimRewards(
 				}
 			}
 
-			// 2. Apply the drafted Power Rune (if they made a choice)
-			completedDraft[hero.id].forEach((draft) => {
-				const { rune, cardInstanceId } = draft;
-				const deckIndex = newHero.deck.findIndex(
-					(c) => c.instanceId === cardInstanceId,
-				);
-
-				if (deckIndex !== -1) {
-					const newDeck = [...newHero.deck];
-					const targetCard = addPowerRune(rune, {
-						...newDeck[deckIndex],
-						powerRunes: { ...newDeck[deckIndex].powerRunes },
-					});
-
-					newDeck[deckIndex] = targetCard;
-					newHero.deck = newDeck;
-
-					const newSelectedCards = [...newHero.selectedCards];
-					const handIndex = newSelectedCards.findIndex(
-						(c) => c?.instanceId === cardInstanceId,
-					);
-					if (handIndex !== -1) {
-						newSelectedCards[handIndex] = targetCard;
-						newHero.selectedCards = newSelectedCards as Hero["selectedCards"];
-					}
-				}
-			});
+			// 2. Apply the reward-screen picks (learned cards, passives, runes)
+			newHero = applyDraftResult(
+				newHero,
+				completedDraft[hero.id] ?? EMPTY_DRAFT_RESULT,
+			);
 
 			return newHero;
 		});

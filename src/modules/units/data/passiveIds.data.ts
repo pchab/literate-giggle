@@ -10,6 +10,10 @@ export const PASSIVE_IDS = {
 	devotion: "devotion",
 	kindling: "kindling",
 	permafrost: "permafrost",
+	// --- generic (level-up picks) ---
+	opportunist: "opportunist",
+	momentum: "momentum",
+	second_wind: "second_wind",
 } as const;
 
 export type PassiveId = (typeof PASSIVE_IDS)[keyof typeof PASSIVE_IDS];

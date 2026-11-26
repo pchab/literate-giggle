@@ -5,7 +5,8 @@ import { useState } from "react";
 import { useShallow } from "zustand/shallow";
 import { PASSIVE_REGISTRY } from "@/modules/battle/data/passives.data";
 import { BattleCard } from "@/modules/cards/components/BattleCard";
-import type { Card } from "@/modules/cards/domain/cards.type";
+import { HeroCardView } from "@/modules/cards/components/HeroCardView";
+import type { Card, HeroCard } from "@/modules/cards/domain/cards.type";
 import { RetroPanel } from "@/modules/shared/components/RetroPanel";
 import { useRegistryStore } from "@/modules/shared/store/registry.store";
 import { CLASS_REGISTRY } from "@/modules/units/data/heroClass.data";
@@ -13,6 +14,7 @@ import type { PassiveId } from "@/modules/units/data/passiveIds.data";
 import type { HeroClass } from "@/modules/units/domain/heroClass.types";
 import { useWorldStore } from "@/modules/world/store/world.store";
 import { HeroPortrait } from "./HeroPortrait";
+import { HeroSummary } from "./HeroSummary";
 
 export function ClassPromotionModal() {
 	const { getCard } = useRegistryStore(
@@ -51,11 +53,18 @@ export function ClassPromotionModal() {
 				<motion.div
 					initial={{ scale: 0.95, y: 10 }}
 					animate={{ scale: 1, y: 0 }}
-					className="max-w-4xl w-full"
+					className="max-w-5xl w-full max-h-full overflow-y-auto"
 				>
-					<RetroPanel title="Choose Your Path">
-						{/* Optional: Add a cancel/close button here if promotions are optional */}
-						<div className="flex flex-col md:flex-row justify-center items-stretch gap-8 mt-4">
+					<RetroPanel
+						title={`Promote ${hero.name}${pendingPromotions.length > 1 ? ` (1 of ${pendingPromotions.length})` : ""}`}
+					>
+						<div className="flex flex-col gap-2 mt-2">
+							<span className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">
+								Who is being promoted · upgrades and passives are kept
+							</span>
+							<HeroSummary hero={hero} />
+						</div>
+						<div className="flex flex-col md:flex-row justify-center items-stretch gap-8 mt-6">
 							{currentPromotion.classChoices.map((classId) => {
 								const classDef = CLASS_REGISTRY[classId];
 								if (!classDef) return null;
@@ -79,6 +88,27 @@ export function ClassPromotionModal() {
 									? getCard(showcaseCardId)
 									: null;
 
+								// The hero's own copy of the replaced weapon keeps its runes.
+								const upgradedWeapon: HeroCard | null =
+									primaryWeaponTrigger?.type === "cardUpgrade"
+										? (() => {
+												const owned = hero.deck.find(
+													(c) =>
+														c.baseCardId === primaryWeaponTrigger.oldCardId,
+												);
+												return owned
+													? {
+															...owned,
+															baseCardId: primaryWeaponTrigger.newCardId,
+														}
+													: null;
+											})()
+										: null;
+								const oldWeaponName =
+									primaryWeaponTrigger?.type === "cardUpgrade"
+										? getCard(primaryWeaponTrigger.oldCardId)?.name
+										: null;
+
 								return (
 									<motion.button
 										type="button"
@@ -93,10 +123,26 @@ export function ClassPromotionModal() {
 											</span>
 										</div>
 
-										{showcaseCard && (
-											<div className="mt-6 pointer-events-none transform transition-transform duration-500 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">
-												<BattleCard card={showcaseCard} isPlayable={false} />
+										{upgradedWeapon ? (
+											<div className="mt-6 flex flex-col items-center gap-1 pointer-events-none">
+												<span className="text-[10px] text-zinc-400 uppercase tracking-wider">
+													{oldWeaponName} → {showcaseCard?.name}
+												</span>
+												<HeroCardView
+													heroCard={upgradedWeapon}
+													tooltip={false}
+												/>
 											</div>
+										) : (
+											showcaseCard && (
+												<div className="mt-6 pointer-events-none transform transition-transform duration-500 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+													<BattleCard
+														card={showcaseCard}
+														isPlayable={false}
+														isStatic
+													/>
+												</div>
+											)
 										)}
 
 										<div className="flex flex-col items-center w-full mt-2 gap-2">
@@ -159,9 +205,18 @@ export function ClassPromotionModal() {
 	const classDef = CLASS_REGISTRY[selectedClassId];
 	if (!classDef) return null;
 
+	const isOwned = (cardId: Card["id"]) =>
+		hero.deck.some((c) => c.baseCardId === cardId);
+	const allSkillsOwned = classDef.utilityCardChoices.every(isOwned);
+	const canAccept = !!selectedCardId || allSkillsOwned;
+
 	const handleAcceptPromotion = () => {
-		if (!selectedCardId) return;
-		resolvePromotion(currentPromotion.heroId, selectedClassId, selectedCardId);
+		if (!canAccept) return;
+		resolvePromotion(
+			currentPromotion.heroId,
+			selectedClassId,
+			selectedCardId ?? ("" as Card["id"]),
+		);
 		setSelectedClassId(null);
 		setSelectedCardId(null);
 	};
@@ -181,21 +236,37 @@ export function ClassPromotionModal() {
 					transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
 				/>
 
+				<button
+					type="button"
+					onClick={() => {
+						setSelectedClassId(null);
+						setSelectedCardId(null);
+					}}
+					className="absolute top-6 left-6 z-20 text-xs uppercase tracking-widest text-zinc-400 hover:text-amber-400 border border-zinc-700 hover:border-amber-500 px-3 py-1.5 rounded transition-colors"
+				>
+					← Choose another path
+				</button>
+
 				<motion.h2
-					className="text-4xl font-black text-amber-400 tracking-[0.3em] uppercase drop-shadow-[0_0_15px_rgba(251,191,36,0.5)] mb-12"
+					className="text-4xl font-black text-amber-400 tracking-[0.3em] uppercase drop-shadow-[0_0_15px_rgba(251,191,36,0.5)] mb-2 text-center"
 					initial={{ y: -50, opacity: 0 }}
 					animate={{ y: 0, opacity: 1 }}
 					transition={{ delay: 0.2, type: "spring" }}
 				>
-					Class Promotion
+					{hero.name} becomes a {classDef.name}
 				</motion.h2>
+				<span className="text-xs text-zinc-500 uppercase tracking-widest mb-10">
+					Level {hero.currentLevel} {CLASS_REGISTRY[hero.heroClass]?.name}
+					{pendingPromotions.length > 1 &&
+						` · promotion 1 of ${pendingPromotions.length}`}
+				</span>
 
 				<div className="flex items-center gap-12 z-10">
 					{/* Old Class */}
 					<motion.div className="flex flex-col items-center opacity-50 grayscale">
 						<HeroPortrait classType={hero.heroClass} variant={hero.variant} />
 						<span className="mt-4 text-zinc-500 font-bold tracking-widest uppercase">
-							{hero.heroClass}
+							{CLASS_REGISTRY[hero.heroClass]?.name ?? hero.heroClass}
 						</span>
 					</motion.div>
 
@@ -226,10 +297,13 @@ export function ClassPromotionModal() {
 							transition={{ delay: 0.8, duration: 0.5 }}
 						/>
 						<div className="ring-4 ring-amber-400 rounded-full shadow-[0_0_40px_rgba(251,191,36,0.6)] scale-125">
-							<HeroPortrait classType={selectedClassId} />
+							<HeroPortrait
+								classType={selectedClassId}
+								variant={hero.variant}
+							/>
 						</div>
 						<span className="mt-8 text-amber-400 font-black text-xl tracking-widest uppercase drop-shadow-md">
-							{selectedClassId}
+							{classDef.name}
 						</span>
 					</motion.div>
 				</div>
@@ -257,10 +331,16 @@ export function ClassPromotionModal() {
 									<button
 										type="button"
 										key={cardId}
+										disabled={isOwned(cardId)}
 										onClick={() => setSelectedCardId(cardId)}
 										className={`relative transition-all duration-300 ${isSelected ? "scale-110 shadow-[0_0_30px_rgba(251,191,36,0.4)]" : "scale-100 hover:scale-105 opacity-70 hover:opacity-100 grayscale hover:grayscale-0"}`}
 									>
-										<BattleCard card={card} isPlayable={false} />
+										<BattleCard card={card} isPlayable={false} isStatic />
+										{isOwned(cardId) && (
+											<span className="absolute -top-2 left-1/2 -translate-x-1/2 z-50 text-[8px] font-bold uppercase bg-zinc-700 text-zinc-200 px-1.5 rounded-sm">
+												Already owned
+											</span>
+										)}
 										{isSelected && (
 											<motion.div
 												layoutId="card-selection-ring"
@@ -274,7 +354,13 @@ export function ClassPromotionModal() {
 					</motion.div>
 				)}
 
-				{selectedCardId && (
+				{allSkillsOwned && (
+					<span className="mt-6 text-xs text-zinc-400 z-10">
+						{hero.name} already knows every {classDef.name} skill.
+					</span>
+				)}
+
+				{canAccept && (
 					<motion.button
 						className={`mt-12 px-8 py-3 font-bold tracking-widest uppercase rounded shadow-lg transition-all z-10 bg-amber-600 hover:bg-amber-500 text-zinc-950 cursor-pointer`}
 						onClick={handleAcceptPromotion}

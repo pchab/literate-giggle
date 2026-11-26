@@ -7,9 +7,8 @@ import { useShallow } from "zustand/shallow";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { ENCOUNTER_DB } from "@/modules/campaign/data/encounters.data";
 import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
-import type { Card } from "@/modules/cards/domain/cards.type";
 import { RetroButton } from "@/modules/shared/components/RetroButton";
-import type { RuneDraftOption } from "@/modules/units/domain/heroClass.types";
+import type { HeroDraftResult } from "@/modules/units/domain/heroClass.types";
 import type { Hero } from "@/modules/units/domain/units.type";
 import { WorldMapNodes } from "@/modules/world/data/mapNodes.data";
 import { useWorldStore } from "@/modules/world/store/world.store";
@@ -44,7 +43,7 @@ export default function RewardScreen() {
 
 	const [initialRoster] = useState(roster);
 	const [completedDrafts, setCompletedDrafts] = useState<
-		Record<Hero["id"], { rune: RuneDraftOption; cardInstanceId: Card["id"] }[]>
+		Record<Hero["id"], HeroDraftResult>
 	>({});
 
 	const sceneIdFromEncounter = encounterId
@@ -99,6 +98,9 @@ export default function RewardScreen() {
 							index={index}
 							onDraftComplete={(draft) =>
 								setCompletedDrafts((prev) => ({ ...prev, [hero.id]: draft }))
+							}
+							onDraftReset={() =>
+								setCompletedDrafts(({ [hero.id]: _reset, ...rest }) => rest)
 							}
 						/>
 					))}

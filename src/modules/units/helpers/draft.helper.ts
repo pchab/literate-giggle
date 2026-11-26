@@ -1,5 +1,15 @@
-import { getComputedCard } from "@/modules/cards/helpers/cards.helper";
-import type { RuneDraftOption } from "@/modules/units/domain/heroClass.types";
+import {
+	createHeroCard,
+	getComputedCard,
+} from "@/modules/cards/helpers/cards.helper";
+import { withRune } from "@/modules/cards/helpers/powerRunes.helper";
+import { useRegistryStore } from "@/modules/shared/store/registry.store";
+import { CLASS_REGISTRY } from "@/modules/units/data/heroClass.data";
+import type {
+	HeroDraftResult,
+	LevelUpDraftStep,
+	RuneDraftOption,
+} from "@/modules/units/domain/heroClass.types";
 import type { Hero } from "@/modules/units/domain/units.type";
 
 export function generateDynamicRuneChoices(
@@ -80,4 +90,94 @@ export function generateDynamicRuneChoices(
 	}
 
 	return allOptions.sort(() => Math.random() - 0.5).slice(0, count);
+}
+
+// ==========================================
+// LEVEL-UP DRAFT (reward screen ↔ claimRewards)
+// ==========================================
+
+/** Every decision a hero will face for the XP just earned, in level order. */
+export function buildDraftSteps(
+	hero: Hero,
+	xpEarned: number,
+): { steps: LevelUpDraftStep[]; levelsGained: number } {
+	const classDef = CLASS_REGISTRY[hero.heroClass];
+	const steps: LevelUpDraftStep[] = [];
+	let xp = hero.currentXp + xpEarned;
+	let level = hero.currentLevel;
+	const owned = new Set<string>(hero.deck.map((c) => c.baseCardId));
+
+	while (
+		classDef.xpThresholds[level] !== undefined &&
+		xp >= classDef.xpThresholds[level]
+	) {
+		xp -= classDef.xpThresholds[level];
+		for (const trigger of classDef.levelUpTriggers[level] ?? []) {
+			if (trigger.type === "powerRune") {
+				steps.push({
+					kind: "rune",
+					level: level + 1,
+					choices: generateDynamicRuneChoices(hero),
+				});
+			}
+			if (trigger.type === "cardChoice") {
+				const options = trigger.options.filter(
+					(id) => !owned.has(id) && !!useRegistryStore.getState().getCard(id),
+				);
+				if (options.length)
+					steps.push({ kind: "card", level: level + 1, options });
+			}
+			if (trigger.type === "passiveChoice") {
+				const options = trigger.options.filter(
+					(id) => !hero.passives.includes(id),
+				);
+				if (options.length)
+					steps.push({ kind: "passive", level: level + 1, options });
+			}
+		}
+		level++;
+	}
+
+	return { steps, levelsGained: level - hero.currentLevel };
+}
+
+/**
+ * Applies the reward-screen picks to a hero. Pure: returns a new hero.
+ * Order: learned cards (auto-equipped into a free hand slot), passives, then runes.
+ */
+export function applyDraftResult(hero: Hero, draft: HeroDraftResult): Hero {
+	const next: Hero = {
+		...hero,
+		deck: [...hero.deck],
+		selectedCards: [...hero.selectedCards] as Hero["selectedCards"],
+		passives: [...hero.passives],
+	};
+
+	for (const cardId of draft.cards) {
+		if (next.deck.some((c) => c.baseCardId === cardId)) continue;
+		if (!useRegistryStore.getState().getCard(cardId)) continue;
+		const heroCard = createHeroCard(hero.id)(cardId);
+		next.deck.push(heroCard);
+		const freeSlot = next.selectedCards.findIndex((c, i) => i > 0 && !c);
+		if (freeSlot !== -1) next.selectedCards[freeSlot] = heroCard;
+	}
+
+	for (const passiveId of draft.passives) {
+		if (!next.passives.includes(passiveId)) next.passives.push(passiveId);
+	}
+
+	for (const { rune, cardInstanceId } of draft.runes) {
+		const deckIndex = next.deck.findIndex(
+			(c) => c.instanceId === cardInstanceId,
+		);
+		if (deckIndex === -1) continue;
+		const upgraded = withRune(next.deck[deckIndex], rune);
+		next.deck[deckIndex] = upgraded;
+		const handIndex = next.selectedCards.findIndex(
+			(c) => c?.instanceId === cardInstanceId,
+		);
+		if (handIndex !== -1) next.selectedCards[handIndex] = upgraded;
+	}
+
+	return next;
 }

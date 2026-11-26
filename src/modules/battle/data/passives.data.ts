@@ -3,6 +3,7 @@ import {
 	type PassiveId,
 } from "@/modules/units/data/passiveIds.data";
 import type { PassiveDefinition } from "@/modules/units/domain/passive.type";
+import type { StatusType } from "@/modules/units/domain/status.type";
 import type { BattleUnit } from "@/modules/units/domain/units.type";
 import { hasStatus } from "@/modules/units/helpers/units.helpers";
 import { areEnemies, getAllegiance } from "../helpers/effects/effect.helpers";
@@ -48,6 +49,18 @@ const isFlanking = (
 };
 
 export { PASSIVE_IDS };
+
+const DEBUFFS: StatusType[] = [
+	"poison",
+	"burn",
+	"chill",
+	"frozen",
+	"stun",
+	"weak",
+	"vulnerable",
+	"marked",
+	"rooted",
+];
 
 export const PASSIVE_REGISTRY: Record<PassiveId, PassiveDefinition> = {
 	// --- HOBO ---
@@ -190,6 +203,49 @@ export const PASSIVE_REGISTRY: Record<PassiveId, PassiveDefinition> = {
 				)(victim.id, {
 					newStatuses: [{ type: "chill", amount: 1, duration: 2 }],
 				});
+			},
+		},
+	},
+
+	// --- GENERIC (level-up passive choices) ---
+	[PASSIVE_IDS.opportunist]: {
+		id: PASSIVE_IDS.opportunist,
+		name: "Opportunist",
+		icon: "🦅",
+		description:
+			"+1 damage against targets that are poisoned, burning, chilled, weak, vulnerable, marked, rooted, stunned or frozen.",
+		hooks: {
+			modifyOutgoingDamage: (_, { target, amount }) =>
+				DEBUFFS.some((d) => hasStatus(target, d)) ? amount + 1 : amount,
+		},
+	},
+	[PASSIVE_IDS.momentum]: {
+		id: PASSIVE_IDS.momentum,
+		name: "Momentum",
+		icon: "🏃",
+		description: "+1 damage if this hero moved this turn.",
+		hooks: {
+			modifyOutgoingDamage: ({ get, owner }, { amount }) =>
+				((get().usedMovesThisTurn as Record<string, number>)[owner.id] ?? 0) > 0
+					? amount + 1
+					: amount,
+		},
+	},
+	[PASSIVE_IDS.second_wind]: {
+		id: PASSIVE_IDS.second_wind,
+		name: "Second Wind",
+		icon: "🌬️",
+		description:
+			"At the start of your turn, heal 2 if at or below a third of max HP.",
+		hooks: {
+			onTurnStart: async (ctx) => {
+				if (ctx.owner.currentHp > ctx.owner.maxHp / 3) return;
+				await applyCombatUpdate(
+					ctx.get,
+					ctx.set,
+					ctx.isSimulation,
+				)(ctx.owner.id, { healingReceived: 2 });
+				flashPassive(ctx, "HEAL");
 			},
 		},
 	},

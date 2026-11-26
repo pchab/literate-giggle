@@ -1,6 +1,5 @@
 import { m } from "motion/react";
-import { BattleCard } from "@/modules/cards/components/BattleCard";
-import { getComputedCard } from "@/modules/cards/helpers/cards.helper";
+import { HeroCardView } from "@/modules/cards/components/HeroCardView";
 import { CLASS_REGISTRY } from "@/modules/units/data/heroClass.data";
 import type { Hero } from "@/modules/units/domain/units.type";
 
@@ -32,10 +31,7 @@ export default function XpReward({
 			<div className="flex items-center gap-6">
 				{primaryWeapon && (
 					<div className="w-20 shrink-0 transform hover:scale-105 transition-transform">
-						<BattleCard
-							card={getComputedCard(primaryWeapon)}
-							isPlayable={false}
-						/>
+						<HeroCardView heroCard={primaryWeapon} tooltip={false} />
 					</div>
 				)}
 				<div className="flex-1 flex flex-col gap-2">
