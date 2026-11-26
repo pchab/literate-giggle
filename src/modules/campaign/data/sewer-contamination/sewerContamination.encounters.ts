@@ -24,6 +24,7 @@ import { SEWER_CONTAMINATION } from "./sewerContamination.definitions";
 const sewerBounds = { cols: 7, rows: 7 };
 const villageBounds = { cols: 12, rows: 8 };
 const REQUIRED_SURVIVORS = 2;
+const TOTAL_VILLAGERS = 4;
 
 export const sewerContaminationEncounters: Record<string, Encounter> = {
 	[SEWER_CONTAMINATION.encounters.giant_toad]: {
@@ -125,7 +126,7 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 		onLoseSceneId: SEWER_CONTAMINATION.scenes.riverbend_lost,
 		// Partial outcome: how many villagers made it shapes the ending.
 		outcomeFlags: ({ objectiveProgress: { savedVillagers = 0 } }) =>
-			savedVillagers >= 4 ? [STORY_FLAGS.riverbendAllSaved] : [],
+			savedVillagers >= TOTAL_VILLAGERS ? [STORY_FLAGS.riverbendAllSaved] : [],
 		generateSummons: () => [
 			{
 				...villager,
@@ -190,7 +191,7 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 			},
 		},
 		objectiveText: ({ savedVillagers = 0 }) =>
-			`Villagers saved: ${savedVillagers}/${REQUIRED_SURVIVORS}`,
+			`Villagers saved: ${savedVillagers}/${TOTAL_VILLAGERS} (need ${REQUIRED_SURVIVORS})`,
 
 		updateObjectives: async ({
 			surfaces,
@@ -226,8 +227,16 @@ export const sewerContaminationEncounters: Record<string, Encounter> = {
 			}
 		},
 
-		checkWin: ({ objectiveProgress: { savedVillagers = 0 } }: BattleState) => {
-			return savedVillagers >= REQUIRED_SURVIVORS;
+		// The fight lasts until every villager has escaped or fallen, so saving
+		// all of them (not just the minimum) is a real, reachable outcome.
+		checkWin: ({
+			units,
+			objectiveProgress: { savedVillagers = 0 },
+		}: BattleState) => {
+			const villagersLeft = units.filter(
+				(u) => u.name === villager.name && u.currentHp > 0,
+			).length;
+			return villagersLeft === 0 && savedVillagers >= REQUIRED_SURVIVORS;
 		},
 
 		checkLoss: ({

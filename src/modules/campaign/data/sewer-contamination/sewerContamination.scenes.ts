@@ -1,4 +1,5 @@
 import type { Scene, SceneAction } from "@/modules/campaign/domain/scenes.type";
+import { mapNodeId } from "@/modules/world/domain/map.types";
 import { STORY_FLAGS } from "../../helpers/storyFlags";
 import { SEWER_CONTAMINATION } from "./sewerContamination.definitions";
 
@@ -26,6 +27,11 @@ const toStep = (
 	questId: SEWER_CONTAMINATION.id,
 	newStepId: SEWER_CONTAMINATION.steps[stepKey],
 });
+/** Riverbend has no town screen and leaves the map after this quest step. */
+const backToIronhold: SceneAction = {
+	type: "FORCE_MOVE",
+	nodeId: mapNodeId("ironhold_city"),
+};
 const finishQuest: SceneAction = {
 	type: "COMPLETE_QUEST",
 	questId: SEWER_CONTAMINATION.id,
@@ -292,11 +298,15 @@ export const sewerContaminationScenes: Record<string, Scene> = {
 				choices: [
 					{
 						label: "Find the ones who poisoned the river.",
-						actions: [toStep("find_cove"), { type: "END_SCENE" }],
+						actions: [
+							toStep("find_cove"),
+							backToIronhold,
+							{ type: "END_SCENE" },
+						],
 					},
 					{
 						label: "Stay and help them rebuild.",
-						actions: [finishQuest, { type: "END_SCENE" }],
+						actions: [finishQuest, backToIronhold, { type: "END_SCENE" }],
 					},
 				],
 			},
@@ -311,6 +321,7 @@ export const sewerContaminationScenes: Record<string, Scene> = {
 							{ type: "REWARD_EVO_RUNE", evoRune: "rune_nature" },
 							{ type: "HEAL_PARTY", amount: 99 },
 							toStep("find_cove"),
+							backToIronhold,
 							{ type: "END_SCENE" },
 						],
 					},
@@ -320,6 +331,7 @@ export const sewerContaminationScenes: Record<string, Scene> = {
 							{ type: "REWARD_EVO_RUNE", evoRune: "rune_nature" },
 							{ type: "HEAL_PARTY", amount: 99 },
 							finishQuest,
+							backToIronhold,
 							{ type: "END_SCENE" },
 						],
 					},
@@ -341,6 +353,7 @@ export const sewerContaminationScenes: Record<string, Scene> = {
 						actions: [
 							{ type: "SET_FLAG", flagId: F.riverbendFallen },
 							toStep("find_cove"),
+							backToIronhold,
 							{ type: "END_SCENE" },
 						],
 					},
@@ -349,6 +362,7 @@ export const sewerContaminationScenes: Record<string, Scene> = {
 						actions: [
 							{ type: "SET_FLAG", flagId: F.riverbendFallen },
 							finishQuest,
+							backToIronhold,
 							{ type: "END_SCENE" },
 						],
 					},

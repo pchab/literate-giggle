@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/shallow";
 import type { Scene } from "@/modules/campaign/domain/scenes.type";
 import { useSceneEngine } from "@/modules/campaign/hooks/useSceneEngine.hook";
@@ -19,17 +19,22 @@ export default function SceneComponent({ scene }: { scene: Scene }) {
 	);
 	const roster = useWorldStore(useShallow((state) => state.roster));
 
-	// Step entry hooks (automatic branching on flags). Runs once per step visit.
+	// Step entry hooks (automatic branching on flags). Runs once per step visit,
+	// before paint, so a step that redirects on entry is never shown or clickable.
+	// Nothing renders until the first entry hook has run on the client: the server
+	// doesn't know the player's flags and would show the un-branched step.
 	const enteredStep = useRef<string | null>(null);
-	useEffect(() => {
+	const [isReady, setIsReady] = useState(false);
+	useLayoutEffect(() => {
 		if (enteredStep.current === currentStepId) return;
 		enteredStep.current = currentStepId;
 		const step = scene.steps[currentStepId];
 		if (step?.onEnter) processActions(step.onEnter);
+		setIsReady(true);
 	}, [currentStepId, scene, processActions]);
 	const flags = useCampaignStore((state) => state.flags);
 
-	if (!currentStepId) return null;
+	if (!isReady || !currentStepId) return null;
 
 	const currentStep = scene.steps[currentStepId];
 	if (!currentStep) return null;

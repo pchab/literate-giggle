@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { useShallow } from "zustand/shallow";
 import type { SceneAction } from "@/modules/campaign/domain/scenes.type";
 import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
-import { useDynamicMap } from "@/modules/world/hooks/useDynamicMap";
+import { getDynamicMap } from "@/modules/world/hooks/useDynamicMap";
 import { useWorldStore } from "@/modules/world/store/world.store";
 
 export function useSceneEngine(setLocalStep: (stepId: string) => void) {
@@ -19,18 +19,15 @@ export function useSceneEngine(setLocalStep: (stepId: string) => void) {
 	// Read flags fresh: earlier actions in the same list may have just set one.
 	const hasFlag = (flag: string) =>
 		useCampaignStore.getState().flags.includes(flag);
-	const { currentNodeId, setPhase, rewardEvoRune, travelToNode, healParty } =
-		useWorldStore(
-			useShallow((state) => ({
-				currentNodeId: state.currentNodeId,
-				setPhase: state.setPhase,
-				roster: state.roster,
-				rewardEvoRune: state.rewardEvoRune,
-				travelToNode: state.travelToNode,
-				healParty: state.healParty,
-			})),
-		);
-	const dynamicMap = useDynamicMap();
+	const { setPhase, rewardEvoRune, travelToNode, healParty } = useWorldStore(
+		useShallow((state) => ({
+			setPhase: state.setPhase,
+			roster: state.roster,
+			rewardEvoRune: state.rewardEvoRune,
+			travelToNode: state.travelToNode,
+			healParty: state.healParty,
+		})),
+	);
 
 	const processActions = (actions: SceneAction[]): void => {
 		actions.forEach((action) => {
@@ -72,7 +69,8 @@ export function useSceneEngine(setLocalStep: (stepId: string) => void) {
 					rewardEvoRune(action.evoRune);
 					break;
 				case "FORCE_MOVE":
-					travelToNode(action.nodeId, dynamicMap);
+					// Fresh map: this scene may have just unlocked the destination.
+					travelToNode(action.nodeId, getDynamicMap());
 					break;
 
 				// --- ROUTING & SIDE EFFECTS ---
@@ -89,7 +87,12 @@ export function useSceneEngine(setLocalStep: (stepId: string) => void) {
 					break;
 				case "END_SCENE":
 					setActiveSceneId(null);
-					setPhase(dynamicMap[currentNodeId].type === "TOWN" ? "TOWN" : "MAP");
+					{
+						// Fresh node: a FORCE_MOVE earlier in this list may have moved the party.
+						const { currentNodeId } = useWorldStore.getState();
+						const node = getDynamicMap()[currentNodeId];
+						setPhase(node?.type === "TOWN" ? "TOWN" : "MAP");
+					}
 					redirect("/");
 					break;
 

@@ -11,7 +11,7 @@ export function travelToNode(
 	return () => {
 		const nextNode = dynamicMap[nodeId];
 		let nextPhase: GamePhase = "MAP";
-		if (nextNode.type === "BATTLE") nextPhase = "BATTLE";
+		if (nextNode?.type === "BATTLE") nextPhase = "BATTLE";
 
 		return {
 			currentNodeId: nodeId,
