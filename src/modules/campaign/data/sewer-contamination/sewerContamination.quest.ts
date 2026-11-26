@@ -16,7 +16,7 @@ export const sewerContaminationQuest: Quest = {
 				"Search the Ironhold Sewers for the smuggled mutagen crates.",
 			targetNodeId: [
 				{
-					mapNodeId: mapNodeId("ironhold"),
+					mapNodeId: mapNodeId("ironhold_city"),
 					locationId: townLocationId("sewers"),
 				},
 			],

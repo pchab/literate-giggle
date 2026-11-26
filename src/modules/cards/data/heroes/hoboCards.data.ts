@@ -42,8 +42,8 @@ export const hoboCards: Record<Card["id"], Card> = {
 		],
 	},
 	[cardId("iron_club")]: {
-		id: cardId("i_ronclub"),
-		name: "Club",
+		id: cardId("iron_club"),
+		name: "Iron Club",
 		range: 1,
 		image: "/cards/iron_club.webp",
 		playRequirement: "requires_enemy",

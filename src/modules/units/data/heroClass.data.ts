@@ -137,6 +137,7 @@ export const CLASS_REGISTRY: Record<HeroClass, ClassDefinition> = {
 			[
 				{ type: "statsIncrease", stat: "hp", amount: 2 },
 				{ type: "statsIncrease", stat: "def", amount: 1 },
+				{ type: "powerRune" },
 				{
 					type: "cardUpgrade",
 					oldCardId: cardId("club"),

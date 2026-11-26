@@ -7,7 +7,7 @@ export const sewerContaminationMapNodes: MapData = {
 		name: "Riverbend village",
 		position: { x: 56, y: 54 },
 		type: "TOWN",
-		connectedNodeIds: ["ironhold"],
+		connectedNodeIds: ["ironhold_city"],
 		background: "grass_river_3_2",
 		unlockCondition: [
 			{

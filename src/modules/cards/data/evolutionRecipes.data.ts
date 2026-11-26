@@ -28,7 +28,7 @@ export const EVOLUTION_RECIPES: Record<
 	},
 	[cardId("dagger")]: {
 		// Rogue
-		rune_pestilence: cardId("toxic_shiv"),
+		rune_pestilence: cardId("toxic_dagger"),
 		rune_acid: cardId("acid_dagger"),
 		rune_nature: cardId("thorn_dagger"),
 		rune_blood: cardId("vampire_dagger"),

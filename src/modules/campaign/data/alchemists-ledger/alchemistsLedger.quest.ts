@@ -8,12 +8,11 @@ export const alchemistQuest: Quest = {
 	title: "The Alchemist's Ledger",
 	loreDescription:
 		"Barnaby the Alchemist hired you to recover his stolen master ledger from a band of goblins. He claims it contains vital cures, but the goblins' trail suggests something far more sinister.",
-	initialStepId: ALCHEMIST.steps.track_goblins,
+	initialStepId: ALCHEMIST.steps.meet_barnaby,
 	steps: {
 		[ALCHEMIST.steps.meet_barnaby]: {
 			id: ALCHEMIST.steps.meet_barnaby,
-			logDescription:
-				"Track the goblins through the frost-caves to their cache.",
+			logDescription: "Meet Barnaby at his alchemy shop in Connury Town.",
 			targetNodeId: [
 				{
 					mapNodeId: mapNodeId("connury_town"),
