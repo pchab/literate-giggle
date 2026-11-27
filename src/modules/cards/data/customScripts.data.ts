@@ -2,6 +2,7 @@ import type { EffectResolver } from "@/modules/battle/helpers/effects/effect.res
 import type { BattleUnit } from "@/modules/units/domain/units.type";
 import type { CustomScriptEffect } from "../domain/cards.type";
 import { alchemicalFrenzy } from "./custom-scripts/alchemicalFrenzy.script";
+import { ceilingCollapse, seismicSlam } from "./custom-scripts/golem.scripts";
 import { recklessExperiment } from "./custom-scripts/recklessExperiment.script";
 import { swallow } from "./custom-scripts/swallow.script";
 import { trapdoorSpawn } from "./custom-scripts/trapDoorSpawn.script";
@@ -17,4 +18,6 @@ export const customScriptRegistry: Record<
 	volatile_transmutation: volatileTransmutation,
 	alchemical_frenzy: alchemicalFrenzy,
 	swallow: swallow,
+	ceiling_collapse: ceilingCollapse,
+	seismic_slam: seismicSlam,
 };

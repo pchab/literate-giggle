@@ -11,9 +11,11 @@ import {
 } from "@/modules/units/helpers/units.helpers";
 import { useCellHighlight } from "../hooks/useCellHighlight";
 import { useBattleStore } from "../store/battle.store";
+import { BarkOverlay } from "./BarkOverlay";
 import { GridCell, type Highlight } from "./GridCell";
 import ShadowPredictions from "./ShadowPredictions";
 import { SurfacesOverlay } from "./SurfaceOverlay";
+import { TelegraphOverlay } from "./TelegraphOverlay";
 
 const getCells = (gridSize: { rows: number; cols: number }) =>
 	Array.from({ length: gridSize.rows }, (_, row) => {
@@ -124,7 +126,7 @@ export function BattleGrid() {
 		>
 			{getCells(gridSize).map((cell) => {
 				if (removedCells.map(getCellId).includes(cell.id)) {
-					return <div className="w-grid h-grid bg-transparent"></div>;
+					return <div key={cell.id} className="w-grid h-grid bg-transparent"></div>;
 				}
 				const unitsInCell = units.filter(isUnitInTile(cell));
 				const hasUnitInCell = unitsInCell.length > 0;
@@ -176,6 +178,8 @@ export function BattleGrid() {
 				);
 			})}
 			<SurfacesOverlay />
+			<TelegraphOverlay />
+			<BarkOverlay />
 			{/* --- SVG OVERLAY FOR PROJECTED MOVES --- */}
 			<ShadowPredictions />
 		</div>

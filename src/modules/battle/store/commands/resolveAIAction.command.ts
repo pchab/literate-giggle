@@ -2,6 +2,7 @@ import { sleep } from "@/modules/shared/helpers/sleep";
 import { useRegistryStore } from "@/modules/shared/store/registry.store";
 import { isHero, isIncapacitated } from "@/modules/units/helpers/units.helpers";
 import { handleAICardIntent } from "../../helpers/ai.actions.helpers";
+import { advancePattern } from "../../helpers/bossScript.helpers";
 import { tickStatusesAndSurfaces } from "../../helpers/effects/effect.helpers";
 import { finalizeAction } from "../../helpers/encounter.helpers";
 import { triggerTurnStart } from "../../helpers/passive.helpers";
@@ -61,6 +62,13 @@ export const resolveAIActions = async (
 			attackerId: freshAIunit.id,
 			card: cardToPlay,
 		});
+
+		// Scripted bosses move on to the next card of their pattern.
+		set(({ units }) => ({
+			units: units.map((u) =>
+				u.id === freshAIunit.id ? advancePattern(u) : u,
+			),
+		}));
 	}
 
 	// ============================================

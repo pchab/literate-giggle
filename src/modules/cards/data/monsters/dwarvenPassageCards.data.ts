@@ -2,6 +2,7 @@ import {
 	cleavePattern,
 	crossPattern,
 } from "@/modules/battle/data/attackPattern.data";
+import { summonId } from "@/modules/units/helpers/units.helpers";
 import type { Card } from "../../domain/cards.type";
 import { cardId } from "../../helpers/cards.helper";
 
@@ -25,6 +26,42 @@ export const dwarvenPassageCards: Record<Card["id"], Card> = {
 		aiTargetPreference: "lowestHp",
 		aoePattern: crossPattern,
 		effects: [{ type: "damage", amount: 6, target: "anchor" }],
+	},
+	[cardId("ceiling_collapse")]: {
+		id: cardId("ceiling_collapse"),
+		name: "Bring Down the Ceiling",
+		image: "/cards/hurl_boulder.webp",
+		range: 0,
+		playRequirement: "no_target",
+		aiTargetPreference: "self",
+		effects: [
+			{
+				type: "custom_script",
+				scriptId: "ceiling_collapse",
+				target: "self",
+				payload: { tiles: 2, damage: 5, boulderId: summonId("boulder") },
+				description:
+					"Marks the tiles under the 2 closest heroes. Next turn rocks fall there: 5 damage that ignores armour, then a boulder lands on each empty tile.",
+			},
+		],
+	},
+	[cardId("seismic_slam")]: {
+		id: cardId("seismic_slam"),
+		name: "Seismic Slam",
+		image: "/cards/fist_slam.webp",
+		range: 0,
+		playRequirement: "no_target",
+		aiTargetPreference: "self",
+		effects: [
+			{
+				type: "custom_script",
+				scriptId: "seismic_slam",
+				target: "self",
+				payload: { radius: 2, damage: 6 },
+				description:
+					"Marks every tile within 2 of the Golem. Next turn: 6 damage to anything still there, its own allies included.",
+			},
+		],
 	},
 	[cardId("hardened_stone")]: {
 		id: cardId("hardened_stone"),

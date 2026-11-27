@@ -24,4 +24,9 @@ export type Intent = {
 	target?: AnchorTarget;
 	intendedMove?: GridPosition[];
 	dangerZone?: GridPosition[];
+	/**
+	 * Telegraphed cells that won't change before the move resolves, however units
+	 * move in between. Shown on the board all turn; kept across re-simulations.
+	 */
+	lockedZone?: GridPosition[];
 };

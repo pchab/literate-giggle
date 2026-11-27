@@ -5,6 +5,7 @@ import { rat } from "../monsters/rat.data";
 import { skeleton } from "../monsters/skeleton.data";
 import { acidFlask } from "./acidFlask";
 import { arcaneWisp } from "./arcaneWisp";
+import { boulder } from "./boulder";
 import { iceWall } from "./iceWall";
 
 export const summonLibrary: Record<string, UnitBlueprint> = {
@@ -14,4 +15,5 @@ export const summonLibrary: Record<string, UnitBlueprint> = {
 	[summonId("briar-wolf")]: briarWolf,
 	[summonId("arcane-wisp")]: arcaneWisp,
 	[summonId("acid-flask")]: acidFlask,
+	[summonId("boulder")]: boulder,
 };

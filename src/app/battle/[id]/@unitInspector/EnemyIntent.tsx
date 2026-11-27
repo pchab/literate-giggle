@@ -2,6 +2,10 @@
 
 import { motion } from "motion/react";
 import { useShallow } from "zustand/shallow";
+import {
+	currentPhaseIndex,
+	upcomingScriptedMoves,
+} from "@/modules/battle/helpers/bossScript.helpers";
 import { useBattleStore } from "@/modules/battle/store/battle.store";
 import { BattleCard } from "@/modules/cards/components/BattleCard";
 import { CardTooltip } from "@/modules/cards/components/CardTooltip";
@@ -98,6 +102,29 @@ export default function EnemyIntentSidebar({
 					{aiUnit.hint}
 				</div>
 			)}
+
+			{/* --- BOSS ROUTINE: what comes after the current move --- */}
+			{(() => {
+				const upcoming = upcomingScriptedMoves(aiUnit)
+					.map((id) => getCard(id)?.name)
+					.filter(Boolean);
+				if (!upcoming.length) return null;
+				const phase = aiUnit.phaseIndex ?? currentPhaseIndex(aiUnit) ?? 0;
+				const nextPhase = aiUnit.phases?.[phase + 1];
+				return (
+					<div className="relative z-10 text-[11px] leading-snug text-zinc-300">
+						<span className="font-bold uppercase tracking-wider text-zinc-500">
+							Then:{" "}
+						</span>
+						{upcoming.join(" → ")}
+						{nextPhase && (
+							<span className="block text-zinc-500">
+								Changes its routine below {nextPhase.atHpPercent}% HP.
+							</span>
+						)}
+					</div>
+				);
+			})()}
 
 			{/* --- STATUS TRACKERS --- */}
 			{displayStatuses.length > 0 && (

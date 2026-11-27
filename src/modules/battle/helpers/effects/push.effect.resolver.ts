@@ -246,12 +246,17 @@ export const resolvePushEffect: EffectResolver<BattleUnit, PushEffect> =
 			// --- 2. EXECUTE CRUSH ---
 			if (isCrushed) {
 				if (collisionDamage > 0) {
+					const multiplier = Math.max(
+						entity.collisionMultiplier ?? 1,
+						...crushObstacles.map((o) => o.collisionMultiplier ?? 1),
+					);
 					await applyCombatUpdate(
 						get,
 						set,
 						isSimulation,
 					)(entity.id, {
-						damageTaken: collisionDamage * 2,
+						damageTaken: collisionDamage * 2 * multiplier,
+						isTrueDamage: multiplier > 1,
 						sourceId: caster.id,
 					});
 					for (const obs of crushObstacles) {
@@ -259,7 +264,11 @@ export const resolvePushEffect: EffectResolver<BattleUnit, PushEffect> =
 							get,
 							set,
 							isSimulation,
-						)(obs.id, { damageTaken: collisionDamage, sourceId: caster.id });
+						)(obs.id, {
+							damageTaken: collisionDamage * multiplier,
+							isTrueDamage: multiplier > 1,
+							sourceId: caster.id,
+						});
 					}
 				}
 				return;
@@ -286,20 +295,23 @@ export const resolvePushEffect: EffectResolver<BattleUnit, PushEffect> =
 			const stoppedShort = path.length < distance;
 			if (stoppedShort || collidedWith) {
 				if (collisionDamage > 0 && entity.currentHp > 0) {
-					await applyCombatUpdate(
-						get,
-						set,
-						isSimulation,
-					)(entity.id, { damageTaken: collisionDamage, sourceId: caster.id });
+					// Jagged obstacles (boulders...) multiply the impact and ignore armour.
+					const multiplier = Math.max(
+						entity.collisionMultiplier ?? 1,
+						collidedWith?.collisionMultiplier ?? 1,
+					);
+					const impact = {
+						damageTaken: collisionDamage * multiplier,
+						isTrueDamage: multiplier > 1,
+						sourceId: caster.id,
+					};
+					await applyCombatUpdate(get, set, isSimulation)(entity.id, impact);
 					if (collidedWith) {
 						await applyCombatUpdate(
 							get,
 							set,
 							isSimulation,
-						)(collidedWith.id, {
-							damageTaken: collisionDamage,
-							sourceId: caster.id,
-						});
+						)(collidedWith.id, impact);
 					}
 				}
 			}

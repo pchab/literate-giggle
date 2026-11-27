@@ -66,7 +66,12 @@ export type BattleState = {
 	battleStatus: BattleStatus;
 
 	sandboxCardOverride: Card | undefined;
+
+	/** Speech bubbles above units (boss phase changes). Newest last. */
+	barks: Bark[];
 };
+
+export type Bark = { id: string; unitId: BattleUnit["id"]; text: string };
 
 type BattleAction = {
 	initBattle: (
@@ -135,6 +140,7 @@ const initialState: BattleState = {
 	battleStatus: "ONGOING",
 
 	sandboxCardOverride: undefined,
+	barks: [],
 };
 
 export type BattleStoreServerAction = (
@@ -194,3 +200,11 @@ export const useBattleStore = create<BattleState & BattleAction>()(
 		},
 	),
 );
+
+// End-to-end tests (e2e/) end battles through this handle. Only exposed when the
+// dev server runs with NEXT_PUBLIC_E2E=1 (see playwright.config.ts).
+if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_E2E === "1") {
+	(
+		window as unknown as { __battleStore: typeof useBattleStore }
+	).__battleStore = useBattleStore;
+}

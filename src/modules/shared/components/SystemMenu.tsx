@@ -1,9 +1,13 @@
 // src/modules/system/components/SystemMenu.tsx
+import { useRouter } from "next/navigation";
 import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
+import { SaveSlotList } from "@/modules/saves/SaveSlotList";
 import { RetroButton } from "@/modules/shared/components/RetroButton";
 import { useWorldStore } from "@/modules/world/store/world.store";
 
 export function SystemMenu() {
+	const router = useRouter();
+
 	const handleSaveGame = () => {
 		const worldState = useWorldStore.getState();
 		const campaignState = useCampaignStore.getState();
@@ -31,20 +35,30 @@ export function SystemMenu() {
 	};
 
 	return (
-		<div className="flex flex-col items-center justify-center h-full w-full gap-8 p-8">
-			<div className="text-center mb-8">
-				<h2 className="text-4xl font-pixel text-yellow-500 mb-4 uppercase tracking-widest text-shadow-pixel">
-					System Options
+		<div className="flex flex-col items-center h-full w-full gap-6 p-8 overflow-y-auto">
+			<div className="text-center">
+				<h2 className="text-4xl font-pixel text-yellow-500 mb-2 uppercase tracking-widest text-shadow-pixel">
+					Save Game
 				</h2>
 				<p className="text-zinc-500 font-mono text-sm max-w-md mx-auto">
-					Download your current campaign progress to your device. You can import
-					this file from the main menu to resume your journey.
+					Saves stay in this browser. Load one here or from the title screen.
 				</p>
 			</div>
 
-			<RetroButton onClick={handleSaveGame} variant="primary" className="w-64">
-				Export Save File
-			</RetroButton>
+			<SaveSlotList canSave onLoaded={() => router.push("/")} />
+
+			<div className="flex flex-col items-center gap-2 mt-4">
+				<RetroButton
+					onClick={handleSaveGame}
+					variant="default"
+					className="w-64"
+				>
+					Export Save File
+				</RetroButton>
+				<p className="text-zinc-600 font-mono text-xs">
+					Download a copy to keep or move to another device.
+				</p>
+			</div>
 		</div>
 	);
 }

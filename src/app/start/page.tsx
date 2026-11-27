@@ -2,10 +2,12 @@
 
 import { domAnimation, LazyMotion, m } from "motion/react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/shallow";
 import { useCampaignStore } from "@/modules/campaign/store/campaign.store";
+import { SaveSlotList } from "@/modules/saves/SaveSlotList";
 import { RetroButton } from "@/modules/shared/components/RetroButton";
 import { useWorldStore } from "@/modules/world/store/world.store";
 
@@ -13,6 +15,20 @@ export default function StartScreen() {
 	const router = useRouter();
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const [loadError, setLoadError] = useState<string | null>(null);
+	const [showSlots, setShowSlots] = useState(false);
+	const [hasGame, setHasGame] = useState(false);
+
+	// A game in progress lives in localStorage: check on the client only.
+	useEffect(() => {
+		try {
+			const world = JSON.parse(
+				localStorage.getItem("alpha-world-state") ?? "null",
+			);
+			setHasGame((world?.state?.roster?.length ?? 0) > 0);
+		} catch {
+			setHasGame(false);
+		}
+	}, []);
 
 	const { initializeRoster } = useWorldStore(
 		useShallow((state) => ({
@@ -31,7 +47,7 @@ export default function StartScreen() {
 		router.push("/world");
 	};
 
-	const handleLoadGame = () => {
+	const handleLoadFile = () => {
 		fileInputRef.current?.click();
 	};
 
@@ -106,21 +122,40 @@ export default function StartScreen() {
 						transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
 						className="flex flex-col gap-4 w-64"
 					>
+						{hasGame && (
+							<RetroButton
+								onClick={() => router.push("/")}
+								variant="primary"
+								className="w-full py-4 text-xl"
+							>
+								Continue
+							</RetroButton>
+						)}
+
 						<RetroButton
 							onClick={handleNewGame}
-							variant="primary"
+							variant={hasGame ? "default" : "primary"}
 							className="w-full py-4 text-xl shadow-[0_0_15px_rgba(234,179,8,0.3)] hover:shadow-[0_0_25px_rgba(234,179,8,0.6)] transition-shadow"
 						>
 							New Game
 						</RetroButton>
 
 						<RetroButton
-							onClick={handleLoadGame}
+							onClick={() => setShowSlots(true)}
 							variant="default"
 							className="w-full py-4 text-xl"
 						>
 							Load Game
 						</RetroButton>
+
+						{process.env.NODE_ENV === "development" && (
+							<Link
+								href="/dev/fights"
+								className="text-center font-mono text-xs uppercase tracking-widest text-zinc-400 hover:text-amber-400"
+							>
+								Fight Room (dev)
+							</Link>
+						)}
 
 						<input
 							type="file"
@@ -137,6 +172,36 @@ export default function StartScreen() {
 						)}
 					</m.div>
 				</div>
+
+				{/* --- LOAD GAME: browser slots, or a save file --- */}
+				{showSlots && (
+					<div
+						className="absolute inset-0 z-30 flex items-center justify-center bg-black/80 p-6"
+						role="dialog"
+						aria-label="Load game"
+					>
+						<div className="flex flex-col items-center gap-6 w-full max-w-2xl bg-zinc-900 border-4 border-zinc-700 p-8">
+							<h2 className="text-3xl font-pixel text-yellow-500 uppercase tracking-widest">
+								Load Game
+							</h2>
+							<SaveSlotList onLoaded={() => router.push("/")} />
+							<div className="flex gap-4">
+								<RetroButton onClick={handleLoadFile}>From a file…</RetroButton>
+								<RetroButton
+									onClick={() => setShowSlots(false)}
+									variant="warning"
+								>
+									Back
+								</RetroButton>
+							</div>
+							{loadError && (
+								<span className="text-red-500 font-mono text-xs font-bold uppercase tracking-wider bg-red-950/80 px-2 py-1 rounded">
+									{loadError}
+								</span>
+							)}
+						</div>
+					</div>
+				)}
 
 				{/* --- FOOTER VERSION INFO --- */}
 				<m.div

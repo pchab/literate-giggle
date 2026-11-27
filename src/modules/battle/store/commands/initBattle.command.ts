@@ -110,6 +110,7 @@ export const initBattle =
 			objectiveProgress: {},
 			gridSize,
 			removedCells,
+			barks: [],
 		}));
 		await triggerTurnStart(get, set, false)(battleRoster);
 		await calculateAIIntents(get, set)({});

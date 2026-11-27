@@ -51,9 +51,36 @@ export interface Unit {
 	size?: BoundingBox["size"];
 	/** Boss tip shown in the inspector: how the fight is meant to be won. */
 	hint?: string;
+	/**
+	 * Boss script: moves played in this order, looping, instead of a weighted random
+	 * pick from `intentPool`. Overridden by the active phase's pattern.
+	 */
+	intentPattern?: Card["id"][];
+	/** HP-threshold phases, highest threshold first (see BossPhase). */
+	phases?: BossPhase[];
+	/**
+	 * Collisions with this unit deal this many times the collision damage, to both
+	 * sides, and ignore DEF and block (e.g. jagged boulders).
+	 */
+	collisionMultiplier?: number;
 }
 
+/**
+ * One stage of a boss fight. A boss is in the last phase whose `atHpPercent` its HP
+ * has dropped to (so list a 100% phase first). Entering a phase restarts its pattern
+ * at the first move and shows the bark above the boss.
+ */
+export type BossPhase = {
+	atHpPercent: number;
+	intentPattern: Card["id"][];
+	bark?: string;
+};
+
 export interface BattleUnit extends Unit {
+	/** Position in the current intent pattern (scripted bosses). */
+	patternStep?: number;
+	/** Index of the current boss phase (scripted bosses). */
+	phaseIndex?: number;
 	currentHp: number;
 	gridPosition: BoundingBox["gridPosition"];
 	statuses: Status[];
