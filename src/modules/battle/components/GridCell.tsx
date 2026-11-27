@@ -91,6 +91,17 @@ export function GridCell({
 					>
 						<UnitSprite unitInCell={unit} />
 
+						{/* --- TRANSFORM COUNTDOWN (boulders waking up...) --- */}
+						{unit.transformIn !== undefined && (
+							<span
+								data-countdown={unit.transformIn}
+								title={`Wakes up in ${unit.transformIn} round${unit.transformIn > 1 ? "s" : ""}`}
+								className="absolute top-1 left-1 z-10 whitespace-nowrap bg-amber-950/90 border border-amber-500 text-amber-200 text-[10px] font-bold rounded px-1"
+							>
+								⏳{unit.transformIn}
+							</span>
+						)}
+
 						{/* --- PROJECTED CASUALTY INDICATOR --- */}
 						<ProjectedCasualtyIcon unitId={unit.id} />
 					</div>

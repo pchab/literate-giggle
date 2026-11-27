@@ -17,6 +17,15 @@ export const dwarvenPassageCards: Record<Card["id"], Card> = {
 		aoePattern: cleavePattern,
 		effects: [{ type: "damage", amount: 7, target: "anchor" }],
 	},
+	[cardId("rubble_punch")]: {
+		id: cardId("rubble_punch"),
+		name: "Rubble Punch",
+		image: "/cards/fist_slam.webp",
+		range: 1,
+		playRequirement: "requires_enemy",
+		aiTargetPreference: "closest",
+		effects: [{ type: "damage", amount: 4, target: "anchor" }],
+	},
 	[cardId("hurl_boulder")]: {
 		id: cardId("hurl_boulder"),
 		name: "Hurl Boulder",
@@ -43,6 +52,38 @@ export const dwarvenPassageCards: Record<Card["id"], Card> = {
 				description:
 					"Marks the tiles under the 2 closest heroes. Next turn rocks fall there: 5 damage that ignores armour, then a boulder lands on each empty tile.",
 			},
+			{
+				type: "custom_script",
+				scriptId: "advance",
+				target: "self",
+				payload: { steps: 2 },
+				description: "Then it walks up to 2 tiles toward the nearest hero.",
+			},
+		],
+	},
+	[cardId("cave_in")]: {
+		id: cardId("cave_in"),
+		name: "Cave-In",
+		image: "/cards/hurl_boulder.webp",
+		range: 0,
+		playRequirement: "no_target",
+		aiTargetPreference: "self",
+		effects: [
+			{
+				type: "custom_script",
+				scriptId: "ceiling_collapse",
+				target: "self",
+				payload: { tiles: 3, damage: 5, boulderId: summonId("boulder") },
+				description:
+					"Marks the tiles under the 3 closest heroes. Next turn rocks fall there: 5 damage that ignores armour, then a boulder lands on each empty tile.",
+			},
+			{
+				type: "custom_script",
+				scriptId: "advance",
+				target: "self",
+				payload: { steps: 2 },
+				description: "Then it walks up to 2 tiles toward the nearest hero.",
+			},
 		],
 	},
 	[cardId("seismic_slam")]: {
@@ -61,6 +102,13 @@ export const dwarvenPassageCards: Record<Card["id"], Card> = {
 				description:
 					"Marks every tile within 2 of the Golem. Next turn: 6 damage to anything still there, its own allies included.",
 			},
+			{
+				type: "custom_script",
+				scriptId: "advance",
+				target: "self",
+				payload: { steps: 2 },
+				description: "Then it walks up to 2 tiles toward the nearest hero.",
+			},
 		],
 	},
 	[cardId("hardened_stone")]: {
@@ -75,6 +123,13 @@ export const dwarvenPassageCards: Record<Card["id"], Card> = {
 				type: "apply_status",
 				status: { type: "block", amount: 6, duration: 2 },
 				target: "anchor",
+			},
+			{
+				type: "custom_script",
+				scriptId: "advance",
+				target: "self",
+				payload: { steps: 2 },
+				description: "Then it walks up to 2 tiles toward the nearest hero.",
 			},
 		],
 	},

@@ -63,6 +63,11 @@ export interface Unit {
 	 * sides, and ignore DEF and block (e.g. jagged boulders).
 	 */
 	collisionMultiplier?: number;
+	/**
+	 * Turns into another unit after a number of rounds (counted at the end of each
+	 * enemy turn), keeping its position and its share of HP (e.g. boulders that wake).
+	 */
+	transformsInto?: { blueprint: UnitBlueprint; afterRounds: number };
 }
 
 /**
@@ -81,6 +86,8 @@ export interface BattleUnit extends Unit {
 	patternStep?: number;
 	/** Index of the current boss phase (scripted bosses). */
 	phaseIndex?: number;
+	/** Rounds left before `transformsInto` happens. */
+	transformIn?: number;
 	currentHp: number;
 	gridPosition: BoundingBox["gridPosition"];
 	statuses: Status[];

@@ -21,12 +21,25 @@ export const stone_elemental: UnitBlueprint = {
 	],
 };
 
+/** A boulder from the Golem's ceiling that woke up. Weaker, darker Stone Elemental. */
+export const rubble_elemental: UnitBlueprint = {
+	id: "rubble_elemental" as UnitBlueprint["id"],
+	name: "Rubble Elemental",
+	spriteBase: "monsters/stone_elemental",
+	availableVariants: ["shadow"],
+	maxHp: 10,
+	baseMove: 1,
+	baseDef: 1,
+	xpReward: 5,
+	intentPool: [{ cardId: cardId("rubble_punch"), weight: 1 }],
+};
+
 export const golem_overseer: UnitBlueprint = {
 	id: "golem_overseer" as UnitBlueprint["id"],
 	name: "Golem Overseer",
-	hint: "Its stone shrugs off blows. Falling rocks and boulders ignore its armour and its guard: push it under the marked rocks, or into a boulder.",
+	hint: "It walks toward you after every move, and boulders wall off the room: keep an escape route clear. Falling rocks and boulders ignore its armour and its guard: push it under the marked rocks, or into a boulder.",
 	spriteBase: "monsters/golem_overseer",
-	maxHp: 45,
+	maxHp: 60,
 	baseMove: 1,
 	baseDef: 2,
 	xpReward: 150,
@@ -45,7 +58,7 @@ export const golem_overseer: UnitBlueprint = {
 		{
 			atHpPercent: 50,
 			bark: "CORE OVERHEATING. ABANDONING DEFENCE.",
-			intentPattern: [cardId("seismic_slam"), cardId("ceiling_collapse")],
+			intentPattern: [cardId("seismic_slam"), cardId("cave_in")],
 		},
 	],
 };

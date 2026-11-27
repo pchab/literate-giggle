@@ -107,10 +107,8 @@ export async function moveHero(
 /** Directly edits units (positions, HP...) to set up a scenario. */
 export async function patchUnits(
 	page: Page,
-	patches: Record<
-		string,
-		Partial<{ gridPosition: { col: number; row: number }; currentHp: number }>
-	>,
+	/** Unit id -> fields to overwrite (gridPosition, currentHp, statuses...). */
+	patches: Record<string, Record<string, unknown>>,
 ) {
 	await page.evaluate((p) => {
 		(window as unknown as BattleWindow).__battleStore.setState((s) => ({

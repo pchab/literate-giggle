@@ -7,8 +7,10 @@ import {
 	isTileInBounds,
 	isUnitInTile,
 } from "@/modules/battle/helpers/grid.helpers";
+import { moveBattleUnit } from "@/modules/battle/helpers/move.helpers";
 import { applyCombatUpdate } from "@/modules/battle/helpers/state.helpers";
 import { lockedZone } from "@/modules/battle/helpers/telegraph.helpers";
+import { transformCountdown } from "@/modules/battle/helpers/transform.helpers";
 import type { BattleSet } from "@/modules/battle/store/battle.store";
 import { sleep } from "@/modules/shared/helpers/sleep";
 import { summonLibrary } from "@/modules/units/data/summons/summons.data";
@@ -103,6 +105,7 @@ export const ceilingCollapse: EffectResolver<
 			statuses: [],
 			gridPosition: cell,
 			allegiance: "NEUTRAL",
+			...transformCountdown(blueprint),
 		}));
 		if (boulders.length)
 			set((prev) => ({ units: [...prev.units, ...boulders] }));
@@ -167,4 +170,83 @@ export const seismicSlam: EffectResolver<
 				isDirectHit: true,
 			});
 		}
+	};
+
+/**
+ * Advance: after acting, the boss walks up to `steps` tiles toward the nearest hero
+ * (ties go toward the centre of the board), so its next telegraph lands where the
+ * party is. Boulders and units block the way.
+ */
+export const advance: EffectResolver<
+	BattleUnit,
+	CustomScriptEffect<{ steps: number }>
+> =
+	(get, set, isSimulation = false) =>
+	({ payload }) =>
+	async ({ caster }) => {
+		const { units, gridSize, removedCells } = get();
+		const self = units.find((u) => u.id === caster.id);
+		const heroes = units.filter((u) => isHero(u) && u.currentHp > 0);
+		if (!self || self.currentHp <= 0 || !heroes.length) return;
+
+		const key = (c: GridPosition) => getCellId(c);
+		const distToHeroes = (c: GridPosition) =>
+			Math.min(
+				...heroes.map((h) =>
+					getDistanceToBoundingBox({ caster: { gridPosition: c }, target: h }),
+				),
+			);
+		const centre = {
+			col: (gridSize.cols - 1) / 2,
+			row: (gridSize.rows - 1) / 2,
+		};
+		const distToCentre = (c: GridPosition) =>
+			Math.abs(c.col - centre.col) + Math.abs(c.row - centre.row);
+
+		// Breadth-first over empty tiles, up to `steps` away.
+		const from = new Map<string, GridPosition | null>([
+			[key(self.gridPosition), null],
+		]);
+		let frontier = [self.gridPosition];
+		for (let step = 0; step < payload.steps; step++) {
+			const next: GridPosition[] = [];
+			for (const cell of frontier) {
+				for (const [dc, dr] of [
+					[1, 0],
+					[-1, 0],
+					[0, 1],
+					[0, -1],
+				]) {
+					const n = { col: cell.col + dc, row: cell.row + dr };
+					if (from.has(key(n))) continue;
+					if (!isTileInBounds(gridSize, removedCells)(n)) continue;
+					if (!isTileEmpty(units)(n)) continue;
+					from.set(key(n), cell);
+					next.push(n);
+				}
+			}
+			frontier = next;
+		}
+
+		const options = [...from.keys()].map((id) => {
+			const [row, col] = id.split("-").map(Number);
+			return { col, row };
+		});
+		const best = options.sort(
+			(a, b) =>
+				distToHeroes(a) - distToHeroes(b) || distToCentre(a) - distToCentre(b),
+		)[0];
+		if (!best || key(best) === key(self.gridPosition)) return;
+		// Already next to a hero: stay put.
+		if (distToHeroes(self.gridPosition) <= distToHeroes(best)) return;
+
+		const path: GridPosition[] = [];
+		for (
+			let at: GridPosition | null = best;
+			at && key(at) !== key(self.gridPosition);
+		) {
+			path.unshift(at);
+			at = from.get(key(at)) ?? null;
+		}
+		await moveBattleUnit(get, set, isSimulation)({ movingUnit: self, path });
 	};

@@ -103,6 +103,14 @@ export default function EnemyIntentSidebar({
 				</div>
 			)}
 
+			{/* --- TRANSFORM COUNTDOWN --- */}
+			{aiUnit.transformIn !== undefined && aiUnit.transformsInto && (
+				<div className="relative z-10 text-[11px] leading-snug text-amber-200">
+					⏳ Becomes a {aiUnit.transformsInto.blueprint.name} in{" "}
+					{aiUnit.transformIn} round{aiUnit.transformIn > 1 ? "s" : ""}.
+				</div>
+			)}
+
 			{/* --- BOSS ROUTINE: what comes after the current move --- */}
 			{(() => {
 				const upcoming = upcomingScriptedMoves(aiUnit)

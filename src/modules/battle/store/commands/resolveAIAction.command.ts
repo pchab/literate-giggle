@@ -6,6 +6,7 @@ import { advancePattern } from "../../helpers/bossScript.helpers";
 import { tickStatusesAndSurfaces } from "../../helpers/effects/effect.helpers";
 import { finalizeAction } from "../../helpers/encounter.helpers";
 import { triggerTurnStart } from "../../helpers/passive.helpers";
+import { tickTransformations } from "../../helpers/transform.helpers";
 import type { BattleGet, BattleSet } from "../battle.store";
 import { calculateAIIntents } from "./calculateAIIntents.command";
 
@@ -70,6 +71,9 @@ export const resolveAIActions = async (
 			),
 		}));
 	}
+
+	// Countdowns (boulders waking up...) tick once per round.
+	tickTransformations(set);
 
 	// ============================================
 	// 3. START OF PLAYER TURN (Tick Hero statuses)

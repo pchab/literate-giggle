@@ -93,12 +93,23 @@ test.describe("Golem Overseer", () => {
 		const boulder = after.units.find((u) => u.name === "Boulder");
 		expect(boulder?.pos).toEqual(dodger.pos);
 
-		// Next in the pattern: Seismic Slam, telegraphed around the Golem.
+		// It walked toward the party after acting...
+		const moved = unitNamed(after.units, "Golem Overseer");
+		const nearest = (pos: { col: number; row: number }) =>
+			Math.min(
+				...heroesOf(after.units).map(
+					(h) => Math.abs(h.pos.col - pos.col) + Math.abs(h.pos.row - pos.row),
+				),
+			);
+		expect(nearest(moved.pos)).toBeLessThan(nearest(golem.pos));
+
+		// ...and its next move, Seismic Slam, is telegraphed around where it now stands.
 		const next = after.intents.find((i) => i.unitId === golem.id);
 		expect(next?.cardId).toBe("card-seismic_slam");
+		expect(next?.lockedZone?.length).toBeGreaterThan(0);
 		for (const cell of next?.lockedZone ?? []) {
 			const d =
-				Math.abs(cell.col - golem.pos.col) + Math.abs(cell.row - golem.pos.row);
+				Math.abs(cell.col - moved.pos.col) + Math.abs(cell.row - moved.pos.row);
 			expect(d).toBeGreaterThan(0);
 			expect(d).toBeLessThanOrEqual(2);
 		}
@@ -179,5 +190,60 @@ test.describe("Golem Overseer", () => {
 		await expect(
 			page.getByText("CORE OVERHEATING. ABANDONING DEFENCE."),
 		).toBeVisible();
+	});
+	test("a boulder wakes up as a Rubble Elemental after 2 rounds, keeping its share of HP", async ({
+		page,
+	}) => {
+		await startFightRoomBattle(page, "The Golem Overseer");
+		const start = await readBattle(page);
+		const golem = unitNamed(start.units, "Golem Overseer");
+		const zone =
+			start.intents.find((i) => i.unitId === golem.id)?.lockedZone ?? [];
+		const dodger = heroesOf(start.units).find((h) =>
+			zone.some((c) => c.col === h.pos.col && c.row === h.pos.row),
+		);
+		if (!dodger) throw new Error("no hero on a marked tile");
+		const elemental = unitNamed(start.units, "Stone Elemental");
+		await patchUnits(page, { [elemental.id]: { currentHp: 0 } });
+		const free = {
+			col: dodger.pos.col === 0 ? 0 : dodger.pos.col - 1,
+			row: dodger.pos.row,
+		};
+		const blocked = start.units.some(
+			(u) => u.pos.col === free.col && u.pos.row === free.row,
+		);
+		await moveHero(
+			page,
+			dodger.id,
+			blocked ? { col: dodger.pos.col, row: dodger.pos.row + 2 } : free,
+		);
+
+		await endRound(page);
+		const landed = await readBattle(page);
+		const boulder = landed.units.find((u) => u.name === "Boulder");
+		expect(boulder, "a boulder landed").toBeDefined();
+		await expect(page.locator("[data-countdown='2']")).toBeVisible();
+
+		// Crack it to half HP, and keep the Golem stunned so nothing else touches it.
+		const stun = [{ type: "stun", amount: 1, duration: 9 }];
+		await patchUnits(page, {
+			[boulder?.id ?? ""]: { currentHp: 4 },
+			[golem.id]: { statuses: stun },
+		});
+
+		await endRound(page);
+		await expect(page.locator("[data-countdown='1']")).toBeVisible();
+		await patchUnits(page, { [golem.id]: { statuses: stun } });
+
+		await endRound(page);
+		const woken = await readBattle(page);
+		expect(woken.units.find((u) => u.name === "Boulder")).toBeUndefined();
+		const rubble = woken.units.find((u) => u.name === "Rubble Elemental");
+		expect(rubble?.pos).toEqual(boulder?.pos);
+		expect(rubble?.maxHp).toBe(10);
+		expect(rubble?.hp, "half a boulder wakes as half an elemental").toBe(5);
+		expect(rubble?.id.startsWith("monster-"), "it counts toward victory").toBe(
+			true,
+		);
 	});
 });

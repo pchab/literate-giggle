@@ -141,7 +141,7 @@ export default function FightRoom() {
 		);
 
 	return (
-		<main className="min-h-screen w-screen bg-zinc-950 text-zinc-300 p-8 font-mono">
+		<main className="h-screen w-screen overflow-y-auto bg-zinc-950 text-zinc-300 p-8 font-mono">
 			<header className="flex items-baseline justify-between mb-6">
 				<h1 className="text-4xl font-pixel text-yellow-500 uppercase tracking-widest">
 					Fight Room
